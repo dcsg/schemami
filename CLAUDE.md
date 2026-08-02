@@ -21,8 +21,9 @@ lives on that branch.
 
 - `schema/rcp-core-v1.schema.json` — the executable core schema
   (JSON Schema 2020-12). The current source of truth for the protocol shape.
-- `examples/*.rcp.yaml` — validated example recipes (Pão Alentejano, a
-  cocktail, sauerkraut, pastéis de nata). Every schema change must keep these
+- `examples/*.rcp.yaml` — six validated example recipes in two files (Pão
+  Alentejano; a cocktail, sauerkraut, pastéis de nata, and a ganache + the
+  brownie that references it). Every schema change must keep these
   validating (ajv, 2020-12 dialect) — they are the regression suite.
 - `docs/research/` — the founding research bundle: 6 research tracks
   (`01`–`06`), the strawman proposal (`00-PROPOSAL-rcp-v1.md`), deep-dives
