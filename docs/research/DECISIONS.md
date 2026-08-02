@@ -225,6 +225,17 @@ strawman proposal is still a proposal.
     English bases keep integrations simple; pt-PT culinary terms stay
     exact where they are content (names, notes, reasons).
 
+25. **`technique.` is the fourth registry kind prefix.** (2026-08-02,
+    PRD-002 OQ-1.) Extends #23's three (ingredient./primitive./
+    equipment.) with governed technique entries (technique.refogado,
+    technique.bulhao-pato, …) under identical governance: append-only,
+    kind-prefixed ontology paths, one file per entry, steward-approved.
+    Techniques earn registry status because they are load-bearing for
+    substitution anchoring (research 06) and the derived technique facet
+    (#10); the interim vocab list retires when PRD-002's FR-REG-003
+    lands. Difficulty facet (same session): integer 1–5, source books'
+    1–3 hat scales map in per-ingest with the mapping recorded.
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the

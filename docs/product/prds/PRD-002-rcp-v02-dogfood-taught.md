@@ -107,16 +107,17 @@ the first surface for `rcp.dev.surface-engineer` and any human reviewer.
 
 ## Open Questions
 
-- **OQ-1** — The `technique.` kind prefix extends DECISIONS #23 (which
-  sanctioned exactly three): needs Daniel's decision entry before
-  FR-REG-003 lands.
 - **OQ-2** — Time-field semantics: hands-on vs total vs per-phase
   (research 04 wants both) — shape decided in SPEC.
-- **OQ-3** — Difficulty scale representation (books use 1–3 chef hats).
 - **OQ-4** — Viewer build toolchain: the page is JavaScript by nature, but
   the anti-Node bar (PRD-001 OQ-2 input d) applies to the *build chain* —
   zero-build vanilla vs minimal bundler is the SPEC's call, burden of
   proof on any npm dependency.
+
+*Resolved 2026-08-02:* **OQ-1** → DECISIONS #25 — `technique.` approved as
+the fourth kind prefix, identical governance. **OQ-3** → difficulty is an
+integer 1–5; source books' 1–3 hat scales map in per-ingest with the
+mapping recorded.
 
 ## Evidence & Discovery
 
