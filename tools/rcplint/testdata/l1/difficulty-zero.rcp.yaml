@@ -1,0 +1,8 @@
+# Negative fixture (DS-PR-006): difficulty below the 1..5 floor must be
+# REJECTED — one failing reason only.
+rcp: 1
+id: fixture-difficulty-zero
+kind: component
+name: { en: Difficulty zero fixture }
+taxonomy:
+  difficulty: 0

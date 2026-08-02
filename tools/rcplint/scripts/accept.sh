@@ -9,6 +9,9 @@ ok()   { PASS=$((PASS+1)); printf "  ✓ %s\n" "$1"; }
 bad()  { FAIL=$((FAIL+1)); printf "  ✗ %s\n" "$1"; }
 check(){ local desc="$1"; shift; if "$@" >/dev/null 2>&1; then ok "$desc"; else bad "$desc"; fi; }
 
+echo "── v0.2 standing guards (PLAN-rcp-v02) ──"
+check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
+
 echo "── Shape + composition (FR-VAL-001, FR-PROF-001/002/003) ──"
 check "AC-VAL-001-1  make validate green: 6 docs, 60 entries, L1+L2+CUE" make validate
 check "AC-PROF-001-1 alentejano passes core ∧ bread (hardened)" sh -c "cd tools/rcplint && go run . validate ../.. | grep -q 'pao-alentejano (core ∧ bread, maturity: hardened)'"

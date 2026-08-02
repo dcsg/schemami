@@ -1,0 +1,16 @@
+# Positive fixture (AC-PR-003-3): a pastry document carrying storage
+# guidance passes core AND the hardened pastry profile — the hardened
+# block admits the new recipe-level field additively.
+rcp: 1
+id: fixture-pastry-storage-ok
+kind: pastry
+name: { en: Pastry storage fixture }
+profile:
+  laminated: false
+storage:
+  - where: room
+    container: { en: Airtight tin }
+    duration: { target: 3d }
+ingredients:
+  - id: base
+    amount: { value: 100, unit: g }

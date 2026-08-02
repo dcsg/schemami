@@ -1,0 +1,33 @@
+# Positive fixture (AC-PR-003-3 shape, DS-PR-005/006/007/008): all four v0.2
+# field groups present and valid — times windows, difficulty facet, storage
+# entries, provenance source detail.
+rcp: 1
+id: fixture-v02-fields-ok
+kind: component
+name: { en: v0.2 field additions fixture }
+taxonomy:
+  category: sauce
+  difficulty: 3
+times:
+  active: { target: 20m }
+  total: { target: 1h30m }
+  prep: { target: 30m }
+  chill: { min: 2h, max: 12h }
+storage:
+  - where: refrigerator
+    container: { en: Airtight box }
+    duration: { target: 3d }
+    note: { en: Press film onto the surface. }
+  - where: freezer
+    duration: { target: 3w }
+provenance:
+  confidence: LOW
+  status: unverified
+  sources:
+    - label: Cookbook page
+      type: book
+      work: Example Cookbook
+      page: 123-125
+ingredients:
+  - id: base
+    amount: { value: 100, unit: g }

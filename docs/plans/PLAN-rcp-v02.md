@@ -30,7 +30,7 @@ phases:
 
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
-| 1     | pending | 0/5 | — |
+| 1     | done | 1/5 | 2026-08-02 |
 | 2     | pending | 0/5 | — |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
@@ -306,3 +306,10 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 1:
+- AC-1.1: PASS — 2026-08-02
+- AC-1.2: PASS — 2026-08-02
+- AC-1.3: PASS — 2026-08-02
+- AC-1.4: PASS — 2026-08-02
+- AC-1.5: PASS — 2026-08-02

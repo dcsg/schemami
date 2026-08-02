@@ -1,0 +1,8 @@
+# Negative fixture (DS-PR-005): `times` is a closed object — an unknown
+# phase key must be REJECTED, not silently ignored.
+rcp: 1
+id: fixture-times-unknown-key
+kind: component
+name: { en: Times unknown key fixture }
+times:
+  baking: { target: 20m }

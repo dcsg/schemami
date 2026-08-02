@@ -1,0 +1,8 @@
+# Negative fixture (DS-PR-007): storage `where` is a closed enum
+# (room | refrigerator | freezer) — anything else must be REJECTED.
+rcp: 1
+id: fixture-storage-bad-where
+kind: component
+name: { en: Storage bad where fixture }
+storage:
+  - where: pantry

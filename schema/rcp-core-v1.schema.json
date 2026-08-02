@@ -25,7 +25,13 @@
       "type": "object",
       "properties": {
         "category": { "$ref": "#/$defs/slug" },
-        "subcategory": { "type": "array", "items": { "$ref": "#/$defs/slug" } }
+        "subcategory": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Asserted facet (DECISIONS #10; PRD-002 OQ-3): integer 1..5. Source books using coarser scales (1–3 chef hats) map in per-ingest; the mapping call is recorded in provenance notes, never guessed silently."
+        }
       },
       "additionalProperties": false
     },
@@ -120,6 +126,37 @@
     "substitutions": { "type": "array", "items": { "$ref": "#/$defs/substitution" } },
     "execution_modes": { "type": "array", "items": { "$ref": "#/$defs/executionMode" } },
     "serving": { "type": "object" },
+
+    "times": {
+      "description": "Recipe-level time metadata (DS-PR-005; research 04:79-80). `active` (hands-on) and `total` are deliberately separate fields — same total, opposite effort (stir-fry vs risotto). Each value is a duration window; single book values encode as `target`. Closed object: a new phase name is a schema change, not authoring freedom.",
+      "type": "object",
+      "properties": {
+        "active": { "$ref": "#/$defs/duration" },
+        "total": { "$ref": "#/$defs/duration" },
+        "prep": { "$ref": "#/$defs/duration" },
+        "cook": { "$ref": "#/$defs/duration" },
+        "chill": { "$ref": "#/$defs/duration" },
+        "rest": { "$ref": "#/$defs/duration" }
+      },
+      "additionalProperties": false
+    },
+
+    "storage": {
+      "description": "Storage guidance (DS-PR-007). An array because book pages routinely give multiple conditions (days airtight at room, months frozen). `where` is a closed enum; free-text nuance goes in `container`/`note`.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["where"],
+        "properties": {
+          "where": { "enum": ["room", "refrigerator", "freezer"] },
+          "container": { "$ref": "#/$defs/text" },
+          "duration": { "$ref": "#/$defs/duration" },
+          "note": { "$ref": "#/$defs/text" }
+        },
+        "additionalProperties": false
+      }
+    },
+
     "provenance": { "$ref": "#/$defs/provenance" },
     "licence": {
       "type": "object",
@@ -702,7 +739,15 @@
             "properties": {
               "label": { "type": "string" },
               "url": { "type": "string", "format": "uri" },
-              "type": { "enum": ["official", "academic", "press", "testimony", "blog", "book"] }
+              "type": { "enum": ["official", "academic", "press", "testimony", "blog", "book"] },
+              "work": {
+                "type": "string",
+                "description": "Publication/book title (DS-PR-008) — the work the page reference points into."
+              },
+              "page": {
+                "type": "string",
+                "description": "Page reference as a string: admits '123', '123-125', 'xii' (DS-PR-008)."
+              }
             },
             "additionalProperties": false
           }

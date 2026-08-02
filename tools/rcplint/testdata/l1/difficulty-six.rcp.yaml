@@ -1,0 +1,8 @@
+# Negative fixture (DS-PR-006): difficulty above the 1..5 ceiling must be
+# REJECTED — one failing reason only.
+rcp: 1
+id: fixture-difficulty-six
+kind: component
+name: { en: Difficulty six fixture }
+taxonomy:
+  difficulty: 6
