@@ -233,6 +233,126 @@ acceptance_criteria:
     when: "each filename (minus .yaml) is compared to the entry's id field"
     then: "they are identical for every entry — file identity equals registry identity"
 
+# Design — the addressable HOW layer (project extension, traceability guideline).
+# DS = individually adjustable design decisions; CMP = buildable units.
+# LLMs cite these ids in plan phases, commits, and adjustments; changing a
+# DS appends a revision_history entry naming it and flags its serves: SRs
+# for re-check.
+design:
+  statements:
+    - id: DS-PR-001
+      text: "Two-surface split: normative protocol = schema/ + registry/ + schema/VERSIONING.md + schema/constraints/*.cue; informative tooling = tools/ + Makefile + .github/. Nothing in the informative surface may be required to implement the protocol."
+      serves: [SR-PR-001, SR-VAL-001]
+      status: proposed
+    - id: DS-PR-002
+      text: "Constraint hardening shape: $defs.constraint gains anyOf requiring at least one bound field, plus a dependent requirement making `of` mandatory whenever min_ratio/max_ratio is present."
+      serves: [SR-PR-002]
+      status: proposed
+    - id: DS-PR-003
+      text: "ingredient.item becomes the union (slug | null); `raw` always survives; null marks unresolved imports and is a lint warning, not a schema error."
+      serves: [SR-PR-002]
+      status: proposed
+    - id: DS-PR-004
+      text: "Safety single-sourcing: ingredient-level constraints are the authoritative bounds; profile safety blocks reference constraint-carrying ingredient ids and never restate numbers; process endpoints (pH target) remain separate as process semantics."
+      serves: [SR-PR-002]
+      status: proposed
+    - id: DS-REG-001
+      text: "File identity = entry identity: one YAML per registry entry, filename equals the entry id; additions are atomic PRs; append-only enforced by review + linter."
+      serves: [SR-REG-002]
+      status: proposed
+    - id: DS-REG-002
+      text: "Kind-prefixed ID regex ^(ingredient|primitive|equipment)\\.[a-z0-9][a-z0-9.-]*$ enforced twice: in the registry entry schemas and as a linter rule on recipe references."
+      serves: [SR-REG-001]
+      status: proposed
+    - id: DS-REG-003
+      text: "Slug migration is mechanical: a recorded old→new mapping table applied to the six examples in one reviewed commit; harness must be green immediately after; git history is the pre-migration archive."
+      serves: [SR-REG-003]
+      status: proposed
+    - id: DS-PROF-001
+      text: "Profiles extend core via allOf into the profile block, selected by kind; every profile schema carries x-rcp-maturity (hardened|draft); the harness prints maturity on every validation."
+      serves: [SR-PROF-001, SR-PROF-002, SR-PROF-003]
+      status: proposed
+    - id: DS-VAL-001
+      text: "Validation composition is core AND profile[kind] — one document, two schema evaluations, both must pass; draft-profile passes are labelled, never silent."
+      serves: [SR-VAL-001, SR-PROF-003]
+      status: proposed
+    - id: DS-VAL-002
+      text: "Layer-1 validator is github.com/santhosh-tekuri/jsonschema/v6 behind a small internal interface, so it can be swapped (e.g. for Google's Go jsonschema package) without touching callers; format assertions explicitly enabled."
+      serves: [SR-VAL-001]
+      status: proposed
+    - id: DS-VAL-003
+      text: "CUE integration is a pipeline step: declarative constraints authored in schema/constraints/*.cue (normative artifacts), evaluated via `cue vet` CLI; embedding CUE in-process stays a documented option (ADR-001), not exercised in v0.1."
+      serves: [SR-VAL-002]
+      status: proposed
+    - id: DS-VAL-004
+      text: "Layer-2 check set: reference resolution (item/primitive/equipment/of/uses/after), DAG completeness+termination per enumerated guard combination, component cycle rejection, produced-but-unconsumed intermediate reporting, unversioned-pin reporting."
+      serves: [SR-VAL-002]
+      status: proposed
+    - id: DS-VAL-005
+      text: "Single entry point: `make validate` runs L1 + L2 + CUE in sequence; .github/workflows/validate.yml runs the same target on push/PR and stays dormant until a remote exists."
+      serves: [SR-VAL-001]
+      status: proposed
+    - id: DS-SAFE-001
+      text: "The clamp is an rcplint subcommand (`rcplint clamp --scale N <file>`), refuses with authored pt/en reasons, defaults to refusal on any uncertainty, and is excluded from the normative surface — never presented as the Recipe Calculus."
+      serves: [SR-SAFE-001]
+      status: proposed
+  components:
+    - id: CMP-PR-001
+      path: "schema/VERSIONING.md + git tag rcp-v0.1"
+      description: "Versioning conventions document and the freeze tag"
+      serves: [SR-PR-001]
+      status: proposed
+    - id: CMP-PR-002
+      path: "schema/rcp-core-v1.schema.json"
+      description: "Core schema hardening edits (DS-PR-002/003/004)"
+      serves: [SR-PR-002]
+      status: proposed
+    - id: CMP-REG-001
+      path: "registry/schemas/{ingredient-class,step-primitive,equipment-profile}.schema.json"
+      description: "The three registry entry formats"
+      serves: [SR-REG-001]
+      status: proposed
+    - id: CMP-REG-002
+      path: "registry/entries/{ingredient,primitive,equipment}/<id>.yaml"
+      description: "Seed registry — complete inventory referenced by the six examples"
+      serves: [SR-REG-002]
+      status: proposed
+    - id: CMP-REG-003
+      path: "examples/*.rcp.yaml"
+      description: "In-place slug migration change-set (DS-REG-003)"
+      serves: [SR-REG-003]
+      status: proposed
+    - id: CMP-PROF-001
+      path: "schema/profiles/bread.schema.json"
+      description: "Bread profile, hardened"
+      serves: [SR-PROF-001]
+      status: proposed
+    - id: CMP-PROF-002
+      path: "schema/profiles/pastry.schema.json"
+      description: "Pastry profile, hardened"
+      serves: [SR-PROF-002]
+      status: proposed
+    - id: CMP-PROF-003
+      path: "schema/profiles/{ferment,preserve,drink,coffee,component}.schema.json"
+      description: "Five draft profiles with x-rcp-maturity: draft"
+      serves: [SR-PROF-003]
+      status: proposed
+    - id: CMP-VAL-001
+      path: "tools/rcplint/ + Makefile + .github/workflows/validate.yml"
+      description: "Go harness: Layer-1 subcommand, entry point, dormant CI"
+      serves: [SR-VAL-001]
+      status: proposed
+    - id: CMP-VAL-002
+      path: "tools/rcplint (lint subcommand) + schema/constraints/*.cue"
+      description: "Layer-2 semantic linter and the CUE constraint files"
+      serves: [SR-VAL-002]
+      status: proposed
+    - id: CMP-SAFE-001
+      path: "tools/rcplint (clamp subcommand)"
+      description: "Throwaway fail-closed safety clamp"
+      serves: [SR-SAFE-001]
+      status: proposed
+
 # Protections — inherited from PRD + spec-scoped additions.
 protections:
   - id: SP-001
@@ -300,12 +420,16 @@ revision_history:
     author: "Daniel Gomes"
     action: "created"
     note: "Initial draft from PRD-001 (v2). 11 SRs covering all 10 FRs; 20 PRD ACs passed through verbatim; 3 SACs added at the architecture layer."
+  - at: "2026-08-02T17:39:37Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Addressable how-layer added per Daniel's rule (context needs no ids; anything implemented does): design block with 14 DS statements and 11 CMP components, each serves: linked to SRs; narrative mirrors the ids; guideline updated and recompiled."
 
 # User extensions — LLM never writes here; commands never touch.
 extensions: {}
 
 # Sync block.
 _sync:
-  md_hash: "f8b10a0149c5e5e469b018df717663002a16229bcee1c4d0f57d8eba4db273f2"
-  yaml_hash: "5b9a10bf4c839807227f4e3151544af7cfb5908fb1791a1f0ebb9e9d6a383854"
-  synced_at: "2026-08-02T17:30:16Z"
+  md_hash: "2d45beb94d814340dede6e13b04906bde3034f1f2a03725e16cd8b582809dbca"
+  yaml_hash: "674a99aadbdb9780d8e3c7bb14ce2dc7e49750dbb548c6e778f4f171fee120b5"
+  synced_at: "2026-08-02T17:39:37Z"

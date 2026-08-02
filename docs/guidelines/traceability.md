@@ -27,6 +27,16 @@ sidecars.
   (`AC-<CODE>-NNN-M`), so the component is readable from any AC id.
 - Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC
   item implementing nothing traceable MUST NOT exist.
+- Context and rationale prose need no ids. **Anything that must be
+  implemented MUST carry an id**: requirements as `SR-<CODE>-NNN`, design
+  decisions as `DS-<CODE>-NNN`, buildable units as `CMP-<CODE>-NNN` (in the
+  spec sidecar's `design:` block, each with a `serves:` list of SR ids),
+  acceptance checks as `AC`/`SAC`. If an implementer would act on it, it is
+  citable by id; if it only explains, it is prose.
+- Plan phases, commits, and adjustments MUST cite the DS/CMP/SR ids they
+  build or change; adjusting a DS appends a revision_history entry naming
+  the id, sets its status to `adjusted`, and its `serves:` SRs and their
+  ACs MUST be re-checked.
 - Every generated artifact (data model, contract, fixture) MUST carry the
   spec-item or FR ids it realizes, in its header or sidecar metadata.
 - Every plan phase MUST list the FR/AC ids it delivers, and its verify

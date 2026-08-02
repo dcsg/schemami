@@ -58,43 +58,70 @@ test, or CI infrastructure; this spec introduces the first.
 
 ## Proposed Design
 
-Two cleanly separated surfaces, per DECISIONS #21:
+The how-layer is **addressable** ([traceability guideline](../../../guidelines/traceability.md)):
+every design decision below is a `DS-<CODE>-NNN` statement in the sidecar's
+`design.statements`, individually adjustable, with `serves:` linking it to
+the SRs it realizes. Plans, commits, and future adjustments cite these ids.
 
-**Normative (the protocol):** `schema/` (core + `schema/profiles/`),
-`registry/` (entry schemas + seed entries), `schema/VERSIONING.md`, and the
-`.cue` constraint files. An independent implementer needs nothing else.
-
-**Informative (tooling):** `tools/rcplint/` (Go), `Makefile`,
-`.github/workflows/validate.yml`. Protected by SSP-001: nothing in `tools/`
-may become a normative requirement.
-
-Validation composes as: **Layer 1** — document validates against
-core ∧ profile[kind] (profiles extend via allOf; draft profiles carry
-`x-rcp-maturity: draft`, surfaced in output). **Layer 2** — `rcplint lint`:
-reference resolution (registry, bases, uses, after), DAG
-connectivity/termination per guard combination, cycle rejection,
-orphan-intermediate and unversioned-pin reporting; then declarative
-ratio-bound/field-relation checks authored in CUE, evaluated via `cue vet`
-as a pipeline step (embedding CUE stays a documented option — ADR-001).
-**Clamp** — `rcplint clamp --scale N file`: recompute `severity: critical`
-constraints at the scaled resolved values; refuse with the authored pt/en
-reason; refuse on uncertainty.
+- **DS-PR-001** — Two-surface split (DECISIONS #21): normative =
+  `schema/` + `registry/` + `schema/VERSIONING.md` + `schema/constraints/*.cue`;
+  informative = `tools/` + `Makefile` + `.github/`. An independent
+  implementer needs only the normative surface.
+- **DS-VAL-001** — Validation composes as core ∧ profile[kind]: one
+  document, two schema evaluations, both must pass.
+- **DS-PROF-001** — Profiles extend via allOf into the `profile` block;
+  every profile schema carries `x-rcp-maturity`; the harness prints
+  maturity on every validation (draft passes are labelled, never silent).
+- **DS-VAL-002** — The L1 validator (santhosh-tekuri/jsonschema v6) sits
+  behind a small internal interface so it can be swapped without touching
+  callers; format assertions explicitly enabled.
+- **DS-VAL-004** — L2 check set: reference resolution (item / primitive /
+  equipment / `of:` / `uses:` / `after:`), DAG completeness + termination
+  per enumerated guard combination, cycle rejection, orphan-intermediate
+  and unversioned-pin reporting.
+- **DS-VAL-003** — CUE as a pipeline step: constraints authored in
+  `schema/constraints/*.cue` (normative artifacts), evaluated via
+  `cue vet`; embedding stays a documented option (ADR-001).
+- **DS-VAL-005** — One entry point: `make validate` = L1 + L2 + CUE;
+  the CI workflow runs the same target, dormant until a remote exists.
+- **DS-PR-002/003/004** — Core hardening shapes: constraint anyOf-bound +
+  `of` required with ratios; `item` becomes (slug | null) with null a lint
+  warning, not a schema error; safety single-sourcing (constraints
+  authoritative, profile blocks reference by id, endpoints stay process
+  semantics).
+- **DS-REG-001/002/003** — File identity = entry identity (one YAML per
+  entry, filename = id); the kind-prefix regex enforced in both entry
+  schemas and linter; migration via a recorded mapping table in one
+  reviewed commit, harness green immediately after.
+- **DS-SAFE-001** — `rcplint clamp --scale N <file>`: refuse with authored
+  pt/en reasons, refusal default on uncertainty, excluded from the
+  normative surface.
 
 ## Components
 
-| Component | Path | SRs |
-|---|---|---|
-| Versioning doc + freeze tag | `schema/VERSIONING.md`, tag `rcp-v0.1` | SR-PR-001 |
-| Core hardening | `schema/rcp-core-v1.schema.json` (constraint anyOf-bound + `of` with ratios; nullable `item`; safety single-sourcing) | SR-PR-002 |
-| Registry entry schemas | `registry/schemas/{ingredient-class,step-primitive,equipment-profile}.schema.json` | SR-REG-001 |
-| Seed registry | `registry/entries/{ingredient,primitive,equipment}/<id>.yaml` — one file per entry, filename = id | SR-REG-002 |
-| Example slug migration | `examples/*.rcp.yaml` rewritten in place, one reviewed commit | SR-REG-003 |
-| Bread profile (hardened) | `schema/profiles/bread.schema.json` | SR-PROF-001 |
-| Pastry profile (hardened) | `schema/profiles/pastry.schema.json` | SR-PROF-002 |
-| Draft profiles ×5 | `schema/profiles/{ferment,preserve,drink,coffee,component}.schema.json` | SR-PROF-003 |
-| Harness L1 + CI | `tools/rcplint/` (Go, santhosh-tekuri/jsonschema v6), `Makefile`, `.github/workflows/validate.yml` | SR-VAL-001 |
-| Linter L2 + CUE | `tools/rcplint` lint subcommand + `schema/constraints/*.cue` | SR-VAL-002 |
-| Safety clamp | `rcplint clamp` subcommand (throwaway) | SR-SAFE-001 |
+Buildable units, addressable as `CMP-<CODE>-NNN` (sidecar
+`design.components`; status tracks proposed → built):
+
+| ID | Path | Realizes | Serves |
+|----|------|----------|--------|
+| CMP-PR-001 | `schema/VERSIONING.md` + tag `rcp-v0.1` | versioning + freeze | SR-PR-001 |
+| CMP-PR-002 | `schema/rcp-core-v1.schema.json` | DS-PR-002/003/004 | SR-PR-002 |
+| CMP-REG-001 | `registry/schemas/*.schema.json` | DS-REG-002 | SR-REG-001 |
+| CMP-REG-002 | `registry/entries/{ingredient,primitive,equipment}/<id>.yaml` | DS-REG-001 | SR-REG-002 |
+| CMP-REG-003 | `examples/*.rcp.yaml` migration change-set | DS-REG-003 | SR-REG-003 |
+| CMP-PROF-001 | `schema/profiles/bread.schema.json` | DS-PROF-001 | SR-PROF-001 |
+| CMP-PROF-002 | `schema/profiles/pastry.schema.json` | DS-PROF-001 | SR-PROF-002 |
+| CMP-PROF-003 | `schema/profiles/{ferment,preserve,drink,coffee,component}.schema.json` | DS-PROF-001 | SR-PROF-003 |
+| CMP-VAL-001 | `tools/rcplint/` + `Makefile` + workflow | DS-VAL-001/002/005 | SR-VAL-001 |
+| CMP-VAL-002 | `rcplint lint` + `schema/constraints/*.cue` | DS-VAL-003/004 | SR-VAL-002 |
+| CMP-SAFE-001 | `rcplint clamp` subcommand | DS-SAFE-001 | SR-SAFE-001 |
+
+**Addressing & adjustment protocol:** plan phases and commits cite these
+ids ("Phase 2 builds CMP-REG-002 per DS-REG-001, implements SR-REG-002").
+Adjusting a DS is an edit-in-place with a revision_history entry naming the
+id and flips its status to `adjusted`; its `serves:` SRs (and their ACs)
+must be re-checked. After the spec is accepted, DS/CMP ids freeze like all
+others — corrections happen by deprecate-and-add.
 
 ## Non-Goals
 
