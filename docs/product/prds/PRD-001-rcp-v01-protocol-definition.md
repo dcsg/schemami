@@ -134,11 +134,18 @@ users can easily follow and understand the recipes."*
 
 ## Open Questions
 
-- **OQ-2** — Harness implementation language: a SPEC (*how*) decision. The
-  protocol-level *whats* are already fixed and must not be re-litigated by
-  the harness choice — JSON Schema 2020-12 dialect, CUE-flavoured
-  declarative constraints (DECISIONS #8). The SPEC must keep implementation
-  choices from leaking normative requirements into the protocol.
+- **OQ-2** — Harness implementation language: a SPEC (*how*) decision,
+  recorded as an ADR when made. The protocol-level *whats* stay fixed —
+  JSON Schema 2020-12 dialect, CUE-flavoured declarative constraints
+  (DECISIONS #8) — and must not be re-litigated by the harness choice.
+  Decision inputs gathered 2026-08-02: **(a)** no backend exists or is
+  planned, so there is no admission point to align with (the DDD review's
+  F5 shared-kernel warning is moot; the harness is a CI/local tool);
+  **(b)** Daniel writes none of the code — implementation is agent-authored
+  and Daniel-reviewed, so the criterion is "best and most efficient for the
+  job", delegated to the SPEC author; **(c)** the CUE integration shape
+  (CLI step vs embed vs re-express) is decided in the same SPEC section,
+  since "embed" forces Go by itself.
 
 *Resolved 2026-08-02:* **OQ-1** → DECISIONS #23, kind-prefixed slugs
 (`ingredient.*` / `primitive.*` / `equipment.*`; example migration tracked

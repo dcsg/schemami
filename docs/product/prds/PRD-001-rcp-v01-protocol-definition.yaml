@@ -246,7 +246,7 @@ risks: []
 # median time-to-correct. OQ-4 → maturity field in each profile schema
 # (folded into FR-303/AC-303-1).
 open_questions:
-  - "OQ-2: Harness implementation language — a SPEC (how) decision. The protocol-level whats are already fixed and must not be re-litigated by the harness choice: JSON Schema 2020-12 dialect and CUE-flavoured declarative constraints (DECISIONS #8). The SPEC must keep implementation choices from leaking normative requirements into the protocol."
+  - "OQ-2: Harness implementation language — a SPEC (how) decision, to be recorded as an ADR when made. The protocol-level whats are already fixed and must not be re-litigated by the harness choice: JSON Schema 2020-12 dialect and CUE-flavoured declarative constraints (DECISIONS #8). Decision inputs gathered 2026-08-02 (interview): (a) no backend exists or is planned in the ecosystem, so there is no admission point to align with — the DDD review's F5 shared-kernel warning is moot for now and the harness is a CI/local tool; (b) Daniel writes none of the code — implementation is agent-authored and Daniel-reviewed, so the criterion is 'best and most efficient for the job', delegated to the SPEC author; (c) the CUE integration shape (CLI step vs embed vs re-express) is decided in the same SPEC section as the language, since option 'embed' forces Go by itself."
 
 # SPECs written against this PRD — maintained by /edikt:sdlc:spec
 source_specs: []
@@ -280,12 +280,16 @@ revision_history:
     action: "edited"
     note: "Component-banded IDs adopted (FR-1xx..5xx + component/trace fields; old FR-001..010 renumbered while draft, no external references existed). OQ-1 resolved → DECISIONS #23 kind-prefixed slugs (new AC-201-2, AC-202-3). OQ-3 resolved → targets set: ≥90% encoding coverage, ≤10 min median time-to-correct. OQ-4 resolved → maturity field in profile schemas (FR-303). OQ-2 rephrased: harness language is SPEC's how; protocol whats stay fixed."
     affected: ["FR-101", "FR-102", "FR-201", "FR-202", "FR-301", "FR-302", "FR-303", "FR-401", "FR-402", "FR-501"]
+  - at: "2026-08-02T16:54:10Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "OQ-2 decision inputs recorded from interview: no backend exists or is planned (F5 moot); implementation is agent-authored, Daniel-reviewed — language criterion delegated to SPEC as 'best and most efficient'; CUE integration shape decided alongside language; choice to be recorded as an ADR."
 
 # User extensions — LLM never writes here; commands never touch
 extensions: {}
 
 # Sync block — SHA-256 of .md and .yaml at last sync
 _sync:
-  md_hash: "412bb9487ddff0cbaa57e90c22f58e773af309aee6dd63de4a5c41847a5ac120"
-  yaml_hash: "ac8c13909d49dc467e7c3f6bddc5313407f4ae57c69ce053db8ea96877bfb469"
-  synced_at: "2026-08-02T16:48:55Z"
+  md_hash: "d859e978bb9881602c10ff47f098b682524d4c2732471d2daf7f0bc76e323e31"
+  yaml_hash: "eae54a2e5803785360c42bb82ee27846bcba80bc6dcc92ae34f9ea02e8624b36"
+  synced_at: "2026-08-02T16:54:10Z"
