@@ -12,7 +12,7 @@ kind: drink
 lang: en
 
 name: { en: Negroni, pt: Negroni }
-taxonomy: { category: cocktail, subcategory: [stirred, aperitivo, spirit-forward] }
+taxonomy: { category: cocktail, subcategory: [stirred, aperitif, spirit-forward] }
 tags: [classic, iba, equal-parts]
 
 # The recipe is genuinely 1:1:1 with NO absolute quantities until instantiated.
@@ -103,7 +103,7 @@ kind: ferment
 lang: pt-PT
 
 name: { pt: Chucrute, en: Sauerkraut }
-taxonomy: { category: conserva, subcategory: [lacto-fermentado, vegetal] }
+taxonomy: { category: preserve, subcategory: [lacto-fermented, vegetable] }
 
 # Pivot is trimmed vegetable weight — not flour, not total. Same `bases` machinery.
 bases:
@@ -184,7 +184,7 @@ kind: pastry
 lang: pt-PT
 
 name: { pt: Pastéis de Nata, en: Portuguese Custard Tarts }
-taxonomy: { category: pastelaria, subcategory: [folhada, creme] }
+taxonomy: { category: pastry, subcategory: [laminated, custard] }
 
 # One recipe, three components, each of a DIFFERENT category.
 # This is why the core must be shared across profiles.
@@ -278,7 +278,7 @@ kind: component
 lang: pt-PT
 
 name: { pt: Ganache de chocolate, en: Chocolate ganache }
-taxonomy: { category: base, subcategory: [chocolate, creme] }
+taxonomy: { category: base, subcategory: [chocolate, custard] }
 
 scaling:
   default_yield: { total: { value: 500, unit: g } }
@@ -316,7 +316,7 @@ kind: pastry
 lang: pt-PT
 
 name: { pt: Brownie com ganache, en: Ganache brownie }
-taxonomy: { category: pastelaria, subcategory: [chocolate, tabuleiro] }
+taxonomy: { category: pastry, subcategory: [chocolate, tray-bake] }
 
 # The referenced component: any published recipe can be used this way.
 # `version` pins it; publish-time resolution embeds the snapshot (SPEC-006).

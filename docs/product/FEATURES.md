@@ -91,6 +91,11 @@ vocabulary) to a governed registry kind: documented gestures, media
 teaches-links, primitive tagging, substitution anchoring.
 *home-cook, surface-engineer, personal-collector · ICP-1*
 
+**FEAT-I18N-001 — Translation layer over English bases** (#24) — all
+machine-read vocabulary English-base; localized display generalizes the
+display_name{pt,en} pattern; integrations bind to stable identifiers.
+*surface-engineer, home-cook · ICP-1*
+
 **FEAT-PUB-001 — Verified publish-time resolution** (#21, obligation 3)
 resolver_version + content hashes pinned in published documents — resolver
 bugs become identifiable, not permanent. *editorial-verifier,

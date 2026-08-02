@@ -7,7 +7,7 @@
 #   VAL validation · SAFE safety machinery · CALC recipe calculus ·
 #   SUB substitution · PUB publishing/resolution · TOOL developer-facing
 #   protocol tooling (playground/viewer — informative surface, SSP-001) ·
-#   APP app-side (external)
+#   I18N localization layer over English bases · APP app-side (external)
 #
 # Fields:
 #   status: shipping (in an accepted PRD) | deferred (target names the
@@ -270,6 +270,24 @@ features:
     status: deferred
     target: v1
     trace: ["research 00 D2b (techniques/gestures as registry-backed vocabulary)", "research 06:270-286 (technique as substitution anchor)", "DECISIONS #10 (derived facet)"]
+    graduates_to: null
+
+  - id: FEAT-I18N-001
+    name: "Translation layer over English bases"
+    description: >-
+      Every machine-read vocabulary is English-base (registry IDs by
+      governance; taxonomy slugs by DECISIONS #24); localized display is
+      a translation layer on top, generalizing the registry
+      display_name{pt,en} pattern to taxonomy terms, technique names,
+      endpoint tests and UI-facing vocabulary. Integrations bind to
+      stable English identifiers; renderers pick the viewer's language;
+      pt-PT culinary exactness (massa velha ≠ isco) lives in the
+      translations and content fields, never in the identifiers.
+    personas: [rcp.dev.surface-engineer, rcp.cook.home-cook]
+    icp: ICP-1
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #24", "registry-governance guideline (IDs never localized)"]
     graduates_to: null
 
   - id: FEAT-PUB-001

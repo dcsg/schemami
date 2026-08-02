@@ -15,9 +15,9 @@ name:
   en: Alentejo Bread
 
 taxonomy:
-  category: pao
-  subcategory: [trigo, massa-velha, regional]
-tags: [alentejo, forno-a-lenha, dupla-fermentacao]
+  category: bread
+  subcategory: [wheat, old-dough, regional]
+tags: [alentejo, wood-fired-oven, double-fermentation]
 
 origin:
   country: PT

@@ -215,6 +215,16 @@ strawman proposal is still a proposal.
     this is the last moment renaming is possible — IDs never change once
     the registry exists.
 
+24. **Taxonomy vocabulary is English-base.** (2026-08-02, during dogfood
+    run #2.) Machine-read taxonomy slugs (category, subcategory, tags)
+    are English — same rule as registry IDs ("identifiers in English");
+    the six examples' Portuguese taxonomy slugs predated the rule being
+    applied there and are migrated. Localized *display* of taxonomy (and
+    everything else) is a translation layer over English bases
+    (FEAT-I18N-001), mirroring the registry display_name pattern —
+    English bases keep integrations simple; pt-PT culinary terms stay
+    exact where they are content (names, notes, reasons).
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
