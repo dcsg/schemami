@@ -2,7 +2,7 @@
 type: spec
 id: SPEC-002
 title: RCP v0.2 implementation — dogfood fields, dish hardening, technique registry, grounding, i18n, viewer
-status: draft
+status: accepted
 author: Daniel Gomes
 implements: PRD-002
 source_prd: PRD-002

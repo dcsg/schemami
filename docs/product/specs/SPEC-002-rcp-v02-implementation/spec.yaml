@@ -5,7 +5,7 @@ id: SPEC-002
 title: RCP v0.2 implementation — dogfood fields, dish hardening, technique registry, grounding, i18n,
   viewer
 slug: rcp-v02-implementation
-status: draft
+status: accepted
 author: Daniel Gomes
 created_at: '2026-08-02T22:34:11Z'
 source_prd: PRD-002
@@ -409,8 +409,12 @@ revision_history:
   note: 'Viewer tech revised with Daniel (ADR-002): DS-TOOL-001 becomes the engine-interface seam, DS-TOOL-002
     added (Bun-toolchained JS engine, 2-dep budget, conformance-vector parity replacing WASM-first); SR-TOOL-001,
     SAC-TOOL-001 reworked, SAC-TOOL-002 added, SSP-004 reworded to oracle+conformance.'
+- at: '2026-08-02T23:05:31Z'
+  author: Daniel Gomes
+  action: edited
+  note: Accepted by Daniel (viewer design revised per ADR-002 first). Proceeding to artifacts.
 extensions: {}
 _sync:
-  md_hash: 9f79a4a57de34d5d0ca7662b597b80252952243041eb6c1b1e76aa9dbf56b4a9
-  yaml_hash: deea32d833c61a7a0070b939f22b8198a95d3f87fa75456e6e822ae5bc54324b
-  synced_at: '2026-08-02T22:50:54Z'
+  md_hash: 24ab57d8d5d0be52d78ade90e161f852cc0b997a0f90d7ba70e7ef3c03101919
+  yaml_hash: 8dae65501b3159a0c3e62ef885bbebb533aee2e59ccc683fb7d0e95be918cf6b
+  synced_at: '2026-08-02T23:05:31Z'
