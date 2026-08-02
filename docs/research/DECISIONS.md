@@ -189,6 +189,19 @@ strawman proposal is still a proposal.
     descriptive, not normative. Consequence: SPEC-009 is structured as a
     normative core plus informative annexes along exactly this line.
 
+22. **v0.1 protocol scope: core frozen + registry formats/seed + bread and
+    pastry profiles + validation harness + minimal fail-closed clamp.**
+    (2026-08-02.) Definition of done: a stranger could take the repo,
+    validate a new bread or pastry recipe against core + profile with every
+    registry reference resolving, and be refused with a reason when a
+    safety bound is violated — without asking Daniel anything. The **dish**
+    profile is written during the ingestion dogfood, forced by the first
+    savoury recipe ingested; **ferment** stays in the hardened-four v1 set
+    (#18) but is not required for v0.1. The clamp checker is explicitly
+    throwaway — the Recipe Calculus with conformance vectors (#13) remains
+    a v1 obligation, not a v0.1 deliverable. SPEC-009 prose comes after
+    v0.1 is exercised, codifying what the dogfood taught.
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
