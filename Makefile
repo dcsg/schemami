@@ -8,7 +8,7 @@ FACTS := $(shell mktemp -t rcp-facts).json
 validate:
 	cd tools/rcplint && go run . validate ../..
 	cd tools/rcplint && go run . lint ../..
-	cd tools/rcplint && go run . facts ../.. > $(FACTS) && $(CUE) vet ../../schema/constraints/bounds.cue $(FACTS) && echo "CUE VET GREEN" && rm -f $(FACTS)
+	cd tools/rcplint && go run . facts ../.. > $(FACTS) && ( $(CUE) vet ../../schema/constraints/bounds.cue $(FACTS) && echo "CUE VET GREEN" && rm -f $(FACTS) || ( python3 scripts/explain-bounds.py $(FACTS); rm -f $(FACTS); exit 1 ) )
 
 .PHONY: accept
 accept:
