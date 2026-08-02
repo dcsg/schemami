@@ -36,17 +36,17 @@ scaling:
 
 ingredients:
   - id: t65
-    item: flour.wheat.t65
+    item: ingredient.flour.wheat.t65
     amount: { value: 6000, unit: g }
     roles: [flour]
 
   - id: t110
-    item: flour.wheat.t110
+    item: ingredient.flour.wheat.t110
     amount: { value: 750, unit: g }
     roles: [flour]
 
   - id: rijo
-    item: flour.wheat.rijo
+    item: ingredient.flour.wheat.rijo
     amount: { value: 750, unit: g }
     roles: [flour]
     note:
@@ -54,17 +54,17 @@ ingredients:
       en: Durum-type wheat, the traditional Alentejo variety.
 
   - id: agua
-    item: water
+    item: ingredient.water
     amount: { value: 4800, unit: g }
     roles: [hydration]
 
   - id: banha
-    item: fat.lard
+    item: ingredient.fat.lard
     amount: { value: 180, unit: g }
     roles: [fat, tenderiser]
 
   - id: mv
-    item: preferment.massa-velha
+    item: ingredient.preferment.massa-velha
     amount: { value: 2850, unit: g }
     roles: [leaven, flavour, acid]
     component: massa-velha
@@ -73,13 +73,13 @@ ingredients:
       en: Old dough kept back from the previous bake. Not the same as isco.
 
   - id: mm
-    item: culture.sourdough.trigo
+    item: ingredient.culture.sourdough.trigo
     amount: { value: 1900, unit: g }
     roles: [leaven]
     component: massa-mae
 
   - id: sal
-    item: salt.sea.fine
+    item: ingredient.salt.sea.fine
     amount: { value: 270, unit: g }
     roles: [salt, flavour, fermentation-control]
 
@@ -92,12 +92,12 @@ components:
     min_batch: { value: 100, unit: g }
     feed_ratio: "1:5:5"
     ingredients:
-      - { id: mm-seed,  item: culture.sourdough.trigo, amount: { ratio: 1, of: mm-feed }, roles: [leaven] }
-      - { id: mm-flour, item: flour.wheat.t65,         amount: { ratio: 5, of: mm-feed }, roles: [flour] }
-      - { id: mm-agua,  item: water,                   amount: { ratio: 5, of: mm-feed }, roles: [hydration] }
+      - { id: mm-seed,  item: ingredient.culture.sourdough.trigo, amount: { ratio: 1, of: mm-feed }, roles: [leaven] }
+      - { id: mm-flour, item: ingredient.flour.wheat.t65,         amount: { ratio: 5, of: mm-feed }, roles: [flour] }
+      - { id: mm-agua,  item: ingredient.water,                   amount: { ratio: 5, of: mm-feed }, roles: [hydration] }
     steps:
       - id: refresh
-        primitive: { id: refresh-culture, v: 1 }
+        primitive: { id: primitive.refresh-culture, v: 1 }
         duration: { min: 4h, target: 6h, max: 8h }
         temperature: { target: 24, unit: C }
         until:
@@ -109,7 +109,7 @@ components:
     name: { pt: Massa velha, en: Old dough }
     carried_over: true             # backslopped: output of batch N-1 is input of batch N
     ingredients:
-      - { id: mv-carry, item: preferment.massa-velha, amount: { value: 2850, unit: g }, roles: [leaven] }
+      - { id: mv-carry, item: ingredient.preferment.massa-velha, amount: { value: 2850, unit: g }, roles: [leaven] }
 
 # ── Options: author-declared choices that reshape the method. Skipping
 #    autolise is NOT a deletion — it selects the other fully-authored path,
@@ -128,7 +128,7 @@ options:
 #    that intermediate, so neither path leaves a dangling dependency. ──
 steps:
   - id: refrescar
-    primitive: { id: refresh-culture, v: 1 }
+    primitive: { id: primitive.refresh-culture, v: 1 }
     track: prep
     uses: [mm]
     title: { pt: Refrescar a massa-mãe, en: Refresh the starter }
@@ -136,7 +136,7 @@ steps:
     until: [{ kind: volume, change: "+100%" }]
 
   - id: autolise
-    primitive: { id: autolyse, v: 1 }
+    primitive: { id: primitive.autolyse, v: 1 }
     when: { option: autolise }
     uses: [t65, t110, rijo, agua]
     produces: massa-autolisada
@@ -147,7 +147,7 @@ steps:
       en: Flours and water only. No salt, no leavens.
 
   - id: misturar
-    primitive: { id: mix, v: 1 }
+    primitive: { id: primitive.mix, v: 1 }
     when: { not: { option: autolise } }
     after: [refrescar]
     uses: [t65, t110, rijo, agua, mv, mm]
@@ -159,7 +159,7 @@ steps:
       en: Add the salt only once the dough has come together.
 
   - id: misturar-pos-autolise
-    primitive: { id: mix, v: 1 }
+    primitive: { id: primitive.mix, v: 1 }
     when: { option: autolise }
     after: [refrescar, massa-autolisada]
     uses: [massa-autolisada, mv, mm]
@@ -171,7 +171,7 @@ steps:
       en: Shorter — the gluten has already begun developing on its own.
 
   - id: juntar-sal-banha
-    primitive: { id: incorporate, v: 1 }
+    primitive: { id: primitive.incorporate, v: 1 }
     after: [massa-misturada]
     uses: [sal, banha]
     repeat: { times: 3, note: "banha em 3 adições, cada uma absorvida antes da seguinte" }
@@ -182,7 +182,7 @@ steps:
           en: You are adding too much at once — fold the dough over itself and add in smaller portions.
 
   - id: bulk
-    primitive: { id: bulk-ferment, v: 1 }
+    primitive: { id: primitive.bulk-ferment, v: 1 }
     after: [juntar-sal-banha]
     title: { pt: Primeira fermentação, en: Bulk fermentation }
     duration: { min: 4h, target: 4h30m, max: 5h }
@@ -195,7 +195,7 @@ steps:
       - { role: result, type: photo, uri: media/alentejano-bulk.jpg, licence: "© all rights reserved" }
 
   - id: tender
-    primitive: { id: shape, v: 1 }
+    primitive: { id: primitive.shape, v: 1 }
     after: [bulk]
     title: { pt: Tender, en: Shape }
     media:
@@ -206,14 +206,14 @@ steps:
         note: { pt: O gesto de tender alentejano., en: The Alentejo shaping gesture. }
 
   - id: levedar
-    primitive: { id: proof, v: 1 }
+    primitive: { id: primitive.proof, v: 1 }
     after: [tender]
     title: { pt: Segunda fermentação, en: Second proof }
     duration: { min: 1h, target: 1h30m, max: 2h }
     scales_with: temperature
 
   - id: cozer
-    primitive: { id: bake, v: 1 }
+    primitive: { id: primitive.bake, v: 1 }
     after: [levedar]
     title: { pt: Cozer, en: Bake }
     temperature: { target: 240, unit: C, falling_to: 210 }
@@ -221,10 +221,10 @@ steps:
     until:
       - { kind: core-temperature, value: 96, unit: C }
       - { kind: sensory, test: tap, expect: "som oco" }
-    equipment: [forno-lenha, forno-domestico-com-vapor]
+    equipment: [equipment.forno-lenha, equipment.forno-domestico-com-vapor]
 
   - id: arrefecer
-    primitive: { id: cool, v: 1 }
+    primitive: { id: primitive.cool, v: 1 }
     after: [cozer]
     title: { pt: Arrefecer, en: Cool }
     duration: { min: 2h, target: 4h }
@@ -242,11 +242,11 @@ substitutions:
     quality: 5
     with_steps:
       - id: misturar-batedeira
-        primitive: { id: mix-machine, v: 1 }
+        primitive: { id: primitive.mix-machine, v: 1 }
         uses: [t65, t110, rijo, agua, mv, mm]
         params: { speed: 1, then_speed: 2 }
         duration: { min: 8m, target: 10m, max: 12m }
-        equipment: [batedeira-espiral]
+        equipment: [equipment.batedeira-espiral]
         title: { pt: Amassar na batedeira, en: Machine knead }
         until: [{ kind: sensory, test: windowpane, expect: "membrana translúcida sem rasgar" }]
     note:
@@ -254,7 +254,7 @@ substitutions:
       en: Same outcome, different technique — the replacement step yields the same intermediate.
 
   - replaces: banha
-    with: fat.olive-oil
+    with: ingredient.fat.olive-oil
     ratio: 1.0
     class: direct
     quality: 4
@@ -264,7 +264,7 @@ substitutions:
       en: Gives a less tender crumb and a different flavour. Attested in several villages.
 
   - replaces: [mv, mm]
-    with: yeast.fresh
+    with: ingredient.yeast.fresh
     amount: { ratio: 0.02, of: flour }
     class: method-changing
     quality: 2
