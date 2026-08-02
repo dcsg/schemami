@@ -80,11 +80,16 @@ requirements:
   implements: FR-TOOL-001
   text: 'Lightweight viewer at tools/viewer/ (informative surface): static page, paste/drop .rcp.yaml
     or JSON, L1 verdicts + human-readable render (name, ingredients with bases, step sections with notes,
-    per-component profile and maturity labels, pt-PT display via i18n vocabulary). Architecture: existing
-    Go core compiled GOOS=js GOARCH=wasm to rcp.wasm via make target; hand-written vanilla index.html/app.js/style.css
-    + Go-distribution wasm_exec.js. Build chain contains no npm, Node.js, bundler, or vendored JS dependency.
-    Works from file:// with zero network transmission of document content. L2/CUE/clamp in-browser out
-    of scope.'
+    per-component profile and maturity labels, pt-PT display via i18n vocabulary). Architecture per ADR-002:
+    the viewer is split at a versioned TypeScript engine interface (analyze(text) -> {parse, verdicts,
+    canonical} + capabilities; scale() reserved for the clamp) and the UI depends only on that interface
+    — the later WASM Go engine drops in behind the same seam without UI rewrite. v0.2 engine is JavaScript
+    (YAML 1.2 parse + JSON Schema 2020-12 validator), at most 2 exact-pinned runtime deps, zero UI deps
+    (vanilla DOM). Bun (pinned via .mise.toml) is the only JS toolchain — package manager, bundler, test
+    runner, TS runtime; Node/npm/npx/separate bundlers prohibited. Verdict parity with rcplint held by
+    a conformance-vector suite over the full corpus, run by bun test in CI. Page works from file:// or
+    any static host with zero network transmission of document content. L2/CUE/clamp in-browser out of
+    scope (arrive later as the WASM engine behind this seam).'
   status: proposed
 - id: SR-VAL-003
   implements: null
@@ -185,12 +190,21 @@ acceptance_criteria:
   verify: sh -c 'ls registry/entries/technique/*.yaml >/dev/null && test ! -f registry/vocab/techniques.yaml'
 - id: SAC-TOOL-001
   source: spec
-  given: the viewer directory as shipped
-  when: its build chain is inspected
-  then: no package.json, lockfile, node_modules, or vendored JS dependency exists under tools/viewer/
-    (wasm_exec.js from the Go distribution is the single permitted non-authored file)
-  verify: sh -c 'test ! -e tools/viewer/package.json && test ! -e tools/viewer/package-lock.json && test
-    ! -d tools/viewer/node_modules'
+  given: the viewer directory and repo toolchain files as shipped
+  when: the build chain is inspected
+  then: tools/viewer/ carries at most 2 exact-pinned runtime dependencies, a Bun lockfile, and no Node/npm/bundler
+    config; Bun is pinned in .mise.toml
+  verify: sh -c 'test -f tools/viewer/bun.lock && test ! -e tools/viewer/vite.config.js && test ! -e tools/viewer/vite.config.ts
+    && test ! -e tools/viewer/webpack.config.js && test ! -e tools/viewer/.nvmrc && grep -q bun .mise.toml
+    && python3 -c "import json,sys; d=json.load(open(\"tools/viewer/package.json\")).get(\"dependencies\",{});
+    sys.exit(0 if len(d)<=2 and all(v[0].isdigit() for v in d.values()) else 1)"'
+- id: SAC-TOOL-002
+  source: spec
+  given: the conformance-vector suite (JS engine vs rcplint over examples + L1 testdata, positives and
+    negatives)
+  when: bun test runs in tools/viewer/
+  then: all vectors pass — the JS engine and rcplint agree on every verdict
+  verify: sh -c 'cd tools/viewer && bun test'
 - id: SAC-VAL-003
   source: spec
   given: the rcplint suite at any v0.2 commit
@@ -261,13 +275,27 @@ design:
     - SR-I18N-001
     status: proposed
   - id: DS-TOOL-001
-    text: 'Viewer architecture (resolves PRD-002 OQ-4): the existing Go core (yaml.v3 parse + santhosh-tekuri
-      L1) compiled GOOS=js GOARCH=wasm, driven by hand-written vanilla HTML/CSS/JS + Go-distribution wasm_exec.js.
-      Zero npm/Node/bundler/vendored-JS — the anti-Node bar is satisfied by having no JS dependency at
-      all, and verdict parity with rcplint holds by construction (no reimplemented validation). Rejected:
-      vendored js-yaml + JS validator (verdict divergence — the founding failure mode), npm toolchain
-      (burden of proof not met, ADR-001). wasm exports L1 + parse only; L2/CUE/clamp stay native-only
-      until the full playground phase.'
+    text: 'Engine seam (resolves PRD-002 OQ-4, with DS-TOOL-002; ADR-002): the viewer splits at a versioned
+      TypeScript engine interface — analyze(text) -> {parse: {ok, errors}, verdicts (layer-tagged), canonical}
+      plus a capabilities object ({l1, l2?, cue?, clamp?}) and an optional scale() reserved for the clamp.
+      The UI is written against this interface only and reads capabilities to light up features; the full-playground
+      WASM Go engine implements the same contract later — nothing at the seam is rewritten. The interface
+      contract is pinned by tests for the future WASM implementer.'
+    serves:
+    - SR-TOOL-001
+    status: proposed
+  - id: DS-TOOL-002
+    text: 'v0.2 engine + toolchain (ADR-002): JavaScript engine — YAML 1.2 parse + JSON Schema 2020-12
+      validator — with a runtime dependency budget of at most 2 exact-pinned packages and zero UI dependencies
+      (vanilla DOM). Bun, exact-pinned via .mise.toml, is the only sanctioned JS toolchain (package manager,
+      bundler via bun build --minify, test runner, TS runtime); Node, npm, npx and separate bundlers are
+      prohibited. Verdict parity is held by conformance vectors, not implementation monogamy: the JS engine
+      must agree with rcplint over examples + L1 testdata (positives and negatives), bun test in CI, red
+      on any disagreement — making the JS engine the first consumer of the cross-stack conformance vectors
+      the protocol owes integrators (engineering obligation #1). Validator pick (shortlist: @hyperjump/json-schema,
+      @cfworker/json-schema, ajv) is ecosystem-health-scored at plan time per ADR-001. Rejected: WASM-first
+      for the lightweight cut (multi-MB payload for parity the vectors provide at near-zero cost); Node/npm
+      toolchain (bar not met); vendored-libs-no-package-manager (conformance suite needs a real test runner).'
     serves:
     - SR-TOOL-001
     status: proposed
@@ -314,9 +342,10 @@ design:
     - SR-I18N-001
     status: proposed
   - id: CMP-TOOL-001
-    path: tools/viewer/ (index.html, app.js, style.css, wasm_exec.js, rcp.wasm) + Makefile wasm target
-      + tools/rcplint wasm entrypoint
-    description: Static viewer page and the Go-to-WASM build of the L1 core
+    path: tools/viewer/ (index.html, style.css, src/engine.ts interface, src/engine-js/, src/app.ts, conformance/
+      suite, package.json + bun.lock) + .mise.toml bun pin
+    description: 'Static viewer: engine interface + JS engine + vanilla UI, Bun-toolchained; conformance-vector
+      suite diffing JS-engine verdicts against rcplint over the corpus'
     serves:
     - SR-TOOL-001
     status: proposed
@@ -338,8 +367,9 @@ protections:
     persist pasted documents anywhere but page memory.
   source: spec
 - id: SSP-004
-  text: 'No validation logic is reimplemented outside the Go core: the viewer''s verdicts come from the
-    same compiled code path as rcplint''s.'
+  text: 'rcplint is the authoritative verdict oracle: no second implementation ships without conformance-vector
+    coverage proving verdict agreement over the full corpus, and the UI never contains validation logic
+    — it renders what an engine returns.'
   source: spec
 solution_references:
 - type: doc
@@ -358,6 +388,9 @@ solution_references:
   path_or_url: docs/product/specs/SPEC-001-rcp-v01-implementation/spec.yaml
   description: 'The v0.1 spec this extends — DS-PR-001 two-surface split and the DS/CMP numbering baseline
     (source: spec)'
+- type: doc
+  path_or_url: docs/architecture/decisions/ADR-002-viewer-engine-seam-bun.md
+  description: 'Viewer engine seam + Bun toolchain decision this spec implements (source: spec)'
 supersedes: null
 superseded_by: null
 deprecated_at: null
@@ -370,8 +403,14 @@ revision_history:
   action: created
   note: Initial draft. Resolves PRD-002 OQ-2 (DS-PR-005 times shape) and OQ-4 (DS-TOOL-001 Go-to-WASM
     zero-Node viewer) as delegated. FR coverage 6/6; 12 PRD ACs passed through + 4 SACs.
+- at: '2026-08-02T22:50:54Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Viewer tech revised with Daniel (ADR-002): DS-TOOL-001 becomes the engine-interface seam, DS-TOOL-002
+    added (Bun-toolchained JS engine, 2-dep budget, conformance-vector parity replacing WASM-first); SR-TOOL-001,
+    SAC-TOOL-001 reworked, SAC-TOOL-002 added, SSP-004 reworded to oracle+conformance.'
 extensions: {}
 _sync:
-  md_hash: dd65100405c756e983e1771c99d49969d57635968590409c63518ebdd7c3e1bd
-  yaml_hash: bec242e454c954d26c4f12e2b562ac5009ca0bef379cc345fe535548a6ab9a1b
-  synced_at: '2026-08-02T22:34:59Z'
+  md_hash: 9f79a4a57de34d5d0ca7662b597b80252952243041eb6c1b1e76aa9dbf56b4a9
+  yaml_hash: deea32d833c61a7a0070b939f22b8198a95d3f87fa75456e6e822ae5bc54324b
+  synced_at: '2026-08-02T22:50:54Z'

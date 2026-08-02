@@ -371,12 +371,14 @@ features:
       human-readable (ingredients with resolved bases, the step DAG,
       per-component profiles and maturity labels), and a live scaling
       slider guarded by the fail-closed clamp — drag past the 2% brine
-      floor and watch the authored refusal appear. Candidate architecture:
-      compile rcplint to WASM so the browser runs the exact same validator
-      and clamp as CI — one implementation, zero drift, no server, no data
-      leaves the page. Sits on the informative surface (SSP-001): the
-      protocol never depends on it; it exists to make the protocol legible
-      to integrators in thirty seconds.
+      floor and watch the authored refusal appear. Architecture (ADR-002):
+      split at a versioned engine interface — a lightweight Bun-toolchained
+      JS engine first (verdict parity with rcplint via CI-tested
+      conformance vectors), the WASM-compiled Go core later behind the
+      same seam for L2+CUE+clamp — no server, no data leaves the page.
+      Sits on the informative surface (SSP-001): the protocol never
+      depends on it; it exists to make the protocol legible to integrators
+      in thirty seconds.
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: both
     status: deferred
@@ -385,9 +387,11 @@ features:
       v0.2 LIGHTWEIGHT VIEWER: paste/drop a document, see L1 validation
       verdicts and the recipe rendered human-readable (ingredients with
       bases, step sections, profile + maturity labels). Static page, no
-      server, no accounts. LATER (full playground): the WASM-compiled
-      rcplint for exact-CI L2 + CUE verdicts in-browser, and the
-      clamp-guarded scaling slider — the signature demo.
+      server, no accounts; JS engine behind the ADR-002 engine interface,
+      Bun via mise, conformance-vector parity. LATER (full playground):
+      the WASM-compiled rcplint drops in behind the same interface for
+      exact-CI L2 + CUE verdicts in-browser, and the clamp-guarded scaling
+      slider — the signature demo. UI survives the engine swap by design.
     trace: ["DECISIONS #19", "DECISIONS #21", "PRD-001 integrator guarantee"]
     graduates_to: PRD-002
 

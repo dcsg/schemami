@@ -10,7 +10,7 @@ source_brainstorm: null
 source_prompt: null
 created_at: 2026-08-02T22:45:00Z
 references:
-  adrs: [ADR-001]
+  adrs: [ADR-001, ADR-002]
   invariants: []
 ---
 
@@ -31,10 +31,13 @@ core (times, difficulty, storage, source detail), the dish profile hardened
 from its two real documents, techniques promoted from interim vocab to the
 fourth governed registry kind (DECISIONS #25), external ontology grounding on
 every ingredient entry, an English-base→pt-PT taxonomy translation vocabulary,
-and a lightweight static viewer. The viewer reuses the existing Go validation
-core compiled to WASM — zero npm anywhere, and verdict parity with rcplint by
-construction. All tooling stays on the informative surface (DS-PR-001,
-DECISIONS #21); everything schema- and registry-shaped is normative.
+and a lightweight static viewer. The viewer is split at a versioned engine
+interface (ADR-002): a small JS engine now (instant load, ≤2 exact-pinned
+deps, Bun-only toolchain), the WASM-compiled Go core later behind the same
+seam — verdict parity held by CI-tested conformance vectors, not
+implementation monogamy. All tooling stays on the informative surface
+(DS-PR-001, DECISIONS #21); everything schema- and registry-shaped is
+normative.
 
 ## Context
 
@@ -43,11 +46,12 @@ times/difficulty/storage/source in prose, two savoury documents running
 core-only, an unvalidated technique vocabulary, and a cebola/onion
 consolidation failure. The PRD deliberately deferred two decisions to this
 spec — the time-field shape (OQ-2) and the viewer build toolchain (OQ-4).
-Both are resolved here as design statements DS-PR-005 and DS-TOOL-001, with
-the PRD's recorded inputs applied: research 04:79-80 requires hands-on and
-total time as separate fields, and the anti-Node bar (burden of proof on any
-npm dependency, per PRD-001 OQ-2 input d and ADR-001's ecosystem-health
-scoring) applies to the viewer's build chain.
+Both are resolved here: OQ-2 as DS-PR-005 (research 04:79-80 requires
+hands-on and total time as separate fields), and OQ-4 as DS-TOOL-001/002
+per ADR-002 — an engine-interface seam with a Bun-toolchained JS engine now
+and the WASM Go core later, the anti-Node bar honoured by sanctioning
+exactly one JS toolchain (Bun via mise) and holding every dependency to
+ADR-001's ecosystem-health scoring.
 
 ## Existing Architecture
 
@@ -71,10 +75,13 @@ Six workstreams, each a spec requirement below. The unifying constraints:
    registry kind, or a new tool. The v0.1 corpus (6 examples, regression
    testdata, 5 private recipes) validates unchanged throughout; `make validate`
    is the standing gate (SAC-PR-001).
-2. **One validation implementation.** No validation logic is reimplemented in
-   another language. The viewer embeds the existing Go core via WASM
-   (DS-TOOL-001) — the founding failure mode (five divergent recipe
-   representations) is not re-imported through a browser port.
+2. **One verdict oracle.** rcplint is authoritative; any second
+   implementation (the viewer's JS engine) MUST hold verdict agreement over
+   the full corpus via CI-tested conformance vectors (DS-TOOL-002,
+   SAC-TOOL-002) — the founding failure mode was divergent implementations
+   *with no shared test oracle*, and the oracle is the fix. The vectors are
+   the cross-stack conformance suite the protocol owes integrators anyway
+   (engineering obligation #1).
 3. **English-base identifiers everywhere** (DECISIONS #23/#24/#25); display
    language is a data layer (registry `display_name`, new i18n vocabulary),
    never an identifier layer.
@@ -169,15 +176,30 @@ The lightweight viewer MUST ship at `tools/viewer/` (informative surface) as
 a static page: paste or drop an `.rcp.yaml`/JSON document → L1 verdicts + a
 human-readable render (name, ingredients with resolved basis expressions,
 step sections with notes, per-component profile and maturity labels, pt-PT
-display via the i18n vocabulary). Architecture per DS-TOOL-001: the existing
-Go core (yaml.v3 parse + santhosh-tekuri L1 validation) compiled with
-`GOOS=js GOARCH=wasm` into `rcp.wasm` via a make target, driven by
-hand-written vanilla `index.html`/`app.js`/`style.css` plus the
-Go-distribution `wasm_exec.js`. The build chain MUST contain no npm, no
-Node.js, no bundler, and no vendored JavaScript dependencies (SAC-TOOL-001).
+display via the i18n vocabulary). Architecture per ADR-002:
+
+- **Engine seam (DS-TOOL-001):** the viewer MUST be split at a versioned
+  TypeScript engine interface — `analyze(text) → {parse, verdicts,
+  canonical}` plus a `capabilities` object (and optional `scale()` reserved
+  for the clamp) — and the UI MUST depend only on that interface. The later
+  WASM-compiled Go engine implements the same contract; the UI reads
+  `capabilities` and lights up features without rewrite.
+- **v0.2 engine + toolchain (DS-TOOL-002):** a JavaScript engine — YAML 1.2
+  parse plus a JSON Schema 2020-12 validator — with at most 2 exact-pinned
+  runtime dependencies and zero UI dependencies (vanilla DOM). The only
+  JavaScript toolchain is Bun, pinned via `.mise.toml`: package manager,
+  bundler, test runner, TS runtime in one binary. Node, npm, npx, and
+  separate bundlers are prohibited (SAC-TOOL-001). The validator pick
+  (shortlist: @hyperjump/json-schema, @cfworker/json-schema, ajv) is
+  ecosystem-health-scored at plan time per ADR-001's criteria.
+- **Verdict parity:** the JS engine MUST agree with rcplint over the full
+  corpus (examples, L1 testdata positives and negatives) via a
+  conformance-vector suite run by `bun test` in CI (SAC-TOOL-002).
+
 The page MUST work from `file://` or any static host with zero network
 transmission of document content (AC-TOOL-001-2). L2/CUE/clamp in-browser
-remain out of scope (later phase of FEAT-TOOL-001).
+remain out of scope (later phase of FEAT-TOOL-001, arriving as the WASM
+engine behind this same seam).
 
 ### SR-VAL-003 — Spec-only (serves SR-REG-004, SR-REG-005, SR-I18N-001)
 
@@ -206,24 +228,36 @@ grounding audit is a registry-CI check, not a document-validation failure).
 
 ## Alternatives Considered
 
-### Viewer: vanilla JS + vendored js-yaml + vendored JSON-Schema validator
-- **Pros:** No WASM payload (~few hundred KB total); familiar stack.
-- **Cons:** Two vendored JavaScript dependencies to track (each subject to
-  the ecosystem-health bar from ADR-001); worse, L1 verdicts come from a
-  *different validator implementation* than rcplint — divergence between
-  browser verdicts and `make validate` verdicts is exactly the
-  five-divergent-implementations failure RCP exists to kill.
-- **Rejected because:** verdict parity is a correctness property, not a
-  nice-to-have; and zero JS dependencies beats two.
+### Viewer: WASM-first (Go core compiled to wasm for the lightweight cut)
+- **Pros:** Verdict parity by construction — the browser runs the exact
+  compiled code rcplint runs; zero JS dependencies.
+- **Cons:** Multi-megabyte payload for what should be an instant tool page;
+  and it buys parity that the conformance-vector suite (which the protocol
+  owes integrators anyway) provides at near-zero payload cost. This was
+  this spec's initial pick, revised 2026-08-02 in discussion with Daniel.
+- **Rejected because:** the engine seam (DS-TOOL-001) makes WASM a later
+  drop-in for the capabilities that genuinely need it (L2/CUE/clamp exist
+  only in Go), so paying its weight for L1 now serves nobody. Recorded in
+  ADR-002.
 
-### Viewer: npm toolchain (Vite/esbuild + TypeScript)
-- **Pros:** Rich tooling, typed render code.
-- **Cons:** Fails the anti-Node bar with no compensating strength — the page
-  is a paste-box and a render, not an app; drags in a lockfile, a registry
-  exposure surface and a second toolchain for a repo that is deliberately
-  Go + make.
+### Viewer: Node/npm toolchain (Vite/esbuild + TypeScript)
+- **Pros:** The familiar web stack; largest tooling ecosystem.
+- **Cons:** Fails the anti-Node bar with no compensating strength — Bun
+  covers package management, bundling, testing and TS in one mise-pinned
+  binary; Node brings the npm sprawl and a second runtime for nothing Bun
+  doesn't do here.
 - **Rejected because:** the burden of proof on Node was not met (PRD-001
-  OQ-2 input d; ADR-001).
+  OQ-2 input d; ADR-001; ADR-002 keeps Node/npm/npx unsanctioned).
+
+### Viewer: vendored libs, no package manager at all
+- **Pros:** No lockfile, no registry exposure at build time.
+- **Cons:** Hand-tracked updates for pinned files, no test runner for the
+  conformance suite, no bundling/minification — the discipline Bun's
+  lockfile and `bun test` give for free would be reimplemented as
+  documentation.
+- **Rejected because:** the conformance suite is load-bearing (SAC-TOOL-002)
+  and needs a real test runner; one mise-pinned binary is a smaller surface
+  than manual vendoring hygiene.
 
 ### Times: ISO-8601 duration strings (PT20M) instead of the existing shape
 - **Pros:** schema.org `prepTime`/`cookTime` compatibility for decode.
@@ -246,7 +280,8 @@ grounding audit is a registry-CI check, not a document-validation failure).
 | Risk | Impact | Likelihood | Mitigation | Rollback |
 |---|---|---|---|---|
 | Dish rules from n=2 break the third savoury recipe | New ingests fail dish profile | Medium | All numeric bounds warn-severity with n=2 rationale authored in (DS-PROF-002); PRD's recorded riskiest assumption | Loosen the offending bound — warn-only means no document is ever rejected |
-| wasm binary size hurts viewer load | Slow first load on the tool page | Medium | `-ldflags "-s -w"`, gzip/brotli at serve time; measure in plan; page is a deliberate tool, not a landing page | Ship render-only page (validation deferred) — render needs no wasm |
+| JS engine verdicts drift from rcplint | Browser says valid, CI says invalid (the founding disease) | Medium | Conformance-vector suite over the full corpus, `bun test` in CI, red on any disagreement (SAC-TOOL-002); validator shortlisted for 2020-12 fidelity | Page labels verdicts advisory + links rcplint until agreement restored |
+| Bun immaturity (lockfile/registry behaviour shifts) | Build breakage or supply-chain exposure | Low | Exact version pinned in `.mise.toml`; 2-dep budget, exact-pinned; one binary — no transitive toolchain | Vendor the two deps as pinned files; Bun only orchestrates |
 | Grounding stalls on hard-to-match heritage ingredients | AC-REG-004-1 blocks the tag | Medium | `grounding: no-match` + note is a first-class, audit-passing outcome by design | n/a — no-match is the escape valve |
 | Technique migration mints wrong ontology paths | Registry churn (append-only pain) | Low | Migration proposes, Daniel approves every mint (standing governance); aliases handle later consolidation | Aliases + deprecation per governance, never renames |
 | i18n vocabulary drifts as new taxonomy slugs appear | Coverage check rots | Low | Coverage is mechanically checked against actual usage (examples + collection), wired into `make accept` | Check reports the gap; adding a term is one line |
@@ -256,17 +291,20 @@ grounding audit is a registry-CI check, not a document-validation failure).
 The viewer is the new surface: it MUST be fully client-side — no server, no
 accounts, no analytics, no network transmission of document content
 (AC-TOOL-001-2, SSP-003). Private-collection documents pasted into it never
-leave the machine. WASM runs sandboxed; the page loads zero third-party
-resources. Grounding cross-refs are static data — validation never performs
-network lookups. No other new attack surface: everything else is schemas,
-YAML data files, and Go lints.
+leave the machine; the page loads zero third-party resources. Supply-chain
+surface is the deliberate concern: two exact-pinned runtime deps + Bun
+itself (mise-pinned), each past the ADR-001 health bar — reviewed at every
+version bump, never floated. Grounding cross-refs are static data —
+validation never performs network lookups. No other new attack surface:
+everything else is schemas, YAML data files, and Go lints.
 
 ## Performance Approach
 
 Standard patterns sufficient. rcplint's new checks are in-memory set
-lookups over registry entries (91 + techniques — trivial). The wasm
-binary is the only artifact with a size concern (see Risks); build-time
-stripping and serve-time compression are the plan-phase levers.
+lookups over registry entries (91 + techniques — trivial). The viewer
+bundle should land in the low hundreds of KB (two libraries + hand-written
+UI); `bun build --minify` is the only lever needed. The later WASM engine
+carries the size concern, deferred with it.
 
 ## Protections
 
@@ -275,9 +313,10 @@ stripping and serve-time compression are the plan-phase levers.
 - **SSP-003** (spec) — The viewer MUST NOT transmit document content over
   the network, load third-party resources, or persist pasted documents
   anywhere but page memory.
-- **SSP-004** (spec) — No validation logic is reimplemented outside the Go
-  core: the viewer's verdicts come from the same compiled code path as
-  rcplint's.
+- **SSP-004** (spec) — rcplint is the authoritative verdict oracle: no
+  second implementation ships without conformance-vector coverage proving
+  verdict agreement over the full corpus, and the UI never contains
+  validation logic — it renders what an engine returns.
 
 ## Acceptance Criteria
 
@@ -289,10 +328,14 @@ Spec-added (source: spec):
 - **SAC-REG-002** — Technique migration complete: `registry/entries/technique/`
   populated and `registry/vocab/techniques.yaml` deleted. Verify: file
   checks (in sidecar).
-- **SAC-TOOL-001** — Zero-Node viewer: no `package.json`, lockfile,
-  `node_modules`, or vendored `.js` dependency anywhere under
-  `tools/viewer/` (`wasm_exec.js` from the Go distribution is the single
-  permitted non-authored file). Verify: file checks (in sidecar).
+- **SAC-TOOL-001** — Bun-only toolchain, budget held: `tools/viewer/`
+  carries at most 2 exact-pinned runtime dependencies, a Bun lockfile, and
+  no Node/npm/bundler config (no `.nvmrc`, `vite.config.*`,
+  `webpack.config.*`); Bun is pinned in `.mise.toml`. Verify: file checks
+  (in sidecar).
+- **SAC-TOOL-002** — Verdict parity: the conformance-vector suite (JS
+  engine vs rcplint over examples + L1 testdata, positives and negatives)
+  passes via `bun test`. Verify: `bun test` in `tools/viewer/`.
 - **SAC-VAL-003** — Regression floor: `go test ./...` in `tools/rcplint`
   green throughout. Verify: `go -C tools/rcplint test ./...`.
 
@@ -311,33 +354,38 @@ Spec-added (source: spec):
   one proposal group.
 - **i18n:** coverage check against a slug deliberately missing a term;
   accented-slug fixture rejected by the English-base L2 check.
-- **Viewer:** hard to test headlessly without adding a browser harness —
-  keep it honest and cheap: a smoke script asserting the wasm target builds
-  and the page's static assets exist and reference each other; manual
-  paste-test of the 11 documents (AC-TOOL-001-1) recorded in the plan's
-  verify evidence; network silence (AC-TOOL-001-2) verified by manual
-  devtools inspection at acceptance, not automated in v0.2.
+- **Viewer:** the engine is fully testable headlessly — the
+  conformance-vector suite (`bun test`) runs the JS engine over the same
+  corpus rcplint validates and diffs verdicts (SAC-TOOL-002); interface-
+  contract tests pin the engine seam's shape for the future WASM
+  implementer. Only the DOM layer stays manual: paste-test of the 11
+  documents (AC-TOOL-001-1) recorded in the plan's verify evidence, and
+  network silence (AC-TOOL-001-2) by devtools inspection at acceptance —
+  no browser harness in v0.2.
 
 ## Dependencies
 
-- ADR-001 (Go for tooling; ecosystem-health bar) — the viewer decision
-  extends it to the browser via WASM rather than revisiting it.
+- ADR-001 (Go for tooling; ecosystem-health bar) — the per-dependency bar
+  now also governs the viewer's two JS deps and Bun itself.
+- ADR-002 (viewer engine seam; Bun as the only sanctioned JS toolchain;
+  conformance-vector parity) — this spec's DS-TOOL-001/002 implement it.
 - DECISIONS #23/#24/#25 (kind-prefixed English-base ids; technique. kind),
   #10 (difficulty as asserted facet), #14 (decode-compat posture), #18
   (profile hardening from real documents), #21 (two-surface split).
 - Registry-governance guideline (rule 6 ontology paths; append-only,
   steward-approved minting) — gains the technique kind.
-- Go toolchain ≥1.26 (already pinned) — now also the wasm build.
+- Go toolchain ≥1.26 (already pinned); Bun exact-pinned via `.mise.toml`.
 - FooDON / FDC / OFF as grounding targets — data references only, no runtime
   dependency.
 
 ## Open Questions
 
 None blocking. PRD-002's OQ-2 and OQ-4 are resolved by this spec
-(DS-PR-005 and DS-TOOL-001 above). Deliberately deferred within v0.2:
+(DS-PR-005, and DS-TOOL-001/002 per ADR-002). Deliberately deferred within
+v0.2:
 
-- Exact wasm size budget and whether to add a loading indicator — plan-phase
-  measurement, not a design unknown.
+- The JSON Schema 2020-12 validator pick (shortlist in DS-TOOL-002) —
+  ecosystem-health-scored at plan time, per-dependency per ADR-001.
 - Which of the harvested primitives/equipment (sear, sauté, Dutch oven,
   madeleine tin, …) mint alongside the technique migration — standing
   governance queue, Daniel approves; not release-gated.
