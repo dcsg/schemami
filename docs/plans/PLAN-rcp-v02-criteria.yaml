@@ -1,0 +1,151 @@
+schema_version: 1
+plan: rcp-v02
+phases:
+- id: 1
+  classification: testable
+  criteria:
+  - id: AC-1.1
+    statement: Core schema remains 2020-12 metaschema-valid after the additions
+    verify: python3 -c "import json; from jsonschema import Draft202012Validator as V; V.check_schema(json.load(open('schema/rcp-core-v1.schema.json')))"
+  - id: AC-1.2
+    statement: times-storage-source-ok validates; difficulty-zero, difficulty-six, times-unknown-key, storage-bad-where each fail for exactly their one reason
+    verify: test -f tools/rcplint/testdata/l1/difficulty-zero.rcp.yaml && test -f tools/rcplint/testdata/l1/difficulty-six.rcp.yaml && test -f tools/rcplint/testdata/l1/times-unknown-key.rcp.yaml && test -f tools/rcplint/testdata/l1/storage-bad-where.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-1.3
+    statement: pastry-storage-ok passes core AND pastry (hardened) — AC-PR-003-3
+    verify: test -f tools/rcplint/testdata/l1/pastry-storage-ok.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-1.4
+    statement: make validate green over the unchanged corpus — AC-PR-003-1, SAC-PR-001
+    verify: make validate
+  - id: AC-1.5
+    statement: Privacy guard present in accept.sh and green
+    verify: grep -q 'check-ignore' tools/rcplint/scripts/accept.sh && git check-ignore -q private/collection && [ -z "$(git ls-files private/)" ]
+- id: 2
+  classification: testable
+  criteria:
+  - id: AC-2.1
+    statement: dish.schema.json exists, metaschema-valid, maturity hardened, every x-rcp-bounds entry warn severity with n=2 rationale
+    verify: python3 -c "import json; from jsonschema import Draft202012Validator as V; s=json.load(open('schema/profiles/dish.schema.json')); V.check_schema(s); assert s.get('x-rcp-maturity')=='hardened'; import re; t=open('schema/profiles/dish.schema.json').read(); assert 'x-rcp-bounds' not in t or ('warn' in t and 'n=2' in t)"
+  - id: AC-2.2
+    statement: Go test validates dish-minimal-ok against core AND dish and asserts the hardened maturity label
+    verify: test -f tools/rcplint/testdata/l1/dish-minimal-ok.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-2.3
+    statement: Out-of-bounds dish fixture produces WARN not error, carrying the rationale — AC-PROF-004-2
+    verify: test -f tools/rcplint/testdata/l2/dish-out-of-bounds.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-2.4
+    statement: chili + feijoada validate core AND dish locally, recorded pass/fail — AC-PROF-004-1 (operational)
+    verify: 'grep -q ''AC-2.4: PASS'' docs/plans/PLAN-rcp-v02.md'
+- id: 3
+  classification: testable
+  criteria:
+  - id: AC-3.1
+    statement: Daniel approved the mint batch before any entry was written (operational checkpoint)
+    verify: 'grep -q ''AC-3.1: PASS'' docs/plans/PLAN-rcp-v02.md'
+  - id: AC-3.2
+    statement: Entries exist incl. the fixtures.yaml minimum seed (stir-family, none sentinel, bulhao-pato, refogado, flambe) and all validate — AC-REG-003-1
+    verify: sh -c 'ls registry/entries/technique/*.yaml | grep -q . && ls registry/entries/technique/ | grep -q bulhao-pato && ls registry/entries/technique/ | grep -q refogado && ls registry/entries/technique/ | grep -q flambe && [ $(ls registry/entries/technique/*.yaml | wc -l) -ge 5 ]' && make validate
+  - id: AC-3.3
+    statement: Unknown technique reference rejected naming the entry — AC-REG-003-2
+    verify: test -f tools/rcplint/testdata/l2/unknown-technique.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-3.4
+    statement: registry/vocab/techniques.yaml deleted; entries present — SAC-REG-002
+    verify: test ! -f registry/vocab/techniques.yaml && ls registry/entries/technique/*.yaml >/dev/null
+  - id: AC-3.5
+    statement: 'registry-governance.md documents the fourth kind citing DECISIONS #25'
+    verify: grep -q 'technique' docs/guidelines/registry-governance.md && grep -q '#25' docs/guidelines/registry-governance.md
+- id: 4
+  classification: testable
+  criteria:
+  - id: AC-4.1
+    statement: Every ingredient entry has cross_refs or explicit no-match; audit green — AC-REG-004-1
+    verify: make validate
+  - id: AC-4.2
+    statement: Ungrounded fixture fails naming the entry; no-match fixture passes
+    verify: test -f tools/rcplint/testdata/registry/ungrounded-entry.yaml && test -f tools/rcplint/testdata/registry/no-match-entry.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-4.3
+    statement: gap-ledger.py --self-test exits 0; cebola + onion appear on one PROPOSAL line — AC-REG-004-2
+    verify: python3 tools/rcplint/scripts/gap-ledger.py --self-test | grep 'PROPOSAL' | grep cebola | grep -q onion
+  - id: AC-4.4
+    statement: make validate green
+    verify: make validate
+- id: 5
+  classification: testable
+  criteria:
+  - id: AC-5.1
+    statement: Coverage check green in full-census mode locally (operational) — AC-I18N-001-1
+    verify: 'grep -q ''AC-5.1: PASS'' docs/plans/PLAN-rcp-v02.md'
+  - id: AC-5.2
+    statement: Accented-slug fixture rejected by the English-base L2 check
+    verify: test -f tools/rcplint/testdata/l2/accented-taxonomy-slug.rcp.yaml && (cd tools/rcplint && go test ./...)
+  - id: AC-5.3
+    statement: make validate green
+    verify: make validate
+  - id: AC-5.4
+    statement: Coverage checker's absent branch exits 0 with skip notice via --collection-path override
+    verify: python3 tools/rcplint/scripts/i18n-coverage.py --collection-path /nonexistent
+- id: 6
+  classification: testable
+  criteria:
+  - id: AC-6.1
+    statement: 'SAC-TOOL-001: exactly 2 exact-pinned runtime deps, bun.lock committed, no trustedDependencies, no Node/bundler config, bun exact-pinned in .mise.toml, frozen-lockfile in Makefile'
+    verify: python3 -c "import json; pkg=json.load(open('tools/viewer/package.json')); d=pkg.get('dependencies',{}); assert set(d)=={'yaml','@cfworker/json-schema'}, d; assert all(v[0].isdigit() for v in d.values()); assert 'trustedDependencies' not in pkg" && test -f tools/viewer/bun.lock && sh -c '! ls tools/viewer | grep -Eqi "webpack.config|vite.config|rollup.config|.nvmrc|package-lock"' && grep -Eq 'bun *= *"[0-9]' .mise.toml && grep -q -- '--frozen-lockfile' Makefile
+  - id: AC-6.2
+    statement: Vector export covers the allowlist, >=15 vectors, all verdicts layer-tagged; no private paths or ids
+    verify: "python3 -c \"import json,glob; fs=glob.glob('tools/viewer/conformance/vectors/**/*.json',recursive=True); assert fs,'no vectors'; n=0\nfor f in fs:\n  d=json.load(open(f)); items=d if isinstance(d,list) else [d]\n  for it in items:\n    n+=1\n    for v in it.get('expected', it.get('verdicts', [])): assert 'layer' in v,(f,v)\nassert n>=15,n; print('OK',n)\" && sh -c '! grep -rl private/ tools/viewer/conformance/vectors | grep -q .'"
+  - id: AC-6.3
+    statement: 'make conformance green: capability-scoped agreement, contract + YAML-pathology + layer-tagging tests — SAC-TOOL-002'
+    verify: make conformance
+  - id: AC-6.4
+    statement: make validate green (nothing normative changed)
+    verify: make validate
+- id: 7
+  classification: testable
+  criteria:
+  - id: AC-7.1
+    statement: Single-file dist/index.html < 500 KB, self-contained, hash-based CSP (no 'self'), charset meta first
+    verify: f=tools/viewer/dist/index.html; test -f "$f" && [ "$(wc -c < "$f")" -lt 512000 ] && head -c 300 "$f" | grep -qi 'charset="utf-8"' && grep -q 'Content-Security-Policy' "$f" && ! grep -q "'self'" "$f" && ! grep -qE '(src|href)="https?://' "$f"
+  - id: AC-7.2
+    statement: 'render tests green: sections, oracle-pinned basis strings, injection fixtures inert, parse-error state escaped'
+    verify: cd tools/viewer && bun test
+  - id: AC-7.3
+    statement: 'Purity greps: engine-only imports in app.ts; no forbidden network/storage APIs in src/'
+    verify: '! grep -rE "fetch\(|XMLHttpRequest|sendBeacon|WebSocket|EventSource|localStorage|indexedDB|document\.cookie" tools/viewer/src/ && ! grep -E "from [''\"](yaml|@cfworker)" tools/viewer/src/app.ts'
+  - id: AC-7.4
+    statement: Mock-engine {l1,l2} test proves added layers render with no UI change
+    verify: cd tools/viewer && bun test
+  - id: AC-7.5
+    statement: Page opens from file:// in >=2 browsers, renders and validates a pasted example (operational)
+    verify: 'grep -q ''AC-7.5: PASS'' docs/plans/PLAN-rcp-v02.md'
+- id: 8
+  classification: testable
+  criteria:
+  - id: AC-8.1
+    statement: All prose-parked metadata moved into fields; nothing invented; 5 docs validate locally (operational)
+    verify: 'grep -q ''AC-8.1: PASS'' docs/plans/PLAN-rcp-v02.md'
+  - id: AC-8.2
+    statement: Prose-parking heuristic green over the collection (identifiers-only) — AC-PR-003-2 assist
+    verify: bash tools/rcplint/scripts/accept.sh
+  - id: AC-8.3
+    statement: Hat-mapping note presence check green locally; correctness stays with Daniel
+    verify: bash tools/rcplint/scripts/accept.sh
+- id: 9
+  classification: testable
+  criteria:
+  - id: AC-9.1
+    statement: make accept green including every new v0.2 check
+    verify: make accept
+  - id: AC-9.2
+    statement: 'Clean-worktree run: frozen install, validate + conformance green, private checks skip-with-notice'
+    verify: git worktree add /tmp/rcp-v02-clean-check HEAD && ( cd /tmp/rcp-v02-clean-check && mise install && cd tools/viewer && bun install --frozen-lockfile && cd ../.. && make validate && make conformance ); status=$?; git worktree remove /tmp/rcp-v02-clean-check --force; exit $status
+  - id: AC-9.3
+    statement: 'features.yaml: 5 features shipped, FEAT-TOOL-001 lightweight delivered; ROADMAP updated'
+    verify: 'python3 -c "import yaml; d=yaml.safe_load(open(''docs/product/features.yaml'')); f={x[''id'']:x for x in d[''features'']}
+
+      for i in [''FEAT-CORE-005'',''FEAT-PROF-005'',''FEAT-REG-003'',''FEAT-REG-004'',''FEAT-I18N-001'']: assert f[i][''status'']==''shipped'',(i,f[i][''status''])
+
+      print(''OK'')" && grep -A8 ''FEAT-TOOL-001'' docs/product/features.yaml | grep -qi ''delivered'''
+  - id: AC-9.4
+    statement: Daniel's manual checks recorded green (operational)
+    verify: 'grep -q ''AC-9.4: PASS'' docs/plans/PLAN-rcp-v02.md'
+  - id: AC-9.5
+    statement: Tag rcp-v0.2 exists on the green commit
+    verify: test "$(git cat-file -t rcp-v0.2)" = tag
