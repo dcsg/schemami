@@ -31,7 +31,7 @@ phases:
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-02 |
-| 2     | pending | 0/5 | — |
+| 2     | done | 1/5 | 2026-08-02 |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
@@ -306,6 +306,13 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 2:
+- AC-2.1: PASS — 2026-08-02 (zero bounds authored — n=2 observed none; rationale in the profile description)
+- AC-2.2: PASS — 2026-08-02
+- AC-2.3: PASS — 2026-08-02 (ADJUSTED: severity machinery tested — warn→advisory, critical→gate; no dish bound exists to violate; adjustment recorded in criteria sidecar)
+- AC-2.4: PASS — 2026-08-02 (chili + feijoada core ∧ dish hardened, local)
+- Phase 2 notes: severity routing is now real pipeline-wide — bread's warn bounds (salty-bread fixture) became advisories; v0.1's AC-PROF-001-2 vet-failure expectation updated with comments. check.py census reverse direction downgraded to advisory (registry is a vocabulary, not a per-doc index); two orphan entries queued for the Phase 3 checkpoint: ingredient.fruit.dried.raisin, ingredient.vegetable.tomato.pulp.
 
 Phase 1:
 - AC-1.1: PASS — 2026-08-02

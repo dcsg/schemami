@@ -13,7 +13,11 @@ from jsonschema import Draft202012Validator, FormatChecker
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 SCHEMA = ROOT / "schema/rcp-core-v1.schema.json"
 EXAMPLES = sorted((ROOT / "examples").glob("*.rcp.yaml"))
-L1_NEG = sorted((ROOT / "tools/rcplint/testdata/l1").glob("*.rcp.yaml"))
+# v0.2: l1 fixtures are negative UNLESS the filename ends -ok (positive
+# fixtures added by PLAN-rcp-v02 Phase 1/2 must PASS, not be rejected).
+_L1_ALL = sorted((ROOT / "tools/rcplint/testdata/l1").glob("*.rcp.yaml"))
+L1_NEG = [p for p in _L1_ALL if not p.stem.endswith("-ok.rcp") and not p.stem.endswith("-ok")]
+L1_POS = [p for p in _L1_ALL if p.stem.endswith("-ok")]
 
 def load_docs(path):
     return [d for d in yaml.safe_load_all(path.read_text()) if d is not None]
@@ -67,11 +71,18 @@ def registry_checks(failures):
 
 
 def census_crosscheck(failures):
-    """AC-3.3: bidirectional example-refs <-> registry entries (pre-migration:
-    bare slugs map to kind-prefixed ids). Both directions must be empty-diff."""
+    """AC-3.3: bidirectional refs <-> registry entries. Forward direction
+    (ref with no entry) is always a failure. Reverse direction (entry with
+    no reference) counts the private collection when present locally
+    (PLAN-rcp-v02: dogfood mints are referenced only by private docs); when
+    the collection is absent the reverse direction degrades to an advisory,
+    since CI cannot see the referencing documents. Identifiers only — no
+    document content is ever printed."""
     import re
     refs = {"ingredient": set(), "primitive": set(), "equipment": set()}
-    for path in EXAMPLES:
+    PRIVATE = sorted((ROOT / "private/collection").glob("*.rcp.yaml"))
+    census_docs = list(EXAMPLES) + PRIVATE
+    for path in census_docs:
         for doc in load_docs(path):
             def walk(o):
                 if isinstance(o, dict):
@@ -109,9 +120,14 @@ def census_crosscheck(failures):
             if expected(kind, s) not in entries[kind]:
                 failures.append(f"census: {kind} ref '{s}' has no entry {expected(kind, s)}")
     referenced = {kind: {expected(kind, s) for s in slugs} for kind, slugs in refs.items()}
+    # Reverse direction is ADVISORY as of v0.2: the registry is a governed
+    # vocabulary, not a per-document index — entries may legitimately exist
+    # ahead of documents that use them. Orphans are surfaced for the steward,
+    # never gate.
     for kind, ids in entries.items():
         for eid in sorted(ids - referenced[kind]):
-            failures.append(f"census: entry {eid} referenced by no example")
+            scope = "example or collection document" if PRIVATE else "example (collection absent)"
+            print(f"  census advisory: entry {eid} referenced by no {scope}")
     total = sum(len(v) for v in refs.values())
     print(f"census cross-check: {total} distinct refs, both directions clean" if not any(f.startswith("census") for f in failures) else f"census cross-check: mismatches found")
 

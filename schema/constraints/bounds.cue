@@ -17,3 +17,20 @@ package rcp
 }
 
 checks: [...#Check]
+
+// Advisories: warn-severity bound findings (DS-PROF-002). Present in the
+// facts payload for explain-bounds to surface; the value is deliberately
+// NOT range-constrained here — advisories inform, they never gate.
+#Advisory: {
+	doc:       string
+	bound:     string
+	of?:       string
+	min:       number
+	max:       number
+	value:     number
+	severity:  string
+	reason_en?: string
+	reason_pt?: string
+}
+
+advisories: [...#Advisory]

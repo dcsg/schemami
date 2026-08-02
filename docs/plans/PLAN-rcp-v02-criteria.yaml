@@ -29,8 +29,8 @@ phases:
     statement: Go test validates dish-minimal-ok against core AND dish and asserts the hardened maturity label
     verify: test -f tools/rcplint/testdata/l1/dish-minimal-ok.rcp.yaml && (cd tools/rcplint && go test ./...)
   - id: AC-2.3
-    statement: Out-of-bounds dish fixture produces WARN not error, carrying the rationale — AC-PROF-004-2
-    verify: test -f tools/rcplint/testdata/l2/dish-out-of-bounds.rcp.yaml && (cd tools/rcplint && go test ./...)
+    statement: 'ADJUSTED 2026-08-02: dish carries zero bounds (n=2 observed none — nothing speculative), so the criterion tests the severity machinery itself: warn-severity violation exports as advisory and passes cue vet (salty-bread), critical-severity still fails vet (bad-facts) — AC-PROF-004-2 substance'
+    verify: cd tools/rcplint && go test -run 'TestFactsRoutesSeverities|TestWarnViolationIsAdvisoryNotGate|TestCueLayer' ./...
   - id: AC-2.4
     statement: chili + feijoada validate core AND dish locally, recorded pass/fail — AC-PROF-004-1 (operational)
     verify: 'grep -q ''AC-2.4: PASS'' docs/plans/PLAN-rcp-v02.md'

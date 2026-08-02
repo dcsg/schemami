@@ -1,0 +1,25 @@
+# Positive fixture (AC-PROF-004-1 stand-in for CI): a synthetic dish document
+# — no book content — that must pass core AND the hardened dish profile.
+# Mirrors the shape the two real dish documents actually use: core fields
+# only, no profile block, no bases (n=2 observed usage).
+rcp: 1
+id: fixture-dish-minimal-ok
+kind: dish
+name: { en: Minimal dish fixture }
+taxonomy:
+  category: stew
+  difficulty: 2
+times:
+  active: { target: 30m }
+  total: { target: 2h }
+ingredients:
+  - id: base
+    amount: { value: 500, unit: g }
+    roles: [substrate]
+  - id: seasoning
+    amount: { value: 8, unit: g }
+    roles: [salt]
+steps:
+  - id: s1
+    primitive: { id: primitive.simmer, v: 1 }
+    uses: [base, seasoning]

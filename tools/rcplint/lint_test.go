@@ -115,21 +115,17 @@ func TestCueLayer(t *testing.T) {
 	if !strings.Contains(string(out), "checks") {
 		t.Errorf("cue vet error does not name the failing check: %s", out)
 	}
-	// profile bound via the real pipeline: facts on the salty bread
+	// profile bound via the real pipeline: facts on the salty bread.
+	// v0.2 (DS-PROF-002): salt_ratio is authored warn severity, so the
+	// violation is exported as an ADVISORY and no longer fails vet — the
+	// gate belongs to critical severities only (TestFactsRoutesSeverities /
+	// TestWarnViolationIsAdvisoryNotGate cover both directions).
 	factsOut, err := exec.Command("go", "run", ".", "facts", root, "testdata/cue/profile-violating-bound.rcp.yaml").Output()
 	if err != nil {
 		t.Fatalf("facts: %v", err)
 	}
 	if !strings.Contains(string(factsOut), "salt_ratio") || !strings.Contains(string(factsOut), "0.3") {
 		t.Fatalf("facts did not export the violating salt_ratio: %s", factsOut)
-	}
-	tmp := t.TempDir() + "/facts.json"
-	if err := writeFile(tmp, factsOut); err != nil {
-		t.Fatal(err)
-	}
-	out, err = exec.Command(cue, "vet", filepath.Join(root, "schema/constraints/bounds.cue"), tmp).CombinedOutput()
-	if err == nil {
-		t.Error("salty bread: cue vet passed — profile bound not enforced (AC-PROF-001-2)")
 	}
 }
 

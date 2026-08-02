@@ -63,7 +63,21 @@ func runFacts(root string, paths []string) int {
 			collectChecks(d.ID, d.Value, bounds, &checks)
 		}
 	}
-	out, _ := json.MarshalIndent(map[string]any{"checks": checks}, "", "  ")
+	// DS-PROF-002 (PLAN-rcp-v02 Phase 2): severity is enforcement routing,
+	// not decoration. Only critical bounds enter the CUE-gated checks;
+	// everything else is an advisory — surfaced, never rejecting a document.
+	// Safety bounds stay fail-closed (DECISIONS #15) because they are
+	// authored critical.
+	gated := []Check{}
+	advisories := []Check{}
+	for _, c := range checks {
+		if c.Severity == "critical" {
+			gated = append(gated, c)
+		} else {
+			advisories = append(advisories, c)
+		}
+	}
+	out, _ := json.MarshalIndent(map[string]any{"checks": gated, "advisories": advisories}, "", "  ")
 	fmt.Println(string(out))
 	return 0
 }

@@ -1,8 +1,10 @@
-# CUE-layer fixture (AC-PROF-001-2). LAYER DECISION: profile-declared ratio
-# bounds over resolved values need basis computation, so they are enforced
-# at the CUE/L2 layer (DS-VAL-003), not JSON Schema. Salt at 30% of flour
-# violates the bread profile's x-rcp-bounds — cue vet must fail naming the
-# bound, and rcplint surfaces the authored reason.
+# CUE-layer fixture (AC-PROF-001-2; severity routing updated by
+# PLAN-rcp-v02 Phase 2 / DS-PROF-002). LAYER DECISION: profile-declared
+# ratio bounds over resolved values need basis computation, so they are
+# enforced at the CUE/L2 layer (DS-VAL-003), not JSON Schema. Salt at 30%
+# of flour violates the bread profile's warn-severity salt_ratio bound —
+# since v0.2 that surfaces as an ADVISORY with the authored reason; only
+# critical severities (the safety bounds, DECISIONS #15) fail cue vet.
 rcp: 1
 id: fx-salty-bread
 kind: bread
