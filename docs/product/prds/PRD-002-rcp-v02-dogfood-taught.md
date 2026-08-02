@@ -1,6 +1,6 @@
 # PRD-002: RCP v0.2 — what the dogfood taught
 
-**Status:** draft
+**Status:** accepted
 **Rigor:** solo
 **Author:** Daniel Gomes
 **Created:** 2026-08-02T22:07:39Z
