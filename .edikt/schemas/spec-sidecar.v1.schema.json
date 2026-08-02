@@ -144,13 +144,13 @@
             "properties": {
               "fr": {
                 "type": "string",
-                "pattern": "^FR-[A-Z]+-\\d{3,}$"
+                "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
               },
               "by": {
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "pattern": "^SR-[A-Z]+-\\d{3,}$"
+                  "pattern": "^SR-[A-Z][A-Z0-9]*-\\d{3,}$"
                 }
               }
             }
@@ -167,7 +167,7 @@
             "properties": {
               "fr": {
                 "type": "string",
-                "pattern": "^FR-[A-Z]+-\\d{3,}$"
+                "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
               },
               "rationale": {
                 "type": "string"
@@ -179,7 +179,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^FR-[A-Z]+-\\d{3,}$"
+            "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
           },
           "description": "Non-empty list blocks /edikt:sdlc:drift."
         }
@@ -197,14 +197,14 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^SR-[A-Z]+-\\d{3,}$"
+            "pattern": "^SR-[A-Z][A-Z0-9]*-\\d{3,}$"
           },
           "implements": {
             "type": [
               "string",
               "null"
             ],
-            "pattern": "^FR-[A-Z]+-\\d{3,}$",
+            "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$",
             "description": "Links to PRD FR. Null for spec-only requirements."
           },
           "text": {
@@ -260,7 +260,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^(AC-[A-Z]+-\\d{3,}-\\d+|SAC-[A-Z]+-\\d{3,})$"
+            "pattern": "^(AC-[A-Z][A-Z0-9]*-\\d{3,}-\\d+|SAC-[A-Z][A-Z0-9]*-\\d{3,})$"
           },
           "source": {
             "type": "string",
@@ -274,7 +274,7 @@
               "string",
               "null"
             ],
-            "pattern": "^FR-[A-Z]+-\\d{3,}$"
+            "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
           },
           "given": {
             "type": "string"
@@ -542,7 +542,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "pattern": "^DS-[A-Z]+-\\d{3,}$"
+                "pattern": "^DS-[A-Z][A-Z0-9]*-\\d{3,}$"
               },
               "text": {
                 "type": "string",
@@ -552,7 +552,7 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "pattern": "^(SR|FR)-[A-Z]+-\\d{3,}$"
+                  "pattern": "^(SR|FR)-[A-Z][A-Z0-9]*-\\d{3,}$"
                 },
                 "minItems": 1
               },
@@ -583,7 +583,7 @@
             "properties": {
               "id": {
                 "type": "string",
-                "pattern": "^CMP-[A-Z]+-\\d{3,}$"
+                "pattern": "^CMP-[A-Z][A-Z0-9]*-\\d{3,}$"
               },
               "path": {
                 "type": "string",
@@ -597,7 +597,7 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "pattern": "^SR-[A-Z]+-\\d{3,}$"
+                  "pattern": "^SR-[A-Z][A-Z0-9]*-\\d{3,}$"
                 },
                 "minItems": 1
               },

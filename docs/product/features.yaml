@@ -232,7 +232,7 @@ features:
     status: deferred
     target: v1
     trace: ["DECISIONS #18"]
-    graduates_to: null
+    graduates_to: PRD-002
   - id: FEAT-SUB-001
     name: "Global substitution catalog (typed op-lists + variants, curated)"
     description: >-
@@ -270,7 +270,7 @@ features:
     status: deferred
     target: v1
     trace: ["research 00 D2b (techniques/gestures as registry-backed vocabulary)", "research 06:270-286 (technique as substitution anchor)", "DECISIONS #10 (derived facet)"]
-    graduates_to: null
+    graduates_to: PRD-002
 
   - id: FEAT-I18N-001
     name: "Translation layer over English bases"
@@ -288,7 +288,7 @@ features:
     status: deferred
     target: v1
     trace: ["DECISIONS #24", "registry-governance guideline (IDs never localized)"]
-    graduates_to: null
+    graduates_to: PRD-002
 
   - id: FEAT-REG-004
     name: "Ontology grounding & cross-language matching"
@@ -308,7 +308,7 @@ features:
     status: deferred
     target: v1
     trace: ["registry-governance rule 6 (2026-08-02)", "research 02:367-378 (cross-refs)", "dogfood run #5 finding"]
-    graduates_to: null
+    graduates_to: PRD-002
 
   - id: FEAT-REG-005
     name: "Derived search index (edges + facets over the ontology)"
@@ -345,7 +345,7 @@ features:
     status: deferred
     target: v0.2 (proposed — the dogfood-taught release)
     trace: ["dogfood runs #1-#5 findings", "DECISIONS #10", "research 04:76-80"]
-    graduates_to: null
+    graduates_to: PRD-002
 
   - id: FEAT-PUB-001
     name: "Verified publish-time reference resolution (resolver_version + content hashes)"
@@ -389,7 +389,7 @@ features:
       rcplint for exact-CI L2 + CUE verdicts in-browser, and the
       clamp-guarded scaling slider — the signature demo.
     trace: ["DECISIONS #19", "DECISIONS #21", "PRD-001 integrator guarantee"]
-    graduates_to: null
+    graduates_to: PRD-002
 
   # ── Deferred: post-v1 ─────────────────────────────────────────────────
   - id: FEAT-PROF-006

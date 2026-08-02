@@ -83,7 +83,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^FR-[A-Z]+-\\d{3,}$"
+            "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
           },
           "text": {
             "type": "string",
@@ -162,12 +162,12 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^AC-[A-Z]+-\\d{3,}-\\d+$",
+            "pattern": "^AC-[A-Z][A-Z0-9]*-\\d{3,}-\\d+$",
             "description": "e.g. AC-PR-001-1 (FR-PR-001, criterion 1). Component code per docs/guidelines/traceability.md."
           },
           "fr": {
             "type": "string",
-            "pattern": "^FR-[A-Z]+-\\d{3,}$"
+            "pattern": "^FR-[A-Z][A-Z0-9]*-\\d{3,}$"
           },
           "given": {
             "type": "string"

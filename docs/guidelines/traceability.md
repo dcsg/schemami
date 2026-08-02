@@ -26,8 +26,12 @@ sidecars.
 - Every PRD functional requirement MUST use a component-coded ID of the
   form `FR-<CODE>-NNN`, numbered per component from 001. The codes are:
   `PR` `protocol-core`, `REG` `registry`, `PROF` `profiles`,
-  `VAL` `validator`, `SAFE` `safety-clamp`. New components MUST be added
-  to this guideline (new code) before use — never invented ad hoc.
+  `VAL` `validator`, `SAFE` `safety-clamp`, `TOOL` `developer tooling
+  (viewer/playground)`, `I18N` `localization layer` (added 2026-08-02
+  for PRD-002). New components MUST be added to this guideline (new
+  code) before use — never invented ad hoc. FR numbering continues
+  across PRDs within a component (PRD-002 protocol-core starts at
+  FR-PR-003) — ids are globally unique, never per-PRD.
 - Every PRD requirement MUST carry a `component:` field naming its
   component and a `trace:` list referencing at least one DECISIONS.md
   entry, research file, or recorded inventory that justifies it.
