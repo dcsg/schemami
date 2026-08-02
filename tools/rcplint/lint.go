@@ -495,6 +495,11 @@ func lintProfileSingleSourcing(loc string, m map[string]any, l *Lint) {
 // lintUnused (DS-VAL-004 adjusted): ingredient listed but consumed nowhere.
 // Warning severity — authored recipes may stage ingredients for options.
 func lintUnused(loc string, m map[string]any, ingIDs, compIDs map[string]bool, l *Lint) {
+	// carried_over components (massa velha, kombucha starter) have no steps
+	// by nature — the carry ingredient IS the component. Not an omission.
+	if isTrue(m["carried_over"]) {
+		return
+	}
 	used := map[string]bool{}
 	var walk func(v any)
 	walk = func(v any) {

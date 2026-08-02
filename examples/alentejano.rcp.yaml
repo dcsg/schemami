@@ -102,6 +102,7 @@ components:
     steps:
       - id: refresh
         primitive: { id: primitive.refresh-culture, v: 1 }
+        uses: [mm-seed, mm-flour, mm-agua]
         duration: { min: 4h, target: 6h, max: 8h }
         temperature: { target: 24, unit: C }
         until:

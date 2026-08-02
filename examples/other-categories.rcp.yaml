@@ -201,6 +201,7 @@ components:
     steps:
       - id: mf-lamina
         primitive: { id: primitive.laminate, v: 1 }
+        uses: [mf-farinha, mf-agua, mf-sal, mf-manteiga]
         params: { geometry: spiral }   # NOT stacked turns — the nata log method
         repeat: { times: 3 }
         rest: { min: 30m, target: 45m, max: 2h }
@@ -217,6 +218,7 @@ components:
     steps:
       - id: c-ferver
         primitive: { id: primitive.cook-syrup, v: 1 }
+        uses: [c-acucar, c-agua, c-limao]
         temperature:
           stage: thread             # registry-backed stage vocabulary
           target: 108
@@ -234,6 +236,7 @@ components:
     steps:
       - id: cr-cozer
         primitive: { id: primitive.cook-custard, v: 1 }
+        uses: [cr-leite, cr-farinha, cr-gemas]
         temperature: { target: 82, min: 80, max: 84, unit: C }
         until: [{ kind: sensory, test: nappe, expect: "cobre as costas da colher" }]
         cues:
