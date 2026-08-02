@@ -84,6 +84,13 @@ personal-collector · both ICPs*
 Curated typed op-lists with method deltas and fail-closed guards; serves
 the diaspora availability problem. *diaspora-substituter, home-cook · both*
 
+**FEAT-REG-003 — Technique vocabulary, captured and documented** (00 D2b;
+06 substitution anchors; #10 derived facet) — techniques graduate from the
+v0.1 interim vocab (seeded + L2-enforced, previously the only unvalidated
+vocabulary) to a governed registry kind: documented gestures, media
+teaches-links, primitive tagging, substitution anchoring.
+*home-cook, surface-engineer, personal-collector · ICP-1*
+
 **FEAT-PUB-001 — Verified publish-time resolution** (#21, obligation 3)
 resolver_version + content hashes pinned in published documents — resolver
 bugs become identifiable, not permanent. *editorial-verifier,

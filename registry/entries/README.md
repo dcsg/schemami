@@ -7,8 +7,9 @@ Additions via PR stating which recipe demanded the entry
 
 ## Vocabulary decision (closes SPEC-001's NEEDS CLARIFICATION, 2026-08-02)
 
-Endpoint tests (`float`, `nappe`, …) and temperature stages (`thread`, …)
-are **documented vocabularies** in `registry/vocab/*.yaml` — machine-read
+Endpoint tests (`float`, `nappe`, …), temperature stages (`thread`, …)
+and techniques (`stir`, …) are **documented vocabularies** in
+`registry/vocab/*.yaml` — machine-read
 data lists the L2 linter validates against — NOT per-entry registry files.
 Rationale: DECISIONS #23 sanctioned exactly three kind prefixes
 (ingredient./primitive./equipment.); minting a fourth for a 10-word

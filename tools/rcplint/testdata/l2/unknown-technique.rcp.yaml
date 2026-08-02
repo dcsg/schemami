@@ -1,0 +1,12 @@
+# Target rule: executionMode.technique must be a documented technique
+# (registry/vocab/techniques.yaml) — the previously-unvalidated vocabulary.
+rcp: 1
+id: fx-unknown-technique
+kind: component
+name: { en: Unknown technique fixture }
+execution_modes:
+  - { id: weird, technique: interpretive-dance }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 100, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

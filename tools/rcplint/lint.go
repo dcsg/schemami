@@ -31,12 +31,13 @@ type Registry struct {
 	Equipment   map[string]bool
 	Tests       map[string]bool
 	Stages      map[string]bool
+	Techniques  map[string]bool
 	Roles       map[string]bool
 }
 
 func loadRegistry(root string) (*Registry, *Lint, error) {
 	r := &Registry{Ingredients: map[string]bool{}, Primitives: map[string]bool{}, Equipment: map[string]bool{},
-		Tests: map[string]bool{}, Stages: map[string]bool{}, Roles: map[string]bool{}}
+		Tests: map[string]bool{}, Stages: map[string]bool{}, Techniques: map[string]bool{}, Roles: map[string]bool{}}
 	l := &Lint{}
 	for kind, set := range map[string]map[string]bool{"ingredient": r.Ingredients, "primitive": r.Primitives, "equipment": r.Equipment} {
 		glob, _ := filepath.Glob(filepath.Join(root, "registry/entries", kind, "*.yaml"))
@@ -70,6 +71,17 @@ func loadRegistry(root string) (*Registry, *Lint, error) {
 				for _, s := range ss {
 					if sm, ok := s.(map[string]any); ok {
 						set[fmt.Sprintf("%v", sm["id"])] = true
+					}
+				}
+			}
+		}
+	}
+	if docs, err := LoadDocuments(filepath.Join(root, "registry/vocab/techniques.yaml")); err == nil && len(docs) == 1 {
+		if m, ok := docs[0].Value.(map[string]any); ok {
+			if ts, ok := m["techniques"].([]any); ok {
+				for _, tv := range ts {
+					if tm, ok := tv.(map[string]any); ok {
+						r.Techniques[fmt.Sprintf("%v", tm["id"])] = true
 					}
 				}
 			}
@@ -130,6 +142,9 @@ func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, 
 	if ems, ok := m["execution_modes"].([]any); ok {
 		for _, ev := range ems {
 			if em, ok := ev.(map[string]any); ok {
+				if tech, ok := em["technique"].(string); ok && !reg.Techniques[tech] {
+					l.errf("%s: execution mode %q technique %q not in registry/vocab/techniques.yaml (the vocabulary Daniel remembered — FEAT-REG-003 hardens it)", loc, em["id"], tech)
+				}
 				if ai, ok := em["adds_ingredient"].(map[string]any); ok {
 					if id, ok := ai["id"].(string); ok {
 						ingIDs[id] = true

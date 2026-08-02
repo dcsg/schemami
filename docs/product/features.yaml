@@ -249,6 +249,29 @@ features:
     target: v1
     trace: ["DECISIONS #9", "DECISIONS #17"]
     graduates_to: null
+  - id: FEAT-REG-003
+    name: "Technique vocabulary — captured, documented, and load-bearing"
+    description: >-
+      Techniques graduate from interim vocab list to governed registry
+      kind: each technique documented (pt/en, definition, what it teaches,
+      media links per research 04's media_hint), taggable on step
+      primitives (the optional technique field the primitive schema
+      already carries), validated everywhere it appears
+      (executionMode.technique today; step-level tags at hardening).
+      Load-bearing twice over: research 06 makes techniques the
+      substitution fallback anchor — when an id-anchored step is replaced,
+      the engine checks the technique a critical role depends on still
+      exists; DECISIONS #10 lists techniques as a derived facet computed
+      from steps at index time. Seeded in v0.1 as
+      registry/vocab/techniques.yaml with L2 membership enforcement
+      (previously the only unvalidated vocabulary).
+    personas: [rcp.cook.home-cook, rcp.dev.surface-engineer, rcp.ingester.personal-collector]
+    icp: ICP-1
+    status: deferred
+    target: v1
+    trace: ["research 00 D2b (techniques/gestures as registry-backed vocabulary)", "research 06:270-286 (technique as substitution anchor)", "DECISIONS #10 (derived facet)"]
+    graduates_to: null
+
   - id: FEAT-PUB-001
     name: "Verified publish-time reference resolution (resolver_version + content hashes)"
     description: >-

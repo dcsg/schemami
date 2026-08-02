@@ -48,6 +48,7 @@ func TestL2FixturesOneRuleEach(t *testing.T) {
 		{"component-cycle.rcp.yaml", "component reference cycle"},
 		{"unversioned-pin.rcp.yaml", "declares no version"},
 		{"profile-numeric-bound.rcp.yaml", "restates a numeric safety bound"},
+		{"unknown-technique.rcp.yaml", "not in registry/vocab/techniques.yaml"},
 	}
 	for _, c := range cases {
 		l := lintFixture(t, c.file)
