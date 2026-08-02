@@ -2,7 +2,7 @@
 type: artifact
 artifact_type: test-strategy
 spec: SPEC-002
-status: draft
+status: accepted
 created_at: 2026-08-02T23:06:15Z
 reviewed_by: qa
 ---
