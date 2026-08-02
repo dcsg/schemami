@@ -1,0 +1,11 @@
+id: ingredient.seafood.clam
+kind: ingredient-class
+display_name:
+  pt: Amêijoa
+  en: Clam
+definition: Fresh clams (amêijoas); opened à Bulhão Pato in the Algarve tradition.
+roles:
+- substrate
+aliases:
+- amêijoas
+- clams

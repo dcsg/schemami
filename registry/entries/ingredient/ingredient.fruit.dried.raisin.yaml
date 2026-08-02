@@ -1,0 +1,11 @@
+id: ingredient.fruit.dried.raisin
+kind: ingredient-class
+display_name:
+  pt: Passas
+  en: Raisins
+definition: Raisins; the book's alternative to currants (per-recipe substitution).
+roles:
+- flavour
+aliases:
+- raisins
+- passas

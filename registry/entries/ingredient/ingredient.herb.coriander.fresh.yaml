@@ -1,0 +1,12 @@
+id: ingredient.herb.coriander.fresh
+kind: ingredient-class
+display_name:
+  pt: Coentros frescos
+  en: Fresh coriander
+definition: Fresh coriander/cilantro leaves — the Algarve finishing herb.
+roles:
+- aromatic
+- flavour
+aliases:
+- coentros
+- cilantro

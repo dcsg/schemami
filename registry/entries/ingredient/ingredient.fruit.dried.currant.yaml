@@ -1,0 +1,10 @@
+id: ingredient.fruit.dried.currant
+kind: ingredient-class
+display_name:
+  pt: Groselhas secas
+  en: Dried currants
+definition: Dried currants; scone/biscuit inclusion.
+roles:
+- flavour
+aliases:
+- currants

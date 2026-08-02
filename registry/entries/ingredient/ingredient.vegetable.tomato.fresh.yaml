@@ -1,0 +1,12 @@
+id: ingredient.vegetable.tomato.fresh
+kind: ingredient-class
+display_name:
+  pt: Tomate maduro
+  en: Fresh tomato
+definition: Ripe fresh tomato — sibling form of ingredient.vegetable.tomato.pulp (ontology rule 6).
+roles:
+- aromatic
+- flavour
+aliases:
+- tomate
+- tomatoes

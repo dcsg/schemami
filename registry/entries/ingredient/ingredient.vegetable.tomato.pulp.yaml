@@ -1,0 +1,15 @@
+id: ingredient.vegetable.tomato.pulp
+kind: ingredient-class
+display_name:
+  pt: Polpa de tomate
+  en: Tomato pulp
+definition: Processed tomato pulp — the book's stated alternative to fresh tomatoes; sibling form under
+  the tomato node.
+roles:
+- aromatic
+- flavour
+aliases:
+- polpa de tomate
+- tomato pulp
+density:
+  g_per_ml: 1.03

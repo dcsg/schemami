@@ -1,0 +1,13 @@
+id: ingredient.fat.vegetable-oil
+kind: ingredient-class
+display_name:
+  pt: Óleo vegetal
+  en: Vegetable oil
+definition: Neutral vegetable oil for high-heat cooking.
+roles:
+- fat
+aliases:
+- vegetable oil
+- óleo
+density:
+  g_per_ml: 0.92

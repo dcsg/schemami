@@ -1,0 +1,12 @@
+id: ingredient.salt.kosher
+kind: ingredient-class
+display_name:
+  pt: Sal kosher
+  en: Kosher salt
+definition: 'Coarse flaked salt; distinct crystal size and volume-per-gram behaviour from fine sea salt
+  (steward call: mint, not alias).'
+roles:
+- salt
+- flavour
+aliases:
+- kosher salt

@@ -1,0 +1,12 @@
+id: ingredient.herb.oregano.dried
+kind: ingredient-class
+display_name:
+  pt: Orégãos secos
+  en: Dried oregano
+definition: Dried oregano leaves.
+roles:
+- flavour
+- aromatic
+aliases:
+- dried oregano
+- orégãos

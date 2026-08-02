@@ -1,0 +1,12 @@
+id: ingredient.spice.cinnamon.ground
+kind: ingredient-class
+display_name:
+  pt: Canela moída
+  en: Ground cinnamon
+definition: Ground cinnamon — disperses through the dish; the stick form (a future sibling, ingredient.spice.cinnamon.stick)
+  infuses and is removed. The canonical ontology-paths example (registry-governance rule 6).
+roles:
+- flavour
+aliases:
+- ground cinnamon
+- canela

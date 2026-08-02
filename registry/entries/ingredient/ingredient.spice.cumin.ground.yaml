@@ -1,0 +1,11 @@
+id: ingredient.spice.cumin.ground
+kind: ingredient-class
+display_name:
+  pt: Cominhos moídos
+  en: Ground cumin
+definition: Ground cumin seed.
+roles:
+- flavour
+aliases:
+- ground cumin
+- cominhos

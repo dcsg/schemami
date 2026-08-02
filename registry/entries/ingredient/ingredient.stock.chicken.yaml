@@ -1,0 +1,14 @@
+id: ingredient.stock.chicken
+kind: ingredient-class
+display_name:
+  pt: Caldo de galinha
+  en: Chicken stock
+definition: Chicken stock, homemade or low-sodium; a preparation-class like ganache.
+roles:
+- hydration
+- flavour
+aliases:
+- chicken stock
+- caldo de galinha
+density:
+  g_per_ml: 1.0

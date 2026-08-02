@@ -1,0 +1,12 @@
+id: ingredient.vegetable.garlic
+kind: ingredient-class
+display_name:
+  pt: Alho
+  en: Garlic
+definition: Garlic cloves; base aromatic.
+roles:
+- aromatic
+aliases:
+- garlic
+- alho
+- dentes de alho

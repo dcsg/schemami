@@ -1,0 +1,11 @@
+id: ingredient.spice.allspice.ground
+kind: ingredient-class
+display_name:
+  pt: Pimenta-da-jamaica moída
+  en: Ground allspice
+definition: Ground allspice berry.
+roles:
+- flavour
+aliases:
+- ground allspice
+- pimenta-da-jamaica

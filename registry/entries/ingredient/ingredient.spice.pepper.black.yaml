@@ -1,0 +1,12 @@
+id: ingredient.spice.pepper.black
+kind: ingredient-class
+display_name:
+  pt: Pimenta-preta
+  en: Black pepper
+definition: Black peppercorn seasoning, usually freshly ground at use (grinding is prep, not a form —
+  ontology rule 6).
+roles:
+- flavour
+aliases:
+- black pepper
+- pimenta-preta

@@ -3,7 +3,8 @@ kind: ingredient-class
 display_name:
   pt: Natas 35%
   en: Cream 35%
-definition: Heavy cream, 35% fat; ganache base.
+definition: 'Heavy cream, 35% fat; ganache base. Steward call 2026-08-02: ''heavy cream'' (US, >=36%)
+  consolidates here as an alias — same culinary function, no separate class.'
 roles:
 - fat
 - hydration
@@ -11,3 +12,6 @@ density:
   g_per_ml: 1.0
 allergens:
 - milk
+aliases:
+- heavy cream
+- natas para bater

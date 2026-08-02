@@ -1,0 +1,11 @@
+id: ingredient.vegetable.pepper.bell.red
+kind: ingredient-class
+display_name:
+  pt: Pimento vermelho
+  en: Red bell pepper
+definition: Red bell pepper.
+roles:
+- aromatic
+aliases:
+- pimento
+- red bell pepper

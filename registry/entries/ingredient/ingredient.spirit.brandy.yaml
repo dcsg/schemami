@@ -1,0 +1,12 @@
+id: ingredient.spirit.brandy
+kind: ingredient-class
+display_name:
+  pt: Brandy
+  en: Brandy
+definition: Grape brandy; flambé and deglazing.
+roles:
+- flavour
+aliases:
+- brandy
+density:
+  g_per_ml: 0.95

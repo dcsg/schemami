@@ -1,0 +1,11 @@
+id: ingredient.seafood.mussel
+kind: ingredient-class
+display_name:
+  pt: Mexilhão
+  en: Mussel
+definition: Fresh mussels.
+roles:
+- substrate
+aliases:
+- mexilhão
+- mussels

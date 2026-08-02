@@ -1,0 +1,11 @@
+id: ingredient.legume.bean.white.dried
+kind: ingredient-class
+display_name:
+  pt: Feijão-branco seco
+  en: Dried white beans
+definition: Dried white beans; soaked overnight before cooking.
+roles:
+- substrate
+aliases:
+- feijão-branco
+- white beans

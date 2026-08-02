@@ -1,0 +1,11 @@
+id: ingredient.herb.bay-leaf
+kind: ingredient-class
+display_name:
+  pt: Folha de louro
+  en: Bay leaf
+definition: Dried bay laurel leaf; infused and removed.
+roles:
+- aromatic
+aliases:
+- folha de louro
+- bay leaf

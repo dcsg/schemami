@@ -1,0 +1,11 @@
+id: ingredient.preparation.chile-paste
+kind: ingredient-class
+display_name:
+  pt: Pasta de chile
+  en: Chile paste
+definition: Cooked chile paste — a preparation class; becomes a component-by-reference once the source
+  recipe is ingested (the ganache precedent).
+roles:
+- flavour
+aliases:
+- chile paste

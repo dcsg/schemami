@@ -1,0 +1,11 @@
+id: ingredient.meat.beef.chuck
+kind: ingredient-class
+display_name:
+  pt: Acém de vaca
+  en: Beef chuck
+definition: Boneless beef chuck; braising cut.
+roles:
+- substrate
+aliases:
+- beef chuck
+- acém

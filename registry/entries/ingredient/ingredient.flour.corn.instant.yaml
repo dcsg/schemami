@@ -1,0 +1,11 @@
+id: ingredient.flour.corn.instant
+kind: ingredient-class
+display_name:
+  pt: Farinha de milho instantânea
+  en: Instant cornmeal
+definition: Instant corn masa flour (Maseca-type); thickener.
+roles:
+- thickener
+aliases:
+- instant cornmeal
+- masa harina

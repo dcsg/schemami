@@ -1,0 +1,11 @@
+id: ingredient.vegetable.onion
+kind: ingredient-class
+display_name:
+  pt: Cebola
+  en: Onion
+definition: Bulb onion; base aromatic across cuisines.
+roles:
+- aromatic
+aliases:
+- onion
+- cebola

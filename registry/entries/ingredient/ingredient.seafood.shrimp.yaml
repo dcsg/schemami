@@ -1,0 +1,11 @@
+id: ingredient.seafood.shrimp
+kind: ingredient-class
+display_name:
+  pt: Camarão
+  en: Shrimp
+definition: Shrimp/prawns; shells and heads make the stock.
+roles:
+- substrate
+aliases:
+- camarão
+- prawns
