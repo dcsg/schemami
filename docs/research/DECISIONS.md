@@ -133,3 +133,61 @@ strawman proposal is still a proposal.
   yet confirmed after the deep-dives).
 - **Profile granularity** (7-as-strawman vs fewer/broader).
 - **Registry governance** process once there are contributors.
+
+*(All five resolved 2026-08-02 — see decisions 16–20 below.)*
+
+## Decided (2026-08-02, interview round 3 — closes all open items)
+
+16. **Execution boundary confirmed; Registry formally split from day one.**
+    Execution is a separate bounded context: measurement *targets* live in
+    the recipe document, *readings*/timers/actuals live in a separate
+    execution session document (as clarified under #13). The Registry
+    (ingredient classes, step primitives, equipment profiles) is its own
+    formal context from day one — registry IDs are load-bearing in every
+    recipe, so the boundary is never retrofitted.
+17. **Global substitution catalog ships in v1**, alongside per-recipe
+    substitutions (both mechanisms of #9 apply to catalog entries: typed
+    op-lists and full variants, LLM-drafted, human-reviewed).
+18. **v1 profile scope: spec all 7, harden 4.** All seven profiles (bread,
+    pastry, fermentation, preserves, drinks, coffee, savoury) are *defined*
+    in the v1 spec so the core is checked against the full roster. Four get
+    the full treatment — semantic linter rules, safety bounds, Calculus
+    conformance vectors, ingestion focus: **bread, fermentation, pastry,
+    savoury**. Drinks, coffee and preserves ship as draft profiles — valid
+    to author, not yet conformance-guaranteed. (Supersedes the narrower
+    "core + bread profile first" recommendation.)
+19. **Scope line: RCP is the protocol — documents only.** Users, identity,
+    favorites, collections/shelves/packs as product features, and recipe
+    ownership classes (user vs system vs pack recipes) are concerns of the
+    consuming app, modeled outside this project (or as a separate project).
+    This repo specifies document formats and the Calculus; it is a published
+    language, not a platform domain model. (Consistent with #10's placement
+    of shelves/packs as projection/curation documents outside recipes.)
+20. **Registry governance: lightweight rules now.** A one-page policy
+    (`docs/registry-governance.md`): additions via PR, naming conventions,
+    required fields, append-only + versioned entries, Daniel as sole
+    approver. Full multi-contributor governance is deferred until a second
+    contributor actually exists.
+
+### Reaffirmed (2026-08-02, post-interview)
+
+- **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
+  grounds that #13/#15 make the Recipe Calculus a constraint engine anyway
+  (risking dual implementations of the same bounds); Daniel reaffirmed CUE.
+  Mitigation for the drift risk: constraint bounds remain declarative data
+  in profiles, and the cross-stack conformance vectors (#13) are the proof
+  that CUE-side admission and Calculus-side cook-time enforcement agree.
+
+## Gates released (2026-08-02)
+
+Daniel released all three held gates from CONCLUSIONS §7 step 1:
+
+- **ICP bok artifact store** — explicitly approved and executed: artifact
+  `019fc312-56e9-70d1-82f3-fb599a2dc5ab` stored (type `icp`, target
+  "RCP — personas"), playbook run `019fc287-6a45-79aa-a460-4feaabaf8795`
+  marked completed.
+- **Personas promotion** — confirmed (already canonical at
+  `docs/personas.md` since 2026-08-02).
+- **The three DECISIONS corrections** — confirmed (Daniel's course
+  corrections 1–3 from the ICP review, already captured as decisions
+  #11–12 and applied in `docs/personas.md`).
