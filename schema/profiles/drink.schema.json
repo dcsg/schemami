@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/drink.schema.json",
+  "title": "RCP Drink Profile (DRAFT)",
+  "x-rcp-maturity": "draft",
+  "description": "DRAFT profile (SR-PROF-003; DECISIONS #18 spec-all-7): valid to author against, NOT conformance-guaranteed — the harness labels every pass 'maturity: draft'. abv_disclosure dilution_model batch_shelf_life observed on negroni; ratio-first machinery is core. Additive alongside core (SSP-002).",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "object",
+      "properties": {
+        "abv_disclosure": {
+          "enum": [
+            "required",
+            "optional"
+          ]
+        },
+        "dilution_model": {
+          "type": "string"
+        },
+        "batch_shelf_life": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": true,
+      "description": "Draft: known fields typed, unknown fields admitted (drafts grow; hardening closes them)."
+    }
+  }
+}

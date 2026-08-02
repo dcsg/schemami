@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/coffee.schema.json",
+  "title": "RCP Coffee Profile (DRAFT)",
+  "x-rcp-maturity": "draft",
+  "description": "DRAFT profile (SR-PROF-003; DECISIONS #18 spec-all-7): valid to author against, NOT conformance-guaranteed — the harness labels every pass 'maturity: draft'. brew-ratio fields arrive at hardening (FEAT-PROF-006); minimal draft. Additive alongside core (SSP-002).",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "object",
+      "properties": {},
+      "additionalProperties": true,
+      "description": "Draft: known fields typed, unknown fields admitted (drafts grow; hardening closes them)."
+    }
+  }
+}
