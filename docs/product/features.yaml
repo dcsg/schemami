@@ -380,7 +380,14 @@ features:
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: both
     status: deferred
-    target: post-v0.1 (proposed by Daniel 2026-08-02; graduates via its own PRD)
+    target: v0.2 lightweight first cut (Daniel 2026-08-02), full playground later
+    phasing: >-
+      v0.2 LIGHTWEIGHT VIEWER: paste/drop a document, see L1 validation
+      verdicts and the recipe rendered human-readable (ingredients with
+      bases, step sections, profile + maturity labels). Static page, no
+      server, no accounts. LATER (full playground): the WASM-compiled
+      rcplint for exact-CI L2 + CUE verdicts in-browser, and the
+      clamp-guarded scaling slider — the signature demo.
     trace: ["DECISIONS #19", "DECISIONS #21", "PRD-001 integrator guarantee"]
     graduates_to: null
 

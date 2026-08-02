@@ -35,7 +35,7 @@ Small, additive, demanded by the five ingested recipes:
 | FEAT-REG-003 Technique vocabulary hardened | bulhão-pato, refogar, flambé arrived with demand |
 | FEAT-REG-004 Ontology grounding & cross-language matching | the cebola/onion blindness |
 | FEAT-I18N-001 Translation layer over English bases | pairs with REG-004 |
-| FEAT-TOOL-001 RCP playground | first audience once pushed; jwt.io move |
+| **FEAT-TOOL-001 RCP viewer — lightweight first cut** | paste/drop → validate + render, static page; the WASM clamp-slider playground follows later (jwt.io move) |
 
 *(The cut is decided in the PRD-002 interview — this table is the proposal.)*
 
