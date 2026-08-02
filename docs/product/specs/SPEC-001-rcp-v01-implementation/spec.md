@@ -2,7 +2,7 @@
 type: spec
 id: SPEC-001
 title: RCP v0.1 implementation
-status: draft
+status: accepted
 author: Daniel Gomes
 implements: PRD-001
 source_prd: PRD-001
