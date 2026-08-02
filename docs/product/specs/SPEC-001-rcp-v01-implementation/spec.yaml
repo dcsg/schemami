@@ -285,9 +285,9 @@ design:
       serves: [SR-VAL-002]
       status: accepted
     - id: DS-VAL-004
-      text: "Layer-2 check set: reference resolution (item/primitive/equipment/of/uses/after), DAG completeness+termination per enumerated guard combination, component cycle rejection, produced-but-unconsumed intermediate reporting, unversioned-pin reporting."
+      text: "Layer-2 check set: reference resolution (item/primitive/equipment/of/uses/after), DAG completeness+termination per enumerated guard combination, component cycle rejection, produced-but-unconsumed intermediate reporting, unversioned-pin reporting, and ingredients-listed-but-never-used reporting (research 00: 'you listed an ingredient nobody uses')."
       serves: [SR-VAL-002]
-      status: accepted
+      status: adjusted
     - id: DS-VAL-005
       text: "Single entry point: `make validate` runs L1 + L2 + CUE in sequence; .github/workflows/validate.yml runs the same target on push/PR and stays dormant until a remote exists."
       serves: [SR-VAL-001]
@@ -432,12 +432,16 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "SPEC accepted by Daniel. All SRs, DS statements and CMP components proposed→accepted; SR/DS/CMP ids frozen per the traceability guideline."
+  - at: "2026-08-02T18:20:38Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "DS-VAL-004 adjusted (QA review finding #5): unused-ingredient reporting was fixture-only with no spec trace; added to the L2 check set. serves: SR-VAL-002 re-checked — the SR's check list is illustrative of DS-VAL-004, no SR/AC text change needed. First use of the adjustment protocol."
 
 # User extensions — LLM never writes here; commands never touch.
 extensions: {}
 
 # Sync block.
 _sync:
-  md_hash: "12cb1ff81d887df5de9143a357ee0053f63c3064b4a581232e546b6d31ec5e88"
-  yaml_hash: "e148f2a8b6ccf3492dae4c1ee06aaeec320c2f8d6c401dd619a0f39cb317952a"
-  synced_at: "2026-08-02T18:04:37Z"
+  md_hash: "1e9a91d0746333ce115817d2d71bf8a832602659e082311589b356951df4024e"
+  yaml_hash: "59e8c569e471e25e89a59fd1fdea287ebfd599a25281a9d58990c40e6266e1e3"
+  synced_at: "2026-08-02T18:20:38Z"

@@ -75,10 +75,11 @@ the SRs it realizes. Plans, commits, and future adjustments cite these ids.
 - **DS-VAL-002** — The L1 validator (santhosh-tekuri/jsonschema v6) sits
   behind a small internal interface so it can be swapped without touching
   callers; format assertions explicitly enabled.
-- **DS-VAL-004** — L2 check set: reference resolution (item / primitive /
-  equipment / `of:` / `uses:` / `after:`), DAG completeness + termination
-  per enumerated guard combination, cycle rejection, orphan-intermediate
-  and unversioned-pin reporting.
+- **DS-VAL-004** *(adjusted 2026-08-02)* — L2 check set: reference
+  resolution (item / primitive / equipment / `of:` / `uses:` / `after:`),
+  DAG completeness + termination per enumerated guard combination, cycle
+  rejection, orphan-intermediate and unversioned-pin reporting, and
+  unused-ingredient reporting.
 - **DS-VAL-003** — CUE as a pipeline step: constraints authored in
   `schema/constraints/*.cue` (normative artifacts), evaluated via
   `cue vet`; embedding stays a documented option (ADR-001).

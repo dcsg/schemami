@@ -1,0 +1,177 @@
+%% Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+%% edikt:artifact type=domain-model spec=SPEC-001 status=draft reviewed_by=architect
+%% created_at=2026-08-02T18:13:42Z
+%% The RCP document model (domain view, storage-free — documents ARE the data).
+%% Source of truth for shapes: schema/rcp-core-v1.schema.json. Registry entries
+%% and Execution sessions are separate bounded contexts, shown as references.
+classDiagram
+    class Recipe {
+        <<aggregate root>>
+        +int rcp
+        +Slug id
+        +Kind kind
+        +Text name
+        +Taxonomy taxonomy
+        +Map~name,Basis~ bases
+        +Scaling scaling
+        +Provenance provenance
+        +Licence licence
+        +ProfileBlock profile
+        +validate() core AND profile[kind]
+        +scale(factor) refused if critical bound violated
+    }
+
+    class Ingredient {
+        +Slug id
+        +Slug item
+        +Quantity amount
+        +Role[] roles
+        +Constraint[] constraints
+        +Prep prep
+        +Slug component
+        +bool removed_after
+        +string raw
+        %% item may be null pre-resolution (import); raw always survives
+    }
+
+    class Quantity {
+        <<value object>>
+        +number value
+        +Unit unit
+        +BasisRef of
+        +ScalingBehaviour scaling
+        %% tagged union: fixed | ratio | parts | range | open
+        %% open variants (to_taste, to_consistency) never scale
+    }
+
+    class Basis {
+        <<value object>>
+        +RoleFilter where
+        +bool include_components
+        +Slug ingredient
+        %% name = map key on Recipe.bases
+        %% oneOf: role-filtered sum | single ingredient
+    }
+
+    class Constraint {
+        <<value object>>
+        +number min_ratio
+        +number max_ratio
+        +number min_value
+        +number max_value
+        +BasisRef of
+        +Severity severity
+        +Text reason
+        %% critical => engine must refuse, never silently produce
+    }
+
+    class Step {
+        +Slug id
+        +PrimitiveRef primitive
+        +Ref[] after
+        +Guard when
+        +Slug section
+        +Duration duration
+        +Temperature temperature
+        +Endpoint[] until
+        +Cue[] cues
+        +Slug[] uses
+        +Slug produces
+        %% after[] makes the opt-in DAG; linear recipes stay a list
+    }
+
+    class Endpoint {
+        <<value object>>
+        +EndpointKind kind
+        +Slug test
+        +Text expect
+    }
+
+    class Temperature {
+        <<value object>>
+        +number target
+        +number min
+        +number max
+        +Slug stage
+        +CurvePoint[] curve
+    }
+
+    class ComponentRef {
+        <<value object>>
+        +Slug id
+        +Slug ref
+        +int version
+        +Quantity draw
+        +Override[] overrides
+        %% id = local alias anchoring ingredients[].component and step refs
+        %% published-only; resolved+embedded at publish time
+    }
+
+    class Option {
+        +Slug id
+        +OptionKind kind
+        +bool default
+        +Slug[] choices
+        %% toggle: default bool; choice: default slug from choices
+        %% selects fully-authored paths via guards, never runtime deletion
+    }
+
+    class Substitution {
+        +Scope scope
+        +SubClass class
+        +Slug replaces
+        +Slug with
+        +Step[] with_steps
+        +WhenApplied when_applied
+        %% method deltas included: 15 of 18 substitutions change the method
+    }
+
+    class EquipmentRef {
+        <<value object>>
+        +Slug ref
+        +EquipRole role
+        +bool required
+        +Slug[] substitutes
+    }
+
+    class IngredientClass {
+        <<registry>>
+        +Slug id
+    }
+
+    class StepPrimitive {
+        <<registry>>
+        +Slug id
+        +int v
+    }
+
+    class EquipmentProfile {
+        <<registry>>
+        +Slug id
+    }
+
+    class ExecutionSession {
+        <<external context>>
+        +readings, timers, actuals
+        %% targets live in Recipe; readings never do (DECISIONS #16)
+    }
+
+    Recipe *-- Ingredient : "rows with roles"
+    Recipe *-- Step : "list or DAG"
+    Recipe *-- Basis : "declares"
+    Recipe *-- Option : "authored paths"
+    Recipe *-- Substitution : "authored swaps"
+    Recipe *-- EquipmentRef : "requires"
+    Recipe *-- Recipe : "components (inline)"
+    Recipe *-- ComponentRef : "components (by ref)"
+    ComponentRef ..> Recipe : "published recipe, version-pinned"
+    Ingredient *-- Quantity : "amount"
+    Ingredient *-- Constraint : "bounded data"
+    Quantity --> Basis : "of"
+    Constraint --> Basis : "of"
+    Step *-- Endpoint : "until"
+    Step *-- Temperature : "at"
+    Ingredient --> IngredientClass : "item ref"
+    Step --> StepPrimitive : "primitive ref"
+    EquipmentRef --> EquipmentProfile : "ref"
+    ExecutionSession ..> Recipe : "consumes targets"

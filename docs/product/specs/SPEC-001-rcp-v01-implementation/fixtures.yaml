@@ -1,0 +1,208 @@
+# Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+# edikt:artifact type=fixtures spec=SPEC-001 status=draft reviewed_by=qa
+# created_at=2026-08-02T18:13:42Z
+# Transform at implementation time into files under tools/rcplint/testdata/.
+# Records asserting future linter/clamp behaviour are status: aspirational
+# until the behaviour ships and they are verified against running code.
+
+scenarios:
+  - name: "positive-suite"
+    purpose: "regression suite — the six real example documents (not copies)"
+    entities:
+      - entity: file
+        records:
+          - path: examples/alentejano.rcp.yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "green through make validate only AFTER the mm-feed defect is fixed/waived (AC-VAL-002-1 requires it to fail first)"
+            _note: "bread: DAG, maintenance culture, options, substitutions"
+          - path: examples/other-categories.rcp.yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "green only after calda-orphan and ganache-pin defects are fixed/waived; pre-fix failures are themselves asserted by AC-VAL-002-1"
+            _note: "5 documents: drink (ratio-first), ferment (safety bounds), pastry (composition), component + referencing pastry"
+
+  - name: "l2-negative-fixtures"
+    purpose: "unit tests — one fixture per Layer-2 rule, failing for exactly one reason"
+    location: tools/rcplint/testdata/l2/
+    entities:
+      - entity: file
+        records:
+          - path: unresolved-item.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint fails naming the missing registry entry (AC-REG-002-2)"
+            _note: "ingredient item references ingredient.does.not.exist"
+          - path: bare-slug.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint rejects citing DECISIONS #23 (AC-REG-001-2)"
+            _note: "item uses pre-migration bare slug flour.wheat.t65. Precedence contract: the kind-prefix regex check classifies and short-circuits BEFORE resolution runs, so exactly one rule fires"
+          - path: undeclared-basis.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint fails: `of:` references a basis never declared"
+            _note: "distilled from the real mm-feed defect in alentejano"
+          - path: unused-ingredient.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint reports ingredient listed but never in any uses:"
+            _note: "traced into DS-VAL-004 by the 2026-08-02 adjustment (was research-00-only, now spec-covered)"
+          - path: orphan-intermediate.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint reports component produced but never consumed"
+            _note: "distilled from the real calda defect in pasteis-de-nata"
+          - path: disconnected-guard-path.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint rejects naming the guard combination and unreachable steps (AC-VAL-002-3)"
+            _note: "option=true path leaves a step with no route to a terminal step"
+          - path: step-cycle.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint rejects the non-terminating step graph (after: A->B->A) naming the cycle (AC-VAL-002-3 non-terminating case)"
+            _note: "step-level after: cycle within one recipe — distinct from component-reference cycles"
+          - path: too-many-options.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint reports the options soft cap exceeded (4 options > cap 3, research 07 B5)"
+            _note: "keeps guard-combination enumeration bounded"
+          - path: item-null-warning.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "two-sided: L1 schema ACCEPTS item: null; L2 lint WARNS unresolved import (DS-PR-003) — neither errors"
+            _note: "the nullable-item contract; regresses silently if either side flips"
+          - path: component-cycle.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint rejects the reference cycle A→B→A"
+            _note: "two by-reference recipes referencing each other"
+          - path: unversioned-pin.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint reports version pin against a target declaring no version"
+            _note: "distilled from the real brownie→ganache version: 1 defect"
+
+  - name: "l1-negative-fixtures"
+    purpose: "unit tests — core hardening rejections at schema layer"
+    location: tools/rcplint/testdata/l1/
+    entities:
+      - entity: file
+        records:
+          - path: constraint-no-bounds.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-PR-002"
+            target_contract: "schema validation rejects constraint with severity+reason but zero bounds (AC-PR-002-1)"
+            _note: "the schema gap found in the defect inventory"
+          - path: ratio-without-of.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-PR-002"
+            target_contract: "schema validation rejects min_ratio present without of"
+            _note: "DS-PR-002 dependent-requirement check"
+
+
+  - name: "cue-negative-fixtures"
+    purpose: "unit tests — declarative constraint layer (cue vet)"
+    location: tools/rcplint/testdata/cue/
+    entities:
+      - entity: file
+        records:
+          - path: profile-violating-bound.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "cue vet names the violated bound and its authored source (AC-PROF-001-2). LAYER DECISION: profile-declared ratio bounds over resolved values need basis computation, so they are enforced at the CUE/L2 layer (DS-VAL-003), not JSON Schema"
+            _note: "bread doc with salt ratio beyond the bread-profile-declared max"
+          - path: ratio-relation-violation.rcp.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "a failing .cue field-relation constraint surfaces through cue vet with non-zero exit"
+            _note: "exercises the CUE pipeline step itself, independent of profile content"
+
+  - name: "registry-negative-fixtures"
+    purpose: "unit tests — registry entry schema rejections"
+    location: tools/rcplint/testdata/registry/
+    entities:
+      - entity: file
+        records:
+          - path: ingredient-missing-roles.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-REG-001"
+            target_contract: "entry validation rejects naming the missing field (AC-REG-001-1)"
+            _note: "IngredientClass without functional roles — machine-read field absent"
+          - path: filename-id-mismatch.yaml
+            format: yaml
+            status: aspirational
+            target_phase: "CMP-VAL-002"
+            target_contract: "lint reports filename ≠ entry id (SAC-REG-001)"
+            _note: "file named ingredient.salt.yaml whose id is ingredient.salt.sea.fine. target_phase CMP-VAL-002 (not CMP-REG-001) is intentional: SAC-REG-001 verifies via linter rule"
+
+  - name: "clamp-cases"
+    purpose: "integration tests — fail-closed refusal on the real documents"
+    location: tools/rcplint/testdata/clamp/
+    entities:
+      - entity: case
+        records:
+          - id: chucrute-under-salt
+            input: examples/other-categories.rcp.yaml#chucrute
+            scale: 0.6
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "refused; authored pt/en reason surfaced (salt below min_ratio 0.02 of vegetable) (AC-SAFE-001-1)"
+            _note: "the exact 2% brine floor from research 03 — the canonical safety case"
+          - id: chucrute-in-range
+            input: examples/other-categories.rcp.yaml#chucrute
+            scale: 1.5
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "accepted — ratios preserved, no bound crossed"
+            _note: "proves the clamp refuses violations, not scaling itself"
+          - id: warn-bound-crossed
+            input: tools/rcplint/testdata/clamp/warn-bound.rcp.yaml
+            scale: 3.0
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "ACCEPTED with the warn-severity violation surfaced — only critical refuses (DS-SAFE-001 refusal scope boundary)"
+            _note: "severity: warn bound crossed under scale; the refuse/surface distinction"
+          - id: missing-quantity-data
+            input: tools/rcplint/testdata/clamp/missing-quantity.rcp.yaml
+            scale: 2.0
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "refused — critical constraint over an ingredient whose quantity cannot resolve; missing data defaults to refusal (AC-SAFE-001-2)"
+            _note: "the second uncertainty branch, distinct from unresolvable basis"
+          - id: min-batch-floor
+            input: examples/alentejano.rcp.yaml
+            scale: 0.05
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "refused or floored per DS-SAFE-001: massa-mae is drawn-from not multiplied, and min_batch (100 g) cannot be breached by downscale"
+            _note: "maintenance-culture clamp behaviour from the edge-case list, now pinned"
+          - id: unresolvable-basis
+            input: tools/rcplint/testdata/l2/undeclared-basis.rcp.yaml
+            scale: 2.0
+            status: aspirational
+            target_phase: "CMP-SAFE-001"
+            target_contract: "refused — uncertainty defaults to refusal (AC-SAFE-001-2)"
+            _note: "constraint whose basis cannot resolve must not silently pass"
+
+relationships:
+  - "l2/undeclared-basis fixture is reused as the clamp uncertainty input — keep them identical"
+  - "positive-suite entries are the live examples/ files, never copied into testdata/"
+  - "every fixture names exactly one target rule; a fixture failing two rules is a fixture bug"
