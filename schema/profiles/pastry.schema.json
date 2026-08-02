@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/pastry.schema.json",
+  "title": "RCP Pastry Profile",
+  "x-rcp-maturity": "hardened",
+  "description": "Hardened pastry profile (SR-PROF-002; DECISIONS #18). Additive alongside core (SSP-002). to_consistency quantities, the four temperature shapes and rest/lamination structures are core $defs the pastry domain exercises; this profile tightens the pastry profile block and carries the pastry bounds as data (DS-VAL-003 adjusted).",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "object",
+      "properties": {
+        "laminated": { "type": "boolean" },
+        "serve_within": {
+          "type": "object",
+          "required": ["value", "unit"],
+          "properties": {
+            "value": { "type": "number", "exclusiveMinimum": 0 },
+            "unit": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "make_ahead": {
+          "type": "object",
+          "properties": {
+            "component": { "type": "string" },
+            "max_lead_time": { "type": "string" },
+            "storage_method": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "description": "Hardened: the pastry profile block admits exactly these fields (research 04: make-ahead/serve-within are first-class)."
+    }
+  },
+  "x-rcp-bounds": {
+    "custard_temperature_c": {
+      "min": 80,
+      "max": 84,
+      "severity": "warn",
+      "reason": {
+        "pt": "Creme inglês/custard coagula mal fora de 80–84 °C (nappe a 82–84 °C; talha acima).",
+        "en": "Custard sets wrong outside 80–84 °C (nappe at 82–84 °C; curdles above). Research 04."
+      }
+    },
+    "lamination_max_temperature_c": {
+      "max": 18,
+      "severity": "warn",
+      "reason": {
+        "pt": "Acima de 18 °C a manteiga funde durante a laminagem e as camadas perdem-se.",
+        "en": "Above 18 °C butter melts during lamination and layers are lost. Research 04."
+      }
+    }
+  }
+}

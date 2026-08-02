@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/bread.schema.json",
+  "title": "RCP Bread Profile",
+  "x-rcp-maturity": "hardened",
+  "description": "Hardened bread profile (SR-PROF-001; DECISIONS #18). Evaluated ALONGSIDE core (validation = core AND profile[kind], DS-VAL-001): additive — tightens, never removes or redefines core fields (SSP-002). Numeric bounds live ONLY in x-rcp-bounds below (DS-VAL-003 adjusted): the CUE layer reads them; restating a number elsewhere is a defect.",
+  "type": "object",
+  "required": ["bases"],
+  "properties": {
+    "bases": {
+      "type": "object",
+      "required": ["flour"],
+      "description": "Bread scales on baker's percentage: a `flour` basis is mandatory (research 03: total flour = 100%, summed across the component tree via include_components)."
+    },
+    "profile": {
+      "type": "object",
+      "description": "Bread-specific profile fields (DDT, preferment conventions) arrive with the Recipe Calculus (FEAT-CALC-001); the block stays open in v0.1."
+    }
+  },
+  "x-rcp-bounds": {
+    "salt_ratio": {
+      "of": "flour",
+      "min": 0.008,
+      "max": 0.025,
+      "severity": "warn",
+      "reason": {
+        "pt": "Fora de 0,8%–2,5% de sal sobre a farinha, o pão está provavelmente mal formulado (típico: 1,8%–2,2%).",
+        "en": "Outside 0.8%–2.5% salt on flour the formula is probably wrong (typical: 1.8%–2.2%). Research 03."
+      }
+    },
+    "hydration_ratio": {
+      "of": "flour",
+      "min": 0.45,
+      "max": 1.1,
+      "severity": "warn",
+      "reason": {
+        "pt": "Hidratação fora de 45%–110% da farinha está fora de qualquer estilo de pão conhecido.",
+        "en": "Hydration outside 45%–110% of flour is outside any known bread style. Research 03."
+      }
+    }
+  }
+}
