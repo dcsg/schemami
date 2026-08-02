@@ -1,0 +1,161 @@
+# Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+# edikt:artifact type=fixtures spec=SPEC-002 status=draft reviewed_by=qa
+# created_at=2026-08-02T23:06:15Z
+# Transform at implementation time into files under tools/rcplint/testdata/
+# and tools/viewer/conformance/. All records are status: aspirational until
+# the behaviour ships and they are verified against running code (the
+# SPEC-001 convention). target_phase names the CMP that builds them.
+
+scenarios:
+  - name: "addition-regression"
+    purpose: "SP-001 standing gate — everything valid at rcp-v0.1 stays valid at every v0.2 commit"
+    entities:
+      - entity: corpus
+        records:
+          - path: "examples/*.rcp.yaml + tools/rcplint/testdata/** + private/collection/*.rcp.yaml"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "CMP-PR-003"
+            target_contract: "green unchanged after every schema edit (AC-PR-003-1, SAC-PR-001)"
+            _note: "not new files — the frozen corpus IS the fixture"
+
+  - name: "l1-field-additions"
+    purpose: "unit fixtures for the four new field groups, one failing reason each"
+    location: tools/rcplint/testdata/l1/
+    entities:
+      - entity: file
+        records:
+          - path: times-storage-source-ok.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PR-003"
+            target_contract: "doc with times (active+total+prep windows), taxonomy.difficulty: 3, storage entries, provenance work/page validates (AC-PR-003-3 shape)"
+          - path: difficulty-out-of-range.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PR-003"
+            target_contract: "difficulty: 0 and difficulty: 6 both rejected by L1 (DS-PR-006 bounds)"
+          - path: times-unknown-key.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PR-003"
+            target_contract: "times.baking rejected — additionalProperties: false holds (DS-PR-005)"
+          - path: storage-bad-where.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PR-003"
+            target_contract: "storage[].where: pantry rejected — closed enum (DS-PR-007)"
+          - path: pastry-storage-ok.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PR-003"
+            target_contract: "pastry doc with storage passes the hardened pastry profile (AC-PR-003-3)"
+
+  - name: "dish-profile"
+    purpose: "the created-at-hardened dish profile against its two real documents"
+    entities:
+      - entity: file
+        records:
+          - path: "private/collection/ chili + feijoada (gitignored, referenced not copied)"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "CMP-PROF-004"
+            target_contract: "both validate core AND dish, maturity hardened (AC-PROF-004-1)"
+            _note: "private docs never enter testdata/ — the check runs against the collection locally; a synthetic minimal dish doc lands in testdata for CI"
+          - path: tools/rcplint/testdata/l1/dish-minimal-ok.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PROF-004"
+            target_contract: "synthetic dish doc (CI-safe, no book content) passes core AND dish"
+          - path: tools/rcplint/testdata/l2/dish-out-of-bounds.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-PROF-004"
+            target_contract: "bound violation surfaces as WARN, never error, and the n=2 rationale text is present in the message (AC-PROF-004-2)"
+
+  - name: "technique-registry"
+    purpose: "fourth kind: entry validation, reference resolution, vocab retirement"
+    entities:
+      - entity: file
+        records:
+          - path: "registry/entries/technique/*.yaml (seed: stir, none, bulhao-pato, refogado, flambe at minimum)"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "CMP-REG-004"
+            target_contract: "all entries pass entry-schema validation under the technique. namespace (AC-REG-003-1)"
+          - path: tools/rcplint/testdata/l2/unknown-technique.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-VAL-003"
+            target_contract: "execution_modes[].technique: technique.does.not.exist rejected naming the entry (AC-REG-003-2)"
+          - path: "registry/vocab/techniques.yaml — DELETED"
+            status: aspirational
+            verified_by: "sh -c 'test ! -f registry/vocab/techniques.yaml'"
+            target_phase: "CMP-REG-004"
+            target_contract: "interim vocab gone after migration (SAC-REG-002)"
+
+  - name: "grounding-audit"
+    purpose: "every ingredient entry grounded or explicitly no-match; ledger groups by proposal"
+    entities:
+      - entity: file
+        records:
+          - path: tools/rcplint/testdata/registry/ungrounded-entry.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-VAL-003"
+            target_contract: "entry with neither cross_refs nor grounding: no-match fails the audit, named (AC-REG-004-1)"
+          - path: tools/rcplint/testdata/registry/no-match-entry.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-VAL-003"
+            target_contract: "grounding: no-match + note passes the audit — the escape valve is first-class"
+          - path: "gap-ledger grouping case: raws cebola + onion, both unresolved"
+            status: aspirational
+            verified_by: "python3 tools/rcplint/scripts/gap-ledger.py (test mode)"
+            target_phase: "CMP-REG-005"
+            target_contract: "both group under one proposed canonical class (AC-REG-004-2)"
+
+  - name: "i18n-coverage"
+    purpose: "English-base slugs enforced; pt-PT display coverage mechanically checked"
+    entities:
+      - entity: file
+        records:
+          - path: i18n/pt-PT.yaml
+            status: aspirational
+            verified_by: "make accept (coverage step)"
+            target_phase: "CMP-I18N-001"
+            target_contract: "every taxonomy slug used across examples + collection has a pt-PT term (AC-I18N-001-1)"
+          - path: tools/rcplint/testdata/l2/accented-taxonomy-slug.rcp.yaml
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-VAL-003"
+            target_contract: "taxonomy slug with accented characters rejected by the English-base L2 check (AC-I18N-001-1 enforcement half)"
+
+  - name: "conformance-vectors"
+    purpose: "SSP-004/SAC-TOOL-002 — the JS engine and rcplint agree on every verdict; the protocol's first cross-stack conformance suite"
+    location: tools/viewer/conformance/
+    entities:
+      - entity: vector-set
+        records:
+          - path: "vectors generated FROM the corpus: examples/*.rcp.yaml + tools/rcplint/testdata/l1/** (positives AND negatives)"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-TOOL-001"
+            target_contract: "for every vector: JsEngine.analyze() verdict set equals rcplint's L1 verdict set (SAC-TOOL-002); CI red on any disagreement"
+            _note: "vectors are (input document, expected verdicts) pairs exported by rcplint — rcplint is the oracle that WRITES them, bun test replays them; private/collection never enters vectors"
+          - path: "engine interface contract tests"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-TOOL-001"
+            target_contract: "analyze() shape, capabilities object, parse-failure path (canonical: null) pinned for the future WASM implementer (DS-TOOL-001)"
+
+  - name: "prose-parking-sweep"
+    purpose: "the north metric — re-encoded private recipes carry no parked metadata"
+    entities:
+      - entity: check
+        records:
+          - path: "private/collection/*.rcp.yaml descriptions (local check, gitignored data)"
+            status: aspirational
+            verified_by: "manual review by Daniel at acceptance + a grep heuristic in make accept for time/difficulty/storage keywords in description fields"
+            target_phase: "CMP-PR-003"
+            target_contract: "zero instances of times, difficulty, storage, or source detail in prose (AC-PR-003-2)"

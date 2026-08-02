@@ -1,0 +1,146 @@
+%% Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+%% edikt:artifact type=domain-model spec=SPEC-002 status=draft reviewed_by=architect
+%% created_at=2026-08-02T23:06:15Z
+%% v0.2 DELTA view — shows only what SPEC-002 adds or changes. The full v0.1
+%% document model lives in SPEC-001's model.mmd; unchanged classes appear here
+%% collapsed, as anchors. Source of truth for shapes: schema/rcp-core-v1.schema.json.
+classDiagram
+    %% ── Core document additions (SR-PR-003) ──────────────────────────────
+    class Recipe {
+        <<aggregate root>>
+        +Times times  «new, optional»
+        +StorageEntry[] storage  «new, optional»
+        +Taxonomy taxonomy  «gains difficulty»
+        +Provenance provenance  «sources gain work/page»
+    }
+
+    class Times {
+        <<value object>>
+        +Duration active  «hands-on — research 04:79-80»
+        +Duration total
+        +Duration prep
+        +Duration cook
+        +Duration chill
+        +Duration rest
+    }
+    %% All keys optional; each is the EXISTING $defs/duration window
+    %% (min/target/max over isoDuration). additionalProperties: false.
+
+    class StorageEntry {
+        <<value object>>
+        +Where where  «room | refrigerator | freezer, required»
+        +Text container
+        +Duration duration
+        +Text note
+    }
+
+    class Taxonomy {
+        <<value object>>
+        +Slug category
+        +Slug[] subcategory
+        +int difficulty  «new: 1..5, OQ-3 resolution»
+    }
+
+    class SourceRef {
+        <<value object>>
+        +Text label  «required, unchanged»
+        +URI url
+        +SourceType type
+        +Text work  «new: publication/book title»
+        +Text page  «new: string — admits 123, 123-125, xii»
+    }
+
+    Recipe *-- Times : "times"
+    Recipe *-- StorageEntry : "storage 0..*"
+    Recipe *-- Taxonomy : "taxonomy"
+    Recipe *-- SourceRef : "provenance.sources 0..*"
+
+    %% ── Dish profile (SR-PROF-004) — created, not modified ───────────────
+    class DishProfile {
+        <<profile schema>>
+        +maturity hardened  «created directly at hardened»
+        +fields typed from chili + feijoada only
+        +bounds() warn severity ONLY, n=2 rationale authored in
+    }
+    Recipe ..> DishProfile : "validate: core AND profile[dish]"
+
+    %% ── Registry bounded context (SR-REG-004, SR-REG-005) ────────────────
+    class TechniqueEntry {
+        <<registry entry — fourth kind, DECISIONS #25»>>
+        +Slug id  «technique. prefix, ontology path per rule 6»
+        +DisplayName display_name  «en required»
+        +Text definition
+        +Slug primitive  «optional association to step primitive»
+        +Link[] teaches
+        +Media[] media
+    }
+
+    class IngredientEntry {
+        <<registry entry — gains grounding»>>
+        +CrossRef[] cross_refs  «new»
+        +Grounding grounding  «new: no-match + note when no cross_ref»
+    }
+
+    class CrossRef {
+        <<value object>>
+        +System system  «foodon | fdc | off»
+        +Text ref
+        +URI url
+    }
+    IngredientEntry *-- CrossRef : "cross_refs 0..*"
+    %% Audit invariant: cross_refs non-empty XOR grounding: no-match — never neither.
+
+    Recipe ..> TechniqueEntry : "execution_modes[].technique resolves"
+    Recipe ..> IngredientEntry : "ingredients[].item resolves (unchanged)"
+
+    class GapLedger {
+        <<tooling — gap-ledger.py»>>
+        +group_by proposed_canonical_class  «cebola + onion → one candidate»
+    }
+    GapLedger ..> IngredientEntry : "proposes mints"
+
+    %% ── i18n layer (SR-I18N-001) ─────────────────────────────────────────
+    class I18nVocabulary {
+        <<data — i18n/pt-PT.yaml»>>
+        +Map~Slug,Text~ terms  «English-base slug → pt-PT display»
+        +coverage() every taxonomy slug used in examples + collection
+    }
+    Taxonomy ..> I18nVocabulary : "display lookup (ids never localized)"
+
+    %% ── Viewer engine seam (SR-TOOL-001, ADR-002) ────────────────────────
+    class RcpEngine {
+        <<interface — versioned, the forward-compat artifact»>>
+        +Capabilities capabilities  «l1, l2?, cue?, clamp?»
+        +analyze(text) AnalysisResult
+        +scale(canonical, factor) ClampResult  «optional, reserved»
+    }
+
+    class AnalysisResult {
+        <<value object>>
+        +ParseResult parse  «ok + errors»
+        +Diagnostic[] verdicts  «layer-tagged: l1 | l2 | cue»
+        +JSON canonical  «null on parse failure»
+    }
+
+    class JsEngine {
+        <<v0.2 — Bun-toolchained, ≤2 exact-pinned deps»>>
+        +yaml parse  «YAML 1.2 lib»
+        +jsonschema validate  «2020-12 validator, plan-time pick»
+    }
+
+    class WasmEngine {
+        <<later — full playground, NOT in v0.2»>>
+        +Go core compiled GOOS=js GOARCH=wasm
+        +adds l2 + cue + clamp capabilities
+    }
+
+    class ViewerUI {
+        <<vanilla DOM — zero deps, zero validation logic»>>
+        +render(AnalysisResult)
+        +lights up features from capabilities
+    }
+
+    RcpEngine <|.. JsEngine : "implements (v0.2)"
+    RcpEngine <|.. WasmEngine : "implements (later, same seam)"
+    ViewerUI --> RcpEngine : "depends ONLY on interface"
+    JsEngine ..> Recipe : "verdict agreement with rcplint via conformance vectors (SAC-TOOL-002)"
