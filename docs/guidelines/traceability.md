@@ -52,7 +52,7 @@ sidecars.
   status: proposed
 
 # SPEC item referencing it
-- id: SI-VAL-002-1
+- id: SR-VAL-002 (spec requirement; SACs for spec-added criteria)
   implements: [FR-VAL-002, AC-VAL-002-1, AC-VAL-002-3]
   ...
 ```

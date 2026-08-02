@@ -249,7 +249,7 @@ open_questions:
   - "OQ-2: Harness implementation language — a SPEC (how) decision, to be recorded as an ADR when made. The protocol-level whats are already fixed and must not be re-litigated by the harness choice: JSON Schema 2020-12 dialect and CUE-flavoured declarative constraints (DECISIONS #8). Decision inputs gathered 2026-08-02 (interview): (a) no backend exists or is planned in the ecosystem, so there is no admission point to align with — the DDD review's F5 shared-kernel warning is moot for now and the harness is a CI/local tool; (b) Daniel writes none of the code — implementation is agent-authored and Daniel-reviewed, so the criterion is 'best and most efficient for the job', delegated to the SPEC author; (c) the CUE integration shape (CLI step vs embed vs re-express) is decided in the same SPEC section as the language, since option 'embed' forces Go by itself; (d) Daniel's preference: Node.js/TypeScript is not banned, but choosing it requires very strong, explicitly argued reasons — the SPEC's comparative research carries the burden of proof for Node; absent that proof, prefer alternatives."
 
 # SPECs written against this PRD — maintained by /edikt:sdlc:spec
-source_specs: []
+source_specs: [SPEC-001]
 
 # Supersede chain
 supersedes: null
@@ -296,6 +296,11 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "PRD accepted by Daniel ('go ahead'). Top-level status draft→accepted; all 10 FRs and 20 ACs proposed→accepted. IDs are now frozen per the traceability guideline — corrections happen by deprecate-and-add."
+  - at: "2026-08-02T17:30:16Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Back-reference added: source_specs += SPEC-001"
+    affected: ["SPEC-001"]
 
 # User extensions — LLM never writes here; commands never touch
 extensions: {}
@@ -303,5 +308,5 @@ extensions: {}
 # Sync block — SHA-256 of .md and .yaml at last sync
 _sync:
   md_hash: "3d62b96c150323e3b1462ef0e788578b4c736bb1ef459692fad8339f4dc8dc1b"
-  yaml_hash: "f754cb013a2366d711f8e474761a220a3280bc1077f91f091b10aabe9f6696fe"
-  synced_at: "2026-08-02T17:08:28Z"
+  yaml_hash: "83e035517775ac2e998916f7ed7bee8c73d11dad525e07243a6b4bf1ae775486"
+  synced_at: "2026-08-02T17:30:16Z"
