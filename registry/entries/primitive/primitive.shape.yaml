@@ -1,0 +1,10 @@
+id: primitive.shape
+v: 1
+display_name:
+  pt: Tender
+  en: Shape
+definition: Divide and shape dough into final form.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

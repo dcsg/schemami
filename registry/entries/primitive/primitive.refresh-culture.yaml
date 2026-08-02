@@ -1,0 +1,10 @@
+id: primitive.refresh-culture
+v: 1
+display_name:
+  pt: Refrescar cultura
+  en: Refresh culture
+definition: Feed a maintained culture at its ratio and let it peak.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

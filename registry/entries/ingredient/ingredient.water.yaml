@@ -1,0 +1,11 @@
+id: ingredient.water
+kind: ingredient-class
+display_name:
+  pt: Água
+  en: Water
+definition: Potable water; the universal hydration medium and cocktail dilution source.
+roles:
+- hydration
+- dilution
+density:
+  g_per_ml: 1.0

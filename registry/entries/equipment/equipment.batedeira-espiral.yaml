@@ -1,0 +1,12 @@
+id: equipment.batedeira-espiral
+kind: mixer
+display_name:
+  pt: Batedeira espiral
+  en: Spiral mixer
+definition: Spiral dough mixer; friction factor higher than hand mixing.
+parameters:
+  speeds: 2
+  friction_factor:
+    value: 11
+    unit: C
+    note: approx dough temperature rise vs hand

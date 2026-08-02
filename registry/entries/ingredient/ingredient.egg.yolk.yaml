@@ -1,0 +1,14 @@
+id: ingredient.egg.yolk
+kind: ingredient-class
+display_name:
+  pt: Gema de ovo
+  en: Egg yolk
+definition: Egg yolk; binder, emulsifier and colourant in custards.
+roles:
+- binder
+- emulsifier
+- colourant
+density:
+  g_per_ml: 1.03
+allergens:
+- eggs

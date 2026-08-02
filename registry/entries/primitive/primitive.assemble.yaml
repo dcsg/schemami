@@ -1,0 +1,10 @@
+id: primitive.assemble
+v: 1
+display_name:
+  pt: Montar
+  en: Assemble
+definition: Join produced components into the final piece.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

@@ -1,0 +1,13 @@
+id: ingredient.egg.whole
+kind: ingredient-class
+display_name:
+  pt: Ovo inteiro
+  en: Whole egg
+definition: Whole egg.
+roles:
+- binder
+- emulsifier
+density:
+  g_per_ml: 1.03
+allergens:
+- eggs

@@ -1,0 +1,8 @@
+id: ingredient.citrus.orange
+kind: ingredient-class
+display_name:
+  pt: Laranja
+  en: Orange
+definition: Fresh orange; expressed peel garnish.
+roles:
+- aromatic

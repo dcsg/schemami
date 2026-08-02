@@ -1,0 +1,10 @@
+id: ingredient.spirit.gin.london-dry
+kind: ingredient-class
+display_name:
+  pt: Gin London Dry
+  en: London dry gin
+definition: Juniper-forward dry gin, cocktail base spirit.
+roles:
+- spirit
+density:
+  g_per_ml: 0.94

@@ -31,8 +31,8 @@ phases:
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-02 |
-| 2     | in-progress | 1/5 | 2026-08-02 |
-| 3     | pending | 0/5 | - |
+| 2     | done | 1/5 | 2026-08-02 |
+| 3     | in-progress | 1/5 | 2026-08-02 |
 | 4     | pending | 0/5 | - |
 | 5     | pending | 0/5 | - |
 | 6     | pending | 0/5 | - |

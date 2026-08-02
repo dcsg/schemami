@@ -1,0 +1,12 @@
+id: ingredient.wine.vermouth.sweet
+kind: ingredient-class
+display_name:
+  pt: Vermute doce
+  en: Sweet vermouth
+definition: Sweet aromatised fortified wine.
+roles:
+- aromatised-wine
+density:
+  g_per_ml: 1.04
+allergens:
+- sulphites

@@ -1,0 +1,11 @@
+id: ingredient.fat.lard
+kind: ingredient-class
+display_name:
+  pt: Banha
+  en: Lard
+definition: Rendered pork fat; tenderises traditional doughs.
+roles:
+- fat
+- tenderiser
+density:
+  g_per_ml: 0.92

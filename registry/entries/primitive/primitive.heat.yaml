@@ -1,0 +1,10 @@
+id: primitive.heat
+v: 1
+display_name:
+  pt: Aquecer
+  en: Heat
+definition: Heat a liquid to target temperature.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

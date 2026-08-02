@@ -1,0 +1,10 @@
+id: equipment.mixing-glass
+kind: vessel
+display_name:
+  pt: Copo de mistura
+  en: Mixing glass
+definition: Cocktail mixing glass for stirred drinks.
+parameters:
+  capacity:
+    value: 500
+    unit: ml

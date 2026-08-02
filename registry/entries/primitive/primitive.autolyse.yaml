@@ -1,0 +1,10 @@
+id: primitive.autolyse
+v: 1
+display_name:
+  pt: Autólise
+  en: Autolyse
+definition: Rest flour and water before salt/leaven to develop gluten passively.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

@@ -1,0 +1,12 @@
+id: ingredient.dairy.milk.whole
+kind: ingredient-class
+display_name:
+  pt: Leite gordo
+  en: Whole milk
+definition: Whole dairy milk.
+roles:
+- hydration
+density:
+  g_per_ml: 1.03
+allergens:
+- milk

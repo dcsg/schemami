@@ -1,0 +1,10 @@
+id: primitive.coat
+v: 1
+display_name:
+  pt: Cobrir
+  en: Coat
+definition: Coat a surface with a prepared component.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

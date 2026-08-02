@@ -1,0 +1,8 @@
+id: ingredient.citrus.lemon.peel
+kind: ingredient-class
+display_name:
+  pt: Casca de limão
+  en: Lemon peel
+definition: Fresh lemon peel strip; infused aromatic.
+roles:
+- aromatic

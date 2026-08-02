@@ -1,0 +1,10 @@
+id: ingredient.spirit.mezcal
+kind: ingredient-class
+display_name:
+  pt: Mezcal
+  en: Mezcal
+definition: Agave spirit with smoke character; negroni variation base.
+roles:
+- spirit
+density:
+  g_per_ml: 0.94

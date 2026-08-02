@@ -1,0 +1,10 @@
+id: primitive.bake
+v: 1
+display_name:
+  pt: Cozer
+  en: Bake
+definition: Bake in an oven to the declared endpoint.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

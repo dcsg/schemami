@@ -1,0 +1,8 @@
+id: ingredient.acid.citric
+kind: ingredient-class
+display_name:
+  pt: Ácido cítrico
+  en: Citric acid
+definition: Food-grade citric acid; acidity compensation.
+roles:
+- acid

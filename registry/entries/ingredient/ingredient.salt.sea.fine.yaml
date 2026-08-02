@@ -1,0 +1,13 @@
+id: ingredient.salt.sea.fine
+kind: ingredient-class
+display_name:
+  pt: Sal marinho fino
+  en: Fine sea salt
+definition: Fine-grained sea salt for doughs and brines.
+roles:
+- salt
+- flavour
+- fermentation-control
+- preservative
+density:
+  g_per_ml: 1.2

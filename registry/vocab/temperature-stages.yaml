@@ -1,0 +1,8 @@
+vocabulary: temperature-stages
+note: Interim documented vocabulary. Named syrup stages carry their canonical ranges here, not in recipes.
+stages:
+- id: thread
+  range_c:
+  - 106
+  - 112
+  en: thread stage

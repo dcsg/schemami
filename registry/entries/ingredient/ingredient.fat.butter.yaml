@@ -1,0 +1,13 @@
+id: ingredient.fat.butter
+kind: ingredient-class
+display_name:
+  pt: Manteiga
+  en: Butter
+definition: Dairy butter; fat and lamination medium.
+roles:
+- fat
+- lamination
+density:
+  g_per_ml: 0.95
+allergens:
+- milk

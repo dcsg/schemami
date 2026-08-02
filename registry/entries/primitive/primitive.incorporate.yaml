@@ -1,0 +1,10 @@
+id: primitive.incorporate
+v: 1
+display_name:
+  pt: Incorporar
+  en: Incorporate
+definition: Work a late ingredient evenly into a developed dough.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

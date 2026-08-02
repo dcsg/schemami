@@ -1,0 +1,10 @@
+id: primitive.cool
+v: 1
+display_name:
+  pt: Arrefecer
+  en: Cool
+definition: Cool on a rack until the endpoint.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

@@ -1,0 +1,10 @@
+id: primitive.bulk-ferment
+v: 1
+display_name:
+  pt: Fermentação em bloco
+  en: Bulk ferment
+definition: First fermentation of the whole dough mass.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

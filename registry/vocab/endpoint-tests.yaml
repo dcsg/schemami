@@ -1,0 +1,12 @@
+vocabulary: endpoint-tests
+note: Interim documented vocabulary (see registry/entries/README.md). L2 validates membership.
+tests:
+- float
+- poke
+- tap
+- windowpane
+- touch
+- visual
+- smell
+- nappe
+- skewer

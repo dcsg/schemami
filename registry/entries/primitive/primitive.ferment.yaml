@@ -1,0 +1,10 @@
+id: primitive.ferment
+v: 1
+display_name:
+  pt: Fermentar
+  en: Ferment
+definition: Hold under controlled conditions until the declared endpoint.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

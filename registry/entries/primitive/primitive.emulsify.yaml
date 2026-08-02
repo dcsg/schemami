@@ -1,0 +1,10 @@
+id: primitive.emulsify
+v: 1
+display_name:
+  pt: Emulsionar
+  en: Emulsify
+definition: Combine fat and liquid phases into a stable emulsion.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

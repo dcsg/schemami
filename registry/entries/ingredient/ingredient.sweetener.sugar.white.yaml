@@ -1,0 +1,10 @@
+id: ingredient.sweetener.sugar.white
+kind: ingredient-class
+display_name:
+  pt: Açúcar branco
+  en: White sugar
+definition: Refined white sugar.
+roles:
+- sweetener
+density:
+  g_per_ml: 0.85

@@ -1,0 +1,10 @@
+id: primitive.cook-syrup
+v: 1
+display_name:
+  pt: Cozer calda
+  en: Cook syrup
+definition: Cook a sugar syrup to a named stage.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

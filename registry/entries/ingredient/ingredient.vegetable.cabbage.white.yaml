@@ -1,0 +1,8 @@
+id: ingredient.vegetable.cabbage.white
+kind: ingredient-class
+display_name:
+  pt: Couve branca
+  en: White cabbage
+definition: Fresh white cabbage; lacto-fermentation substrate.
+roles:
+- substrate

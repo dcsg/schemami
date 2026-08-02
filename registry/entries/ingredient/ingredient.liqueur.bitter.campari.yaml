@@ -1,0 +1,10 @@
+id: ingredient.liqueur.bitter.campari
+kind: ingredient-class
+display_name:
+  pt: Campari
+  en: Campari
+definition: Bitter red Italian liqueur.
+roles:
+- bitter
+density:
+  g_per_ml: 1.05

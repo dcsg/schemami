@@ -1,0 +1,12 @@
+id: ingredient.flour.wheat.t110
+kind: ingredient-class
+display_name:
+  pt: Farinha de trigo T110
+  en: Wheat flour T110
+definition: Semi-wholemeal wheat flour, ash type 110.
+roles:
+- flour
+density:
+  g_per_ml: 0.55
+allergens:
+- gluten

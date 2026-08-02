@@ -1,0 +1,9 @@
+id: ingredient.chocolate.dark.60
+kind: ingredient-class
+display_name:
+  pt: Chocolate negro 60%
+  en: Dark chocolate 60%
+definition: Dark couverture chocolate, 60% cocoa.
+roles:
+- fat
+- flavour

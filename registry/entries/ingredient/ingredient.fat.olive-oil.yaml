@@ -1,0 +1,11 @@
+id: ingredient.fat.olive-oil
+kind: ingredient-class
+display_name:
+  pt: Azeite
+  en: Olive oil
+definition: Olive oil; fat with distinct flavour, common lard substitute.
+roles:
+- fat
+- flavour
+density:
+  g_per_ml: 0.91

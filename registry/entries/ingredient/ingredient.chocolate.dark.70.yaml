@@ -1,0 +1,9 @@
+id: ingredient.chocolate.dark.70
+kind: ingredient-class
+display_name:
+  pt: Chocolate negro 70%
+  en: Dark chocolate 70%
+definition: Dark couverture chocolate, 70% cocoa; balance-forcing substitute for 60%.
+roles:
+- fat
+- flavour

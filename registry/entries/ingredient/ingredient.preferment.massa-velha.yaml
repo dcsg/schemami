@@ -1,0 +1,12 @@
+id: ingredient.preferment.massa-velha
+kind: ingredient-class
+display_name:
+  pt: Massa velha
+  en: Old dough
+definition: Carried-over fermented dough from the previous batch (massa velha ≠ isco — distinct ferments).
+roles:
+- leaven
+- acid
+- flavour
+allergens:
+- gluten

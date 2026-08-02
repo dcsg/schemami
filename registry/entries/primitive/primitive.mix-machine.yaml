@@ -1,0 +1,16 @@
+id: primitive.mix-machine
+v: 1
+display_name:
+  pt: Misturar à máquina
+  en: Machine mix
+definition: Mix in a stand/spiral mixer; speeds per ParamSpec.
+param_spec:
+  type: object
+  properties:
+    speed:
+      type: integer
+      minimum: 1
+    then_speed:
+      type: integer
+      minimum: 1
+  additionalProperties: false

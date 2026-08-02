@@ -1,0 +1,10 @@
+id: ingredient.liqueur.bitter.non-alcoholic
+kind: ingredient-class
+display_name:
+  pt: Bitter sem álcool
+  en: Non-alcoholic bitter
+definition: Non-alcoholic bitter apéritif; compensation-forcing Campari substitute.
+roles:
+- bitter
+density:
+  g_per_ml: 1.05

@@ -1,0 +1,10 @@
+id: primitive.burp
+v: 1
+display_name:
+  pt: Libertar gás
+  en: Burp
+definition: Briefly open a fermentation vessel to release CO2 (trigger action).
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

@@ -1,0 +1,10 @@
+id: primitive.combine
+v: 1
+display_name:
+  pt: Juntar
+  en: Combine
+definition: Bring measured liquids together in a vessel.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

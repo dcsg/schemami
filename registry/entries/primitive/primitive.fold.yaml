@@ -1,0 +1,10 @@
+id: primitive.fold
+v: 1
+display_name:
+  pt: Envolver
+  en: Fold
+definition: Fold gently to preserve structure.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

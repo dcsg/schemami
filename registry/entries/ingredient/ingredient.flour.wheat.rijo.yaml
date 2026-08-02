@@ -1,0 +1,12 @@
+id: ingredient.flour.wheat.rijo
+kind: ingredient-class
+display_name:
+  pt: Farinha de trigo rijo
+  en: Hard wheat flour
+definition: High-protein hard wheat flour (durum-adjacent) used in Alentejo breads.
+roles:
+- flour
+density:
+  g_per_ml: 0.58
+allergens:
+- gluten

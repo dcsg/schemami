@@ -1,0 +1,12 @@
+id: primitive.laminate
+v: 1
+display_name:
+  pt: Laminar
+  en: Laminate
+definition: Fold fat into dough in layers; geometry per ParamSpec.
+param_spec:
+  type: object
+  properties:
+    geometry:
+      type: string
+  additionalProperties: false

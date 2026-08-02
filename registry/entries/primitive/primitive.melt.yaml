@@ -1,0 +1,10 @@
+id: primitive.melt
+v: 1
+display_name:
+  pt: Derreter
+  en: Melt
+definition: Melt gently without scorching.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

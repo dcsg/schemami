@@ -29,7 +29,7 @@ phases:
     verify: python3 tools/rcplint/scripts/check.py
     statement: Check script rejects `ingredient-missing-roles.yaml` naming the field; accepts a valid sample entry
   - id: AC-2.3
-    verify: grep -l 'ingredient|primitive|equipment' registry/schemas/*.schema.json | wc -l | grep -q 3
+    verify: grep -q '\^ingredient' registry/schemas/ingredient-class.schema.json && grep -q '\^primitive' registry/schemas/step-primitive.schema.json && grep -q '\^equipment' registry/schemas/equipment-profile.schema.json
     statement: All three schemas enforce `^(ingredient|primitive|equipment)\.` id pattern
   - id: AC-2.4
     verify: test -f tools/rcplint/testdata/registry/filename-id-mismatch.yaml

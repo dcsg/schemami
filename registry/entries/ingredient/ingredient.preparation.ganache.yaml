@@ -1,0 +1,12 @@
+id: ingredient.preparation.ganache
+kind: ingredient-class
+display_name:
+  pt: Ganache
+  en: Ganache
+definition: Chocolate-cream emulsion produced as a component; consumed as a coating.
+roles:
+- coating
+- fat
+- flavour
+allergens:
+- milk

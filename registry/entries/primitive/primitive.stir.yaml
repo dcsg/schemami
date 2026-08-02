@@ -1,0 +1,10 @@
+id: primitive.stir
+v: 1
+display_name:
+  pt: Mexer
+  en: Stir
+definition: Stir with ice to chill and dilute.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

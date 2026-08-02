@@ -1,0 +1,10 @@
+id: primitive.salt-and-massage
+v: 1
+display_name:
+  pt: Salgar e massajar
+  en: Salt and massage
+definition: Salt shredded vegetable and massage until brine releases.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false

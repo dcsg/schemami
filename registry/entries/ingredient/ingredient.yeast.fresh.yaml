@@ -1,0 +1,8 @@
+id: ingredient.yeast.fresh
+kind: ingredient-class
+display_name:
+  pt: Fermento fresco
+  en: Fresh yeast
+definition: Compressed fresh baker's yeast.
+roles:
+- leaven

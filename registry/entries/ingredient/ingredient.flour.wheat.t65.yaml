@@ -1,0 +1,12 @@
+id: ingredient.flour.wheat.t65
+kind: ingredient-class
+display_name:
+  pt: Farinha de trigo T65
+  en: Wheat flour T65
+definition: Portuguese-classified wheat flour, ash type 65 — the standard bread flour.
+roles:
+- flour
+density:
+  g_per_ml: 0.55
+allergens:
+- gluten

@@ -1,0 +1,8 @@
+id: ingredient.tannin.hibiscus
+kind: ingredient-class
+display_name:
+  pt: Hibisco
+  en: Hibiscus
+definition: Dried hibiscus; tannin and colour addition.
+roles:
+- tannin

@@ -65,6 +65,56 @@ def registry_checks(failures):
                 failures.append(f"entry {path.name}: {errs[0].json_path}: {errs[0].message[:100]}")
         print(f"registry entries validated: {n}")
 
+
+def census_crosscheck(failures):
+    """AC-3.3: bidirectional example-refs <-> registry entries (pre-migration:
+    bare slugs map to kind-prefixed ids). Both directions must be empty-diff."""
+    import re
+    refs = {"ingredient": set(), "primitive": set(), "equipment": set()}
+    for path in EXAMPLES:
+        for doc in load_docs(path):
+            def walk(o):
+                if isinstance(o, dict):
+                    if isinstance(o.get("item"), str): refs["ingredient"].add(o["item"])
+                    prim = o.get("primitive")
+                    if isinstance(prim, dict) and "id" in prim: refs["primitive"].add(prim["id"])
+                    eq = o.get("equipment")
+                    if isinstance(eq, list): [refs["equipment"].add(x) for x in eq if isinstance(x, str)]
+                    trg = o.get("action")
+                    if isinstance(trg, str): refs["primitive"].add(trg)
+                    g = o.get("garnish")
+                    if isinstance(g, dict) and isinstance(g.get("item"), str): refs["ingredient"].add(g["item"])
+                    for k in ("with", "replaces"):
+                        pass  # substitution targets are ingredient ids or classes; classes covered via `with`
+                    w = o.get("with")
+                    if isinstance(w, str) and "." in w: refs["ingredient"].add(w)
+                    ra = o.get("requires_additions")
+                    if isinstance(ra, list):
+                        for x in ra:
+                            if isinstance(x, dict) and isinstance(x.get("item"), str): refs["ingredient"].add(x["item"])
+                    ov = o.get("overrides")
+                    if isinstance(ov, list):
+                        for x in ov:
+                            if isinstance(x, dict) and isinstance(x.get("with"), str) and "." in x["with"]:
+                                refs["ingredient"].add(x["with"])
+                    for vv in o.values(): walk(vv)
+                elif isinstance(o, list):
+                    for vv in o: walk(vv)
+            walk(doc)
+    entries = {k: {f.stem for f in (REG_ENTRIES / k).glob("*.yaml")} for k in refs}
+    def expected(kind, slug):
+        return slug if slug.startswith(kind + ".") else f"{kind}.{slug}"
+    for kind, slugs in refs.items():
+        for s in sorted(slugs):
+            if expected(kind, s) not in entries[kind]:
+                failures.append(f"census: {kind} ref '{s}' has no entry {expected(kind, s)}")
+    referenced = {kind: {expected(kind, s) for s in slugs} for kind, slugs in refs.items()}
+    for kind, ids in entries.items():
+        for eid in sorted(ids - referenced[kind]):
+            failures.append(f"census: entry {eid} referenced by no example")
+    total = sum(len(v) for v in refs.values())
+    print(f"census cross-check: {total} distinct refs, both directions clean" if not any(f.startswith("census") for f in failures) else f"census cross-check: mismatches found")
+
 def main():
     failures = []
     schema = json.loads(SCHEMA.read_text())
@@ -84,6 +134,7 @@ def main():
     print(f"examples validated: {n} documents")
 
     registry_checks(failures)
+    census_crosscheck(failures)
 
     for path in L1_NEG:
         for doc in load_docs(path):

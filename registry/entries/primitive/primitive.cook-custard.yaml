@@ -1,0 +1,10 @@
+id: primitive.cook-custard
+v: 1
+display_name:
+  pt: Cozer creme
+  en: Cook custard
+definition: Cook a custard to temperature and nappe.
+param_spec:
+  type: object
+  properties: {}
+  additionalProperties: false
