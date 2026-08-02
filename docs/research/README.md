@@ -16,7 +16,7 @@ repo. `schema/` and `examples/` referenced below live at the repo root.
 | **`FINDINGS.md`** | **Start here.** What the research found, what's easy / hard / not possible, and the decisions that are still open for brainstorm. |
 | `00-PROPOSAL-rcp-v1.md` | A **strawman** assembled from the findings — one candidate protocol shape to react to, not a decision. |
 | `examples/alentejano.rcp.yaml` | Pão Alentejano encoded in RCP, from the repo's real data — zero information loss, plus what the current struct cannot hold. |
-| `examples/other-categories.rcp.yaml` | A cocktail, a sauerkraut, and pastéis de nata — proving profiles and cross-category composition. |
+| `examples/other-categories.rcp.yaml` | Five recipes in one multi-document file — a cocktail, a sauerkraut, pastéis de nata, and a ganache + the brownie that references it — proving profiles, cross-category composition and referenced components. |
 
 ## Research tracks
 
@@ -28,7 +28,7 @@ repo. `schema/` and `examples/` referenced below live at the repo root.
 | `04-pastry-savoury-domain.md` | Pastry chef + chef | Quantity cannot be a number (`to_consistency`). An entremet is a DAG. Temperature has at least four shapes. |
 | `05-drinks-domain.md` | Barista + bartender + brewer | Dilution is a phantom ingredient. Ratio-first recipes have no absolute quantities. Four incompatible timeline shapes. |
 | `06-substitution-model.md` | Substitution + method deltas | 15 of 18 sourced substitutions require a method/parameter delta. Chosen design: typed op list anchored to step slugs, role vectors, fail-closed guards. |
-| `schema/rcp-core-v1.schema.json` | Executable core schema | JSON Schema 2020-12. All four example recipes validate against it (ajv). |
+| `schema/rcp-core-v1.schema.json` | Executable core schema | JSON Schema 2020-12. All six example recipes validate against it (ajv). |
 
 ## The five findings that shaped the design
 
