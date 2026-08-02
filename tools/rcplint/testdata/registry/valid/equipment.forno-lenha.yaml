@@ -1,6 +1,5 @@
 id: equipment.forno-lenha
 kind: oven
-kind: equipment-profile
 display_name: { pt: Forno a lenha, en: Wood-fired oven }
 definition: Traditional wood-fired masonry oven with falling heat and high thermal mass.
 parameters: { max_temperature: { value: 350, unit: C }, thermal_mass: high, steam: native, heat: falling }

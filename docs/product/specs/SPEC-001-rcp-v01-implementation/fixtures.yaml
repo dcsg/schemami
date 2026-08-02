@@ -103,13 +103,17 @@ scenarios:
         records:
           - path: constraint-no-bounds.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestL1FixturesRejected"
+            verified_at: "2026-08-02T19:03:59Z"
             target_phase: "CMP-PR-002"
             target_contract: "schema validation rejects constraint with severity+reason but zero bounds (AC-PR-002-1)"
             _note: "the schema gap found in the defect inventory"
           - path: ratio-without-of.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestL1FixturesRejected"
+            verified_at: "2026-08-02T19:03:59Z"
             target_phase: "CMP-PR-002"
             target_contract: "schema validation rejects min_ratio present without of"
             _note: "DS-PR-002 dependent-requirement check"
@@ -142,7 +146,9 @@ scenarios:
         records:
           - path: ingredient-missing-roles.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestRegistryFixtures"
+            verified_at: "2026-08-02T19:03:59Z"
             target_phase: "CMP-REG-001"
             target_contract: "entry validation rejects naming the missing field (AC-REG-001-1)"
             _note: "IngredientClass without functional roles — machine-read field absent"
