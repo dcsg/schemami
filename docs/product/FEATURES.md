@@ -89,6 +89,13 @@ resolver_version + content hashes pinned in published documents — resolver
 bugs become identifiable, not permanent. *editorial-verifier,
 surface-engineer · ICP-1*
 
+**FEAT-TOOL-001 — RCP playground (validate + render, jwt.io-style)** —
+paste a document, see validation verdicts, a rendered recipe, and a
+clamp-guarded scaling slider; candidate: rcplint compiled to WASM so the
+browser runs the exact CI validator (one implementation, zero drift, no
+server). Proposed by Daniel 2026-08-02; graduates via its own PRD.
+*surface-engineer, personal-collector, home-cook · both ICPs*
+
 ## Deferred — post-v1
 
 **FEAT-PROF-006 — Preserve, drink, coffee hardened** (#18) — sequenced by

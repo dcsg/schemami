@@ -5,7 +5,9 @@
 # new areas are added to this header before use:
 #   CORE protocol core schema · REG registry · PROF profiles ·
 #   VAL validation · SAFE safety machinery · CALC recipe calculus ·
-#   SUB substitution · PUB publishing/resolution · APP app-side (external)
+#   SUB substitution · PUB publishing/resolution · TOOL developer-facing
+#   protocol tooling (playground/viewer — informative surface, SSP-001) ·
+#   APP app-side (external)
 #
 # Fields:
 #   status: shipping (in an accepted PRD) | deferred (target names the
@@ -260,6 +262,28 @@ features:
     status: deferred
     target: v1
     trace: ["DECISIONS #21", "engineering obligation #3"]
+    graduates_to: null
+
+  - id: FEAT-TOOL-001
+    name: "RCP playground — paste/drop a recipe, validate and render it (the jwt.io move)"
+    description: >-
+      A static website where anyone pastes or drops an .rcp.yaml/JSON
+      document and instantly sees: L1+L2 validation verdicts with the same
+      file+pointer errors the harness gives, the recipe rendered
+      human-readable (ingredients with resolved bases, the step DAG,
+      per-component profiles and maturity labels), and a live scaling
+      slider guarded by the fail-closed clamp — drag past the 2% brine
+      floor and watch the authored refusal appear. Candidate architecture:
+      compile rcplint to WASM so the browser runs the exact same validator
+      and clamp as CI — one implementation, zero drift, no server, no data
+      leaves the page. Sits on the informative surface (SSP-001): the
+      protocol never depends on it; it exists to make the protocol legible
+      to integrators in thirty seconds.
+    personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector, rcp.cook.home-cook]
+    icp: both
+    status: deferred
+    target: post-v0.1 (proposed by Daniel 2026-08-02; graduates via its own PRD)
+    trace: ["DECISIONS #19", "DECISIONS #21", "PRD-001 integrator guarantee"]
     graduates_to: null
 
   # ── Deferred: post-v1 ─────────────────────────────────────────────────
