@@ -424,12 +424,16 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "Addressable how-layer added per Daniel's rule (context needs no ids; anything implemented does): design block with 14 DS statements and 11 CMP components, each serves: linked to SRs; narrative mirrors the ids; guideline updated and recompiled."
+  - at: "2026-08-02T17:50:06Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Non-goals now reference feature-ledger ids (FEAT-*); no requirement/design changes."
 
 # User extensions — LLM never writes here; commands never touch.
 extensions: {}
 
 # Sync block.
 _sync:
-  md_hash: "2d45beb94d814340dede6e13b04906bde3034f1f2a03725e16cd8b582809dbca"
-  yaml_hash: "674a99aadbdb9780d8e3c7bb14ce2dc7e49750dbb548c6e778f4f171fee120b5"
-  synced_at: "2026-08-02T17:39:37Z"
+  md_hash: "0ccfefe0ead3dbaa3f7bc7be3d6fb8f8fd8be4093130b26a8aab60609c816755"
+  yaml_hash: "67e0751ac188e30ede0ab7cef4bd97ad43b3ae1088a648549c67f164321a61e7"
+  synced_at: "2026-08-02T17:50:06Z"

@@ -62,19 +62,29 @@ users can easily follow and understand the recipes."*
 
 ## Non-Goals
 
-- Hardening the five draft profiles (ferment, preserve, drink, coffee,
-  dish) — v1 hardens ferment + dish per DECISIONS #18.
-- The Recipe Calculus and cross-stack conformance vectors (v1 obligation,
-  DECISIONS #13) — the v0.1 clamp is explicitly throwaway.
-- The global substitution catalog content (v1, DECISIONS #17).
-- The ingestion pipeline itself — app-side, out of protocol scope
-  (DECISIONS #19/#21); v0.1 only makes its target format real.
-- SPEC prose — codified after v0.1 is exercised.
-- Users, favorites, packs, publishing infrastructure (DECISIONS #19).
+Deferred scope is tracked with stable ids in the
+[feature ledger](../FEATURES.md); nothing below is lost, only parked.
+
+- Hardening the five draft profiles — v1 hardens ferment + dish
+  (FEAT-PROF-004, FEAT-PROF-005; preserve/drink/coffee post-v1,
+  FEAT-PROF-006; DECISIONS #18).
+- The Recipe Calculus and cross-stack conformance vectors
+  (FEAT-CALC-001, v1; DECISIONS #13) — the v0.1 clamp is explicitly
+  throwaway.
+- The global substitution catalog content (FEAT-SUB-001, v1;
+  DECISIONS #17).
+- The ingestion pipeline itself — app-side (FEAT-APP-001; DECISIONS
+  #19/#21); v0.1 only makes its target format real.
+- SPEC prose — codified after v0.1 is exercised (process, not a feature).
+- Users, favorites, packs, publishing infrastructure (FEAT-APP-003,
+  FEAT-SUB-002; DECISIONS #19).
 
 ## Requirements
 
 <!-- Source of truth: the .yaml sidecar. Mirror for human readability. -->
+
+Every FR realizes a feature from the [feature ledger](../FEATURES.md)
+(first entry in its sidecar `trace:` list).
 
 | ID | Component | Requirement | Trace |
 |----|-----------|-------------|-------|

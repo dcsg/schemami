@@ -9,91 +9,116 @@ path: "docs/guidelines/traceability.md"
 
 signals:
   - "component-coded id"
-  - "trace field"
+  - "feat id"
   - "spec item"
-  - "plan phase"
-  - "sidecar metadata"
-  - "id chain"
-  - "decisions.md"
-  - "revision history"
-  - "drift checks"
   - "acceptance criteria"
+  - "plan phase"
+  - "sidecar"
+  - "id chain"
+  - "trace list"
+  - "features.yaml"
+  - "decisions.md entry"
 
-paths: []
+paths:
+  - "docs/product/**/*.yaml"
 scope: [implementation, review]
 
 directives:
-  - text: "Every PRD functional requirement MUST use a component-coded ID of the form `FR-<CODE>-NNN`, numbered per component from 001. (ref: traceability)"
+  - text: "Features are the top of the chain: every product feature MUST have a `FEAT-<AREA>-NNN` entry in `docs/product/features.yaml` (areas are defined in that file's header; a new area MUST be added there before use). (ref: guideline-traceability)"
     source_excerpt:
       line_start: 18
-      line_end: 19
-      quote: "Every PRD functional requirement MUST use a component-coded ID of the\nform `FR-<CODE>-NNN`, numbered per component from 001."
+      line_end: 21
+      quote: "Features are the top of the chain: every product feature MUST have a `FEAT-<AREA>-NNN` entry in `docs/product/features.yaml` (areas are defined in that file's header; a new area MUST be added there before use)."
 
-  - text: "New components MUST be added to this guideline (new code) before use — never invented ad hoc. (ref: traceability)"
+  - text: "Every PRD FR MUST trace to a FEAT id (first entry of its `trace:` list). (ref: guideline-traceability)"
     source_excerpt:
       line_start: 21
       line_end: 22
-      quote: "New components MUST be added\nto this guideline (new code) before use — never invented ad hoc."
+      quote: "Every PRD FR MUST trace to a FEAT id (first entry of its `trace:` list)."
 
-  - text: "Every PRD requirement MUST carry a `component:` field naming its component and a `trace:` list referencing at least one DECISIONS.md entry, research file, or recorded inventory that justifies it. (ref: traceability)"
+  - text: "Non-goals in any PRD or SPEC MUST reference the FEAT id they defer, or a DECISIONS entry when no feature exists yet. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 23
-      line_end: 25
-      quote: "Every PRD requirement MUST carry a `component:` field naming its\ncomponent and a `trace:` list referencing at least one DECISIONS.md\nentry, research file, or recorded inventory that justifies it."
+      line_start: 22
+      line_end: 23
+      quote: "Non-goals in any PRD or SPEC MUST reference the FEAT id they defer, or a DECISIONS entry when no feature exists yet."
 
-  - text: "Acceptance criteria MUST inherit their FR's code and number (`AC-<CODE>-NNN-M`), so the component is readable from any AC id. (ref: traceability)"
+  - text: "Deferred and external features MUST NOT carry implementation ids until they graduate into a PRD, recorded via `graduates_to:`. (ref: guideline-traceability)"
+    source_excerpt:
+      line_start: 24
+      line_end: 25
+      quote: "Deferred and external features carry NO implementation ids until they graduate into a PRD, recorded via `graduates_to:`."
+
+  - text: "Every PRD functional requirement MUST use a component-coded ID of the form `FR-<CODE>-NNN`, numbered per component from 001. (ref: guideline-traceability)"
     source_excerpt:
       line_start: 26
       line_end: 27
-      quote: "Acceptance criteria MUST inherit their FR's code and number\n(`AC-<CODE>-NNN-M`), so the component is readable from any AC id."
+      quote: "Every PRD functional requirement MUST use a component-coded ID of the form `FR-<CODE>-NNN`, numbered per component from 001."
 
-  - text: "Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC item implementing nothing traceable MUST NOT exist. (ref: traceability)"
+  - text: "New components MUST be added to this guideline (new code) before use — never invented ad hoc. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 28
-      line_end: 29
-      quote: "Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC\nitem implementing nothing traceable MUST NOT exist."
+      line_start: 29
+      line_end: 30
+      quote: "New components MUST be added to this guideline (new code) before use — never invented ad hoc."
 
-  - text: "Anything that must be implemented MUST carry an id: requirements as `SR-<CODE>-NNN`, design decisions as `DS-<CODE>-NNN`, buildable units as `CMP-<CODE>-NNN` (in the spec sidecar's `design:` block, each with a `serves:` list of SR ids), acceptance checks as `AC`/`SAC`. (ref: traceability)"
+  - text: "Every PRD requirement MUST carry a `component:` field naming its component and a `trace:` list referencing at least one DECISIONS.md entry, research file, or recorded inventory that justifies it. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 30
-      line_end: 34
-      quote: "**Anything that must be\nimplemented MUST carry an id**: requirements as `SR-<CODE>-NNN`, design\ndecisions as `DS-<CODE>-NNN`, buildable units as `CMP-<CODE>-NNN` (in the\nspec sidecar's `design:` block, each with a `serves:` list of SR ids),\nacceptance checks as `AC`/`SAC`."
+      line_start: 31
+      line_end: 33
+      quote: "Every PRD requirement MUST carry a `component:` field naming its component and a `trace:` list referencing at least one DECISIONS.md entry, research file, or recorded inventory that justifies it."
 
-  - text: "Plan phases, commits, and adjustments MUST cite the DS/CMP/SR ids they build or change; adjusting a DS appends a revision_history entry naming the id, sets its status to `adjusted`, and its `serves:` SRs and their ACs MUST be re-checked. (ref: traceability)"
+  - text: "Acceptance criteria MUST inherit their FR's code and number (`AC-<CODE>-NNN-M`), so the component is readable from any AC id. (ref: guideline-traceability)"
+    source_excerpt:
+      line_start: 34
+      line_end: 35
+      quote: "Acceptance criteria MUST inherit their FR's code and number (`AC-<CODE>-NNN-M`), so the component is readable from any AC id."
+
+  - text: "Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC item implementing nothing traceable MUST NOT exist. (ref: guideline-traceability)"
     source_excerpt:
       line_start: 36
-      line_end: 39
-      quote: "Plan phases, commits, and adjustments MUST cite the DS/CMP/SR ids they\nbuild or change; adjusting a DS appends a revision_history entry naming\nthe id, sets its status to `adjusted`, and its `serves:` SRs and their\nACs MUST be re-checked."
+      line_end: 37
+      quote: "Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC item implementing nothing traceable MUST NOT exist."
 
-  - text: "Every generated artifact (data model, contract, fixture) MUST carry the spec-item or FR ids it realizes, in its header or sidecar metadata. (ref: traceability)"
+  - text: "**Anything that must be implemented MUST carry an id**: requirements as `SR-<CODE>-NNN`, design decisions as `DS-<CODE>-NNN`, buildable units as `CMP-<CODE>-NNN` (in the spec sidecar's `design:` block, each with a `serves:` list of SR ids), acceptance checks as `AC`/`SAC`. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 40
-      line_end: 41
-      quote: "Every generated artifact (data model, contract, fixture) MUST carry the\nspec-item or FR ids it realizes, in its header or sidecar metadata."
+      line_start: 38
+      line_end: 42
+      quote: "**Anything that must be implemented MUST carry an id**: requirements as `SR-<CODE>-NNN`, design decisions as `DS-<CODE>-NNN`, buildable units as `CMP-<CODE>-NNN` (in the spec sidecar's `design:` block, each with a `serves:` list of SR ids), acceptance checks as `AC`/`SAC`."
 
-  - text: "Every plan phase MUST list the FR/AC ids it delivers, and its verify criteria MUST map to those ACs. (ref: traceability)"
-    source_excerpt:
-      line_start: 42
-      line_end: 43
-      quote: "Every plan phase MUST list the FR/AC ids it delivers, and its verify\ncriteria MUST map to those ACs."
-
-  - text: "Sidecars (PRD, SPEC, plan) MUST preserve the id chain unbroken so drift checks can walk PRD → SPEC → plan → code mechanically. (ref: traceability)"
+  - text: "Plan phases, commits, and adjustments MUST cite the DS/CMP/SR ids they build or change; adjusting a DS appends a revision_history entry naming the id, sets its status to `adjusted`, and its `serves:` SRs and their ACs MUST be re-checked. (ref: guideline-traceability)"
     source_excerpt:
       line_start: 44
-      line_end: 45
-      quote: "Sidecars (PRD, SPEC, plan) MUST preserve the id chain unbroken so drift\nchecks can walk PRD → SPEC → plan → code mechanically."
+      line_end: 47
+      quote: "Plan phases, commits, and adjustments MUST cite the DS/CMP/SR ids they build or change; adjusting a DS appends a revision_history entry naming the id, sets its status to `adjusted`, and its `serves:` SRs and their ACs MUST be re-checked."
 
-  - text: "NEVER rename or renumber a coded ID after the owning artifact leaves draft status — IDs are frozen at acceptance; corrections happen by deprecating and adding. (ref: traceability)"
+  - text: "Every generated artifact (data model, contract, fixture) MUST carry the spec-item or FR ids it realizes, in its header or sidecar metadata. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 46
-      line_end: 48
-      quote: "NEVER rename or renumber a coded ID after the owning artifact leaves\ndraft status — IDs are frozen at acceptance; corrections happen by\ndeprecating and adding."
+      line_start: 48
+      line_end: 49
+      quote: "Every generated artifact (data model, contract, fixture) MUST carry the spec-item or FR ids it realizes, in its header or sidecar metadata."
 
-  - text: "NEVER introduce a deliverable without a trace — \"no decision, no work\" is the default; the escape hatch is recording the decision first. (ref: traceability)"
+  - text: "Every plan phase MUST list the FR/AC ids it delivers, and its verify criteria MUST map to those ACs. (ref: guideline-traceability)"
     source_excerpt:
-      line_start: 49
-      line_end: 50
-      quote: "NEVER introduce a deliverable without a trace — \"no decision, no work\" is\nthe default; the escape hatch is recording the decision first."
+      line_start: 50
+      line_end: 51
+      quote: "Every plan phase MUST list the FR/AC ids it delivers, and its verify criteria MUST map to those ACs."
+
+  - text: "Sidecars (PRD, SPEC, plan) MUST preserve the id chain unbroken so drift checks can walk PRD → SPEC → plan → code mechanically. (ref: guideline-traceability)"
+    source_excerpt:
+      line_start: 52
+      line_end: 53
+      quote: "Sidecars (PRD, SPEC, plan) MUST preserve the id chain unbroken so drift checks can walk PRD → SPEC → plan → code mechanically."
+
+  - text: "NEVER rename or renumber a coded ID after the owning artifact leaves draft status — IDs are frozen at acceptance; corrections happen by deprecating and adding. (ref: guideline-traceability)"
+    source_excerpt:
+      line_start: 54
+      line_end: 56
+      quote: "NEVER rename or renumber a coded ID after the owning artifact leaves draft status — IDs are frozen at acceptance; corrections happen by deprecating and adding."
+
+  - text: "NEVER introduce a deliverable without a trace — \"no decision, no work\" is the default; the escape hatch is recording the decision first. (ref: guideline-traceability)"
+    source_excerpt:
+      line_start: 57
+      line_end: 58
+      quote: "NEVER introduce a deliverable without a trace — \"no decision, no work\" is the default; the escape hatch is recording the decision first."
 
 manual_directives: []
 suppressed_directives: []

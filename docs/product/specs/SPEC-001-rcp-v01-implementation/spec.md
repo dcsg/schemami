@@ -125,13 +125,19 @@ others — corrections happen by deprecate-and-add.
 
 ## Non-Goals
 
-- The Recipe Calculus and conformance vectors (v1; the clamp is throwaway).
-- Hardening ferment/preserve/drink/coffee/dish profiles (v1 hardens
-  ferment + dish per DECISIONS #18).
-- Substitution catalog content (v1, DECISIONS #17).
-- Any ingestion tooling, services, or persistence (app-side, #19/#21).
-- Embedding CUE in-process (documented option only).
-- Codegen (quicktype → Swift/TS) — post-v0.1, once the schema is frozen.
+Deferred scope carries stable ids in the
+[feature ledger](../../FEATURES.md):
+
+- The Recipe Calculus and conformance vectors (FEAT-CALC-001, v1; the
+  clamp is throwaway).
+- Hardening ferment/preserve/drink/coffee/dish profiles (FEAT-PROF-004/
+  005 v1, FEAT-PROF-006 post-v1; DECISIONS #18).
+- Substitution catalog content (FEAT-SUB-001, v1; DECISIONS #17).
+- Any ingestion tooling, services, or persistence (FEAT-APP-001..003;
+  app-side, #19/#21).
+- Embedding CUE in-process (design option DS-VAL-003, not a feature).
+- Codegen (quicktype → Swift/TS) — FEAT-CORE-004, v1, once the schema is
+  frozen; decode-compatibility CI fixtures alongside (FEAT-CORE-003).
 
 ## Alternatives Considered
 

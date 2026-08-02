@@ -1,0 +1,147 @@
+# RCP feature ledger — source of truth (mirror: FEATURES.md).
+# Top of the traceability chain: FEAT → FR (PRD) → SR/DS/CMP (SPEC) → plan → code.
+#
+# ID scheme: FEAT-<AREA>-NNN (traceability guideline). Areas defined here;
+# new areas are added to this header before use:
+#   CORE protocol core schema · REG registry · PROF profiles ·
+#   VAL validation · SAFE safety machinery · CALC recipe calculus ·
+#   SUB substitution · PUB publishing/resolution · APP app-side (external)
+#
+# status: shipping (in an accepted PRD) | deferred (target names the release)
+#         | external (app-side per DECISIONS #19/#21 — tracked for the map,
+#           never implemented in this repo)
+# realized_by: FR ids once in a PRD; graduates_to: PRD id when a deferred
+# feature enters one. Deferred/external features carry NO implementation ids
+# until graduation (rule: context needs no ids; implemented work does).
+
+features:
+  # ── Shipping in v0.1 (PRD-001, SPEC-001) ──────────────────────────────
+  - id: FEAT-CORE-001
+    name: "Frozen, versioned core schema"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #14", "DECISIONS #21", "DECISIONS #22"]
+    realized_by: [FR-PR-001]
+  - id: FEAT-CORE-002
+    name: "Hardened constraint & safety encoding (single-sourced bounds)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #5"]
+    realized_by: [FR-PR-002]
+  - id: FEAT-REG-001
+    name: "Registry entry formats (ingredient class, step primitive, equipment profile)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #16", "DECISIONS #23"]
+    realized_by: [FR-REG-001]
+  - id: FEAT-REG-002
+    name: "Seed registry + kind-prefixed slug migration"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #22", "DECISIONS #23"]
+    realized_by: [FR-REG-002]
+  - id: FEAT-PROF-001
+    name: "Bread profile (hardened)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #18"]
+    realized_by: [FR-PROF-001]
+  - id: FEAT-PROF-002
+    name: "Pastry profile (hardened)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #18"]
+    realized_by: [FR-PROF-002]
+  - id: FEAT-PROF-003
+    name: "Draft profiles ×5 with machine-readable maturity"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #18"]
+    realized_by: [FR-PROF-003]
+  - id: FEAT-VAL-001
+    name: "Two-layer validation harness (schema + semantic linter with CUE)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #8"]
+    realized_by: [FR-VAL-001, FR-VAL-002]
+  - id: FEAT-SAFE-001
+    name: "Fail-closed safety clamp (throwaway precursor)"
+    status: shipping
+    target: v0.1
+    trace: ["DECISIONS #15", "DECISIONS #22"]
+    realized_by: [FR-SAFE-001]
+
+  # ── Deferred: v1 ──────────────────────────────────────────────────────
+  - id: FEAT-CALC-001
+    name: "Recipe Calculus with cross-stack conformance vectors"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #13", "DECISIONS #15"]
+    graduates_to: null
+  - id: FEAT-CORE-003
+    name: "Decode-compatibility CI fixtures (old reader/new doc, both directions)"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #14"]
+    graduates_to: null
+  - id: FEAT-CORE-004
+    name: "Codegen decode types (quicktype → Swift Codable + TS) from the frozen schema"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #8", "research 02:551-554"]
+    graduates_to: null
+  - id: FEAT-PROF-004
+    name: "Ferment profile hardened"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #18"]
+    graduates_to: null
+  - id: FEAT-PROF-005
+    name: "Dish (savoury) profile hardened"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #18"]
+    graduates_to: null
+  - id: FEAT-SUB-001
+    name: "Global substitution catalog (typed op-lists + variants, curated)"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #9", "DECISIONS #17"]
+    graduates_to: null
+  - id: FEAT-PUB-001
+    name: "Verified publish-time reference resolution (resolver_version + content hashes)"
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #21", "engineering obligation #3"]
+    graduates_to: null
+
+  # ── Deferred: post-v1 ─────────────────────────────────────────────────
+  - id: FEAT-PROF-006
+    name: "Preserve, drink, coffee profiles hardened"
+    status: deferred
+    target: post-v1
+    trace: ["DECISIONS #18"]
+    graduates_to: null
+  - id: FEAT-SUB-002
+    name: "Pack/shelf projection document format (curation layer)"
+    status: deferred
+    target: post-v1 (gated on AT-2/AT-4 expansion evidence)
+    trace: ["DECISIONS #10", "DECISIONS #19"]
+    graduates_to: null
+
+  # ── External: app-side, never implemented in this repo ────────────────
+  - id: FEAT-APP-001
+    name: "Ingestion pipeline (photo → vision-LLM extraction → review/correct → private recipe)"
+    status: external
+    target: consuming app (v1-core product path; AT-3 dogfood exercises the protocol)
+    trace: ["DECISIONS #11", "DECISIONS #19", "DECISIONS #21"]
+  - id: FEAT-APP-002
+    name: "Execution sessions (readings, timers, actuals) and cook-along surfaces"
+    status: external
+    target: consuming app
+    trace: ["DECISIONS #16", "DECISIONS #19"]
+  - id: FEAT-APP-003
+    name: "Users, favorites, collections, publishing infrastructure"
+    status: external
+    target: consuming app / platform
+    trace: ["DECISIONS #19"]

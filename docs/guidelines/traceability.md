@@ -15,6 +15,14 @@ sidecars.
 
 ## Rules
 
+- Features are the top of the chain: every product feature MUST have a
+  `FEAT-<AREA>-NNN` entry in `docs/product/features.yaml` (areas are
+  defined in that file's header; a new area MUST be added there before
+  use). Every PRD FR MUST trace to a FEAT id (first entry of its
+  `trace:` list). Non-goals in any PRD or SPEC MUST reference the FEAT
+  id they defer, or a DECISIONS entry when no feature exists yet.
+  Deferred and external features carry NO implementation ids until they
+  graduate into a PRD, recorded via `graduates_to:`.
 - Every PRD functional requirement MUST use a component-coded ID of the
   form `FR-<CODE>-NNN`, numbered per component from 001. The codes are:
   `PR` `protocol-core`, `REG` `registry`, `PROF` `profiles`,

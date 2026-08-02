@@ -25,52 +25,52 @@ requirements:
   - id: FR-PR-001
     component: protocol-core
     text: "The core schema is frozen as protocol v0.1: versioning conventions are documented ($id URL scheme, `rcp` version-field semantics, SchemaVer-flavoured change rules), the decode-compatibility rules bind to every subsequent change (unknown-field tolerance, enum catch-alls, no new required field without a default), and the freeze is a git tag."
-    trace: ["DECISIONS #14", "DECISIONS #21", "DECISIONS #22", "research 02:475-560"]
+    trace: ["FEAT-CORE-001", "DECISIONS #14", "DECISIONS #21", "DECISIONS #22", "research 02:475-560"]
     status: accepted
   - id: FR-PR-002
     component: protocol-core
     text: "Constraint and reference shapes are hardened in core: a constraint requires at least one bound and `of:` when ratio-based; the ingredient.item null-contradiction is resolved; the chucrute safety data (2% brine / pH 4.0) gets exactly one authoritative encoding referenced — not duplicated — by endpoint and profile blocks."
-    trace: ["DECISIONS #5", "defect inventory 2026-08-02"]
+    trace: ["FEAT-CORE-002", "DECISIONS #5", "defect inventory 2026-08-02"]
     status: accepted
   - id: FR-REG-001
     component: registry
     text: "Registry entry document formats exist as JSON Schemas for the three vocabulary kinds — IngredientClass (functional roles, display names with pt-PT exactness, optional density/allergen/cross-reference fields), StepPrimitive (versioned id + ParamSpec, SPEC-008 lineage: new capability = new id), EquipmentProfile (kind + parameters participating in the maths) — honouring every directive in docs/guidelines/registry-governance.md, including the kind-prefixed slug convention (DECISIONS #23: ingredient.* / primitive.* / equipment.*)."
-    trace: ["DECISIONS #16", "DECISIONS #23", "registry-governance guideline", "research 00 §registry", "research 02:367-378"]
+    trace: ["FEAT-REG-001", "DECISIONS #16", "DECISIONS #23", "registry-governance guideline", "research 00 §registry", "research 02:367-378"]
     status: accepted
   - id: FR-REG-002
     component: registry
     text: "The seed registry resolves every reference in the six example recipes (30 ingredient classes, 24 step primitives including trigger action `burp`, 6 equipment profiles, the endpoint-test vocabulary, temperature stage `thread`), and the six examples are migrated to kind-prefixed slugs per DECISIONS #23. A reference to a non-existent entry is a named lint failure; new entries enter only via the governance process — the pipeline never mints IDs."
-    trace: ["DECISIONS #22", "DECISIONS #23", "examples inventory 2026-08-02", "registry-governance guideline"]
+    trace: ["FEAT-REG-002", "DECISIONS #22", "DECISIONS #23", "examples inventory 2026-08-02", "registry-governance guideline"]
     status: accepted
   - id: FR-PROF-001
     component: profiles
     text: "The bread profile schema exists and is hardened: additive allOf extension of core; flour-basis conventions (total-flour pivot incl. include_components across the component tree); maintenance-culture and carry-forward fields; bread safety bounds encoded as bounded data. Pão Alentejano validates against core AND bread profile."
-    trace: ["DECISIONS #18", "research 03"]
+    trace: ["FEAT-PROF-001", "DECISIONS #18", "research 03"]
     status: accepted
   - id: FR-PROF-002
     component: profiles
     text: "The pastry profile schema exists and is hardened: to_consistency open quantities, the four temperature shapes (target / range / named stage / curve), rest and lamination structures, make-ahead/serve-within fields. Pastéis de nata and brownie-ganache validate against core AND pastry profile, with the nata's embedded bread component passing bread rules."
-    trace: ["DECISIONS #18", "research 04"]
+    trace: ["FEAT-PROF-002", "DECISIONS #18", "research 04"]
     status: accepted
   - id: FR-PROF-003
     component: profiles
     text: "Draft profile schemas exist for the remaining five kinds (ferment, preserve, drink, coffee, component/dish): each defines the profile-block fields already observed or researched, is valid to author against, and carries a machine-readable maturity field (hardened|draft) in the profile schema itself — the harness surfaces maturity on every validation. Negroni (drink) and chucrute (ferment) validate against core AND their draft profiles."
-    trace: ["DECISIONS #18", "OQ-4 resolution 2026-08-02"]
+    trace: ["FEAT-PROF-003", "DECISIONS #18", "OQ-4 resolution 2026-08-02"]
     status: accepted
   - id: FR-VAL-001
     component: validator
     text: "A committed Layer-1 validation harness (ajv-compatible, JSON Schema 2020-12) validates every example against core AND the profile selected by `kind`, via a single documented command, runnable in CI — making CLAUDE.md's re-validate-examples rule executable for the first time. Implementation language is a SPEC decision (OQ-2)."
-    trace: ["DECISIONS #8", "research 07:38-81", "CLAUDE.md working conventions"]
+    trace: ["FEAT-VAL-001", "DECISIONS #8", "research 07:38-81", "CLAUDE.md working conventions"]
     status: accepted
   - id: FR-VAL-002
     component: validator
     text: "A Layer-2 semantic linter enforces what the schema cannot: every registry/basis/uses/after reference resolves; every guard combination yields a complete connected DAG; component reference cycles are rejected; ratio-bound and field-relation constraints are expressed in CUE per decision #8. On first run against the unmodified examples it catches the known defects (mm-feed undeclared basis; calda produced-but-never-consumed; ganache version pinned against an unversioned target)."
-    trace: ["DECISIONS #8 reaffirmed", "research 07:38-60", "defect inventory 2026-08-02"]
+    trace: ["FEAT-VAL-001", "DECISIONS #8 reaffirmed", "research 07:38-60", "defect inventory 2026-08-02"]
     status: accepted
   - id: FR-SAFE-001
     component: safety-clamp
     text: "A minimal fail-closed safety clamp (explicitly throwaway, NOT the Recipe Calculus) recomputes resolved values of severity-critical constraints under a scale transformation and refuses violations with the authored reason shown; refusal is the default on uncertainty."
-    trace: ["DECISIONS #15", "DECISIONS #22", "research 03:248-253", "CONCLUSIONS §5"]
+    trace: ["FEAT-SAFE-001", "DECISIONS #15", "DECISIONS #22", "research 03:248-253", "CONCLUSIONS §5"]
     status: accepted
 
 # Acceptance criteria — Given/When/Then, one or more per FR.
@@ -301,12 +301,16 @@ revision_history:
     action: "edited"
     note: "Back-reference added: source_specs += SPEC-001"
     affected: ["SPEC-001"]
+  - at: "2026-08-02T17:50:06Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Feature ledger adopted (docs/product/features.yaml): every FR trace now leads with its FEAT id; non-goals reference the FEAT ids they defer."
 
 # User extensions — LLM never writes here; commands never touch
 extensions: {}
 
 # Sync block — SHA-256 of .md and .yaml at last sync
 _sync:
-  md_hash: "3d62b96c150323e3b1462ef0e788578b4c736bb1ef459692fad8339f4dc8dc1b"
-  yaml_hash: "83e035517775ac2e998916f7ed7bee8c73d11dad525e07243a6b4bf1ae775486"
-  synced_at: "2026-08-02T17:30:16Z"
+  md_hash: "f69c90231455aedeffcd1eeb15872834a324d62510d0de7d8fc627ffb953bed4"
+  yaml_hash: "840e1e99f965abe91ac793f0c25b19897311ff8a61caff31c183ea5243c3b55e"
+  synced_at: "2026-08-02T17:50:06Z"
