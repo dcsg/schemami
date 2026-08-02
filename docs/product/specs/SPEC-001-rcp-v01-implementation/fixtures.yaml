@@ -1,5 +1,5 @@
 # Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
-# edikt:artifact type=fixtures spec=SPEC-001 status=draft reviewed_by=qa
+# edikt:artifact type=fixtures spec=SPEC-001 status=accepted reviewed_by=qa
 # created_at=2026-08-02T18:13:42Z
 # Transform at implementation time into files under tools/rcplint/testdata/.
 # Records asserting future linter/clamp behaviour are status: aspirational
