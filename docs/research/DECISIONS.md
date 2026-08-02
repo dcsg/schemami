@@ -169,6 +169,26 @@ strawman proposal is still a proposal.
     approver. Full multi-contributor governance is deferred until a second
     contributor actually exists.
 
+21. **The protocol/implementation split is explicit and structures the
+    spec.** (2026-08-02, sharpens #19.) RCP-the-protocol is the
+    **normative** published language an independent party could implement
+    with nothing else: the core schema, the profiles, the Recipe Calculus
+    semantics + conformance vectors (#13), the decode-compatibility
+    contract (#14), the registry vocabularies + their rules, the
+    substitution model, and the validation rules (#8). Everything about
+    persistence and infrastructure is **informative** implementation
+    guidance owed by no implementer: Postgres edge projection (#7 is an
+    implementation decision, not protocol), snapshot storage, the resolver
+    service, index-time derived-facet computation, session storage, and
+    the ingestion pipeline (a producer of RCP documents, never part of the
+    language). Boundary cases resolve by asking what is visible in the
+    documents: the targets-vs-readings split and the
+    resolver_version/content-hash guarantee are protocol (facts of the
+    formats); the services behind them are not. The DDD context map is a
+    **reference architecture** for Daniel and future app implementations —
+    descriptive, not normative. Consequence: SPEC-009 is structured as a
+    normative core plus informative annexes along exactly this line.
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
