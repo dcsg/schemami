@@ -12,7 +12,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: rcplint <validate> [root]")
+		fmt.Fprintln(os.Stderr, "usage: rcplint <validate|lint> [root]")
 		os.Exit(2)
 	}
 	root := "."
@@ -25,6 +25,8 @@ func main() {
 	switch os.Args[1] {
 	case "validate":
 		os.Exit(runValidate(root))
+	case "lint":
+		os.Exit(runLint(root))
 	default:
 		fmt.Fprintf(os.Stderr, "unknown subcommand %q\n", os.Args[1])
 		os.Exit(2)
