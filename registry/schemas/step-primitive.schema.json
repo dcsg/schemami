@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/step-primitive.schema.json",
+  "title": "RCP Registry — StepPrimitive",
+  "description": "A governed, versioned step primitive (SPEC-008 lineage): a new capability is a NEW id, never a repurposed one; params only ever grow optionally within a version.",
+  "type": "object",
+  "required": ["id", "v", "display_name", "definition", "param_spec"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^primitive\\.[a-z0-9][a-z0-9.-]*$" },
+    "v": { "type": "integer", "minimum": 1, "description": "Primitive version referenced by steps as {id, v}." },
+    "display_name": {
+      "type": "object",
+      "required": ["pt", "en"],
+      "properties": { "pt": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } },
+      "additionalProperties": false
+    },
+    "definition": { "type": "string", "minLength": 1 },
+    "param_spec": {
+      "type": "object",
+      "description": "JSON Schema fragment validating step.params for this primitive (core delegates: 'validated by the primitive's ParamSpec in the registry, not by core'). Empty object = no params."
+    },
+    "technique": { "type": "string", "description": "Optional semantic tag (research 06): fallback anchor when substitutions remove the id-anchored step." },
+    "status": { "enum": ["active", "deprecated"], "default": "active" }
+  },
+  "additionalProperties": false
+}

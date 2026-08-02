@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/equipment-profile.schema.json",
+  "title": "RCP Registry — EquipmentProfile",
+  "description": "A governed equipment profile whose parameters participate in the maths (DECISIONS #3): level-1 conversions live here (e.g. convection = conventional −20°C), never hand-encoded in recipes.",
+  "type": "object",
+  "required": ["id", "kind", "display_name", "definition", "parameters"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^equipment\\.[a-z0-9][a-z0-9.-]*$" },
+    "kind": { "type": "string", "minLength": 1, "description": "Equipment family slug: oven, mixer, vessel, mould, glassware, ice, crock…" },
+    "display_name": {
+      "type": "object",
+      "required": ["pt", "en"],
+      "properties": { "pt": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } },
+      "additionalProperties": false
+    },
+    "definition": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "object",
+      "description": "Machine-read parameters (max_temperature, thermal_mass, steam, heat profile…) — must be complete for the maths this equipment participates in (registry-governance directive)."
+    },
+    "conversions": { "type": "object", "description": "Level-1 parameter-shift rules relative to a reference profile." },
+    "status": { "enum": ["active", "deprecated"], "default": "active" }
+  },
+  "additionalProperties": false
+}

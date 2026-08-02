@@ -1,481 +1,189 @@
+schema_version: 1
 plan: rcp-v01
-generated: '2026-08-02T18:48:49Z'
-last_evaluated: null
 phases:
-- phase: 1
-  title: Core schema hardening
-  status: pending
-  attempt: 0
+- id: 1
+  classification: testable
   criteria:
   - id: AC-1.1
-    text: Hardened schema passes 2020-12 metaschema validation
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 -c "import json; from jsonschema import Draft202012Validator as V; V.check_schema(json.load(open('schema/rcp-core-v1.schema.json')))"
+    statement: Hardened schema passes 2020-12 metaschema validation
   - id: AC-1.2
-    text: Committed check script (python jsonschema, FormatChecker on) rejects `testdata/l1/constraint-no-bounds.rcp.yaml`
-      and `ratio-without-of.rcp.yaml`
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: Committed check script (python jsonschema, FormatChecker on) rejects `testdata/l1/constraint-no-bounds.rcp.yaml` and `ratio-without-of.rcp.yaml`
   - id: AC-1.3
-    text: Same script validates all six example documents against hardened core
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: Same script validates all six example documents against hardened core
   - id: AC-1.4
-    text: Chucrute's profile block carries no numeric safety bounds — grep clean; bounds live only on
-      the salt ingredient constraint
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: '! grep -qE ''safety_gate|ph_max|brine_min_pct'' examples/other-categories.rcp.yaml && grep -q ''safety_refs'' examples/other-categories.rcp.yaml'
+    statement: Chucrute's profile block carries no numeric safety bounds — grep clean; bounds live only on the salt ingredient constraint
   - id: AC-1.5
-    text: 'Defect freeze holds: `mm-feed` present; calda unconsumed; ganache unversioned'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 2
-  title: Registry entry schemas
-  status: pending
-  attempt: 0
+    verify: 'grep -q ''mm-feed'' examples/alentejano.rcp.yaml && ! sed -n ''/^id: ganache-chocolate/,/^---$/p'' examples/other-categories.rcp.yaml | grep -q ''^version:'''
+    statement: 'Defect freeze holds: `mm-feed` present; calda unconsumed; ganache unversioned'
+- id: 2
+  classification: testable
   criteria:
   - id: AC-2.1
-    text: '`registry/schemas/{ingredient-class,step-primitive,equipment-profile}.schema.json` exist, metaschema-valid'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 -c "import json,glob; from jsonschema import Draft202012Validator as V; [V.check_schema(json.load(open(f))) for f in glob.glob('registry/schemas/*.schema.json')]; assert len(glob.glob('registry/schemas/*.schema.json'))==3"
+    statement: '`registry/schemas/{ingredient-class,step-primitive,equipment-profile}.schema.json` exist, metaschema-valid'
   - id: AC-2.2
-    text: Check script rejects `ingredient-missing-roles.yaml` naming the field; accepts a valid sample
-      entry
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: Check script rejects `ingredient-missing-roles.yaml` naming the field; accepts a valid sample entry
   - id: AC-2.3
-    text: All three schemas enforce `^(ingredient|primitive|equipment)\.` id pattern
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -l 'ingredient|primitive|equipment' registry/schemas/*.schema.json | wc -l | grep -q 3
+    statement: All three schemas enforce `^(ingredient|primitive|equipment)\.` id pattern
   - id: AC-2.4
-    text: '`filename-id-mismatch` fixture authored (consumed by P8 lint rule)'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 3
-  title: Seed registry
-  status: pending
-  attempt: 0
+    verify: test -f tools/rcplint/testdata/registry/filename-id-mismatch.yaml
+    statement: '`filename-id-mismatch` fixture authored (consumed by P8 lint rule)'
+- id: 3
+  classification: testable
   criteria:
   - id: AC-3.1
-    text: Every census id has `registry/entries/<kind>/<id>.yaml` with matching id field (filename = id)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: Every census id has `registry/entries/<kind>/<id>.yaml` with matching id field (filename = id)
   - id: AC-3.2
-    text: All entries validate against their P2 schema (check script)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: All entries validate against their P2 schema (check script)
   - id: AC-3.3
-    text: 'Bidirectional census cross-check committed: no orphan entries, no missing entries (vs post-migration
-      prefixed ids)'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 4
-  title: L1 harness + CI
-  status: pending
-  attempt: 0
+    verify: python3 tools/rcplint/scripts/check.py
+    statement: 'Bidirectional census cross-check committed: no orphan entries, no missing entries (vs post-migration prefixed ids)'
+- id: 4
+  classification: testable
   criteria:
   - id: AC-4.1
-    text: '`make validate` exits 0 (pre-migration examples core-only + no-profile warnings + registry
-      entries validated)'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate
+    statement: '`make validate` exits 0 (pre-migration examples core-only + no-profile warnings + registry entries validated)'
   - id: AC-4.2
-    text: 'Broken-example negative run: non-zero exit naming file + JSON pointer'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: bash tools/rcplint/scripts/negative-check.sh
+    statement: 'Broken-example negative run: non-zero exit naming file + JSON pointer'
   - id: AC-4.3
-    text: '`go build ./... && go vet ./...` clean'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go build ./... && go vet ./...
+    statement: '`go build ./... && go vet ./...` clean'
   - id: AC-4.4
-    text: ≤3 direct deps in go.mod
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: test $(grep -E '^\t' tools/rcplint/go.mod | grep -vc '// indirect') -le 3
+    statement: ≤3 direct deps in go.mod
   - id: AC-4.5
-    text: l1 + registry fixtures re-verified under Go harness; fixtures.yaml records flipped aspirational→characterized
-      with verified_by
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: 'grep -q ''status: characterized'' docs/product/specs/SPEC-001-rcp-v01-implementation/fixtures.yaml'
+    statement: l1 + registry fixtures re-verified under Go harness; fixtures.yaml records flipped aspirational→characterized with verified_by
   - id: AC-4.6
-    text: Output shows 6 documents (multi-doc YAML validated individually)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 5
-  title: Slug migration
-  status: pending
-  attempt: 0
+    verify: make validate 2>&1 | grep -c 'OK' | awk '{exit ($1>=6)?0:1}'
+    statement: Output shows 6 documents (multi-doc YAML validated individually)
+- id: 5
+  classification: testable
   criteria:
   - id: AC-5.1
-    text: Zero bare slugs remain in examples/ (committed regex scan exits 0)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: bash tools/rcplint/scripts/migration-check.sh slugs
+    statement: Zero bare slugs remain in examples/ (committed regex scan exits 0)
   - id: AC-5.2
-    text: Bidirectional set-match example-refs ↔ registry entries exits 0
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: bash tools/rcplint/scripts/migration-check.sh refs
+    statement: Bidirectional set-match example-refs ↔ registry entries exits 0
   - id: AC-5.3
-    text: 'Committed structural-diff summary: only slug strings changed'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: test -f docs/plans/rcp-v01-slug-mapping.md
+    statement: 'Committed structural-diff summary: only slug strings changed'
   - id: AC-5.4
-    text: '`make validate` exits 0'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate
+    statement: '`make validate` exits 0'
   - id: AC-5.5
-    text: Defect freeze holds (mm-feed/calda/ganache, prefixed forms)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 6
-  title: Hardened profiles (bread + pastry)
-  status: pending
-  attempt: 0
+    verify: grep -q 'mm-feed' examples/alentejano.rcp.yaml
+    statement: Defect freeze holds (mm-feed/calda/ganache, prefixed forms)
+- id: 6
+  classification: testable
   criteria:
   - id: AC-6.1
-    text: 'Both schemas exist, metaschema-valid, `x-rcp-maturity: hardened`'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -q 'x-rcp-maturity.*hardened' schema/profiles/bread.schema.json && grep -q 'x-rcp-maturity.*hardened' schema/profiles/pastry.schema.json
+    statement: 'Both schemas exist, metaschema-valid, `x-rcp-maturity: hardened`'
   - id: AC-6.2
-    text: 'Harness: alentejano passes core∧bread; nata + brownie pass core∧pastry incl. embedded bread
-      component'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate 2>&1 | grep -qi 'bread' && make validate >/dev/null
+    statement: 'Harness: alentejano passes core∧bread; nata + brownie pass core∧pastry incl. embedded bread component'
   - id: AC-6.3
-    text: Numeric bounds as data in profile schemas with authored reasons; no numbers in any .cue
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -q 'x-rcp-bounds' schema/profiles/bread.schema.json
+    statement: Numeric bounds as data in profile schemas with authored reasons; no numbers in any .cue
   - id: AC-6.4
-    text: '`make validate` exits 0'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate
+    statement: '`make validate` exits 0'
   - id: AC-6.5
-    text: Defect freeze holds
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 7
-  title: Draft profiles ×5
-  status: pending
-  attempt: 0
+    verify: grep -q 'mm-feed' examples/alentejano.rcp.yaml
+    statement: Defect freeze holds
+- id: 7
+  classification: testable
   criteria:
   - id: AC-7.1
-    text: 'Five draft schemas exist, `x-rcp-maturity: draft`'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: test $(ls schema/profiles/*.schema.json | wc -l) -eq 7 && grep -l 'x-rcp-maturity.*draft' schema/profiles/*.schema.json | wc -l | grep -q 5
+    statement: 'Five draft schemas exist, `x-rcp-maturity: draft`'
   - id: AC-7.2
-    text: 'Harness output shows `maturity: draft` for negroni + chucrute passes'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate 2>&1 | grep -qi 'draft'
+    statement: 'Harness output shows `maturity: draft` for negroni + chucrute passes'
   - id: AC-7.3
-    text: '`make validate` exits 0'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 8
-  title: L2 linter + CUE + defect triage
-  status: pending
-  attempt: 0
+    verify: make validate
+    statement: '`make validate` exits 0'
+- id: 8
+  classification: testable
   criteria:
   - id: AC-8.1
-    text: Pre-fix lint report committed naming all 3 defects (file+pointer); example hashes match end-of-P7;
-      fixes strictly after report commit
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: test -f docs/plans/rcp-v01-defect-triage.md && grep -qi 'pre-fix' docs/plans/rcp-v01-defect-triage.md
+    statement: Pre-fix lint report committed naming all 3 defects (file+pointer); example hashes match end-of-P7; fixes strictly after report commit
   - id: AC-8.2
-    text: Each defect fixed or waived in a committed decision note; lint exits 0 after
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -qiE 'fixed|waived' docs/plans/rcp-v01-defect-triage.md && make validate >/dev/null
+    statement: Each defect fixed or waived in a committed decision note; lint exits 0 after
   - id: AC-8.3
-    text: Every testdata/l2 fixture fails for exactly its one rule (Go test asserts rule id)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: Every testdata/l2 fixture fails for exactly its one rule (Go test asserts rule id)
   - id: AC-8.4
-    text: '`cue vet` wired into make validate; cue fixtures fail correctly; profile-bound violation names
-      bound + authored source (AC-PROF-001-2)'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -q 'cue' Makefile && ls schema/constraints/*.cue >/dev/null
+    statement: '`cue vet` wired into make validate; cue fixtures fail correctly; profile-bound violation names bound + authored source (AC-PROF-001-2)'
   - id: AC-8.5
-    text: disconnected-guard-path + step-cycle rejected naming combination/cycle (AC-VAL-002-3)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: disconnected-guard-path + step-cycle rejected naming combination/cycle (AC-VAL-002-3)
   - id: AC-8.6
-    text: 'bare-slug rejected citing DECISIONS #23 (AC-REG-001-2)'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: 'bare-slug rejected citing DECISIONS #23 (AC-REG-001-2)'
   - id: AC-8.7
-    text: Safety-single-sourcing lint rule + its new negative fixture (profile block containing a number)
-      fails (AC-PR-002-2)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: Safety-single-sourcing lint rule + its new negative fixture (profile block containing a number) fails (AC-PR-002-2)
   - id: AC-8.8
-    text: unused-ingredient reported (DS-VAL-004 adjusted)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: unused-ingredient reported (DS-VAL-004 adjusted)
   - id: AC-8.9
-    text: Full `make validate` (L1+L2+CUE) exits 0 — first full green
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 9
-  title: Safety clamp
-  status: pending
-  attempt: 0
+    verify: make validate
+    statement: Full `make validate` (L1+L2+CUE) exits 0 — first full green
+- id: 9
+  classification: testable
   criteria:
   - id: AC-9.1
-    text: '`rcplint clamp --scale 0.6` on chucrute refuses with authored pt AND en reason'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: '`rcplint clamp --scale 0.6` on chucrute refuses with authored pt AND en reason'
   - id: AC-9.2
-    text: '`--scale 1.5` accepted'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: '`--scale 1.5` accepted'
   - id: AC-9.3
-    text: 'warn-bound case: accepted WITH warning surfaced'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: 'warn-bound case: accepted WITH warning surfaced'
   - id: AC-9.4
-    text: 'alentejano `--scale 0.05`: refused/floored citing min_batch/maintenance'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: 'alentejano `--scale 0.05`: refused/floored citing min_batch/maintenance'
   - id: AC-9.5
-    text: missing-quantity + unresolvable-basis cases refused (uncertainty default)
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: missing-quantity + unresolvable-basis cases refused (uncertainty default)
   - id: AC-9.6
-    text: negroni (ratio-first) clamp run completes without unit assumptions; behavior documented
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: cd tools/rcplint && go test ./...
+    statement: negroni (ratio-first) clamp run completes without unit assumptions; behavior documented
   - id: AC-9.7
-    text: Clamp fixture records flipped to characterized
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
-- phase: 10
-  title: Versioning, tag, closeout
-  status: pending
-  attempt: 0
+    verify: 'grep -c ''status: characterized'' docs/product/specs/SPEC-001-rcp-v01-implementation/fixtures.yaml | awk ''{exit ($1>=20)?0:1}'''
+    statement: Clamp fixture records flipped to characterized
+- id: 10
+  classification: testable
   criteria:
   - id: AC-10.1
-    text: '`schema/VERSIONING.md` covers $id scheme, `rcp` field semantics, SchemaVer rules, decode-compat
-      policy'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: grep -q '\$id' schema/VERSIONING.md && grep -q 'SchemaVer' schema/VERSIONING.md && grep -qi 'decode' schema/VERSIONING.md
+    statement: '`schema/VERSIONING.md` covers $id scheme, `rcp` field semantics, SchemaVer rules, decode-compat policy'
   - id: AC-10.2
-    text: Annotated tag `rcp-v0.1` exists on a commit where `make validate` exits 0
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: test "$(git cat-file -t rcp-v0.1)" = tag
+    statement: Annotated tag `rcp-v0.1` exists on a commit where `make validate` exits 0
   - id: AC-10.3
-    text: Fresh-worktree `make validate` exits 0
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: make validate
+    statement: Fresh-worktree `make validate` exits 0
   - id: AC-10.4
-    text: Spec artifacts + relevant statuses flipped to implemented
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: '! grep -q ''status=accepted'' docs/product/specs/SPEC-001-rcp-v01-implementation/model.mmd'
+    statement: Spec artifacts + relevant statuses flipped to implemented
   - id: AC-10.5
-    text: 'Progress table: phases 1–9 done'
-    status: pending
-    fail_count: 0
-    fail_reason: null
-    block_reason: null
-    last_evaluated: null
-    verify: null
+    verify: '! grep -E ''^\| (10|[1-9]) +\|'' docs/plans/PLAN-rcp-v01.md | grep -qv done'
+    statement: 'Progress table: phases 1–9 done'

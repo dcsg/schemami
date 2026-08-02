@@ -1,0 +1,8 @@
+# Negative fixture (SAC-REG-001): the id below does NOT equal this filename —
+# file identity must equal registry identity. Consumed by the P8 lint rule
+# (target_phase CMP-VAL-002 intentionally: the check is a linter rule, not schema).
+id: ingredient.salt.sea.fine
+kind: ingredient-class
+display_name: { pt: Sal marinho fino, en: Fine sea salt }
+definition: Fine-grained sea salt.
+roles: [salt]

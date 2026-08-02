@@ -1,0 +1,6 @@
+# Negative fixture (AC-REG-001-1): IngredientClass without functional roles —
+# a machine-read field is absent; entry validation must reject naming `roles`.
+id: ingredient.salt.sea.fine
+kind: ingredient-class
+display_name: { pt: Sal marinho fino, en: Fine sea salt }
+definition: Fine-grained sea salt for doughs and brines.

@@ -1,0 +1,5 @@
+id: primitive.mix
+v: 1
+display_name: { pt: Misturar, en: Mix }
+definition: Combine ingredients until homogeneous.
+param_spec: { type: object, properties: { speed: { type: integer, minimum: 1 } }, additionalProperties: false }
