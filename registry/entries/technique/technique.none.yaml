@@ -1,0 +1,7 @@
+id: technique.none
+kind: technique
+display_name: { pt: Sem técnica, en: None }
+definition: >-
+  Sentinel: the execution mode applies no technique — e.g. batched drinks
+  take their dilution from added water, not from a gesture. Migrated from
+  the interim vocabulary (PLAN-rcp-v02 Phase 3).

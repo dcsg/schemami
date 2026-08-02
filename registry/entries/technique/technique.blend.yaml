@@ -1,0 +1,7 @@
+id: technique.blend
+kind: technique
+display_name: { pt: Triturar, en: Blend }
+definition: >-
+  Reducing solids to a smooth purée by machine — the tool (jar blender,
+  stick blender, food processor) is a first-class variable that changes
+  texture, per research 04's paste findings.

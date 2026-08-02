@@ -32,7 +32,7 @@ phases:
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-02 |
 | 2     | done | 1/5 | 2026-08-02 |
-| 3     | pending | 0/5 | — |
+| 3     | done | 1/5 | 2026-08-02 |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
@@ -306,6 +306,13 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 3:
+- AC-3.1: PASS — 2026-08-02 (Daniel approved all 13 at the checkpoint; orphans kept)
+- AC-3.2: PASS — 2026-08-02
+- AC-3.3: PASS — 2026-08-02
+- AC-3.4: PASS — 2026-08-02
+- AC-3.5: PASS — 2026-08-02
 
 Phase 2:
 - AC-2.1: PASS — 2026-08-02 (zero bounds authored — n=2 observed none; rationale in the profile description)

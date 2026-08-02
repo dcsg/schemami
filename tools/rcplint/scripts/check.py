@@ -30,7 +30,8 @@ REG_ENTRIES = ROOT / "registry/entries"
 
 KIND_SCHEMA = {"ingredient": "ingredient-class.schema.json",
                "primitive": "step-primitive.schema.json",
-               "equipment": "equipment-profile.schema.json"}
+               "equipment": "equipment-profile.schema.json",
+               "technique": "technique.schema.json"}
 
 def schema_key(doc):
     return str(doc.get("id", "")).split(".", 1)[0]

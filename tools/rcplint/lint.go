@@ -76,14 +76,14 @@ func loadRegistry(root string) (*Registry, *Lint, error) {
 			}
 		}
 	}
-	if docs, err := LoadDocuments(filepath.Join(root, "registry/vocab/techniques.yaml")); err == nil && len(docs) == 1 {
-		if m, ok := docs[0].Value.(map[string]any); ok {
-			if ts, ok := m["techniques"].([]any); ok {
-				for _, tv := range ts {
-					if tm, ok := tv.(map[string]any); ok {
-						r.Techniques[fmt.Sprintf("%v", tm["id"])] = true
-					}
-				}
+	// Techniques are the fourth governed registry kind (DECISIONS #25;
+	// PLAN-rcp-v02 Phase 3): membership comes from entries, the interim
+	// vocab list is retired.
+	techGlob, _ := filepath.Glob(filepath.Join(root, "registry/entries/technique/*.yaml"))
+	for _, tp := range techGlob {
+		if docs, err := LoadDocuments(tp); err == nil && len(docs) == 1 {
+			if tm, ok := docs[0].Value.(map[string]any); ok {
+				r.Techniques[fmt.Sprintf("%v", tm["id"])] = true
 			}
 		}
 	}
@@ -143,7 +143,7 @@ func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, 
 		for _, ev := range ems {
 			if em, ok := ev.(map[string]any); ok {
 				if tech, ok := em["technique"].(string); ok && !reg.Techniques[tech] {
-					l.errf("%s: execution mode %q technique %q not in registry/vocab/techniques.yaml (the vocabulary Daniel remembered — FEAT-REG-003 hardens it)", loc, em["id"], tech)
+					l.errf("%s: execution mode %q technique %q has no entry under registry/entries/technique/ (fourth registry kind, DECISIONS #25)", loc, em["id"], tech)
 				}
 				if ai, ok := em["adds_ingredient"].(map[string]any); ok {
 					if id, ok := ai["id"].(string); ok {

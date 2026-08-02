@@ -1,7 +1,8 @@
 # Registry governance — v0 (solo phase)
 
 Policy for changes to the RCP Registry (ingredient classes, step primitives,
-equipment profiles). Established by decision #20 (2026-08-02). This is the
+equipment profiles, techniques — the fourth kind, DECISIONS #25).
+Established by decision #20 (2026-08-02). This is the
 lightweight, single-editor version; full multi-contributor governance is
 deferred until a second contributor actually exists.
 
@@ -34,7 +35,8 @@ deferred until a second contributor actually exists.
    mints. Consumers MUST be able to resolve an ingredient family by id
    prefix (`ingredient.spice.cinnamon.*` finds every form).
 7. **Required fields before merge**: stable ID, kind (ingredient class /
-   primitive / equipment profile), display name, definition prose, and the
+   primitive / equipment profile / technique), display name, definition
+   prose, and the
    machine-read fields the schema demands for that kind (e.g. functional
    roles for ingredient classes, parameters for equipment profiles). An
    entry that a machine reads must be complete for the maths it

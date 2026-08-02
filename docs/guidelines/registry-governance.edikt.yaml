@@ -20,116 +20,117 @@ signals:
   - "required fields before merge"
   - "equipment profile"
   - "ingredient class"
+  - "registry technique"
 
 scope: [implementation, review]
 
 directives:
   - text: "Every addition or change to a registry vocabulary MUST be approved by him — today that means his own PRs; tomorrow it means he reviews others'. (ref: registry-governance)"
     source_excerpt:
-      line_start: 10
-      line_end: 12
+      line_start: 11
+      line_end: 13
       quote: "Every addition or change to a registry vocabulary is approved by him — today that means his own PRs; tomorrow it means he reviews others'."
 
   - text: "**Additions via PR**, never direct edits — even solo. (ref: registry-governance)"
     source_excerpt:
-      line_start: 13
-      line_end: 13
+      line_start: 14
+      line_end: 14
       quote: "**Additions via PR**, never direct edits — even solo."
 
   - text: "The PR description MUST state *why* the entry is needed (which recipe or profile demanded it). (ref: registry-governance)"
     source_excerpt:
-      line_start: 13
-      line_end: 14
+      line_start: 14
+      line_end: 15
       quote: "The PR description states *why* the entry is needed (which recipe or profile demanded it)."
 
   - text: "Registry entries MUST NEVER be deleted or repurposed. (ref: registry-governance)"
     source_excerpt:
-      line_start: 15
-      line_end: 15
+      line_start: 16
+      line_end: 16
       quote: "Registry entries are never deleted or repurposed."
 
   - text: "Mistakes MUST be handled by deprecating the entry (marked, kept resolvable) and adding a corrected one. (ref: registry-governance)"
     source_excerpt:
-      line_start: 16
-      line_end: 17
+      line_start: 17
+      line_end: 18
       quote: "Mistakes are handled by deprecating the entry (marked, kept resolvable) and adding a corrected one."
 
   - text: "Published recipes MUST keep resolving forever. (ref: registry-governance)"
     source_excerpt:
-      line_start: 17
-      line_end: 17
+      line_start: 18
+      line_end: 18
       quote: "Published recipes must keep resolving forever."
 
   - text: "Registry changes MUST bump the registry version; recipes MUST reference entries by stable ID, and publish-time resolution MUST pin resolver_version + content hashes (engineering obligation #3). (ref: registry-governance)"
     source_excerpt:
-      line_start: 18
-      line_end: 20
+      line_start: 19
+      line_end: 21
       quote: "Registry changes bump the registry version; recipes reference entries by stable ID, and publish-time resolution pins resolver_version + content hashes (engineering obligation #3)."
 
   - text: "IDs MUST be stable, lowercase, dot-namespaced English slugs (`ingredient.flour.wheat.t65`, `primitive.fold`, `equipment.oven.deck`). (ref: registry-governance)"
     source_excerpt:
-      line_start: 22
-      line_end: 23
+      line_start: 23
+      line_end: 24
       quote: "IDs are stable, lowercase, dot-namespaced English slugs (`ingredient.flour.wheat.t65`, `primitive.fold`, `equipment.oven.deck`)."
 
   - text: "IDs NEVER encode display names and NEVER change once merged. (ref: registry-governance)"
     source_excerpt:
-      line_start: 24
-      line_end: 24
+      line_start: 25
+      line_end: 25
       quote: "IDs never encode display names and never change once merged."
 
   - text: "Flour types MUST always be explicit (T65, T80, T130, …). (ref: registry-governance)"
     source_excerpt:
-      line_start: 25
-      line_end: 25
+      line_start: 26
+      line_end: 26
       quote: "Flour types are always explicit (T65, T80, T130, …)."
 
   - text: "Display names MAY be localized (pt-PT terms kept exact — massa velha ≠ isco); the ID is not. (ref: registry-governance)"
     source_excerpt:
-      line_start: 26
-      line_end: 27
+      line_start: 27
+      line_end: 28
       quote: "Display names may be localized (pt-PT terms kept exact — massa velha ≠ isco); the ID is not."
 
   - text: "The dot-namespaced id MUST encode the taxonomy (`ingredient.spice.cinnamon.ground`): functionally distinct forms of one ingredient MUST be siblings under the shared node (`…cinnamon.ground` / `…cinnamon.stick` — ground disperses, the stick infuses and is removed; never 1:1 substitutable). (ref: registry-governance)"
     source_excerpt:
-      line_start: 28
-      line_end: 32
+      line_start: 29
+      line_end: 33
       quote: "The dot-namespaced id encodes the taxonomy (`ingredient.spice.cinnamon.ground`): functionally distinct forms of one ingredient MUST be siblings under the shared node (`…cinnamon.ground` / `…cinnamon.stick` — ground disperses, the stick infuses and is removed; never 1:1 substitutable)."
 
   - text: "Form-as-gesture (grinding at use, melting, dicing) MUST be `prep` on the usage and NEVER mints. (ref: registry-governance)"
     source_excerpt:
-      line_start: 32
-      line_end: 34
+      line_start: 33
+      line_end: 35
       quote: "Form-as-gesture (grinding at use, melting, dicing) is `prep` on the usage and NEVER mints."
 
   - text: "Consumers MUST be able to resolve an ingredient family by id prefix (`ingredient.spice.cinnamon.*` finds every form). (ref: registry-governance)"
     source_excerpt:
-      line_start: 34
-      line_end: 35
+      line_start: 35
+      line_end: 36
       quote: "Consumers MUST be able to resolve an ingredient family by id prefix (`ingredient.spice.cinnamon.*` finds every form)."
 
-  - text: "Required fields before merge MUST include stable ID, kind (ingredient class / primitive / equipment profile), display name, definition prose, and the machine-read fields the schema demands for that kind (e.g. functional roles for ingredient classes, parameters for equipment profiles). (ref: registry-governance)"
+  - text: "Required fields before merge MUST include stable ID, kind (ingredient class / primitive / equipment profile / technique), display name, definition prose, and the machine-read fields the schema demands for that kind (e.g. functional roles for ingredient classes, parameters for equipment profiles). (ref: registry-governance)"
     source_excerpt:
-      line_start: 36
-      line_end: 39
-      quote: "Required fields before merge: stable ID, kind (ingredient class / primitive / equipment profile), display name, definition prose, and the machine-read fields the schema demands for that kind (e.g. functional roles for ingredient classes, parameters for equipment profiles)."
+      line_start: 37
+      line_end: 41
+      quote: "Required fields before merge: stable ID, kind (ingredient class / primitive / equipment profile / technique), display name, definition prose, and the machine-read fields the schema demands for that kind (e.g. functional roles for ingredient classes, parameters for equipment profiles)."
 
   - text: "An entry that a machine reads MUST be complete for the maths it participates in. (ref: registry-governance)"
     source_excerpt:
-      line_start: 39
-      line_end: 41
+      line_start: 41
+      line_end: 43
       quote: "An entry that a machine reads must be complete for the maths it participates in."
 
   - text: "The extraction pipeline MAY only map to existing registry entries or flag a gap for review — it NEVER mints IDs. (ref: registry-governance)"
     source_excerpt:
-      line_start: 42
-      line_end: 44
+      line_start: 44
+      line_end: 46
       quote: "The extraction pipeline may only map to existing registry entries or flag a gap for review — it never mints IDs."
 
   - text: "New entries MUST always arrive through this process. (ref: registry-governance)"
     source_excerpt:
-      line_start: 44
-      line_end: 44
+      line_start: 46
+      line_end: 46
       quote: "New entries always arrive through this process."
 
 manual_directives: []

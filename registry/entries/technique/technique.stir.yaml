@@ -1,0 +1,8 @@
+id: technique.stir
+kind: technique
+display_name: { pt: Mexer com gelo, en: Stirred }
+definition: >-
+  Cocktail dilution-and-chill by stirring over ice — the drink-mode
+  gesture, distinct from the step primitive of the same bare name.
+  Migrated from the interim vocabulary (PLAN-rcp-v02 Phase 3).
+primitive: primitive.stir

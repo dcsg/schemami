@@ -118,6 +118,7 @@ func validateRegistry(root string) int {
 		"ingredient": "ingredient-class.schema.json",
 		"primitive":  "step-primitive.schema.json",
 		"equipment":  "equipment-profile.schema.json",
+		"technique":  "technique.schema.json",
 	} {
 		v, err := CompileSchema(filepath.Join(root, "registry/schemas", file))
 		if err != nil {

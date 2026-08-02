@@ -1,12 +1,13 @@
-# Target rule: executionMode.technique must be a documented technique
-# (registry/vocab/techniques.yaml) — the previously-unvalidated vocabulary.
+# L2 fixture (AC-REG-003-2): an execution-mode technique reference that has
+# no entry under registry/entries/technique/ must be REJECTED naming the
+# missing entry — the vocab list is retired; entries are the source.
 rcp: 1
-id: fx-unknown-technique
-kind: component
+id: fixture-unknown-technique
+kind: drink
 name: { en: Unknown technique fixture }
-execution_modes:
-  - { id: weird, technique: interpretive-dance }
 ingredients:
-  - { id: x, item: ingredient.water, amount: { value: 100, unit: g } }
-steps:
-  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }
+  - id: base
+    amount: { value: 60, unit: ml }
+execution_modes:
+  - id: bad-mode
+    technique: technique.does.not.exist

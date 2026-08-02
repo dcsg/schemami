@@ -8,8 +8,8 @@ name: { en: Correctly combined guards }
 options:
   - { id: extra, kind: toggle, default: false }
 execution_modes:
-  - { id: single, technique: none }
-  - { id: batch, technique: none }
+  - { id: single, technique: technique.none }
+  - { id: batch, technique: technique.none }
 ingredients:
   - { id: x, item: ingredient.water, amount: { value: 100, unit: g } }
 steps:

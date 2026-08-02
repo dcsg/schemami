@@ -32,11 +32,11 @@ ingredients:
 # Implicit when stirred over ice; MUST become explicit when batched.
 execution_modes:
   - id: single
-    technique: stir
+    technique: technique.stir
     equipment: [equipment.mixing-glass, equipment.large-cube]
     dilution: { ratio: 0.20, of: spec, source: ice }   # not a listed ingredient
   - id: batch
-    technique: none
+    technique: technique.none
     dilution: { ratio: 0.20, of: spec, source: added-water }
     adds_ingredient:
       { id: agua, item: ingredient.water, amount: { ratio: 0.20, of: spec }, roles: [dilution] }

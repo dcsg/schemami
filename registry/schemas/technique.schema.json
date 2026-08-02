@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/technique.schema.json",
+  "title": "RCP Registry — Technique",
+  "description": "A governed technique entry (DECISIONS #25; SR-REG-004): the semantic layer over primitives — the substitution fallback anchor (research 06) and the derived technique facet (DECISIONS #10). Fourth registry kind, same governance as the other three: append-only, kind-prefixed ontology paths (registry-governance rule 6), one file per entry, filename = id, steward-approved mints.",
+  "type": "object",
+  "required": ["id", "kind", "display_name", "definition"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^technique\\.[a-z0-9][a-z0-9.-]*$" },
+    "kind": { "const": "technique" },
+    "display_name": {
+      "type": "object",
+      "required": ["en"],
+      "properties": { "pt": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } },
+      "additionalProperties": false
+    },
+    "definition": { "type": "string", "minLength": 1 },
+    "primitive": {
+      "type": "string",
+      "pattern": "^primitive\\.[a-z0-9][a-z0-9.-]*$",
+      "description": "Optional association to the step primitive this gesture most directly executes; added when the primitive exists, never forced."
+    },
+    "teaches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label"],
+        "properties": { "label": { "type": "string" }, "url": { "type": "string", "format": "uri" } },
+        "additionalProperties": false
+      }
+    },
+    "media": { "type": "array", "items": { "type": "object" } },
+    "status": { "enum": ["active", "deprecated"], "default": "active" }
+  },
+  "additionalProperties": false
+}
