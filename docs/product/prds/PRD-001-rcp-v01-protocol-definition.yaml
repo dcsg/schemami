@@ -246,7 +246,7 @@ risks: []
 # median time-to-correct. OQ-4 → maturity field in each profile schema
 # (folded into FR-303/AC-303-1).
 open_questions:
-  - "OQ-2: Harness implementation language — a SPEC (how) decision, to be recorded as an ADR when made. The protocol-level whats are already fixed and must not be re-litigated by the harness choice: JSON Schema 2020-12 dialect and CUE-flavoured declarative constraints (DECISIONS #8). Decision inputs gathered 2026-08-02 (interview): (a) no backend exists or is planned in the ecosystem, so there is no admission point to align with — the DDD review's F5 shared-kernel warning is moot for now and the harness is a CI/local tool; (b) Daniel writes none of the code — implementation is agent-authored and Daniel-reviewed, so the criterion is 'best and most efficient for the job', delegated to the SPEC author; (c) the CUE integration shape (CLI step vs embed vs re-express) is decided in the same SPEC section as the language, since option 'embed' forces Go by itself."
+  - "OQ-2: Harness implementation language — a SPEC (how) decision, to be recorded as an ADR when made. The protocol-level whats are already fixed and must not be re-litigated by the harness choice: JSON Schema 2020-12 dialect and CUE-flavoured declarative constraints (DECISIONS #8). Decision inputs gathered 2026-08-02 (interview): (a) no backend exists or is planned in the ecosystem, so there is no admission point to align with — the DDD review's F5 shared-kernel warning is moot for now and the harness is a CI/local tool; (b) Daniel writes none of the code — implementation is agent-authored and Daniel-reviewed, so the criterion is 'best and most efficient for the job', delegated to the SPEC author; (c) the CUE integration shape (CLI step vs embed vs re-express) is decided in the same SPEC section as the language, since option 'embed' forces Go by itself; (d) Daniel's preference: Node.js/TypeScript is not banned, but choosing it requires very strong, explicitly argued reasons — the SPEC's comparative research carries the burden of proof for Node; absent that proof, prefer alternatives."
 
 # SPECs written against this PRD — maintained by /edikt:sdlc:spec
 source_specs: []
@@ -284,12 +284,16 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "OQ-2 decision inputs recorded from interview: no backend exists or is planned (F5 moot); implementation is agent-authored, Daniel-reviewed — language criterion delegated to SPEC as 'best and most efficient'; CUE integration shape decided alongside language; choice to be recorded as an ADR."
+  - at: "2026-08-02T16:58:39Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "OQ-2 input (d) added: Node.js/TypeScript not banned but requires very strong, explicitly argued reasons — burden of proof on Node in the SPEC's comparative research."
 
 # User extensions — LLM never writes here; commands never touch
 extensions: {}
 
 # Sync block — SHA-256 of .md and .yaml at last sync
 _sync:
-  md_hash: "d859e978bb9881602c10ff47f098b682524d4c2732471d2daf7f0bc76e323e31"
-  yaml_hash: "eae54a2e5803785360c42bb82ee27846bcba80bc6dcc92ae34f9ea02e8624b36"
-  synced_at: "2026-08-02T16:54:10Z"
+  md_hash: "7b99a0f30b68e6eddd776c519092e66f01d05c9c2253e636055705b944a13efc"
+  yaml_hash: "6868d10e6713de14d55cd0fc65620a3866c6d78e7bb283db302363e7a3865e42"
+  synced_at: "2026-08-02T16:59:39Z"

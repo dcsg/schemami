@@ -145,7 +145,10 @@ users can easily follow and understand the recipes."*
   and Daniel-reviewed, so the criterion is "best and most efficient for the
   job", delegated to the SPEC author; **(c)** the CUE integration shape
   (CLI step vs embed vs re-express) is decided in the same SPEC section,
-  since "embed" forces Go by itself.
+  since "embed" forces Go by itself; **(d)** Daniel's preference:
+  Node.js/TypeScript is not banned, but choosing it requires very strong,
+  explicitly argued reasons — the SPEC's comparative research carries the
+  burden of proof for Node; absent that proof, prefer alternatives.
 
 *Resolved 2026-08-02:* **OQ-1** → DECISIONS #23, kind-prefixed slugs
 (`ingredient.*` / `primitive.*` / `equipment.*`; example migration tracked
