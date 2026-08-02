@@ -36,8 +36,8 @@ features:
       outlive code on.
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #14", "DECISIONS #21", "DECISIONS #22"]
     realized_by: [FR-PR-001]
   - id: FEAT-CORE-002
@@ -52,8 +52,8 @@ features:
       catchable).
     personas: [rcp.verifier.editorial, rcp.cook.production-scaler, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #5"]
     realized_by: [FR-PR-002]
   - id: FEAT-REG-001
@@ -68,8 +68,8 @@ features:
       reference meaning, not strings.
     personas: [rcp.registry.steward, rcp.dev.surface-engineer]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #16", "DECISIONS #23"]
     realized_by: [FR-REG-001]
   - id: FEAT-REG-002
@@ -83,8 +83,8 @@ features:
       is what keeps ingestion from polluting the vocabulary.
     personas: [rcp.registry.steward, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #22", "DECISIONS #23"]
     realized_by: [FR-REG-002]
   - id: FEAT-PROF-001
@@ -97,8 +97,8 @@ features:
       is the one place the ecosystem already has real users.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-001]
   - id: FEAT-PROF-002
@@ -112,8 +112,8 @@ features:
       test.
     personas: [rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-002]
   - id: FEAT-PROF-003
@@ -127,8 +127,8 @@ features:
       hardening costs before the dogfood.
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-003]
   - id: FEAT-VAL-001
@@ -143,8 +143,8 @@ features:
       'examples are the regression suite' rule finally runs.
     personas: [rcp.dev.surface-engineer, rcp.registry.steward]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #8"]
     realized_by: [FR-VAL-001, FR-VAL-002]
   - id: FEAT-SAFE-001
@@ -158,8 +158,8 @@ features:
       Recipe Calculus (FEAT-CALC-001).
     personas: [rcp.verifier.editorial, rcp.cook.production-scaler, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: shipping
-    target: v0.1
+    status: shipped
+    target: v0.1 (tag rcp-v0.1, PRD-001 shipped 2026-08-02)
     trace: ["DECISIONS #15", "DECISIONS #22"]
     realized_by: [FR-SAFE-001]
 

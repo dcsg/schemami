@@ -8,7 +8,7 @@ features carry no implementation ids until they graduate into a PRD
 Personas are stable keys from [personas.md](../personas.md); ICP-1 =
 infrastructure (validated), ICP-2 = expansion (hypothesis, gated AT-2/AT-4).
 
-## Shipping — v0.1 (PRD-001 / SPEC-001)
+## Shipped — v0.1 (`rcp-v0.1` · PRD-001 shipped 2026-08-02)
 
 **FEAT-CORE-001 — Frozen, versioned core schema** → FR-PR-001
 One schema for any category (roles, basis, DAG, bounds), frozen with binding
