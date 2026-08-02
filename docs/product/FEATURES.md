@@ -5,7 +5,7 @@ personas, ICP mapping). Top of the traceability chain:
 **FEAT → FR (PRD) → SR/DS/CMP (SPEC) → plan → code.** Deferred and external
 features carry no implementation ids until they graduate into a PRD
 (`graduates_to:`), per the [traceability guideline](../guidelines/traceability.md).
-Personas are stable keys from [personas.md](../personas.md); ICP-1 =
+Version mapping: [ROADMAP.md](./ROADMAP.md). Personas are stable keys from [personas.md](../personas.md); ICP-1 =
 infrastructure (validated), ICP-2 = expansion (hypothesis, gated AT-2/AT-4).
 
 ## Shipped — v0.1 (`rcp-v0.1` · PRD-001 shipped 2026-08-02)
@@ -95,6 +95,20 @@ teaches-links, primitive tagging, substitution anchoring.
 machine-read vocabulary English-base; localized display generalizes the
 display_name{pt,en} pattern; integrations bind to stable identifiers.
 *surface-engineer, home-cook · ICP-1*
+
+**FEAT-REG-004 — Ontology grounding & cross-language matching** — FooDON/
+FDC/OFF cross-refs; extraction proposes canonical English classes; ledger
+groups by proposal (the cebola/onion fix). *registry-steward,
+personal-collector · ICP-1*
+
+**FEAT-REG-005 — Derived search index (edges + facets)** (#7, #10, #21) —
+rebuildable rcp_edges projection + prefix/role/facet queries: find
+cinnamon in any form. *home-cook, personal-collector, surface-engineer ·
+ICP-1*
+
+**FEAT-CORE-005 — Dogfood field additions** — times, difficulty, storage,
+source detail: the ADDITION-class fields five real pages asked for.
+Target: v0.2. *personal-collector, home-cook · ICP-1*
 
 **FEAT-PUB-001 — Verified publish-time resolution** (#21, obligation 3)
 resolver_version + content hashes pinned in published documents — resolver

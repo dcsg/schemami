@@ -25,13 +25,21 @@ deferred until a second contributor actually exists.
    - Flour types are always explicit (T65, T80, T130, …).
    - Display names may be localized (pt-PT terms kept exact — massa velha ≠
      isco); the ID is not.
-6. **Required fields before merge**: stable ID, kind (ingredient class /
+6. **IDs are ontology paths.** The dot-namespaced id encodes the taxonomy
+   (`ingredient.spice.cinnamon.ground`): functionally distinct forms of
+   one ingredient MUST be siblings under the shared node
+   (`…cinnamon.ground` / `…cinnamon.stick` — ground disperses, the stick
+   infuses and is removed; never 1:1 substitutable). Form-as-gesture
+   (grinding at use, melting, dicing) is `prep` on the usage and NEVER
+   mints. Consumers MUST be able to resolve an ingredient family by id
+   prefix (`ingredient.spice.cinnamon.*` finds every form).
+7. **Required fields before merge**: stable ID, kind (ingredient class /
    primitive / equipment profile), display name, definition prose, and the
    machine-read fields the schema demands for that kind (e.g. functional
    roles for ingredient classes, parameters for equipment profiles). An
    entry that a machine reads must be complete for the maths it
    participates in.
-7. **No invention at ingestion time.** The extraction pipeline may only map
+8. **No invention at ingestion time.** The extraction pipeline may only map
    to existing registry entries or flag a gap for review — it never mints
    IDs. New entries always arrive through this process.
 

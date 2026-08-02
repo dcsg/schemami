@@ -290,6 +290,63 @@ features:
     trace: ["DECISIONS #24", "registry-governance guideline (IDs never localized)"]
     graduates_to: null
 
+  - id: FEAT-REG-004
+    name: "Ontology grounding & cross-language matching"
+    description: >-
+      Every registry class anchored to external ontologies via cross_refs
+      (FooDON as the food-ontology spine; FDC/OFF for nutrition/product
+      data), and the ingestion pipeline made language-aware: extraction
+      proposes the canonical English class for each unresolved item
+      (cebola -> onion at extraction time, where the knowledge exists),
+      and the gap ledger groups by proposal instead of raw-string
+      normalization — the fix for the cross-language consolidation
+      blindness dogfood run #5 exposed. Builds on the ontology-paths rule
+      (registry-governance rule 6): IDs are taxonomy paths, families
+      resolve by prefix.
+    personas: [rcp.registry.steward, rcp.ingester.personal-collector]
+    icp: ICP-1
+    status: deferred
+    target: v1
+    trace: ["registry-governance rule 6 (2026-08-02)", "research 02:367-378 (cross-refs)", "dogfood run #5 finding"]
+    graduates_to: null
+
+  - id: FEAT-REG-005
+    name: "Derived search index (edges + facets over the ontology)"
+    description: >-
+      The find-anything layer, per DECISIONS #7 (no graph DB — documents
+      are the record, edges projected): a derived, always-rebuildable
+      edge index (research 07 rcp_edges: recipe -uses-class-> ingredient,
+      uses-equipment, component-of, substitutes) combined with prefix
+      queries over ontology paths (ingredient.spice.cinnamon.* finds
+      ground AND stick), role queries (everything that leavens), and the
+      #10 derived facets (time, diets, techniques, main ingredients).
+      Four axes, zero new protocol machinery. Informative surface
+      (DECISIONS #21) — implementable in-repo as tooling or app-side.
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
+    icp: ICP-1
+    status: deferred
+    target: v1
+    trace: ["DECISIONS #7", "DECISIONS #10", "DECISIONS #21", "research 07:396-420"]
+    graduates_to: null
+
+  - id: FEAT-CORE-005
+    name: "Dogfood field additions (times, difficulty, storage, source detail)"
+    description: >-
+      The small ADDITION-class core fields five real cookbook pages asked
+      for and v0.1 parked in description prose: recipe-level
+      preparation/cooking/chilling time metadata (books state them;
+      research 04 wanted hands-on vs total), a difficulty asserted facet
+      (DECISIONS #10 lists it; taxonomy lacks it), storage guidance
+      (pastry profile's hardened block rejects it today), and a
+      provenance source-detail field (book/page). Each is additive and
+      MODEL-1-legal per VERSIONING.md.
+    personas: [rcp.ingester.personal-collector, rcp.cook.home-cook]
+    icp: ICP-1
+    status: deferred
+    target: v0.2 (proposed — the dogfood-taught release)
+    trace: ["dogfood runs #1-#5 findings", "DECISIONS #10", "research 04:76-80"]
+    graduates_to: null
+
   - id: FEAT-PUB-001
     name: "Verified publish-time reference resolution (resolver_version + content hashes)"
     description: >-
