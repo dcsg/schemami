@@ -38,8 +38,8 @@ phases:
 | 6     | done | 1/5 | 2026-08-02 |
 | 7     | done | 1/5 | 2026-08-02 |
 | 8     | done | 1/5 | 2026-08-02 |
-| 9     | in-progress | 1/5 | 2026-08-02 |
-| 10    | pending | 0/5 | - |
+| 9     | done | 1/5 | 2026-08-02 |
+| 10    | done | 1/5 | 2026-08-02 |
 
 **IMPORTANT:** Update this table as phases complete. This table is the persistent state that survives context compaction.
 
