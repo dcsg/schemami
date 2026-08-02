@@ -1,0 +1,19 @@
+# POSITIVE edge fixture (negroni-stir bug class, corrected form): options
+# and execution modes guarding together — every combination yields a
+# complete DAG when the dependent step carries the SAME mode guard.
+rcp: 1
+id: fx-guards-combined
+kind: component
+name: { en: Correctly combined guards }
+options:
+  - { id: extra, kind: toggle, default: false }
+execution_modes:
+  - { id: single, technique: none }
+  - { id: batch, technique: none }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 100, unit: g } }
+steps:
+  - { id: a, primitive: { id: primitive.mix, v: 1 }, uses: [x], when: { execution_mode: single } }
+  - { id: b, primitive: { id: primitive.fold, v: 1 }, after: [a], when: { execution_mode: single } }
+  - { id: c, primitive: { id: primitive.combine, v: 1 }, uses: [x], when: { execution_mode: batch } }
+  - { id: d, primitive: { id: primitive.heat, v: 1 }, after: [b], when: { option: extra, execution_mode: single } }

@@ -252,6 +252,38 @@ scenarios:
             target_contract: "refused — uncertainty defaults to refusal (AC-SAFE-001-2)"
             _note: "constraint whose basis cannot resolve must not silently pass"
 
+  - name: "edge-regression-suite"
+    purpose: "unit tests — schema strictness boundary + session bug-classes, so none silently returns"
+    location: tools/rcplint/edge_test.go (+ testdata/l2/)
+    entities:
+      - entity: case
+        records:
+          - id: schema-edges
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestSchemaEdges"
+            verified_at: "2026-08-02T20:28:01Z"
+            _note: "11 pinned edges: x- accepted at root only (VERSIONING.md posture), typos rejected everywhere, negative/zero amounts rejected, closed kind enum, slug case, ingredients-or-components required, steps:[] accepted (restricting = MODEL bump)"
+          - id: duplicate-yaml-keys
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestDuplicateYAMLKeysRejected"
+            verified_at: "2026-08-02T20:28:01Z"
+            _note: "the forno-lenha escape: permissive loaders swallow dup keys; the Go loader must reject"
+          - id: uses-produced-ok
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestUsesResolvesProducedIntermediates"
+            verified_at: "2026-08-02T20:28:01Z"
+            _note: "positive twin of the massa-autolisada false positive"
+          - id: guards-combined-ok
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestCombinedGuardsCorrectFormClean"
+            verified_at: "2026-08-02T20:28:01Z"
+            _note: "positive twin of the negroni-stir defect: option x mode guards, every combination a complete DAG"
+          - id: clamp-identity-and-multidoc
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run 'TestClampIdentityScale|TestMultiDocCountExact'"
+            verified_at: "2026-08-02T20:28:01Z"
+            _note: "scale x1.0 is identity; other-categories holds exactly 5 documents (silent doc-dropping is the failure mode)"
+
 relationships:
   - "l2/undeclared-basis fixture is reused as the clamp uncertainty input — keep them identical"
   - "positive-suite entries are the live examples/ files, never copied into testdata/"

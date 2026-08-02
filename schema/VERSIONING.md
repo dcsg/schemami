@@ -38,6 +38,15 @@ There are no bug fixes for a schema — only these change classes:
 - Profiles may add and tighten but never remove or redefine a core field
   (SSP-002): a core-only consumer always renders any valid document.
 
+### Extension scope (pinned by the edge-regression suite)
+
+The `x-` vendor-extension bucket exists at the **document root only** in
+MODEL 1 — `x-*` inside nested objects (ingredients, steps…) does not
+validate. Widening to per-node extensions would be an ADDITION and may
+happen later; narrowing never will. Typo'd fields are rejected everywhere
+(virtuous intolerance): the writer side stays strict so the reader side's
+tolerance means something.
+
 ## Decode-compatibility contract (binding, DECISIONS #14)
 
 "Data outlives code." Every reader implementation MUST:

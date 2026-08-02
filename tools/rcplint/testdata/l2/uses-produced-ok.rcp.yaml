@@ -1,0 +1,11 @@
+# POSITIVE edge fixture (massa-autolisada bug class): a step consuming a
+# produced intermediate via uses: must lint clean.
+rcp: 1
+id: fx-uses-produced
+kind: component
+name: { en: Produced-intermediate consumption }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 100, unit: g } }
+steps:
+  - { id: a, primitive: { id: primitive.mix, v: 1 }, uses: [x], produces: massa-intermedia }
+  - { id: b, primitive: { id: primitive.fold, v: 1 }, after: [a], uses: [massa-intermedia] }
