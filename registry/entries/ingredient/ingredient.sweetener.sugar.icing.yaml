@@ -1,0 +1,14 @@
+id: ingredient.sweetener.sugar.icing
+kind: ingredient-class
+display_name:
+  pt: Açúcar em pó
+  en: Icing sugar
+definition: Powdered sugar with fine dissolution behaviour — functionally distinct from granulated white
+  sugar despite the name similarity (steward call, gap ledger 2026-08-02).
+roles:
+- sweetener
+aliases:
+- icing sugar
+- powdered sugar
+- confectioners' sugar
+- açúcar em pó

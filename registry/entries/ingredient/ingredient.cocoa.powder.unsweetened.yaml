@@ -1,0 +1,12 @@
+id: ingredient.cocoa.powder.unsweetened
+kind: ingredient-class
+display_name:
+  pt: Cacau em pó
+  en: Unsweetened cocoa powder
+definition: Unsweetened cocoa powder; flavour and colour, no added sugar.
+roles:
+- flavour
+- colourant
+aliases:
+- cocoa powder
+- cacau em pó

@@ -1,0 +1,11 @@
+id: ingredient.sweetener.honey
+kind: ingredient-class
+display_name:
+  pt: Mel
+  en: Honey
+definition: Honey; sweetener with distinct flavour and hygroscopy.
+roles:
+- sweetener
+- flavour
+density:
+  g_per_ml: 1.42

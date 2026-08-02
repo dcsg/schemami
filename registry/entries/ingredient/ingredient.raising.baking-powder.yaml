@@ -1,0 +1,12 @@
+id: ingredient.raising.baking-powder
+kind: ingredient-class
+display_name:
+  pt: Fermento em pó
+  en: Baking powder
+definition: Chemical raising agent (leavening.chemical in the fine-grained role taxonomy); first chemical
+  leavening in the registry.
+roles:
+- leaven
+aliases:
+- baking powder
+- fermento em pó
