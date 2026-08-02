@@ -1,0 +1,294 @@
+# Worked example 1 — heritage bread, real data.
+# Source of truth today: site/src/calc/breadRecipes.ts:36 + site/src/data/recipeContent.ts
+#   alentejano: blend { f65: 6000, f110: 750, trigo_rijo: 750 },
+#              agua 4800, banha 180, mv 2850, mm 1900, sal 270
+# This file shows that same recipe with zero information loss, plus the things
+# the current struct cannot hold: step DAG, sensory gates, media, substitutions.
+
+rcp: 1
+id: pao-alentejano
+kind: bread
+lang: pt-PT
+
+name:
+  pt: Pão Alentejano
+  en: Alentejo Bread
+
+taxonomy:
+  category: pao
+  subcategory: [trigo, massa-velha, regional]
+tags: [alentejo, forno-a-lenha, dupla-fermentacao]
+
+origin:
+  country: PT
+  region: Alentejo
+
+# ── Bases: what percentages are "of". Replaces the hardcoded flour pivot. ──
+bases:
+  flour:
+    sum: ingredients
+    where: { roles: [flour] }
+    include_components: true      # preferment flour counts toward total flour
+
+scaling:
+  pivot: flour
+  default_yield: { units: 3, unit_weight: { value: 900, unit: g } }
+
+ingredients:
+  - id: t65
+    item: flour.wheat.t65
+    amount: { value: 6000, unit: g }
+    roles: [flour]
+
+  - id: t110
+    item: flour.wheat.t110
+    amount: { value: 750, unit: g }
+    roles: [flour]
+
+  - id: rijo
+    item: flour.wheat.rijo
+    amount: { value: 750, unit: g }
+    roles: [flour]
+    note:
+      pt: Trigo rijo — variedade tradicional alentejana.
+      en: Durum-type wheat, the traditional Alentejo variety.
+
+  - id: agua
+    item: water
+    amount: { value: 4800, unit: g }
+    roles: [hydration]
+
+  - id: banha
+    item: fat.lard
+    amount: { value: 180, unit: g }
+    roles: [fat, tenderiser]
+
+  - id: mv
+    item: preferment.massa-velha
+    amount: { value: 2850, unit: g }
+    roles: [leaven, flavour, acid]
+    component: massa-velha
+    note:
+      pt: Massa velha — massa guardada da fornada anterior. Não confundir com isco.
+      en: Old dough kept back from the previous bake. Not the same as isco.
+
+  - id: mm
+    item: culture.sourdough.trigo
+    amount: { value: 1900, unit: g }
+    roles: [leaven]
+    component: massa-mae
+
+  - id: sal
+    item: salt.sea.fine
+    amount: { value: 270, unit: g }
+    roles: [salt, flavour, fermentation-control]
+
+# ── Components: sub-recipes whose output is an ingredient above. ──
+components:
+  - id: massa-mae
+    kind: component
+    name: { pt: Massa-mãe, en: Sourdough starter }
+    maintenance: true              # recurring, not one-shot — survives the bake
+    min_batch: { value: 100, unit: g }
+    feed_ratio: "1:5:5"
+    ingredients:
+      - { id: mm-seed,  item: culture.sourdough.trigo, amount: { ratio: 1, of: mm-feed }, roles: [leaven] }
+      - { id: mm-flour, item: flour.wheat.t65,         amount: { ratio: 5, of: mm-feed }, roles: [flour] }
+      - { id: mm-agua,  item: water,                   amount: { ratio: 5, of: mm-feed }, roles: [hydration] }
+    steps:
+      - id: refresh
+        primitive: { id: refresh-culture, v: 1 }
+        duration: { min: 4h, target: 6h, max: 8h }
+        temperature: { target: 24, unit: C }
+        until:
+          - { kind: volume, change: "+100%" }
+          - { kind: sensory, test: float, expect: "flutua em água" }
+
+  - id: massa-velha
+    kind: component
+    name: { pt: Massa velha, en: Old dough }
+    carried_over: true             # backslopped: output of batch N-1 is input of batch N
+    ingredients:
+      - { id: mv-carry, item: preferment.massa-velha, amount: { value: 2850, unit: g }, roles: [leaven] }
+
+# ── Options: author-declared choices that reshape the method. Skipping
+#    autolise is NOT a deletion — it selects the other fully-authored path,
+#    where the mix step takes all ingredients and runs longer. ──
+options:
+  - id: autolise
+    kind: toggle
+    default: false
+    label: { pt: Autólise, en: Autolyse }
+    note:
+      pt: Com autólise a mistura final é mais curta e o glúten desenvolve-se sozinho.
+      en: With autolyse the final mix is shorter; gluten develops on its own.
+
+# ── Steps: a DAG. `after` is omitted where the order is simply sequential.
+#    Both mix variants produce `massa-misturada`; downstream steps anchor on
+#    that intermediate, so neither path leaves a dangling dependency. ──
+steps:
+  - id: refrescar
+    primitive: { id: refresh-culture, v: 1 }
+    track: prep
+    uses: [mm]
+    title: { pt: Refrescar a massa-mãe, en: Refresh the starter }
+    duration: { min: 4h, target: 6h, max: 8h }
+    until: [{ kind: volume, change: "+100%" }]
+
+  - id: autolise
+    primitive: { id: autolyse, v: 1 }
+    when: { option: autolise }
+    uses: [t65, t110, rijo, agua]
+    produces: massa-autolisada
+    title: { pt: Autólise, en: Autolyse }
+    duration: { min: 30m, target: 1h, max: 2h }
+    note:
+      pt: Só farinhas e água. Sem sal, sem fermentos.
+      en: Flours and water only. No salt, no leavens.
+
+  - id: misturar
+    primitive: { id: mix, v: 1 }
+    when: { not: { option: autolise } }
+    after: [refrescar]
+    uses: [t65, t110, rijo, agua, mv, mm]
+    produces: massa-misturada
+    title: { pt: Amassar, en: Mix }
+    duration: { min: 12m, target: 15m, max: 20m }
+    note:
+      pt: Junta o sal só depois da massa ganhar coesão.
+      en: Add the salt only once the dough has come together.
+
+  - id: misturar-pos-autolise
+    primitive: { id: mix, v: 1 }
+    when: { option: autolise }
+    after: [refrescar, massa-autolisada]
+    uses: [massa-autolisada, mv, mm]
+    produces: massa-misturada
+    title: { pt: Misturar após autólise, en: Mix after autolyse }
+    duration: { min: 6m, target: 8m, max: 10m }
+    note:
+      pt: Mais curto — o glúten já começou a desenvolver-se sozinho.
+      en: Shorter — the gluten has already begun developing on its own.
+
+  - id: juntar-sal-banha
+    primitive: { id: incorporate, v: 1 }
+    after: [massa-misturada]
+    uses: [sal, banha]
+    repeat: { times: 3, note: "banha em 3 adições, cada uma absorvida antes da seguinte" }
+    cues:
+      - condition: { pt: a banha separar-se da massa, en: the lard pools on the surface }
+        action:
+          pt: Estás a juntar demasiado de uma vez — dobra a massa sobre si e adiciona em porções menores.
+          en: You are adding too much at once — fold the dough over itself and add in smaller portions.
+
+  - id: bulk
+    primitive: { id: bulk-ferment, v: 1 }
+    after: [juntar-sal-banha]
+    title: { pt: Primeira fermentação, en: Bulk fermentation }
+    duration: { min: 4h, target: 4h30m, max: 5h }
+    temperature: { target: 22, unit: C }
+    scales_with: temperature
+    until:
+      - { kind: volume, change: "+100%" }
+      - { kind: sensory, test: poke, expect: "volta lentamente" }
+    media:
+      - { role: result, type: photo, uri: media/alentejano-bulk.jpg, licence: "© all rights reserved" }
+
+  - id: tender
+    primitive: { id: shape, v: 1 }
+    after: [bulk]
+    title: { pt: Tender, en: Shape }
+    media:
+      - role: technique
+        type: video
+        uri: media/alentejano-moldagem.mp4
+        licence: "© all rights reserved"
+        note: { pt: O gesto de tender alentejano., en: The Alentejo shaping gesture. }
+
+  - id: levedar
+    primitive: { id: proof, v: 1 }
+    after: [tender]
+    title: { pt: Segunda fermentação, en: Second proof }
+    duration: { min: 1h, target: 1h30m, max: 2h }
+    scales_with: temperature
+
+  - id: cozer
+    primitive: { id: bake, v: 1 }
+    after: [levedar]
+    title: { pt: Cozer, en: Bake }
+    temperature: { target: 240, unit: C, falling_to: 210 }
+    duration: { min: 50m, target: 60m, max: 70m }
+    until:
+      - { kind: core-temperature, value: 96, unit: C }
+      - { kind: sensory, test: tap, expect: "som oco" }
+    equipment: [forno-lenha, forno-domestico-com-vapor]
+
+  - id: arrefecer
+    primitive: { id: cool, v: 1 }
+    after: [cozer]
+    title: { pt: Arrefecer, en: Cool }
+    duration: { min: 2h, target: 4h }
+    note:
+      pt: Cortar antes disto deixa o miolo gomoso.
+      en: Cutting before this leaves the crumb gummy.
+
+# ── Substitutions. Author-level; these win over the global catalog. ──
+# Scope is not only ingredients: `steps`/`section` swaps replace how a part of
+# the method is done; `component` swaps replace an entire sub-recipe.
+substitutions:
+  - scope: steps
+    replaces: [misturar]
+    class: technique-forcing
+    quality: 5
+    with_steps:
+      - id: misturar-batedeira
+        primitive: { id: mix-machine, v: 1 }
+        uses: [t65, t110, rijo, agua, mv, mm]
+        params: { speed: 1, then_speed: 2 }
+        duration: { min: 8m, target: 10m, max: 12m }
+        equipment: [batedeira-espiral]
+        title: { pt: Amassar na batedeira, en: Machine knead }
+        until: [{ kind: sensory, test: windowpane, expect: "membrana translúcida sem rasgar" }]
+    note:
+      pt: Mesmo resultado, técnica diferente — o passo substituto produz o mesmo intermédio.
+      en: Same outcome, different technique — the replacement step yields the same intermediate.
+
+  - replaces: banha
+    with: fat.olive-oil
+    ratio: 1.0
+    class: direct
+    quality: 4
+    loses: [tenderiser]
+    note:
+      pt: Torna o pão menos macio e altera o sabor. Aceite em várias aldeias.
+      en: Gives a less tender crumb and a different flavour. Attested in several villages.
+
+  - replaces: [mv, mm]
+    with: yeast.fresh
+    amount: { ratio: 0.02, of: flour }
+    class: method-changing
+    quality: 2
+    when_applied:
+      remove_steps: [refrescar]
+      patch:
+        - step: bulk
+          set: { duration: { min: 1h30m, target: 2h, max: 2h30m } }
+      warn:
+        pt: Deixa de ser Pão Alentejano no sentido tradicional — perde a dupla fermentação e a acidez.
+        en: This stops being Pão Alentejano in the traditional sense — it loses the double fermentation and the acidity.
+
+provenance:
+  confidence: HIGH
+  status: published
+  sources:
+    - { label: "DGADR — Produtos Tradicionais Portugueses", url: "https://tradicional.dgadr.gov.pt/" }
+    - { label: "Alentejo Turismo — Pão Alentejano", url: "https://alentejoturismo.pt/pao-alentejano/" }
+  divergences:
+    - topic: { pt: Uso de banha, en: Use of lard }
+      versions:
+        - claim: { pt: A banha é tradicional na zona de Évora., en: Lard is traditional around Évora. }
+        - claim: { pt: O pão alentejano clássico não leva gordura., en: Classic Alentejo bread contains no fat. }
+
+licence:
+  text: CC-BY-4.0
+  media: "© all rights reserved"

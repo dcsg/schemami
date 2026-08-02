@@ -1,0 +1,367 @@
+# Worked examples 2–4 — proving the "one core + per-category profile" claim.
+# Same core vocabulary as alentejano.rcp.yaml (ingredients+roles, bases, step
+# DAG, constraints, substitutions). Only the `profile` block differs per kind.
+
+# ═══════════════════════════════════════════════════════════════════════
+# 2. DRINK — ratio-first, dilution as a phantom ingredient, execution modes
+# ═══════════════════════════════════════════════════════════════════════
+---
+rcp: 1
+id: negroni
+kind: drink
+lang: en
+
+name: { en: Negroni, pt: Negroni }
+taxonomy: { category: cocktail, subcategory: [stirred, aperitivo, spirit-forward] }
+tags: [classic, iba, equal-parts]
+
+# The recipe is genuinely 1:1:1 with NO absolute quantities until instantiated.
+bases:
+  spec: { sum: ingredients, where: { roles: [spirit, bitter, aromatised-wine] } }
+
+scaling:
+  mode: ratio-first
+  default_yield: { servings: 1, serving_volume: { value: 90, unit: ml } }
+
+ingredients:
+  - { id: gin,      item: spirit.gin.london-dry, amount: { parts: 1 }, roles: [spirit] }
+  - { id: campari,  item: liqueur.bitter.campari, amount: { parts: 1 }, roles: [bitter] }
+  - { id: vermouth, item: wine.vermouth.sweet,    amount: { parts: 1 }, roles: [aromatised-wine] }
+
+# Dilution: water that exists in the finished drink but is poured from no bottle.
+# Implicit when stirred over ice; MUST become explicit when batched.
+execution_modes:
+  - id: single
+    technique: stir
+    equipment: [mixing-glass, large-cube]
+    dilution: { ratio: 0.20, of: spec, source: ice }   # not a listed ingredient
+  - id: batch
+    technique: none
+    dilution: { ratio: 0.20, of: spec, source: added-water }
+    adds_ingredient:
+      { id: agua, item: water, amount: { ratio: 0.20, of: spec }, roles: [dilution] }
+    warn:
+      en: Batched Negronis get no dilution from ice. Omitting this water makes the batch ~20% over-strength.
+
+steps:
+  - id: build
+    primitive: { id: combine, v: 1 }
+    uses: [gin, campari, vermouth]
+    when: { execution_mode: single }
+  - id: stir
+    primitive: { id: stir, v: 1 }
+    after: [build]
+    duration: { min: 20s, target: 30s, max: 40s }
+    until: [{ kind: sensory, test: touch, expect: "glass frosted" }]
+    media: [{ role: technique, type: video, uri: media/stir-technique.mp4, licence: "© all rights reserved" }]
+  - id: batch-combine
+    primitive: { id: combine, v: 1 }
+    uses: [gin, campari, vermouth, agua]
+    when: { execution_mode: batch }
+
+serving:
+  glassware: rocks
+  ice: large-cube
+  garnish: { item: citrus.orange, prep: expressed-peel }
+  temperature: { target: 4, unit: C }
+
+derived:
+  - { id: final_abv, compute: abv, from: [ingredients, dilution] }
+
+substitutions:
+  - replaces: gin
+    with: spirit.mezcal
+    ratio: 1.0
+    class: balance-forcing          # ratio holds, sensory identity does not
+    quality: 3
+    note: { en: "Ratio is unchanged, but this is a different drink. Do not claim equivalence." }
+  - replaces: campari
+    with: liqueur.bitter.non-alcoholic
+    ratio: 1.0
+    class: compensation-forcing
+    quality: 2
+    requires_additions:
+      - { id: citric, item: acid.citric, amount: { ratio: 0.005, of: spec }, roles: [acid] }
+      - { id: hibiscus, item: tannin.hibiscus, amount: { value: 1, unit: dash }, roles: [tannin] }
+    when_applied:
+      patch: [{ step: stir, set: { duration: { min: 15s, target: 20s, max: 25s } } }]
+    note: { en: NA bitters lack alcohol's body; acid and tannin restore structure. }
+
+profile:                            # ← drink profile only
+  abv_disclosure: required
+  dilution_model: arnold
+  batch_shelf_life: { value: 30, unit: day, refrigerated: true }
+
+# ═══════════════════════════════════════════════════════════════════════
+# 3. FERMENT — safety-critical bounds that scaling may not violate
+# ═══════════════════════════════════════════════════════════════════════
+---
+rcp: 1
+id: chucrute
+kind: ferment
+lang: pt-PT
+
+name: { pt: Chucrute, en: Sauerkraut }
+taxonomy: { category: conserva, subcategory: [lacto-fermentado, vegetal] }
+
+# Pivot is trimmed vegetable weight — not flour, not total. Same `bases` machinery.
+bases:
+  vegetable: { sum: ingredients, where: { roles: [substrate] } }
+
+scaling: { pivot: vegetable }
+
+ingredients:
+  - id: couve
+    item: vegetable.cabbage.white
+    amount: { value: 1000, unit: g }
+    roles: [substrate]
+    prep: { cut: shredded, note: { pt: Fina., en: Finely. } }
+
+  - id: sal
+    item: salt.sea.fine
+    amount: { ratio: 0.02, of: vegetable }
+    roles: [salt, preservative, fermentation-control]
+    constraints:
+      - min_ratio: 0.02
+        of: vegetable
+        severity: critical
+        reason:
+          pt: Abaixo de 2% a fermentação láctica não é fiável nem segura.
+          en: Below 2% brine, lacto-fermentation is not reliably safe.
+      - max_ratio: 0.035
+        of: vegetable
+        severity: warn
+        reason: { en: Above ~3.5% fermentation stalls. }
+
+steps:
+  - id: salgar
+    primitive: { id: salt-and-massage, v: 1 }
+    uses: [couve, sal]
+    duration: { min: 5m, target: 10m }
+    until: [{ kind: sensory, test: visual, expect: "liberta líquido suficiente para cobrir" }]
+
+  - id: fermentar
+    primitive: { id: ferment, v: 1 }
+    after: [salgar]
+    duration: { min: 7d, target: 21d, max: 42d }
+    temperature: { target: 18, unit: C, min: 15, max: 22 }
+    scales_with: temperature
+    scaling: fixed                  # ← ferment time does NOT scale with batch size
+    until:
+      - { kind: pH, op: "<", value: 4.0 }
+      - { kind: sensory, test: smell, expect: "ácido láctico, não pútrido" }
+    triggers:
+      - { kind: recurring, first: 1d, increment: 1d, times: 7,
+          action: burp, note: { pt: Libertar gás diariamente., en: Release gas daily. } }
+    media:
+      - role: result
+        type: photo
+        uri: media/chucrute-bolhas.jpg
+        licence: "© all rights reserved"
+        note: { pt: Fermentação saudável — bolhas finas., en: Healthy ferment — fine bubbles. }
+      - role: failure
+        type: photo
+        uri: media/kahm-vs-bolor.jpg
+        licence: "© all rights reserved"
+        note: { pt: Levedura kahm (inofensiva) vs bolor (deitar fora)., en: Kahm yeast (harmless) vs mould (discard). }
+
+profile:                            # ← ferment profile only
+  ferment_type: lacto
+  safety_gate: { ph_max: 4.0, brine_min_pct: 2.0 }
+  vessel_headspace: { ratio: 0.15, scaling: fixed }
+
+# ═══════════════════════════════════════════════════════════════════════
+# 4. CROSS-CATEGORY — the case that separate protocols could not express
+# ═══════════════════════════════════════════════════════════════════════
+---
+rcp: 1
+id: pasteis-de-nata
+kind: pastry
+lang: pt-PT
+
+name: { pt: Pastéis de Nata, en: Portuguese Custard Tarts }
+taxonomy: { category: pastelaria, subcategory: [folhada, creme] }
+
+# One recipe, three components, each of a DIFFERENT category.
+# This is why the core must be shared across profiles.
+components:
+  - id: massa-folhada
+    kind: bread                     # ← laminated dough: a BREAD-profile component
+    name: { pt: Massa folhada enrolada, en: Rolled laminated dough }
+    bases: { flour: { sum: ingredients, where: { roles: [flour] } } }
+    ingredients:
+      - { id: mf-farinha, item: flour.wheat.t55, amount: { value: 500, unit: g }, roles: [flour] }
+      - { id: mf-agua,    item: water,           amount: { ratio: 0.55, of: flour }, roles: [hydration] }
+      - { id: mf-sal,     item: salt.sea.fine,   amount: { ratio: 0.02, of: flour }, roles: [salt] }
+      - { id: mf-manteiga, item: fat.butter,     amount: { ratio: 0.60, of: flour }, roles: [fat, lamination] }
+    steps:
+      - id: mf-lamina
+        primitive: { id: laminate, v: 1 }
+        params: { geometry: spiral }   # NOT stacked turns — the nata log method
+        repeat: { times: 3 }
+        rest: { min: 30m, target: 45m, max: 2h }
+        temperature: { max: 18, unit: C, reason: { en: Above this the butter breaks out. } }
+        media: [{ role: technique, type: video, uri: media/nata-enrolar.mp4, licence: "© all rights reserved" }]
+
+  - id: calda
+    kind: component                 # ← sugar syrup cooked to a NAMED STAGE
+    name: { pt: Calda de açúcar, en: Sugar syrup }
+    ingredients:
+      - { id: c-acucar, item: sweetener.sugar.white, amount: { value: 300, unit: g }, roles: [sweetener] }
+      - { id: c-agua,   item: water,                 amount: { value: 150, unit: g }, roles: [hydration] }
+      - { id: c-limao,  item: citrus.lemon.peel,     amount: { value: 1, unit: piece }, roles: [aromatic] }
+    steps:
+      - id: c-ferver
+        primitive: { id: cook-syrup, v: 1 }
+        temperature:
+          stage: thread             # registry-backed stage vocabulary
+          target: 108
+          unit: C
+          altitude_correction: { per_300m: -1, unit: C }
+
+  - id: creme
+    kind: component                 # ← a custard, with a tolerance band
+    name: { pt: Creme, en: Custard }
+    ingredients:
+      - { id: cr-leite,  item: dairy.milk.whole,     amount: { value: 500, unit: g }, roles: [hydration] }
+      - { id: cr-farinha, item: flour.wheat.t55,     amount: { value: 50, unit: g },  roles: [thickener] }
+      - { id: cr-gemas,  item: egg.yolk,             amount: { value: 6, unit: piece },
+          roles: [binder, emulsifier, colourant] }
+    steps:
+      - id: cr-cozer
+        primitive: { id: cook-custard, v: 1 }
+        temperature: { target: 82, min: 80, max: 84, unit: C }
+        until: [{ kind: sensory, test: nappe, expect: "cobre as costas da colher" }]
+        cues:
+          - condition: { pt: o creme talhar, en: the custard splits }
+            action: { pt: Varinha mágica re-emulsiona; coar e arrefecer rápido.,
+                      en: An immersion blender re-emulsifies; strain and chill fast. }
+
+steps:
+  - id: montar
+    primitive: { id: assemble, v: 1 }
+    after: [massa-folhada, calda, creme]     # ← DAG join across three components
+    uses: [massa-folhada, creme]
+
+  - id: cozer
+    primitive: { id: bake, v: 1 }
+    after: [montar]
+    temperature: { target: 280, unit: C }
+    duration: { min: 10m, target: 12m, max: 15m }
+    until:
+      - { kind: visual, expect: "manchas escuras (leopardo) no creme" }   # localized char, not even browning
+    equipment: [forno-alta-temperatura]
+
+profile:
+  laminated: true
+  serve_within: { value: 4, unit: hour }
+
+# ═══════════════════════════════════════════════════════════════════════
+# 5. COMPONENT BY REFERENCE — a generic recipe reused inside another.
+#    The ganache is a normal published recipe (below); the brownie includes
+#    it BY REFERENCE with a pinned version, a draw amount, and a
+#    reference-site override. No special "base recipe" type exists —
+#    being a base is curation (packs, kind: component), not essence.
+# ═══════════════════════════════════════════════════════════════════════
+---
+rcp: 1
+id: ganache-chocolate
+kind: component
+lang: pt-PT
+
+name: { pt: Ganache de chocolate, en: Chocolate ganache }
+taxonomy: { category: base, subcategory: [chocolate, creme] }
+
+scaling:
+  default_yield: { total: { value: 500, unit: g } }
+
+ingredients:
+  - { id: chocolate, item: chocolate.dark.60, amount: { value: 250, unit: g }, roles: [flavour, fat] }
+  - { id: natas, item: dairy.cream.35, amount: { ratio: 1.0, of: choc }, roles: [fat, hydration] }
+
+bases:
+  choc: { ingredient: chocolate }
+
+steps:
+  - id: aquecer
+    primitive: { id: heat, v: 1 }
+    uses: [natas]
+    temperature: { target: 85, max: 90, unit: C }
+    until: [{ kind: visual, expect: "fumega, sem ferver" }]
+  - id: emulsionar
+    primitive: { id: emulsify, v: 1 }
+    after: [aquecer]
+    uses: [chocolate]
+    produces: ganache
+    until: [{ kind: visual, expect: "brilhante e homogénea" }]
+    cues:
+      - condition: { pt: a ganache talhar (gordura separada), en: the ganache splits }
+        action: { pt: Junta um fio de natas frias e emulsiona de novo., en: Add a splash of cold cream and re-emulsify. }
+        recoverable: true
+
+provenance: { confidence: HIGH, status: published }
+
+---
+rcp: 1
+id: brownie-ganache
+kind: pastry
+lang: pt-PT
+
+name: { pt: Brownie com ganache, en: Ganache brownie }
+taxonomy: { category: pastelaria, subcategory: [chocolate, tabuleiro] }
+
+# The referenced component: any published recipe can be used this way.
+# `version` pins it; publish-time resolution embeds the snapshot (SPEC-006).
+components:
+  - id: cobertura
+    ref: ganache-chocolate
+    version: 1
+    draw: { value: 200, unit: g }        # child makes 500 g; parent uses 200 g
+    overrides:
+      - scope: ingredient
+        replaces: chocolate
+        with: chocolate.dark.70
+        ratio: 1.0
+        class: balance-forcing
+        quality: 4
+        note: { pt: Mais amargo para equilibrar a massa doce., en: "Darker, to balance the sweet batter." }
+
+ingredients:
+  - { id: manteiga,  item: fat.butter,            amount: { value: 175, unit: g }, roles: [fat] }
+  - { id: chocolate, item: chocolate.dark.60,     amount: { value: 200, unit: g }, roles: [flavour, fat] }
+  - { id: acucar,    item: sweetener.sugar.white, amount: { value: 250, unit: g }, roles: [sweetener] }
+  - { id: ovos,      item: egg.whole,             amount: { value: 3, unit: piece }, roles: [binder, emulsifier] }
+  - { id: farinha,   item: flour.wheat.t55,       amount: { value: 100, unit: g }, roles: [flour, thickener] }
+  - id: ganache
+    item: preparation.ganache
+    amount: { value: 200, unit: g }
+    roles: [coating]
+    component: cobertura                  # ← produced by the referenced component
+
+steps:
+  - id: derreter
+    primitive: { id: melt, v: 1 }
+    uses: [manteiga, chocolate]
+    temperature: { max: 55, unit: C }
+  - id: bater
+    primitive: { id: mix, v: 1 }
+    after: [derreter]
+    uses: [acucar, ovos]
+  - id: envolver
+    primitive: { id: fold, v: 1 }
+    after: [bater]
+    uses: [farinha]
+    produces: massa-brownie
+  - id: cozer
+    primitive: { id: bake, v: 1 }
+    after: [massa-brownie]
+    temperature: { target: 175, unit: C }
+    duration: { min: 20m, target: 25m, max: 30m }
+    until: [{ kind: sensory, test: skewer, expect: "sai com migalhas húmidas, não líquido" }]
+  - id: cobrir
+    primitive: { id: coat, v: 1 }
+    after: [cozer, cobertura]             # ← DAG join: bake done AND ganache ready
+    uses: [ganache]
+    note: { pt: Espalhar a ganache com o brownie já frio., en: Spread the ganache once fully cool. }
+
+provenance: { confidence: MEDIUM, status: draft }
