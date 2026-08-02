@@ -1,0 +1,248 @@
+# yaml-language-server: $schema=../../../.edikt/schemas/prd-sidecar.v1.schema.json
+schema_version: "1.0"
+type: prd
+id: "PRD-001"
+title: "RCP v0.1 protocol definition"
+slug: "rcp-v01-protocol-definition"
+status: draft
+rigor: "solo"
+author: "Daniel Gomes"
+created_at: "2026-08-02T16:28:22Z"
+
+# Functional requirements — stable IDs flow through to SPEC.
+# verify: omitted throughout — the validation harness that could run such
+# checks IS a v0.1 deliverable (FR-007/FR-008); add verify commands via
+# continuation once it exists.
+requirements:
+  - id: FR-001
+    text: "The core schema is frozen as protocol v0.1: versioning conventions are documented ($id URL scheme, `rcp` version-field semantics, SchemaVer-flavoured change rules), the decode-compatibility rules bind to every subsequent change (unknown-field tolerance, enum catch-alls, no new required field without a default), and the freeze is a git tag. [trace: DECISIONS #14, #21, #22; research 02:475-560]"
+    status: proposed
+  - id: FR-002
+    text: "Registry entry document formats exist as JSON Schemas for the three vocabulary kinds — IngredientClass (functional roles, display names with pt-PT exactness, optional density/allergen/cross-reference fields), StepPrimitive (versioned id + ParamSpec, SPEC-008 lineage: new capability = new id), EquipmentProfile (kind + parameters participating in the maths) — honouring every directive in docs/guidelines/registry-governance.md (stable dot-namespaced IDs, required fields before merge, append-only + versioned). [trace: DECISIONS #16; registry-governance guideline; research 00 §registry, 02:367-378]"
+    status: proposed
+  - id: FR-003
+    text: "The seed registry resolves every reference in the six example recipes: 30 ingredient-class slugs, 24 step primitives (including trigger action `burp`), 6 equipment profiles, the endpoint-test vocabulary, and temperature stage `thread`. A reference to a non-existent entry is a named lint failure; new entries enter only via the governance process — the pipeline never mints IDs. [trace: DECISIONS #22 DoD; examples inventory 2026-08-02; registry-governance guideline]"
+    status: proposed
+  - id: FR-004
+    text: "The bread profile schema exists and is hardened: additive allOf extension of core; flour-basis conventions (total-flour pivot incl. include_components across the component tree); maintenance-culture and carry-forward fields; bread safety bounds encoded as bounded data. Pão Alentejano validates against core AND bread profile. [trace: DECISIONS #18; research 03]"
+    status: proposed
+  - id: FR-005
+    text: "The pastry profile schema exists and is hardened: to_consistency open quantities, the four temperature shapes (target / range / named stage / curve), rest and lamination structures, make-ahead/serve-within fields. Pastéis de nata and brownie-ganache validate against core AND pastry profile, with the nata's embedded bread component passing bread rules. [trace: DECISIONS #18; research 04]"
+    status: proposed
+  - id: FR-006
+    text: "Draft profile schemas exist for the remaining five kinds (ferment, preserve, drink, coffee, component/dish): each defines the profile-block fields already observed or researched, is valid to author against, and is explicitly marked non-conformance-guaranteed. Negroni (drink) and chucrute (ferment) validate against core AND their draft profiles. [trace: DECISIONS #18 spec-all-7/harden-4]"
+    status: proposed
+  - id: FR-007
+    text: "A committed Layer-1 validation harness (ajv, JSON Schema 2020-12) validates every example against core AND the profile selected by `kind`, via a single documented command, runnable in CI — making CLAUDE.md's re-validate-examples rule executable for the first time. [trace: DECISIONS #8; research 07:38-81; CLAUDE.md working conventions]"
+    status: proposed
+  - id: FR-008
+    text: "A Layer-2 semantic linter enforces what the schema cannot: every registry/basis/uses/after reference resolves; every guard combination yields a complete connected DAG; component reference cycles are rejected; ratio-bound and field-relation constraints are expressed in CUE per decision #8. On first run against the unmodified examples it catches the known defects (mm-feed undeclared basis; calda produced-but-never-consumed; ganache version pinned against an unversioned target). [trace: DECISIONS #8 reaffirmed; research 07:38-60; defect inventory 2026-08-02]"
+    status: proposed
+  - id: FR-009
+    text: "A minimal fail-closed safety clamp (explicitly throwaway, NOT the Recipe Calculus) recomputes resolved values of severity-critical constraints under a scale transformation and refuses violations with the authored reason shown; refusal is the default on uncertainty. [trace: DECISIONS #15, #22; research 03:248-253; CONCLUSIONS §5]"
+    status: proposed
+  - id: FR-010
+    text: "Constraint and reference shapes are hardened in core: a constraint requires at least one bound and `of:` when ratio-based; the ingredient.item null-contradiction is resolved; the chucrute safety data (2% brine / pH 4.0) gets exactly one authoritative encoding referenced — not duplicated — by endpoint and profile blocks. [trace: DECISIONS #5; defect inventory 2026-08-02]"
+    status: proposed
+
+# Acceptance criteria — Given/When/Then, one or more per FR.
+acceptance_criteria:
+  - id: AC-001-1
+    fr: FR-001
+    given: "the repository at the v0.1 git tag"
+    when: "a stranger reads schema/ and its versioning documentation"
+    then: "the version semantics and change rules are explicit without asking Daniel anything"
+    status: proposed
+  - id: AC-001-2
+    fr: FR-001
+    given: "a proposed schema change that adds a required field without a default"
+    when: "it is reviewed against the documented freeze rules"
+    then: "the change is rejected by policy, citing the decode-compatibility contract"
+    status: proposed
+  - id: AC-002-1
+    fr: FR-002
+    given: "a registry entry document missing a required field for its kind (e.g. an IngredientClass without functional roles)"
+    when: "it is validated against the registry entry schema"
+    then: "it is rejected with the missing field named"
+    status: proposed
+  - id: AC-002-2
+    fr: FR-002
+    given: "the slug convention conflict (bare `flour.wheat.t65` in examples vs prefixed `ingredient.flour.wheat.t65` in the governance guideline)"
+    when: "v0.1 freezes"
+    then: "exactly one convention is decided, recorded, and mechanically enforced by the linter"
+    status: proposed
+  - id: AC-003-1
+    fr: FR-003
+    given: "the six example documents unmodified"
+    when: "Layer-2 reference resolution runs against the seed registry"
+    then: "zero unresolved registry references remain"
+    status: proposed
+  - id: AC-003-2
+    fr: FR-003
+    given: "a recipe referencing a slug absent from the registry"
+    when: "the linter runs"
+    then: "the failure names the missing entry — no silent pass, and no code path mints the entry"
+    status: proposed
+  - id: AC-004-1
+    fr: FR-004
+    given: "examples/alentejano.rcp.yaml with kind: bread"
+    when: "validated by the harness"
+    then: "it passes core AND bread-profile validation"
+    status: proposed
+  - id: AC-004-2
+    fr: FR-004
+    given: "a bread document violating a profile-declared bound (e.g. salt ratio beyond the declared maximum)"
+    when: "validated"
+    then: "the rejection names the violated bound and its authored source"
+    status: proposed
+  - id: AC-005-1
+    fr: FR-005
+    given: "pasteis-de-nata and brownie-ganache with kind: pastry"
+    when: "validated by the harness"
+    then: "both pass core AND pastry validation, and the nata's embedded kind: bread component passes bread rules"
+    status: proposed
+  - id: AC-006-1
+    fr: FR-006
+    given: "negroni (kind: drink) and chucrute (kind: ferment)"
+    when: "validated by the harness"
+    then: "both pass core AND their draft profiles, and the draft (non-conformance-guaranteed) status is machine-visible in the profile schema metadata"
+    status: proposed
+  - id: AC-007-1
+    fr: FR-007
+    given: "a fresh clone of the repository"
+    when: "the single documented validation command runs"
+    then: "all six examples validate and the command exits 0"
+    status: proposed
+  - id: AC-007-2
+    fr: FR-007
+    given: "any schema or example edit that breaks shape validation"
+    when: "the runner executes"
+    then: "it exits non-zero naming the file and the failing JSON pointer"
+    status: proposed
+  - id: AC-008-1
+    fr: FR-008
+    given: "the current six examples unmodified"
+    when: "the semantic linter first runs"
+    then: "it reports at least: alentejano's `of: mm-feed` undeclared basis; nata's calda component produced but never consumed; brownie's `version: 1` pin against a ganache document that declares no version"
+    status: proposed
+  - id: AC-008-2
+    fr: FR-008
+    given: "the linter's findings on the examples"
+    when: "v0.1 completes"
+    then: "each known defect is either fixed in the examples/schema or explicitly waived in a recorded decision — none silently passes"
+    status: proposed
+  - id: AC-008-3
+    fr: FR-008
+    given: "a recipe where some guard combination yields a disconnected or non-terminating DAG"
+    when: "linted"
+    then: "it is rejected naming the guard combination and the unreachable step(s)"
+    status: proposed
+  - id: AC-009-1
+    fr: FR-009
+    given: "chucrute scaled so that salt falls below min_ratio 0.02 of the vegetable basis"
+    when: "the safety clamp evaluates the transformation"
+    then: "the transformation is refused and the authored reason (pt/en) is surfaced"
+    status: proposed
+  - id: AC-009-2
+    fr: FR-009
+    given: "any severity-critical constraint violation produced by scaling"
+    when: "the clamp evaluates"
+    then: "no code path silently accepts it — refusal is the default on uncertainty"
+    status: proposed
+  - id: AC-010-1
+    fr: FR-010
+    given: "a constraint object carrying severity and reason but zero bound fields"
+    when: "validated against the hardened core"
+    then: "it is rejected"
+    status: proposed
+  - id: AC-010-2
+    fr: FR-010
+    given: "the chucrute document after hardening"
+    when: "its safety encoding is inspected"
+    then: "the 2% brine / pH 4.0 data exists in exactly one authoritative location, referenced (not duplicated) by the endpoint and profile blocks"
+    status: proposed
+
+# Protections — what must NOT change when this ships
+protections:
+  - id: SP-001
+    text: "The 8 non-negotiable design decisions in CLAUDE.md (roles-not-fields; basis; opt-in DAG; enum/registry/prose discipline; bounded fail-closed safety data; one core + profiles; documents as system of record; JSON canonical / YAML authoring with BE/CI-only validation) hold for every v0.1 deliverable; reopening any requires an explicit DECISIONS.md entry."
+
+# Solution references — prior art already in-repo; no mockups exist (protocol, not UI)
+solution_references:
+  - type: doc
+    path_or_url: "schema/rcp-core-v1.schema.json"
+    description: "The executable strawman being frozen"
+  - type: doc
+    path_or_url: "examples/"
+    description: "Six validated example documents — the regression suite"
+  - type: doc
+    path_or_url: "docs/research/00-PROPOSAL-rcp-v1.md"
+    description: "Strawman rationale for every core construct"
+  - type: doc
+    path_or_url: "docs/research/03-bread-fermentation-domain.md"
+    description: "Bread profile content source (basis rules, safety table, maintenance cultures)"
+  - type: doc
+    path_or_url: "docs/research/04-pastry-savoury-domain.md"
+    description: "Pastry profile content source (to_consistency, temperature shapes)"
+  - type: doc
+    path_or_url: "docs/research/07-brainstorm-deep-dives.md"
+    description: "The two-layer validation stack design"
+  - type: doc
+    path_or_url: "docs/guidelines/registry-governance.md"
+    description: "Registry directives (15, compiled to sidecar)"
+
+# Stakeholders (team/platform rigor only)
+stakeholders: []
+
+# Dependencies (team/platform rigor only)
+dependencies: []
+
+# Non-functional requirements (platform rigor only)
+nfrs: []
+
+# Risks (platform rigor only)
+risks: []
+
+# Open questions — unresolved items, must be closed before ship
+open_questions:
+  - "OQ-1: Registry slug convention — bare (`flour.wheat.t65`, as all six examples use) or kind-prefixed (`ingredient.flour.wheat.t65`, as registry-governance prescribes)? Must be resolved by FR-002/AC-002-2 before the seed registry is authored."
+  - "OQ-2: Harness implementation language (TypeScript assumed for ajv; decided in SPEC)."
+  - "OQ-3: Encoding-coverage target % and time-to-correct threshold — Daniel sets both at ingestion-dogfood start (AT-3, Torres rule: criteria before running)."
+  - "OQ-4: Mechanism for marking draft profiles as non-conformance-guaranteed (schema annotation vs registry of profile maturity)."
+
+# SPECs written against this PRD — maintained by /edikt:sdlc:spec
+source_specs: []
+
+# Supersede chain
+supersedes: null
+superseded_by: null
+
+# Deprecation / cancellation fields
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+
+# Forcing questions — answered once at authoring, scored by evaluator
+forcing_questions:
+  problem_behind_problem: "Without RCP v0.1 two failure states persist: (1) five independent recipe representations with no shared type and three divergent baker's-percentage implementations keep drifting across surfaces — every new feature multiplies maintenance (internal evidence, research track 01); (2) Daniel's actual recipes stay trapped in physical books — unscalable, unsearchable, uncookable with any machinery. Without a validated protocol and working harness there is no correct target to converge on and no safe way to bring book recipes in."
+  evidence_or_hypothesis: "Internal evidence + n=1 stated behaviour. The codebase inventory (track 01) documented the five representations and three baker's-% implementations first-hand; CONCLUSIONS records that convergence 'is justified by internal evidence alone'. The consumer side is n=1: Daniel's stated behaviour as PO (ingest from his cookbooks and cook from them — DECISIONS #11). Broader demand (ICP-2 expansion) remains explicit hypothesis gated behind AT-2/AT-4; v0.1 does not depend on it."
+  north_metric_and_counter: "Daniel's north star, verbatim: 'flexibility to ingest any recipe and easily classify it, and allow integrators to manage and create interfaces that users can easily follow and understand the recipes.' Measurable form (confirmed): NORTH — encoding coverage: % of attempted recipes (any category, from Daniel's real books) that encode fully in RCP with zero information loss and zero core-schema changes, classified via existing facets; numeric target set at dogfood start (OQ-3). Standing integrator guarantee: every valid document renders correctly (if incompletely) from core alone — the additive-profile rule. COUNTER — zero silent safety-bound violations (every violation refused with a reason) AND the six-example regression suite never goes red."
+  must_not_change: "The 8 non-negotiable design decisions in CLAUDE.md. Reopening any requires an explicit DECISIONS.md entry."
+  riskiest_assumption: "Solo capacity: that the v0.1 scope (core freeze + registry formats/seed + two hardened profiles + five drafts + two-layer harness + clamp) is completable by one person before momentum is lost — ranked above extraction-quality risk (A11×A5), which has AT-3 as its designed test and lands after v0.1."
+
+# Revision history — appended by every command-driven mutation
+revision_history:
+  - at: "2026-08-02T16:28:22Z"
+    author: "Daniel Gomes"
+    action: "created"
+    note: "Initial draft — rigor: solo"
+
+# User extensions — LLM never writes here; commands never touch
+extensions: {}
+
+# Sync block — SHA-256 of .md and .yaml at last sync
+_sync:
+  md_hash: "05226dd6ee5c302882e0098be40b1fd586662c78b6a9fee5e9cecfa0a07a8e96"
+  yaml_hash: "854d86d1f236a208f0186d08a7269a0ede70095eff69c9428e3bd87979020d08"
+  synced_at: "2026-08-02T16:31:53Z"
