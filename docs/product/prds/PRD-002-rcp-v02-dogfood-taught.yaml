@@ -149,7 +149,7 @@ open_questions:
   - "OQ-2: Time-field semantics — hands-on vs total vs per-phase (research 04 wants both); exact shape decided in SPEC."
   - "OQ-4: Viewer build toolchain — a browser page is JavaScript by nature, but the anti-Node bar (PRD-001 OQ-2 input d) applies to the BUILD chain: zero-build vanilla vs minimal bundler is a SPEC decision with the burden of proof on any npm dependency."
 
-source_specs: []
+source_specs: ["SPEC-002"]
 supersedes: null
 superseded_by: null
 deprecated_at: null
@@ -177,10 +177,14 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "Accepted by Daniel — all user-answerable OQs resolved; OQ-2/OQ-4 SPEC-bound. Proceeding to SPEC."
+  - at: "2026-08-02T22:35:13Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Back-reference added: source_specs += SPEC-002"
 
 extensions: {}
 
 _sync:
   md_hash: "1447fa977a27adf9cbc26cb96f3e215df6ccdcd19e4d5443a0c0f2dc315e9536"
-  yaml_hash: "cd685e163b23e107223dd48b754a76a8b877425ec9e31daa61225bb08e5d1511"
-  synced_at: "2026-08-02T22:27:37Z"
+  yaml_hash: "beb0290435777893352e7208f558c8a6b2f7729d993245e011907a8458f59dc6"
+  synced_at: "2026-08-02T22:35:13Z"

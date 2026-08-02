@@ -1,0 +1,377 @@
+# yaml-language-server: $schema=../../../../.edikt/schemas/spec-sidecar.v1.schema.json
+schema_version: '1.0'
+type: spec
+id: SPEC-002
+title: RCP v0.2 implementation — dogfood fields, dish hardening, technique registry, grounding, i18n,
+  viewer
+slug: rcp-v02-implementation
+status: draft
+author: Daniel Gomes
+created_at: '2026-08-02T22:34:11Z'
+source_prd: PRD-002
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-002
+  covered:
+  - fr: FR-PR-003
+    by:
+    - SR-PR-003
+  - fr: FR-PROF-004
+    by:
+    - SR-PROF-004
+  - fr: FR-REG-003
+    by:
+    - SR-REG-004
+  - fr: FR-REG-004
+    by:
+    - SR-REG-005
+  - fr: FR-I18N-001
+    by:
+    - SR-I18N-001
+  - fr: FR-TOOL-001
+    by:
+    - SR-TOOL-001
+  deferred: []
+  uncovered: []
+requirements:
+- id: SR-PR-003
+  implements: FR-PR-003
+  text: 'Core adds four optional MODEL-1-legal field groups: times (object with optional active/total/prep/cook/chill/rest
+    keys, each a $defs/duration window, additionalProperties false — active and total are separate fields
+    per research 04:79-80); taxonomy.difficulty (integer 1..5, per-ingest hat-scale mapping recorded in
+    provenance notes); storage (array of {where: room|refrigerator|freezer, container?, duration?, note?});
+    provenance.sources[] gains optional work and page. The hardened pastry profile admits storage additively.
+    The five private recipes re-encode with zero prose-parking of the four field classes.'
+  status: proposed
+- id: SR-PROF-004
+  implements: FR-PROF-004
+  text: 'Dish profile is created (schema/profiles/dish.schema.json does not exist today — dish documents
+    validate core-only with an explicit warning per DS-VAL-001) directly at x-rcp-maturity: hardened,
+    fields typed from chili + feijoada observed use and nothing speculative, every numeric bound at warn
+    severity only with the n=2 rationale authored into its x-rcp-bounds reason. Both dish documents validate
+    core AND dish (hardened). Bounds MUST NOT be promoted to error severity within v0.2.'
+  status: proposed
+- id: SR-REG-004
+  implements: FR-REG-003
+  text: 'Techniques become the fourth governed registry kind under registry/entries/technique/ (DECISIONS
+    #25): one YAML per entry, filename = id, technique. prefix, ontology paths per registry-governance
+    rule 6. Entry schema: id, kind: technique, display_name (en required), definition, optional primitive
+    association, teaches, media. Seed covers interim vocab + dogfood harvest (stir, none, bulhao-pato,
+    refogado, flambe at minimum). rcplint validates every technique reference against entries; registry/vocab/techniques.yaml
+    is deleted after migration. Minting stays steward-approved.'
+  status: proposed
+- id: SR-REG-005
+  implements: FR-REG-004
+  text: 'Every ingredient entry carries external grounding: cross_refs list ({system: foodon|fdc|off,
+    ref, url?}) or explicit grounding: no-match with note. An audit fails naming any entry with neither.
+    Extraction guidance updated: unresolved raws carry a proposed canonical English class; gap-ledger.py
+    groups by proposal so cebola and onion consolidate under one candidate. Grounding refs are data —
+    no network access in any validation path.'
+  status: proposed
+- id: SR-I18N-001
+  implements: FR-I18N-001
+  text: 'Taxonomy translation vocabulary at i18n/pt-PT.yaml: English-base taxonomy slugs to pt-PT display
+    terms, coverage spanning every taxonomy slug used across examples/ and the private collection, mechanically
+    checked. Identifiers never localized: rcplint enforces English-base slug shape (ASCII kebab-case,
+    no accents) on taxonomy values as a new L2 check. Registry entries keep their own display_name layer.'
+  status: proposed
+- id: SR-TOOL-001
+  implements: FR-TOOL-001
+  text: 'Lightweight viewer at tools/viewer/ (informative surface): static page, paste/drop .rcp.yaml
+    or JSON, L1 verdicts + human-readable render (name, ingredients with bases, step sections with notes,
+    per-component profile and maturity labels, pt-PT display via i18n vocabulary). Architecture: existing
+    Go core compiled GOOS=js GOARCH=wasm to rcp.wasm via make target; hand-written vanilla index.html/app.js/style.css
+    + Go-distribution wasm_exec.js. Build chain contains no npm, Node.js, bundler, or vendored JS dependency.
+    Works from file:// with zero network transmission of document content. L2/CUE/clamp in-browser out
+    of scope.'
+  status: proposed
+- id: SR-VAL-003
+  implements: null
+  text: 'rcplint gains the v0.2 checks as L2 lints with tests: technique references vs registry/entries/technique/,
+    English-base taxonomy slug shape, ingredient grounding audit (registry-CI check, not a document-validation
+    failure). Existing regression suite (go test ./..., make accept negative checks) stays green throughout;
+    new checks follow the existing severity model.'
+  status: proposed
+acceptance_criteria:
+- id: AC-PR-003-1
+  fr: FR-PR-003
+  given: every document valid at tag rcp-v0.1
+  when: validated against the v0.2 core
+  then: it still validates unchanged — the additions are MODEL-1-legal (no MODEL bump)
+  source: prd
+- id: AC-PR-003-2
+  fr: FR-PR-003
+  given: the five private recipes re-encoded with the new fields
+  when: their descriptions are inspected
+  then: zero instances of times, difficulty, storage, or source detail parked in prose — semantic coverage
+    reaches the north metric
+  source: prd
+- id: AC-PR-003-3
+  fr: FR-PR-003
+  given: a pastry document carrying storage guidance
+  when: validated against the hardened pastry profile
+  then: it passes — the hardened block admitted the field additively
+  source: prd
+- id: AC-PROF-004-1
+  fr: FR-PROF-004
+  given: chili and feijoada
+  when: validated by the harness
+  then: 'both pass core AND dish with maturity: hardened in output'
+  source: prd
+- id: AC-PROF-004-2
+  fr: FR-PROF-004
+  given: the dish profile's bounds
+  when: inspected
+  then: 'every numeric bound carries severity: warn and an authored reason noting the n=2 evidence base
+    — no critical bounds enter on two data points'
+  source: prd
+- id: AC-REG-003-1
+  fr: FR-REG-003
+  given: the technique registry entries
+  when: validated against the technique entry schema
+  then: all pass, kind-prefixed under the technique. namespace per the extended DECISIONS entry
+  source: prd
+- id: AC-REG-003-2
+  fr: FR-REG-003
+  given: a document referencing an undocumented technique
+  when: linted
+  then: it is rejected naming the missing entry; the interim vocab file no longer exists
+  source: prd
+- id: AC-REG-004-1
+  fr: FR-REG-004
+  given: the ingredient registry
+  when: audited
+  then: every entry carries at least one cross_ref or a recorded no-match note — none silently ungrounded
+  source: prd
+- id: AC-REG-004-2
+  fr: FR-REG-004
+  given: two unresolved imports whose raws are 'cebola' and 'onion'
+  when: the gap ledger runs
+  then: they group under one proposed canonical class — the cross-language consolidation test
+  source: prd
+- id: AC-I18N-001-1
+  fr: FR-I18N-001
+  given: every taxonomy slug used across examples and the private collection
+  when: looked up in the translation vocabulary
+  then: each has a pt-PT display term; slugs themselves remain English-base and the linter rejects non-conforming
+    taxonomy slugs
+  source: prd
+- id: AC-TOOL-001-1
+  fr: FR-TOOL-001
+  given: any of the six examples or five private recipes pasted or dropped into the viewer
+  when: the page processes it
+  then: L1 verdicts and the rendered recipe view (ingredients with bases, step sections, maturity labels)
+    appear
+  source: prd
+- id: AC-TOOL-001-2
+  fr: FR-TOOL-001
+  given: the viewer processing a private-collection document
+  when: network activity is inspected
+  then: zero requests carry document content — rendering is entirely client-side
+  source: prd
+- id: SAC-PR-001
+  source: spec
+  given: the full corpus (examples, registry, testdata) at any v0.2 commit
+  when: make validate runs (L1+L2+CUE)
+  then: it passes unchanged — the ADDITION-only gate holds
+  verify: make validate
+- id: SAC-REG-002
+  source: spec
+  given: the technique migration is complete
+  when: the registry tree is inspected
+  then: registry/entries/technique/ holds the seeded entries and registry/vocab/techniques.yaml no longer
+    exists
+  verify: sh -c 'ls registry/entries/technique/*.yaml >/dev/null && test ! -f registry/vocab/techniques.yaml'
+- id: SAC-TOOL-001
+  source: spec
+  given: the viewer directory as shipped
+  when: its build chain is inspected
+  then: no package.json, lockfile, node_modules, or vendored JS dependency exists under tools/viewer/
+    (wasm_exec.js from the Go distribution is the single permitted non-authored file)
+  verify: sh -c 'test ! -e tools/viewer/package.json && test ! -e tools/viewer/package-lock.json && test
+    ! -d tools/viewer/node_modules'
+- id: SAC-VAL-003
+  source: spec
+  given: the rcplint suite at any v0.2 commit
+  when: go test ./... runs in tools/rcplint
+  then: all tests pass — the regression floor holds
+  verify: go -C tools/rcplint test ./...
+design:
+  statements:
+  - id: DS-PR-005
+    text: 'Time shape (resolves PRD-002 OQ-2): recipe-level times object with optional keys active (hands-on),
+      total, prep, cook, chill, rest — each a $defs/duration window over the existing isoDuration grammar;
+      additionalProperties false, nothing required. active vs total are separate fields (research 04:79-80:
+      stir-fry vs risotto — same total, opposite hands-on). Single-value book times encode as target.
+      One duration grammar: schema.org PT20M maps in at decode, never forks the internal representation.'
+    serves:
+    - SR-PR-003
+    status: proposed
+  - id: DS-PR-006
+    text: 'Difficulty (per PRD-002 OQ-3 resolution): taxonomy.difficulty, integer minimum 1 maximum 5.
+      Books using 1-3 chef-hat scales map in per-ingest; the extractor records the mapping call in the
+      document''s provenance notes.'
+    serves:
+    - SR-PR-003
+    status: proposed
+  - id: DS-PR-007
+    text: 'Storage: array of entries {where: enum room|refrigerator|freezer (required), container?: text,
+      duration?: $defs/duration, note?: text}. Array because book pages routinely give multiple conditions
+      (3 days airtight at room, 3 months frozen).'
+    serves:
+    - SR-PR-003
+    status: proposed
+  - id: DS-PR-008
+    text: 'Provenance source detail: sources[] items gain optional work (publication/book title) and page
+      (string — admits ranges and roman numerals). label/url/type unchanged; type: book already exists.'
+    serves:
+    - SR-PR-003
+    status: proposed
+  - id: DS-PROF-002
+    text: 'Dish profile posture: the profile is CREATED at hardened maturity (none exists today), and
+      n=2 evidence means every numeric bound enters at warn severity with the rationale authored into
+      its x-rcp-bounds reason; promotion to error requires more real documents and a future decision.
+      Fields typed from chili + feijoada observed use only — nothing speculative.'
+    serves:
+    - SR-PROF-004
+    status: proposed
+  - id: DS-REG-004
+    text: 'Technique registry kind (DECISIONS #25): registry/entries/technique/, same governance as the
+      other three kinds — append-only, kind-prefixed ontology paths (rule 6), one file per entry, steward-approved
+      mints. Migration from registry/vocab/techniques.yaml proposes entries; Daniel approves; vocab file
+      deleted at completion. execution_modes[].technique membership check moves from vocab list to entries.'
+    serves:
+    - SR-REG-004
+    status: proposed
+  - id: DS-REG-005
+    text: 'Grounding: cross_refs [{system: foodon|fdc|off, ref, url?}] on ingredient entries; explicit
+      grounding: no-match + note is a first-class audit-passing outcome (heritage items legitimately no-match).
+      Ledger consolidation keys on the extraction-proposed canonical English class, not on raw string
+      similarity.'
+    serves:
+    - SR-REG-005
+    status: proposed
+  - id: DS-I18N-001
+    text: 'i18n layer: i18n/pt-PT.yaml maps English-base taxonomy slugs to pt-PT display terms (registry
+      display_name pattern). Scope = slugs with no registry entry to carry a display name. Coverage mechanically
+      checked against actual usage. English-base enforcement is an L2 lint: ASCII kebab-case, no accents,
+      on taxonomy slug values.'
+    serves:
+    - SR-I18N-001
+    status: proposed
+  - id: DS-TOOL-001
+    text: 'Viewer architecture (resolves PRD-002 OQ-4): the existing Go core (yaml.v3 parse + santhosh-tekuri
+      L1) compiled GOOS=js GOARCH=wasm, driven by hand-written vanilla HTML/CSS/JS + Go-distribution wasm_exec.js.
+      Zero npm/Node/bundler/vendored-JS — the anti-Node bar is satisfied by having no JS dependency at
+      all, and verdict parity with rcplint holds by construction (no reimplemented validation). Rejected:
+      vendored js-yaml + JS validator (verdict divergence — the founding failure mode), npm toolchain
+      (burden of proof not met, ADR-001). wasm exports L1 + parse only; L2/CUE/clamp stay native-only
+      until the full playground phase.'
+    serves:
+    - SR-TOOL-001
+    status: proposed
+  - id: DS-VAL-006
+    text: 'New rcplint checks slot into the existing L2 severity model: technique-reference and taxonomy-slug-shape
+      checks are document lints; the grounding audit is a registry-CI check (a data obligation on entries,
+      not a document failure). All three covered by table-driven tests beside the existing suites.'
+    serves:
+    - SR-VAL-003
+    status: proposed
+  components:
+  - id: CMP-PR-003
+    path: schema/rcp-core-v1.schema.json + schema/profiles/pastry.schema.json
+    description: Core field-group additions (times, taxonomy.difficulty, storage, provenance work/page)
+      and the pastry hardened block admitting storage
+    serves:
+    - SR-PR-003
+    status: proposed
+  - id: CMP-PROF-004
+    path: schema/profiles/dish.schema.json
+    description: Dish profile created at hardened maturity from its two real documents; warn-only bounds
+      with authored n=2 rationale
+    serves:
+    - SR-PROF-004
+    status: proposed
+  - id: CMP-REG-004
+    path: registry/entries/technique/ + registry/entries/README.md + docs/guidelines/registry-governance.md
+    description: Technique entry files, entry-schema documentation, governance guideline gains the fourth
+      kind; interim vocab retired
+    serves:
+    - SR-REG-004
+    status: proposed
+  - id: CMP-REG-005
+    path: registry/entries/ingredient/*.yaml + tools/rcplint/scripts/gap-ledger.py
+    description: cross_refs / no-match grounding on all ingredient entries; ledger grouping by proposed
+      canonical English class; grounding audit
+    serves:
+    - SR-REG-005
+    status: proposed
+  - id: CMP-I18N-001
+    path: i18n/pt-PT.yaml
+    description: Taxonomy translation vocabulary + mechanical coverage check wired into make accept
+    serves:
+    - SR-I18N-001
+    status: proposed
+  - id: CMP-TOOL-001
+    path: tools/viewer/ (index.html, app.js, style.css, wasm_exec.js, rcp.wasm) + Makefile wasm target
+      + tools/rcplint wasm entrypoint
+    description: Static viewer page and the Go-to-WASM build of the L1 core
+    serves:
+    - SR-TOOL-001
+    status: proposed
+  - id: CMP-VAL-003
+    path: tools/rcplint/lint.go + tools/rcplint/testdata/
+    description: New L2 checks (technique refs, English-base taxonomy slugs) + grounding audit + table-driven
+      tests
+    serves:
+    - SR-VAL-003
+    status: proposed
+protections:
+- id: SP-001
+  text: 'ADDITION-only: every document valid at tag rcp-v0.1 remains valid throughout v0.2 — additions
+    and tighten-with-defaults only, per schema/VERSIONING.md; any change that would invalidate an existing
+    document is out of scope by definition (it would be a MODEL bump).'
+  source: prd
+- id: SSP-003
+  text: The viewer MUST NOT transmit document content over the network, load third-party resources, or
+    persist pasted documents anywhere but page memory.
+  source: spec
+- id: SSP-004
+  text: 'No validation logic is reimplemented outside the Go core: the viewer''s verdicts come from the
+    same compiled code path as rcplint''s.'
+  source: spec
+solution_references:
+- type: doc
+  path_or_url: docs/product/ROADMAP.md
+  description: The v0.2 cut as proposed and approved
+- type: doc
+  path_or_url: private/collection/
+  description: The five ingested recipes — the demand evidence (gitignored, personal use)
+- type: doc
+  path_or_url: docs/product/features.yaml
+  description: 'Graduating features: FEAT-CORE-005, FEAT-PROF-005, FEAT-REG-003/004, FEAT-I18N-001, FEAT-TOOL-001'
+- type: doc
+  path_or_url: registry/vocab/techniques.yaml
+  description: The interim technique vocabulary FR-REG-003 retires
+- type: doc
+  path_or_url: docs/product/specs/SPEC-001-rcp-v01-implementation/spec.yaml
+  description: 'The v0.1 spec this extends — DS-PR-001 two-surface split and the DS/CMP numbering baseline
+    (source: spec)'
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+revision_history:
+- at: '2026-08-02T22:34:11Z'
+  author: Daniel Gomes
+  action: created
+  note: Initial draft. Resolves PRD-002 OQ-2 (DS-PR-005 times shape) and OQ-4 (DS-TOOL-001 Go-to-WASM
+    zero-Node viewer) as delegated. FR coverage 6/6; 12 PRD ACs passed through + 4 SACs.
+extensions: {}
+_sync:
+  md_hash: dd65100405c756e983e1771c99d49969d57635968590409c63518ebdd7c3e1bd
+  yaml_hash: bec242e454c954d26c4f12e2b562ac5009ca0bef379cc345fe535548a6ab9a1b
+  synced_at: '2026-08-02T22:34:59Z'
