@@ -1,0 +1,11 @@
+# Target rule: kind-prefix (AC-REG-001-2, DECISIONS #23). Precedence
+# contract: the prefix check classifies and short-circuits BEFORE
+# resolution, so exactly one rule fires.
+rcp: 1
+id: fx-bare-slug
+kind: component
+name: { en: Bare slug fixture }
+ingredients:
+  - { id: x, item: flour.wheat.t65, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

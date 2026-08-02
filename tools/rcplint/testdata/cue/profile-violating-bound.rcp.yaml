@@ -1,0 +1,16 @@
+# CUE-layer fixture (AC-PROF-001-2). LAYER DECISION: profile-declared ratio
+# bounds over resolved values need basis computation, so they are enforced
+# at the CUE/L2 layer (DS-VAL-003), not JSON Schema. Salt at 30% of flour
+# violates the bread profile's x-rcp-bounds — cue vet must fail naming the
+# bound, and rcplint surfaces the authored reason.
+rcp: 1
+id: fx-salty-bread
+kind: bread
+name: { en: Impossibly salty bread }
+bases:
+  flour: { sum: ingredients, where: { roles: [flour] } }
+ingredients:
+  - { id: farinha, item: ingredient.flour.wheat.t65, amount: { value: 1000, unit: g }, roles: [flour] }
+  - { id: sal, item: ingredient.salt.sea.fine, amount: { ratio: 0.30, of: flour }, roles: [salt] }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [farinha, sal] }

@@ -1,0 +1,24 @@
+# Target rule: component reference cycle A→B→A across published recipes.
+rcp: 1
+id: fx-cycle-a
+kind: component
+version: 1
+name: { en: Cycle A }
+components:
+  - { id: uses-b, ref: fx-cycle-b, version: 1 }
+ingredients:
+  - { id: xa, item: ingredient.water, amount: { value: 1, unit: g }, component: uses-b }
+steps:
+  - { id: sa, primitive: { id: primitive.mix, v: 1 }, uses: [xa] }
+---
+rcp: 1
+id: fx-cycle-b
+kind: component
+version: 1
+name: { en: Cycle B }
+components:
+  - { id: uses-a, ref: fx-cycle-a, version: 1 }
+ingredients:
+  - { id: xb, item: ingredient.water, amount: { value: 1, unit: g }, component: uses-a }
+steps:
+  - { id: sb, primitive: { id: primitive.mix, v: 1 }, uses: [xb] }

@@ -1,0 +1,9 @@
+# Target rule: `of:` references a basis never declared (the mm-feed class).
+rcp: 1
+id: fx-undeclared-basis
+kind: component
+name: { en: Undeclared basis fixture }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { ratio: 0.5, of: ghost } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

@@ -1,0 +1,10 @@
+# Target rule: missing registry entry (AC-REG-002-2) — id IS kind-prefixed
+# so the prefix rule cannot also fire (precedence isolation).
+rcp: 1
+id: fx-unresolved-item
+kind: component
+name: { en: Unresolved item fixture }
+ingredients:
+  - { id: x, item: ingredient.does.not.exist, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

@@ -1,0 +1,12 @@
+# Target rule: safety single-sourcing (AC-PR-002-2 / DS-PR-004) — a profile
+# block restating a numeric bound instead of referencing the ingredient.
+rcp: 1
+id: fx-profile-bound
+kind: component
+name: { en: Profile numeric bound fixture }
+ingredients:
+  - { id: x, item: ingredient.salt.sea.fine, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }
+profile:
+  safety_gate: { ph_max: 4.0 }

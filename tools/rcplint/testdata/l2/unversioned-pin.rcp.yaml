@@ -1,0 +1,21 @@
+# Target rule: version pin against a target declaring no version
+# (the brownie→ganache class).
+rcp: 1
+id: fx-pin-target
+kind: component
+name: { en: Unversioned target }
+ingredients:
+  - { id: t, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: st, primitive: { id: primitive.mix, v: 1 }, uses: [t] }
+---
+rcp: 1
+id: fx-pinner
+kind: component
+name: { en: Pinner }
+components:
+  - { id: dep, ref: fx-pin-target, version: 3 }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g }, component: dep }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

@@ -1,0 +1,11 @@
+# Target rule (WARNING severity): ingredient listed but never used
+# (DS-VAL-004 adjusted 2026-08-02 — was research-00-only, now spec-covered).
+rcp: 1
+id: fx-unused-ingredient
+kind: component
+name: { en: Unused ingredient fixture }
+ingredients:
+  - { id: used,   item: ingredient.water, amount: { value: 1, unit: g } }
+  - { id: unused, item: ingredient.salt.sea.fine, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [used] }

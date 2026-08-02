@@ -51,6 +51,7 @@ steps:
   - id: stir
     primitive: { id: primitive.stir, v: 1 }
     after: [build]
+    when: { execution_mode: single }   # triage fix (P8): batch mode skips the stir
     duration: { min: 20s, target: 30s, max: 40s }
     until: [{ kind: sensory, test: touch, expect: "glass frosted" }]
     media: [{ role: technique, type: video, uri: media/stir-technique.mp4, licence: "© all rights reserved" }]
@@ -244,7 +245,7 @@ steps:
   - id: montar
     primitive: { id: primitive.assemble, v: 1 }
     after: [massa-folhada, calda, creme]     # ← DAG join across three components
-    uses: [massa-folhada, creme]
+    uses: [massa-folhada, calda, creme]   # triage fix (P8): the syrup was produced but never consumed
 
   - id: cozer
     primitive: { id: primitive.bake, v: 1 }
@@ -269,6 +270,7 @@ profile:
 ---
 rcp: 1
 id: ganache-chocolate
+version: 1                # triage fix (P8): the revision the brownie pins
 kind: component
 lang: pt-PT
 

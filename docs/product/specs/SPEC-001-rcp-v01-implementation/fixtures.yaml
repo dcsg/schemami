@@ -12,12 +12,16 @@ scenarios:
       - entity: file
         records:
           - path: examples/alentejano.rcp.yaml
-            status: aspirational
+            status: characterized
+            verified_by: "make validate"
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "green through make validate only AFTER the mm-feed defect is fixed/waived (AC-VAL-002-1 requires it to fail first)"
             _note: "bread: DAG, maintenance culture, options, substitutions"
           - path: examples/other-categories.rcp.yaml
-            status: aspirational
+            status: characterized
+            verified_by: "make validate"
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "green only after calda-orphan and ganache-pin defects are fixed/waived; pre-fix failures are themselves asserted by AC-VAL-002-1"
             _note: "5 documents: drink (ratio-first), ferment (safety bounds), pastry (composition), component + referencing pastry"
@@ -30,67 +34,89 @@ scenarios:
         records:
           - path: unresolved-item.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint fails naming the missing registry entry (AC-REG-002-2)"
             _note: "ingredient item references ingredient.does.not.exist"
           - path: bare-slug.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint rejects citing DECISIONS #23 (AC-REG-001-2)"
             _note: "item uses pre-migration bare slug flour.wheat.t65. Precedence contract: the kind-prefix regex check classifies and short-circuits BEFORE resolution runs, so exactly one rule fires"
           - path: undeclared-basis.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint fails: `of:` references a basis never declared"
             _note: "distilled from the real mm-feed defect in alentejano"
           - path: unused-ingredient.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint reports ingredient listed but never in any uses:"
             _note: "traced into DS-VAL-004 by the 2026-08-02 adjustment (was research-00-only, now spec-covered)"
           - path: orphan-intermediate.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint reports component produced but never consumed"
             _note: "distilled from the real calda defect in pasteis-de-nata"
           - path: disconnected-guard-path.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint rejects naming the guard combination and unreachable steps (AC-VAL-002-3)"
             _note: "option=true path leaves a step with no route to a terminal step"
           - path: step-cycle.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint rejects the non-terminating step graph (after: A->B->A) naming the cycle (AC-VAL-002-3 non-terminating case)"
             _note: "step-level after: cycle within one recipe — distinct from component-reference cycles"
           - path: too-many-options.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint reports the options soft cap exceeded (4 options > cap 3, research 07 B5)"
             _note: "keeps guard-combination enumeration bounded"
           - path: item-null-warning.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "two-sided: L1 schema ACCEPTS item: null; L2 lint WARNS unresolved import (DS-PR-003) — neither errors"
             _note: "the nullable-item contract; regresses silently if either side flips"
           - path: component-cycle.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint rejects the reference cycle A→B→A"
             _note: "two by-reference recipes referencing each other"
           - path: unversioned-pin.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint reports version pin against a target declaring no version"
             _note: "distilled from the real brownie→ganache version: 1 defect"
@@ -127,13 +153,17 @@ scenarios:
         records:
           - path: profile-violating-bound.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "cue vet names the violated bound and its authored source (AC-PROF-001-2). LAYER DECISION: profile-declared ratio bounds over resolved values need basis computation, so they are enforced at the CUE/L2 layer (DS-VAL-003), not JSON Schema"
             _note: "bread doc with salt ratio beyond the bread-profile-declared max"
           - path: ratio-relation-violation.rcp.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "a failing .cue field-relation constraint surfaces through cue vet with non-zero exit"
             _note: "exercises the CUE pipeline step itself, independent of profile content"
@@ -154,7 +184,9 @@ scenarios:
             _note: "IngredientClass without functional roles — machine-read field absent"
           - path: filename-id-mismatch.yaml
             format: yaml
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test ./..."
+            verified_at: "2026-08-02T19:19:16Z"
             target_phase: "CMP-VAL-002"
             target_contract: "lint reports filename ≠ entry id (SAC-REG-001)"
             _note: "file named ingredient.salt.yaml whose id is ingredient.salt.sea.fine. target_phase CMP-VAL-002 (not CMP-REG-001) is intentional: SAC-REG-001 verifies via linter rule"

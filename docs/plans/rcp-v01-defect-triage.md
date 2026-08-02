@@ -17,3 +17,17 @@ LINT other-categories.rcp.yaml#negroni: guard combination {options: map[], mode:
 LINT other-categories.rcp.yaml#pasteis-de-nata: component "calda" is produced but never consumed — orphan intermediate
 LINT other-categories.rcp.yaml#brownie-ganache: component "cobertura" pins version against target "ganache-chocolate" which declares no version
 ```
+
+## Post-fix dispositions (AC-VAL-002-2 — each defect fixed or waived, none silent)
+
+| # | Defect | Disposition |
+|---|--------|-------------|
+| 1 | `of: mm-feed` undeclared basis (alentejano/massa-mae) | **FIXED** — the 1:5:5 feed parts sum was referenced but never declared; `bases: { mm-feed: { sum: ingredients } }` added to the component. Zero information loss. |
+| 2 | `calda` produced but never consumed (nata) | **FIXED** — the syrup joins the assembly step's `uses:`; it was always consumed in the real method, the document just never said so. |
+| 3 | `version: 1` pin against unversioned ganache | **FIXED, with a core schema addition** — componentRef always pinned a version but no field existed for a document to declare one; core gains optional `version` (integer ≥1) and the ganache declares `version: 1`. Additive, pre-freeze. |
+| 4 | **NEW (found by the linter, not in the research inventory):** negroni `stir` active in batch mode but depends on single-mode-only `build` | **FIXED** — `when: { execution_mode: single }` on the stir step; batch was never meant to stir. First proof of the guard-combination DAG check paying for itself. |
+
+Full harness (L1 + L2 + CUE) green after all four fixes: `make validate` exits 0.
+CUE-layer scope note: v0.1 checks amounts already expressed as ratios of a
+basis; gram-to-basis resolution needs preferment decomposition — Recipe
+Calculus work (FEAT-CALC-001), deliberately not faked.

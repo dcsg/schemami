@@ -91,6 +91,10 @@ components:
     maintenance: true              # recurring, not one-shot — survives the bake
     min_batch: { value: 100, unit: g }
     feed_ratio: "1:5:5"
+    # Triage fix (P8, AC-VAL-002-2): the feed parts sum IS the basis the
+    # 1:5:5 amounts are ratios of — it was referenced but never declared.
+    bases:
+      mm-feed: { sum: ingredients }
     ingredients:
       - { id: mm-seed,  item: ingredient.culture.sourdough.trigo, amount: { ratio: 1, of: mm-feed }, roles: [leaven] }
       - { id: mm-flour, item: ingredient.flour.wheat.t65,         amount: { ratio: 5, of: mm-feed }, roles: [flour] }

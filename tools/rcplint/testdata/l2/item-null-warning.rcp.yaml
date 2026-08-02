@@ -1,0 +1,10 @@
+# Two-sided contract (DS-PR-003): L1 schema ACCEPTS item: null;
+# L2 lint WARNS unresolved import — neither errors.
+rcp: 1
+id: fx-item-null
+kind: component
+name: { en: Null item fixture }
+ingredients:
+  - { id: x, item: null, raw: "2 chávenas de farinha qualquer", amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

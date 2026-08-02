@@ -129,6 +129,11 @@
       },
       "additionalProperties": false
     },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Revision number of THIS document, pinned by componentRef.version at reference sites. HARDENED (P8 triage): componentRef always pinned a version, but no field existed for the target to declare one — the gap the brownie→ganache defect exposed."
+    },
     "lineage": {
       "type": "object",
       "properties": {

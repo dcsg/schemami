@@ -1,0 +1,17 @@
+# Target rule: component produced but never consumed (the calda class).
+rcp: 1
+id: fx-orphan
+kind: component
+name: { en: Orphan intermediate fixture }
+components:
+  - id: ghost-syrup
+    kind: component
+    name: { en: Never consumed }
+    ingredients:
+      - { id: g, item: ingredient.sweetener.sugar.white, amount: { value: 1, unit: g } }
+    steps:
+      - { id: cs, primitive: { id: primitive.cook-syrup, v: 1 }, uses: [g] }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

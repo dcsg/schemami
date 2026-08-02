@@ -1,0 +1,14 @@
+# Target rule: options soft cap (research 07 B5) — 4 > 3.
+rcp: 1
+id: fx-too-many-options
+kind: component
+name: { en: Options cap fixture }
+options:
+  - { id: o1, kind: toggle, default: false }
+  - { id: o2, kind: toggle, default: false }
+  - { id: o3, kind: toggle, default: false }
+  - { id: o4, kind: toggle, default: false }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

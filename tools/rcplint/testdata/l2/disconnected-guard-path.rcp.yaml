@@ -1,0 +1,13 @@
+# Target rule: guard combination yields a disconnected path (AC-VAL-002-3)
+# — the negroni-stir class: b always active, depends on option-gated a.
+rcp: 1
+id: fx-disconnected
+kind: component
+name: { en: Disconnected guard path fixture }
+options:
+  - { id: extra, kind: toggle, default: false }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: a, primitive: { id: primitive.mix, v: 1 }, uses: [x], when: { option: extra } }
+  - { id: b, primitive: { id: primitive.fold, v: 1 }, after: [a] }

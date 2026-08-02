@@ -1,0 +1,10 @@
+# Target rule: non-terminating step graph (AC-VAL-002-3) — after: A→B→A.
+rcp: 1
+id: fx-step-cycle
+kind: component
+name: { en: Step cycle fixture }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: a, primitive: { id: primitive.mix, v: 1 }, uses: [x], after: [b] }
+  - { id: b, primitive: { id: primitive.fold, v: 1 }, after: [a] }
