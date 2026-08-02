@@ -1,6 +1,6 @@
 # PRD-001: RCP v0.1 protocol definition
 
-**Status:** draft
+**Status:** accepted
 **Rigor:** solo
 **Author:** Daniel Gomes
 **Created:** 2026-08-02T16:28:22Z
