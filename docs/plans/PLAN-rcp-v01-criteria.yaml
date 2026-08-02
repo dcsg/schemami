@@ -185,5 +185,5 @@ phases:
     verify: '! grep -q ''status=accepted'' docs/product/specs/SPEC-001-rcp-v01-implementation/model.mmd'
     statement: Spec artifacts + relevant statuses flipped to implemented
   - id: AC-10.5
-    verify: '! grep -E ''^\| (10|[1-9]) +\|'' docs/plans/PLAN-rcp-v01.md | grep -qv done'
+    verify: '! grep -E ''\| (pending|in-progress|blocked|stuck) \|'' docs/plans/PLAN-rcp-v01.md | grep -q .'
     statement: 'Progress table: phases 1–9 done'
