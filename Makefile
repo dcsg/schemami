@@ -9,3 +9,7 @@ validate:
 	cd tools/rcplint && go run . validate ../..
 	cd tools/rcplint && go run . lint ../..
 	cd tools/rcplint && go run . facts ../.. > $(FACTS) && $(CUE) vet ../../schema/constraints/bounds.cue $(FACTS) && echo "CUE VET GREEN" && rm -f $(FACTS)
+
+.PHONY: accept
+accept:
+	bash tools/rcplint/scripts/accept.sh
