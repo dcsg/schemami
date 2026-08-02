@@ -202,6 +202,19 @@ strawman proposal is still a proposal.
     a v1 obligation, not a v0.1 deliverable. SPEC-009 prose comes after
     v0.1 is exercised, codifying what the dogfood taught.
 
+23. **Registry slugs are kind-prefixed.** (2026-08-02, PRD-001 OQ-1.)
+    Registry entry IDs and every recipe reference to them carry the kind
+    namespace: `ingredient.flour.wheat.t65`, `primitive.mix`,
+    `equipment.forno-lenha` — as `docs/guidelines/registry-governance.md`
+    already prescribed. The six example recipes (which use bare slugs)
+    are migrated as part of the v0.1 seed-registry work; the migration is
+    a recorded, reviewed change validated green by the harness
+    (PRD-001 AC-202-3), and the linter thereafter rejects bare slugs
+    (AC-201-2). Chosen over bare-slugs-with-context because entry IDs
+    should be self-describing independent of the referencing field, and
+    this is the last moment renaming is possible — IDs never change once
+    the registry exists.
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
