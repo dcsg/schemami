@@ -1,0 +1,13 @@
+# Negative fixture: min_ratio present WITHOUT `of` must be REJECTED
+# (SR-PR-002/DS-PR-002 dependent requirement — a ratio of nothing is meaningless).
+rcp: 1
+id: fixture-ratio-without-of
+kind: component
+name: { en: Ratio without basis fixture }
+ingredients:
+  - id: x
+    amount: { value: 100, unit: g }
+    constraints:
+      - min_ratio: 0.02
+        severity: critical
+        reason: { en: Ratio bound with no basis reference. }

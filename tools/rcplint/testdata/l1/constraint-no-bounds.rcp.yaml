@@ -1,0 +1,12 @@
+# Negative fixture (AC-PR-002-1): constraint with severity+reason but ZERO bound
+# fields must be REJECTED by the hardened core schema (SR-PR-002/DS-PR-002).
+rcp: 1
+id: fixture-constraint-no-bounds
+kind: component
+name: { en: Constraint without bounds fixture }
+ingredients:
+  - id: x
+    amount: { value: 100, unit: g }
+    constraints:
+      - severity: critical
+        reason: { en: A bound-less constraint is not a constraint. }

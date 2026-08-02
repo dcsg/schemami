@@ -315,8 +315,11 @@
       "properties": {
         "id": { "$ref": "#/$defs/slug" },
         "item": {
-          "$ref": "#/$defs/slug",
-          "description": "REGISTRY REFERENCE into the ingredient-class catalog (e.g. flour.wheat.t65). Recipes reference a class, never a purchasable product — the shopping layer resolves class to product. MAY be null on freshly-imported recipes that are not yet resolved; `raw` always survives."
+          "anyOf": [
+            { "$ref": "#/$defs/slug" },
+            { "type": "null" }
+          ],
+          "description": "REGISTRY REFERENCE into the ingredient-class catalog (e.g. ingredient.flour.wheat.t65). Recipes reference a class, never a purchasable product — the shopping layer resolves class to product. HARDENED (SR-PR-002/DS-PR-003): null is schema-valid and marks an unresolved import (freshly-ingested, not yet mapped) — the semantic linter WARNS on null, the schema never errors; `raw` always survives for audit and re-parsing."
         },
         "amount": { "$ref": "#/$defs/quantity" },
         "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } },
@@ -343,9 +346,19 @@
     },
 
     "constraint": {
-      "description": "Bounded quantity. A `critical` constraint may not be violated by scaling or substitution — the engine must refuse and explain, not silently produce an unsafe recipe.",
+      "description": "Bounded quantity. A `critical` constraint may not be violated by scaling or substitution — the engine must refuse and explain, not silently produce an unsafe recipe. HARDENED (SR-PR-002): at least one bound is required — a constraint without bounds is not a constraint; ratio bounds require `of` naming the basis they are ratios of.",
       "type": "object",
       "required": ["severity", "reason"],
+      "anyOf": [
+        { "required": ["min_ratio"] },
+        { "required": ["max_ratio"] },
+        { "required": ["min_value"] },
+        { "required": ["max_value"] }
+      ],
+      "dependentRequired": {
+        "min_ratio": ["of"],
+        "max_ratio": ["of"]
+      },
       "properties": {
         "min_ratio": { "type": "number" },
         "max_ratio": { "type": "number" },

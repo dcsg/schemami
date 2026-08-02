@@ -167,7 +167,10 @@ steps:
 
 profile:                            # ← ferment profile only
   ferment_type: lacto
-  safety_gate: { ph_max: 4.0, brine_min_pct: 2.0 }
+  # Single-sourcing (SR-PR-002/DS-PR-004): the numeric bounds live ONLY on the
+  # constraint-carrying ingredient (sal: 2% min of vegetable) and the pH process
+  # endpoint (< 4.0 on the fermentar step). This block references, never restates.
+  safety_refs: [sal]
   vessel_headspace: { ratio: 0.15, scaling: fixed }
 
 # ═══════════════════════════════════════════════════════════════════════
