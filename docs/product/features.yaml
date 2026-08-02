@@ -7,65 +7,155 @@
 #   VAL validation · SAFE safety machinery · CALC recipe calculus ·
 #   SUB substitution · PUB publishing/resolution · APP app-side (external)
 #
-# status: shipping (in an accepted PRD) | deferred (target names the release)
-#         | external (app-side per DECISIONS #19/#21 — tracked for the map,
-#           never implemented in this repo)
-# realized_by: FR ids once in a PRD; graduates_to: PRD id when a deferred
-# feature enters one. Deferred/external features carry NO implementation ids
-# until graduation (rule: context needs no ids; implemented work does).
+# Fields:
+#   status: shipping (in an accepted PRD) | deferred (target names the
+#           release) | external (app-side per DECISIONS #19/#21 — tracked
+#           for the map, never implemented in this repo)
+#   description: what the feature IS and why it exists — grounded in the
+#           research corpus and decisions, never invented
+#   personas: stable keys from docs/personas.md served by this feature
+#   icp: ICP-1 (infrastructure — validated, the ecosystem itself) |
+#        ICP-2 (expansion — hypothesis, gated on AT-2/AT-4) | both
+#   realized_by: FR ids once in a PRD; graduates_to: PRD id when a
+#           deferred feature enters one. Deferred/external features carry
+#           NO implementation ids until graduation.
 
 features:
   # ── Shipping in v0.1 (PRD-001, SPEC-001) ──────────────────────────────
   - id: FEAT-CORE-001
     name: "Frozen, versioned core schema"
+    description: >-
+      One small machine-readable schema (JSON Schema 2020-12) able to hold
+      any recipe category: ingredients as role-tagged rows, basis
+      percentages, opt-in step DAG, bounded constraints. Frozen at v0.1
+      with documented version semantics and decode-compatibility rules
+      binding every later change — replacing five divergent in-house
+      representations with a single validated target that documents can
+      outlive code on.
+    personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #14", "DECISIONS #21", "DECISIONS #22"]
     realized_by: [FR-PR-001]
   - id: FEAT-CORE-002
     name: "Hardened constraint & safety encoding (single-sourced bounds)"
+    description: >-
+      Safety-critical quantities (brine %, cure ppm, salt ratios) are
+      bounded data with authored reasons, encoded exactly once per
+      document and referenced elsewhere — never duplicated prose. The
+      schema rejects bound-less constraints, so a safety rule cannot
+      silently degrade into a comment. Foundation for every fail-closed
+      check downstream (A11×A5: a mis-extracted salt quantity must be
+      catchable).
+    personas: [rcp.verifier.editorial, rcp.cook.production-scaler, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #5"]
     realized_by: [FR-PR-002]
   - id: FEAT-REG-001
     name: "Registry entry formats (ingredient class, step primitive, equipment profile)"
+    description: >-
+      The three shared vocabularies get document formats of their own:
+      ingredient classes (functional roles, localized display names,
+      optional density/allergen/cross-refs), versioned step primitives
+      with ParamSpecs (SPEC-008 lineage: new capability = new id), and
+      equipment profiles whose parameters participate in the maths.
+      Kind-prefixed stable IDs, append-only, governed — so recipes
+      reference meaning, not strings.
+    personas: [rcp.registry.steward, rcp.dev.surface-engineer]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #16", "DECISIONS #23"]
     realized_by: [FR-REG-001]
   - id: FEAT-REG-002
     name: "Seed registry + kind-prefixed slug migration"
+    description: >-
+      The vocabulary stops being implicit: every slug the six example
+      recipes reference (~30 ingredient classes, 24 primitives, 6
+      equipment profiles) becomes a real governed entry, and the examples
+      migrate to the kind-prefixed convention. From here, extraction can
+      only map to existing entries or flag a gap — never mint IDs — which
+      is what keeps ingestion from polluting the vocabulary.
+    personas: [rcp.registry.steward, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #22", "DECISIONS #23"]
     realized_by: [FR-REG-002]
   - id: FEAT-PROF-001
     name: "Bread profile (hardened)"
+    description: >-
+      The category RCP was born from, fully enforced: total-flour basis
+      across component trees (preferment flour counts), maintenance
+      cultures (massa-mãe feed ratios, minimum batches, carry-forward),
+      and bread safety/sanity bounds as data. The validated bread segment
+      is the one place the ecosystem already has real users.
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-001]
   - id: FEAT-PROF-002
     name: "Pastry profile (hardened)"
+    description: >-
+      The domain that breaks naive recipe models, enforced: quantities
+      that are tests not numbers (to_consistency), four temperature
+      shapes (target / range / named stage / curve), lamination and rest
+      structures, make-ahead windows. Proves the core generalizes beyond
+      bread with the nata — a pastry containing a bread — as the living
+      test.
+    personas: [rcp.ingester.personal-collector, rcp.cook.home-cook]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-002]
   - id: FEAT-PROF-003
     name: "Draft profiles ×5 with machine-readable maturity"
+    description: >-
+      Ferment, preserve, drink, coffee and component/dish exist as draft
+      schemas — valid to author against, honestly labelled
+      non-conformance-guaranteed via x-rcp-maturity. Keeps the core
+      checked against the full seven-category roster (a single-profile
+      core silently overfits, the original defect) without paying five
+      hardening costs before the dogfood.
+    personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #18"]
     realized_by: [FR-PROF-003]
   - id: FEAT-VAL-001
     name: "Two-layer validation harness (schema + semantic linter with CUE)"
+    description: >-
+      The protocol becomes executable: Layer 1 validates shape
+      (core ∧ profile[kind]); Layer 2 enforces what schemas cannot —
+      every reference resolves, every guard combination yields a complete
+      DAG, no cycles, no orphan intermediates — with declarative ratio
+      bounds in CUE. One command, CI-able. Integrators inherit a
+      validated contract instead of hand-writing validation; the repo's
+      'examples are the regression suite' rule finally runs.
+    personas: [rcp.dev.surface-engineer, rcp.registry.steward]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #8"]
     realized_by: [FR-VAL-001, FR-VAL-002]
   - id: FEAT-SAFE-001
     name: "Fail-closed safety clamp (throwaway precursor)"
+    description: >-
+      A minimal scaler-guard proving the protocol's central safety claim:
+      scale a recipe until a critical bound breaks and the transformation
+      is refused with the author's reason shown — never silently
+      accepted. Explicitly throwaway; exists so the dogfood's
+      'zero silent quantity errors' criterion is testable before the real
+      Recipe Calculus (FEAT-CALC-001).
+    personas: [rcp.verifier.editorial, rcp.cook.production-scaler, rcp.ingester.personal-collector]
+    icp: ICP-1
     status: shipping
     target: v0.1
     trace: ["DECISIONS #15", "DECISIONS #22"]
@@ -74,42 +164,99 @@ features:
   # ── Deferred: v1 ──────────────────────────────────────────────────────
   - id: FEAT-CALC-001
     name: "Recipe Calculus with cross-stack conformance vectors"
+    description: >-
+      The one named library of pure functions every surface computes with
+      at cook time — scaling, basis resolution, guard-path selection,
+      fail-closed constraint enforcement, duration re-estimation —
+      specified once, shipped with conformance test vectors so TS, Swift
+      and Go implementations are proven equivalent instead of drifting
+      (the disease RCP exists to cure). Replaces the throwaway clamp.
+    personas: [rcp.dev.surface-engineer, rcp.cook.home-cook, rcp.cook.production-scaler]
+    icp: ICP-1
     status: deferred
     target: v1
     trace: ["DECISIONS #13", "DECISIONS #15"]
     graduates_to: null
   - id: FEAT-CORE-003
     name: "Decode-compatibility CI fixtures (old reader/new doc, both directions)"
+    description: >-
+      The 'data outlives code' contract made mechanical: bidirectional
+      fixtures run in CI proving old readers tolerate new documents
+      (unknown fields preserved, enums catch-all) and new readers decode
+      old documents. The one bug class that cannot be fixed after
+      offline snapshots ship.
+    personas: [rcp.dev.surface-engineer]
+    icp: ICP-1
     status: deferred
     target: v1
     trace: ["DECISIONS #14"]
     graduates_to: null
   - id: FEAT-CORE-004
     name: "Codegen decode types (quicktype → Swift Codable + TS) from the frozen schema"
+    description: >-
+      Apps never validate — they decode. Generated Swift and TypeScript
+      decode types from the frozen schema give every surface types that
+      cannot drift from the truth, closing the 'zero client-side
+      validation' goal from decision #8.
+    personas: [rcp.dev.surface-engineer]
+    icp: ICP-1
     status: deferred
     target: v1
     trace: ["DECISIONS #8", "research 02:551-554"]
     graduates_to: null
   - id: FEAT-PROF-004
     name: "Ferment profile hardened"
+    description: >-
+      Fermentation graduates from draft to conformance-guaranteed: brine
+      and pH safety gates, vessel headspace, burping triggers, backslop
+      carry-forward — the domain where the fail-closed machinery earns
+      its keep (botulism bounds are not prose).
+    personas: [rcp.cook.home-cook, rcp.verifier.editorial]
+    icp: ICP-1
     status: deferred
     target: v1
     trace: ["DECISIONS #18"]
     graduates_to: null
   - id: FEAT-PROF-005
     name: "Dish (savoury) profile hardened"
+    description: >-
+      Everyday cooking enforced: endpoint-driven doneness (internal
+      temperature, not minutes), the equipment guarded-branch machinery
+      (oven vs air-fryer), pan-geometry-aware scaling, plated
+      multi-component composition (steak + fries as a two-component
+      dish). The profile that makes 'any recipe' credible for daily use.
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector]
+    icp: both
     status: deferred
     target: v1
     trace: ["DECISIONS #18"]
     graduates_to: null
   - id: FEAT-SUB-001
     name: "Global substitution catalog (typed op-lists + variants, curated)"
+    description: >-
+      The novel part of RCP as shared content: curated cross-recipe
+      substitutions (gelatine→agar boils; yeast→levain grafts a subtree)
+      as typed op-lists anchored to step slugs with fail-closed guards —
+      method deltas included, because 15 of 18 researched substitutions
+      change the method. LLM-drafted, human-reviewed, never auto-applied.
+      Serves the diaspora availability problem (T65 doesn't exist abroad
+      under that name).
+    personas: [rcp.cook.diaspora-substituter, rcp.cook.home-cook]
+    icp: both
     status: deferred
     target: v1
     trace: ["DECISIONS #9", "DECISIONS #17"]
     graduates_to: null
   - id: FEAT-PUB-001
     name: "Verified publish-time reference resolution (resolver_version + content hashes)"
+    description: >-
+      Published documents pin what they resolved: every embedded
+      component and registry reference carries resolver_version and a
+      content hash, so a resolver bug can be identified and republished
+      instead of shipping silently into immutable offline snapshots with
+      no repair path.
+    personas: [rcp.verifier.editorial, rcp.dev.surface-engineer]
+    icp: ICP-1
     status: deferred
     target: v1
     trace: ["DECISIONS #21", "engineering obligation #3"]
@@ -118,12 +265,27 @@ features:
   # ── Deferred: post-v1 ─────────────────────────────────────────────────
   - id: FEAT-PROF-006
     name: "Preserve, drink, coffee profiles hardened"
+    description: >-
+      The remaining three categories graduate: preserves (cure ppm
+      two-hop conversions), drinks (ratio-first recipes, dilution as
+      phantom ingredient), coffee (brew ratios, non-portable grind
+      settings). Sequenced after the dogfood shows which one real
+      ingestion demands first.
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector]
+    icp: ICP-2
     status: deferred
     target: post-v1
     trace: ["DECISIONS #18"]
     graduates_to: null
   - id: FEAT-SUB-002
     name: "Pack/shelf projection document format (curation layer)"
+    description: >-
+      A document format for curated recipe collections (packs, shelves)
+      that reference published recipes — the protocol-side enabler of the
+      expansion bet. Explicitly gated on AT-2/AT-4 evidence that anyone
+      beyond n=1 wants it; the fake-door test comes first.
+    personas: [rcp.author.contributor, rcp.cook.home-cook]
+    icp: ICP-2
     status: deferred
     target: post-v1 (gated on AT-2/AT-4 expansion evidence)
     trace: ["DECISIONS #10", "DECISIONS #19"]
@@ -132,16 +294,40 @@ features:
   # ── External: app-side, never implemented in this repo ────────────────
   - id: FEAT-APP-001
     name: "Ingestion pipeline (photo → vision-LLM extraction → review/correct → private recipe)"
+    description: >-
+      The primary v1 content path, built in the consuming app: photograph
+      a cookbook page, vision-LLM extracts into RCP, review-and-correct,
+      land as a private unverified recipe cookable with full machinery.
+      Imported book recipes are personal-use only — private-vs-published
+      is a first-class boundary. AT-3 (the ingestion dogfood on Daniel's
+      own books) is how this exercises and validates the protocol.
+    personas: [rcp.ingester.personal-collector, rcp.verifier.editorial]
+    icp: ICP-1
     status: external
-    target: consuming app (v1-core product path; AT-3 dogfood exercises the protocol)
+    target: consuming app (v1-core product path)
     trace: ["DECISIONS #11", "DECISIONS #19", "DECISIONS #21"]
   - id: FEAT-APP-002
     name: "Execution sessions (readings, timers, actuals) and cook-along surfaces"
+    description: >-
+      Cook-time state lives outside the recipe: targets in the document,
+      readings in separate session documents, checkpoint-driven
+      re-estimation ('at 2h you reported +30% volume → revised finish
+      ~5h'). Built by apps against the protocol's targets; the protocol
+      itself stays immutable at cook time.
+    personas: [rcp.cook.home-cook, rcp.cook.production-scaler]
+    icp: ICP-1
     status: external
     target: consuming app
     trace: ["DECISIONS #16", "DECISIONS #19"]
   - id: FEAT-APP-003
     name: "Users, favorites, collections, publishing infrastructure"
+    description: >-
+      Identity, personal libraries, entitlements, and the
+      private→published editorial workflow — platform concerns of
+      whatever app implements RCP, deliberately outside the protocol so
+      it stays a published language rather than a product domain model.
+    personas: [rcp.author.contributor, rcp.verifier.editorial]
+    icp: ICP-2
     status: external
     target: consuming app / platform
     trace: ["DECISIONS #19"]
