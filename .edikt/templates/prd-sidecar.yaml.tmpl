@@ -11,19 +11,19 @@ created_at: "{{created_at}}"
 
 # Functional requirements — stable IDs flow through to SPEC.
 #
-# PROJECT RULE (docs/guidelines/traceability.md): IDs use component bands —
-#   FR-1xx protocol-core · FR-2xx registry · FR-3xx profiles ·
-#   FR-4xx validator · FR-5xx safety-clamp
-# Every FR MUST carry `component:` (its band name) and `trace:` (list of
-# DECISIONS #NN / research refs). Both cascade to SPEC, artifacts, plans,
-# and sidecars. New bands are added to the guideline before use.
+# PROJECT RULE (docs/guidelines/traceability.md): IDs use component codes —
+#   FR-PR-NNN protocol-core · FR-REG-NNN registry · FR-PROF-NNN profiles ·
+#   FR-VAL-NNN validator · FR-SAFE-NNN safety-clamp (numbered per component)
+# Every FR MUST carry `component:` (its component name) and `trace:` (list
+# of DECISIONS #NN / research refs). Both cascade to SPEC, artifacts,
+# plans, and sidecars. New codes are added to the guideline before use.
 #
 # Each FR MAY carry a `verify:` shell command run by
 # `bin/edikt verify prd <id>`. Exit 0 = FR is shipped/satisfied. Omit
 # when no programmatic check exists. PRD lifecycle (ship, supersede)
 # refuses the transition when any verify fails.
 requirements:
-  - id: FR-101
+  - id: FR-PR-001
     component: protocol-core
     text: "{{fr_text}}"
     trace: ["DECISIONS #NN"]
@@ -31,14 +31,14 @@ requirements:
     # verify: "<shell command, exit 0 = FR satisfied>"
 
 # Acceptance criteria — Given/When/Then, one or more per FR.
-# AC ids inherit the FR's banded number (AC-NNN-M) so the component is
-# readable from any AC id (traceability guideline).
+# AC ids inherit the FR's code and number (AC-<CODE>-NNN-M) so the
+# component is readable from any AC id (traceability guideline).
 # Each AC MAY carry a `verify:` shell command that mechanically validates
 # the Given/When/Then. Exit 0 = the AC passes. Omit when human judgment
 # is the only path.
 acceptance_criteria:
-  - id: AC-101-1
-    fr: FR-101
+  - id: AC-PR-001-1
+    fr: FR-PR-001
     given: "{{given}}"
     when: "{{when}}"
     then: "{{then}}"

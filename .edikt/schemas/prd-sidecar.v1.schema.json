@@ -2,20 +2,31 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://edikt.dev/schemas/prd-sidecar/v1.json",
   "title": "edikt PRD sidecar",
-  "description": "Structured sidecar (.yaml) that accompanies every v2 PRD narrative (.md). Source of truth for requirements, ACs, status, and cross-references. PRDs follow an edit-in-place lifecycle — the sidecar is mutable.",
+  "description": "Structured sidecar (.yaml) that accompanies every v2 PRD narrative (.md). Source of truth for requirements, ACs, status, and cross-references. PRDs follow an edit-in-place lifecycle \u2014 the sidecar is mutable.",
   "type": "object",
   "additionalProperties": false,
   "unevaluatedProperties": false,
-  "required": ["schema_version", "type", "id", "title", "status", "rigor", "author", "created_at"],
+  "required": [
+    "schema_version",
+    "type",
+    "id",
+    "title",
+    "status",
+    "rigor",
+    "author",
+    "created_at"
+  ],
   "properties": {
     "schema_version": {
       "type": "string",
       "const": "1.0",
-      "description": "Sidecar schema version. PRD/SPEC sidecars use a string semver (\"1.0\") because they expect minor/patch evolution within v1.x — additive field changes can ship as 1.1, 1.2, … without rewriting the consumer surface. The governance sidecar (gov-sidecar.v1.schema.json) intentionally uses a discrete integer (1) because its on-disk shape is a v1-or-v2 contract, not a semver-versioned one. Used by /edikt:doctor to flag stale sidecars."
+      "description": "Sidecar schema version. PRD/SPEC sidecars use a string semver (\"1.0\") because they expect minor/patch evolution within v1.x \u2014 additive field changes can ship as 1.1, 1.2, \u2026 without rewriting the consumer surface. The governance sidecar (gov-sidecar.v1.schema.json) intentionally uses a discrete integer (1) because its on-disk shape is a v1-or-v2 contract, not a semver-versioned one. Used by /edikt:doctor to flag stale sidecars."
     },
     "type": {
       "type": "string",
-      "enum": ["prd"]
+      "enum": [
+        "prd"
+      ]
     },
     "id": {
       "type": "string",
@@ -33,12 +44,25 @@
     },
     "status": {
       "type": "string",
-      "enum": ["draft", "accepted", "in-progress", "shipped", "evolving", "superseded", "deprecated", "cancelled"],
-      "description": "Lifecycle status. draft → accepted → in-progress → shipped (→ evolving for post-ship iteration). Terminal states: superseded | deprecated | cancelled. PRDs and SPECs share this enum so a status from one artifact class is meaningful when surfaced alongside the other."
+      "enum": [
+        "draft",
+        "accepted",
+        "in-progress",
+        "shipped",
+        "evolving",
+        "superseded",
+        "deprecated",
+        "cancelled"
+      ],
+      "description": "Lifecycle status. draft \u2192 accepted \u2192 in-progress \u2192 shipped (\u2192 evolving for post-ship iteration). Terminal states: superseded | deprecated | cancelled. PRDs and SPECs share this enum so a status from one artifact class is meaningful when surfaced alongside the other."
     },
     "rigor": {
       "type": "string",
-      "enum": ["solo", "team", "platform"]
+      "enum": [
+        "solo",
+        "team",
+        "platform"
+      ]
     },
     "author": {
       "type": "string"
@@ -51,11 +75,15 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "text", "status"],
+        "required": [
+          "id",
+          "text",
+          "status"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^FR-\\d{3,}$"
+            "pattern": "^FR-[A-Z]+-\\d{3,}$"
           },
           "text": {
             "type": "string",
@@ -63,18 +91,37 @@
           },
           "status": {
             "type": "string",
-            "enum": ["proposed", "accepted", "shipped", "deprecated"]
+            "enum": [
+              "proposed",
+              "accepted",
+              "shipped",
+              "deprecated"
+            ]
           },
-          "shipped_at": { "type": ["string", "null"] },
-          "deprecated_at": { "type": ["string", "null"] },
+          "shipped_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "deprecated_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "verify": {
             "type": "string",
             "minLength": 1,
-            "description": "Optional shell command that returns exit 0 when this FR is shipped/satisfied. Run via `bin/edikt verify prd <PRD-ID>`. PRD lifecycle transitions (ship, supersede) refuse to proceed when any verify fails — the completion-evidence discipline treats a status flip without evidence as unverifiable. Omit when no programmatic check exists — the field stays absent, not empty."
+            "description": "Optional shell command that returns exit 0 when this FR is shipped/satisfied. Run via `bin/edikt verify prd <PRD-ID>`. PRD lifecycle transitions (ship, supersede) refuse to proceed when any verify fails \u2014 the completion-evidence discipline treats a status flip without evidence as unverifiable. Omit when no programmatic check exists \u2014 the field stays absent, not empty."
           },
           "verify_kind": {
             "type": "string",
-            "enum": ["behavioral", "tooling", "structural"],
+            "enum": [
+              "behavioral",
+              "tooling",
+              "structural"
+            ],
             "description": "Discriminator for the cheat-rate benchmark. Required only when this FR should be scored by `bin/edikt gov benchmark cheat-rate`."
           },
           "intent": {
@@ -87,8 +134,12 @@
             "minLength": 1,
             "maxLength": 300
           },
-          "positive_fixture_path": { "type": "string" },
-          "negative_fixture_path": { "type": "string" },
+          "positive_fixture_path": {
+            "type": "string"
+          },
+          "negative_fixture_path": {
+            "type": "string"
+          },
           "user_fields": {
             "type": "object",
             "description": "User-owned per-entry extension zone. LLM never writes here."
@@ -100,32 +151,54 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "fr", "given", "when", "then", "status"],
+        "required": [
+          "id",
+          "fr",
+          "given",
+          "when",
+          "then",
+          "status"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^AC-\\d{3,}-\\d+$",
-            "description": "e.g. AC-001-1 (FR-001, criterion 1)."
+            "pattern": "^AC-[A-Z]+-\\d{3,}-\\d+$",
+            "description": "e.g. AC-PR-001-1 (FR-PR-001, criterion 1). Component code per docs/guidelines/traceability.md."
           },
           "fr": {
             "type": "string",
-            "pattern": "^FR-\\d{3,}$"
+            "pattern": "^FR-[A-Z]+-\\d{3,}$"
           },
-          "given": { "type": "string" },
-          "when": { "type": "string" },
-          "then": { "type": "string" },
+          "given": {
+            "type": "string"
+          },
+          "when": {
+            "type": "string"
+          },
+          "then": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
-            "enum": ["proposed", "accepted", "shipped", "deprecated"]
+            "enum": [
+              "proposed",
+              "accepted",
+              "shipped",
+              "deprecated"
+            ]
           },
           "verify": {
             "type": "string",
             "minLength": 1,
-            "description": "Optional shell command that mechanically validates the Given/When/Then. Exit 0 = the AC passes. Run by `bin/edikt verify prd <PRD-ID>`; used by PRD lifecycle gates and the completion-evidence discipline. Omit when no programmatic check is possible — the AC then relies on human judgment, surfaced via doctor's verify-coverage metric."
+            "description": "Optional shell command that mechanically validates the Given/When/Then. Exit 0 = the AC passes. Run by `bin/edikt verify prd <PRD-ID>`; used by PRD lifecycle gates and the completion-evidence discipline. Omit when no programmatic check is possible \u2014 the AC then relies on human judgment, surfaced via doctor's verify-coverage metric."
           },
           "verify_kind": {
             "type": "string",
-            "enum": ["behavioral", "tooling", "structural"],
+            "enum": [
+              "behavioral",
+              "tooling",
+              "structural"
+            ],
             "description": "Discriminator for the cheat-rate benchmark."
           },
           "intent": {
@@ -138,9 +211,15 @@
             "minLength": 1,
             "maxLength": 300
           },
-          "positive_fixture_path": { "type": "string" },
-          "negative_fixture_path": { "type": "string" },
-          "user_fields": { "type": "object" }
+          "positive_fixture_path": {
+            "type": "string"
+          },
+          "negative_fixture_path": {
+            "type": "string"
+          },
+          "user_fields": {
+            "type": "object"
+          }
         }
       }
     },
@@ -150,25 +229,34 @@
         "oneOf": [
           {
             "type": "object",
-            "required": ["ref"],
+            "required": [
+              "ref"
+            ],
             "properties": {
               "ref": {
                 "type": "string",
                 "pattern": "^INV-\\d{3,}$"
               },
-              "note": { "type": "string" }
+              "note": {
+                "type": "string"
+              }
             }
           },
           {
             "type": "object",
-            "required": ["id", "text"],
+            "required": [
+              "id",
+              "text"
+            ],
             "properties": {
               "id": {
                 "type": "string",
                 "pattern": "^SP-\\d{3,}$",
                 "description": "Feature-scoped protection. Promote to an INV if durable."
               },
-              "text": { "type": "string" }
+              "text": {
+                "type": "string"
+              }
             }
           }
         ]
@@ -178,14 +266,28 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["type", "path_or_url"],
+        "required": [
+          "type",
+          "path_or_url"
+        ],
         "properties": {
           "type": {
             "type": "string",
-            "enum": ["figma", "screenshot", "url", "doc", "generated", "prototype"]
+            "enum": [
+              "figma",
+              "screenshot",
+              "url",
+              "doc",
+              "generated",
+              "prototype"
+            ]
           },
-          "path_or_url": { "type": "string" },
-          "description": { "type": "string" }
+          "path_or_url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
         }
       }
     },
@@ -193,34 +295,68 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "role"],
+        "required": [
+          "name",
+          "role"
+        ],
         "properties": {
-          "name": { "type": "string" },
+          "name": {
+            "type": "string"
+          },
           "role": {
             "type": "string",
-            "enum": ["owner", "stakeholder", "reviewer", "informed"]
+            "enum": [
+              "owner",
+              "stakeholder",
+              "reviewer",
+              "informed"
+            ]
           },
-          "required": { "type": "boolean" },
-          "signed_off_at": { "type": ["string", "null"] }
+          "required": {
+            "type": "boolean"
+          },
+          "signed_off_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
     "dependencies": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "nfrs": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["category", "requirement"],
+        "required": [
+          "category",
+          "requirement"
+        ],
         "properties": {
           "category": {
             "type": "string",
-            "enum": ["performance", "availability", "security", "privacy", "accessibility", "observability", "other"]
+            "enum": [
+              "performance",
+              "availability",
+              "security",
+              "privacy",
+              "accessibility",
+              "observability",
+              "other"
+            ]
           },
-          "requirement": { "type": "string" },
-          "target": { "type": "string" }
+          "requirement": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          }
         }
       }
     },
@@ -228,18 +364,38 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["description"],
+        "required": [
+          "description"
+        ],
         "properties": {
-          "description": { "type": "string" },
-          "likelihood": { "enum": ["low", "medium", "high"] },
-          "impact": { "enum": ["low", "medium", "high"] },
-          "mitigation": { "type": "string" }
+          "description": {
+            "type": "string"
+          },
+          "likelihood": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "impact": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "mitigation": {
+            "type": "string"
+          }
         }
       }
     },
     "open_questions": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "source_specs": {
       "type": "array",
@@ -250,43 +406,100 @@
       "description": "SPECs written against this PRD. Maintained by /edikt:sdlc:spec (back-reference emission,)."
     },
     "supersedes": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^PRD-\\d{3,}$"
     },
     "superseded_by": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "pattern": "^PRD-\\d{3,}$"
     },
-    "deprecated_at": { "type": ["string", "null"] },
-    "deprecated_reason": { "type": ["string", "null"] },
-    "cancelled_at": { "type": ["string", "null"] },
-    "cancelled_reason": { "type": ["string", "null"] },
+    "deprecated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deprecated_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cancelled_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "cancelled_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "forcing_questions": {
       "type": "object",
       "properties": {
-        "problem_behind_problem": { "type": "string" },
-        "evidence_or_hypothesis": { "type": "string" },
-        "north_metric_and_counter": { "type": "string" },
-        "must_not_change": { "type": "string" },
-        "riskiest_assumption": { "type": "string" }
+        "problem_behind_problem": {
+          "type": "string"
+        },
+        "evidence_or_hypothesis": {
+          "type": "string"
+        },
+        "north_metric_and_counter": {
+          "type": "string"
+        },
+        "must_not_change": {
+          "type": "string"
+        },
+        "riskiest_assumption": {
+          "type": "string"
+        }
       }
     },
     "revision_history": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["at", "author", "action"],
+        "required": [
+          "at",
+          "author",
+          "action"
+        ],
         "properties": {
-          "at": { "type": "string" },
-          "author": { "type": "string" },
+          "at": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
           "action": {
             "type": "string",
-            "enum": ["created", "edited", "ship", "deprecate", "cancel", "supersede", "resync", "review"]
+            "enum": [
+              "created",
+              "edited",
+              "ship",
+              "deprecate",
+              "cancel",
+              "supersede",
+              "resync",
+              "review"
+            ]
           },
-          "note": { "type": "string" },
+          "note": {
+            "type": "string"
+          },
           "affected": {
             "type": "array",
-            "items": { "type": "string" },
+            "items": {
+              "type": "string"
+            },
             "description": "e.g. ['FR-001', 'AC-001-2']"
           }
         }
@@ -299,7 +512,11 @@
     },
     "_sync": {
       "type": "object",
-      "required": ["md_hash", "yaml_hash", "synced_at"],
+      "required": [
+        "md_hash",
+        "yaml_hash",
+        "synced_at"
+      ],
       "properties": {
         "md_hash": {
           "type": "string",

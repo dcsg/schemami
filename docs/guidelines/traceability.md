@@ -8,22 +8,23 @@ RCP's founding failure mode is drift: five recipe representations with no
 shared type, three divergent baker's-percentage implementations. The same
 disease infects project artifacts when a spec item can't be traced to a
 requirement, or a plan phase delivers work no decision asked for. PRD-001
-adopted component-banded identifiers (2026-08-02) precisely so that "which
+adopted component-coded identifiers (2026-08-02) precisely so that "which
 part of v0.1 is this?" is answerable from the ID alone; this guideline makes
 the scheme binding down the whole chain: PRD → SPEC → artifacts → plans →
 sidecars.
 
 ## Rules
 
-- Every PRD functional requirement MUST use a component-banded ID:
-  FR-1xx `protocol-core`, FR-2xx `registry`, FR-3xx `profiles`,
-  FR-4xx `validator`, FR-5xx `safety-clamp`. New components MUST be added
-  to this guideline (new band) before use — never invented ad hoc.
-- Every PRD requirement MUST carry a `component:` field naming its band and
-  a `trace:` list referencing at least one DECISIONS.md entry, research
-  file, or recorded inventory that justifies it.
-- Acceptance criteria MUST inherit their FR's number (AC-NNN-M with NNN the
-  FR number), so the component band is readable from any AC id.
+- Every PRD functional requirement MUST use a component-coded ID of the
+  form `FR-<CODE>-NNN`, numbered per component from 001. The codes are:
+  `PR` `protocol-core`, `REG` `registry`, `PROF` `profiles`,
+  `VAL` `validator`, `SAFE` `safety-clamp`. New components MUST be added
+  to this guideline (new code) before use — never invented ad hoc.
+- Every PRD requirement MUST carry a `component:` field naming its
+  component and a `trace:` list referencing at least one DECISIONS.md
+  entry, research file, or recorded inventory that justifies it.
+- Acceptance criteria MUST inherit their FR's code and number
+  (`AC-<CODE>-NNN-M`), so the component is readable from any AC id.
 - Every SPEC item MUST reference the FR and/or AC ids it implements; a SPEC
   item implementing nothing traceable MUST NOT exist.
 - Every generated artifact (data model, contract, fixture) MUST carry the
@@ -32,8 +33,9 @@ sidecars.
   criteria MUST map to those ACs.
 - Sidecars (PRD, SPEC, plan) MUST preserve the id chain unbroken so drift
   checks can walk PRD → SPEC → plan → code mechanically.
-- NEVER renumber a banded ID after the owning artifact leaves draft status —
-  IDs are frozen at acceptance; corrections happen by deprecating and adding.
+- NEVER rename or renumber a coded ID after the owning artifact leaves
+  draft status — IDs are frozen at acceptance; corrections happen by
+  deprecating and adding.
 - NEVER introduce a deliverable without a trace — "no decision, no work" is
   the default; the escape hatch is recording the decision first.
 
@@ -43,26 +45,26 @@ sidecars.
 
 ```yaml
 # PRD sidecar requirement
-- id: FR-402
+- id: FR-VAL-002
   component: validator
   text: "A Layer-2 semantic linter enforces what the schema cannot: ..."
   trace: ["DECISIONS #8 reaffirmed", "research 07:38-60"]
   status: proposed
 
 # SPEC item referencing it
-- id: SI-402-1
-  implements: [FR-402, AC-402-1, AC-402-3]
+- id: SI-VAL-002-1
+  implements: [FR-VAL-002, AC-VAL-002-1, AC-VAL-002-3]
   ...
 ```
 
 ### Incorrect
 
 ```yaml
-# No component, no trace, sequential id with no band meaning:
+# No component code, no trace, sequential id with no meaning:
 - id: FR-011
   text: "Add a linter"
   status: proposed
-# Violates: banded-ID rule, component: requirement, trace: requirement.
+# Violates: coded-ID rule, component: requirement, trace: requirement.
 # There is no way to tell what part of the system this is or why it exists.
 ```
 
