@@ -273,17 +273,17 @@ design:
       serves: [SR-PROF-001, SR-PROF-002, SR-PROF-003]
       status: accepted
     - id: DS-VAL-001
-      text: "Validation composition is core AND profile[kind] — one document, two schema evaluations, both must pass; draft-profile passes are labelled, never silent."
+      text: "Validation composition is core AND profile[kind] — one document, two schema evaluations, both must pass. When no profile file exists for a kind (e.g. dish until post-v1), validation is core-only WITH an explicit no-profile warning — a permanent semantic, distinct from the draft-maturity label, never silent."
       serves: [SR-VAL-001, SR-PROF-003]
-      status: accepted
+      status: adjusted
     - id: DS-VAL-002
       text: "Layer-1 validator is github.com/santhosh-tekuri/jsonschema/v6 behind a small internal interface, so it can be swapped (e.g. for Google's Go jsonschema package) without touching callers; format assertions explicitly enabled."
       serves: [SR-VAL-001]
       status: accepted
     - id: DS-VAL-003
-      text: "CUE integration is a pipeline step: declarative constraints authored in schema/constraints/*.cue (normative artifacts), evaluated via `cue vet` CLI; embedding CUE in-process stays a documented option (ADR-001), not exercised in v0.1."
+      text: "CUE integration is a pipeline step: declarative constraints authored in schema/constraints/*.cue (normative artifacts), evaluated via `cue` CLI; embedding stays a documented option (ADR-001). Bounds authority: numeric bounds live ONLY in the profile schemas (bounds-as-data); the .cue files carry relation logic and READ the numbers from the profile schemas at vet time — restating a number in .cue is a defect (single-sourcing, DS-PR-004's principle)."
       serves: [SR-VAL-002]
-      status: accepted
+      status: adjusted
     - id: DS-VAL-004
       text: "Layer-2 check set: reference resolution (item/primitive/equipment/of/uses/after), DAG completeness+termination per enumerated guard combination, component cycle rejection, produced-but-unconsumed intermediate reporting, unversioned-pin reporting, and ingredients-listed-but-never-used reporting (research 00: 'you listed an ingredient nobody uses')."
       serves: [SR-VAL-002]
@@ -436,6 +436,10 @@ revision_history:
     author: "Daniel Gomes"
     action: "edited"
     note: "DS-VAL-004 adjusted (QA review finding #5): unused-ingredient reporting was fixture-only with no spec trace; added to the L2 check set. serves: SR-VAL-002 re-checked — the SR's check list is illustrative of DS-VAL-004, no SR/AC text change needed. First use of the adjustment protocol."
+  - at: "2026-08-02T18:41:50Z"
+    author: "Daniel Gomes"
+    action: "edited"
+    note: "Two DS adjustments from plan pre-flight review: DS-VAL-001 — missing-profile => core-only pass with explicit warning is permanent semantics (dish has no profile until post-v1), distinct from maturity labels. DS-VAL-003 — bounds authority named: profile schemas hold the numbers; .cue files hold relations and read from profiles; dual-encoding is a defect. serves: SR-VAL-001/002, SR-PROF-003 re-checked, no AC text changes."
 
 # User extensions — LLM never writes here; commands never touch.
 extensions: {}
@@ -443,5 +447,5 @@ extensions: {}
 # Sync block.
 _sync:
   md_hash: "1e9a91d0746333ce115817d2d71bf8a832602659e082311589b356951df4024e"
-  yaml_hash: "59e8c569e471e25e89a59fd1fdea287ebfd599a25281a9d58990c40e6266e1e3"
-  synced_at: "2026-08-02T18:20:38Z"
+  yaml_hash: "7c55738c9869d5d37fdfa7bdf1ac0c21e2578b854f26f8a92ba9486762dd36d2"
+  synced_at: "2026-08-02T18:41:50Z"
