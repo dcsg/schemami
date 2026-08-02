@@ -1,0 +1,21 @@
+# Clamp fixture (AC-9.3): warn-severity bound crossed under the same fixed
+# asymmetry — surfaced, never refused (DS-SAFE-001 refusal scope).
+rcp: 1
+id: fx-warn-bound
+kind: ferment
+name: { en: Warn bound fixture }
+bases:
+  vegetable: { sum: ingredients, where: { roles: [substrate] } }
+ingredients:
+  - { id: couve, item: ingredient.vegetable.cabbage.white, amount: { value: 1000, unit: g }, roles: [substrate] }
+  - id: sal
+    item: ingredient.salt.sea.fine
+    amount: { value: 30, unit: g, scaling: fixed }
+    roles: [salt]
+    constraints:
+      - max_ratio: 0.035
+        of: vegetable
+        severity: warn
+        reason: { en: Above ~3.5% fermentation stalls. }
+steps:
+  - { id: s, primitive: { id: primitive.salt-and-massage, v: 1 }, uses: [couve, sal] }

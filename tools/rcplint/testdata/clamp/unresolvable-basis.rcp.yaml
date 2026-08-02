@@ -1,0 +1,19 @@
+# Clamp fixture (AC-SAFE-001-2, unresolvable-basis branch): critical
+# constraint whose basis cannot resolve — refusal by default. (Kept separate
+# from testdata/l2/undeclared-basis.rcp.yaml, which stays one-rule for lint.)
+rcp: 1
+id: fx-unresolvable-basis
+kind: ferment
+name: { en: Unresolvable basis clamp fixture }
+ingredients:
+  - id: sal
+    item: ingredient.salt.sea.fine
+    amount: { ratio: 0.02, of: ghost }
+    roles: [salt]
+    constraints:
+      - min_ratio: 0.02
+        of: ghost
+        severity: critical
+        reason: { en: Below 2% is not safe., pt: Abaixo de 2% não é seguro. }
+steps:
+  - { id: s, primitive: { id: primitive.salt-and-massage, v: 1 }, uses: [sal] }

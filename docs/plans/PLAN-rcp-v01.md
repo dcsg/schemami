@@ -37,8 +37,8 @@ phases:
 | 5     | done | 1/5 | 2026-08-02 |
 | 6     | done | 1/5 | 2026-08-02 |
 | 7     | done | 1/5 | 2026-08-02 |
-| 8     | in-progress | 1/5 | 2026-08-02 |
-| 9     | pending | 0/5 | - |
+| 8     | done | 1/5 | 2026-08-02 |
+| 9     | in-progress | 1/5 | 2026-08-02 |
 | 10    | pending | 0/5 | - |
 
 **IMPORTANT:** Update this table as phases complete. This table is the persistent state that survives context compaction.
@@ -379,8 +379,8 @@ When complete, output: PHASE 8 COMPLETE
 - `docs/product/specs/SPEC-001-rcp-v01-implementation/fixtures.yaml` — clamp-cases scenario
 
 **Acceptance Criteria:**
-- [ ] AC-9.1 `rcplint clamp --scale 0.6` on chucrute refuses with authored pt AND en reason
-- [ ] AC-9.2 `--scale 1.5` accepted
+- [ ] AC-9.1 clamp refuses the asymmetric case (gram-fixed salt, substrate scaled ×2) with authored pt AND en reason — corrected at P9: uniform scaling is ratio-invariant
+- [ ] AC-9.2 uniform scaling of the real chucrute accepted at 0.6 AND 1.5 (ratio invariance — no false refusals)
 - [ ] AC-9.3 warn-bound case: accepted WITH warning surfaced
 - [ ] AC-9.4 alentejano `--scale 0.05`: refused/floored citing min_batch/maintenance
 - [ ] AC-9.5 missing-quantity + unresolvable-basis cases refused (uncertainty default)

@@ -1,0 +1,20 @@
+# Clamp fixture (AC-SAFE-001-2, missing-data branch): a critical constraint
+# on an ingredient whose quantity cannot resolve — refusal by default.
+rcp: 1
+id: fx-missing-quantity
+kind: ferment
+name: { en: Missing quantity fixture }
+bases:
+  vegetable: { sum: ingredients, where: { roles: [substrate] } }
+ingredients:
+  - { id: couve, item: ingredient.vegetable.cabbage.white, amount: { value: 1000, unit: g }, roles: [substrate] }
+  - id: sal
+    item: ingredient.salt.sea.fine
+    roles: [salt]
+    constraints:
+      - min_ratio: 0.02
+        of: vegetable
+        severity: critical
+        reason: { en: Below 2% brine, lacto-fermentation is not reliably safe., pt: Abaixo de 2% não é seguro. }
+steps:
+  - { id: s, primitive: { id: primitive.salt-and-massage, v: 1 }, uses: [couve, sal] }

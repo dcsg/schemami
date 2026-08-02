@@ -1,0 +1,27 @@
+# Clamp fixture (AC-SAFE-001-1 class): salt is GRAM-FIXED (scaling: fixed)
+# while the vegetable scales — the asymmetry that actually breaks the 2%
+# floor. Uniform scaling of the real chucrute is ratio-invariant and SAFE;
+# this fixture is the honest refusal case (contract corrected in P9 —
+# the original scale-0.6 expectation was mathematically wrong).
+rcp: 1
+id: fx-fixed-salt-chucrute
+kind: ferment
+name: { pt: Chucrute com sal fixo, en: Fixed-salt sauerkraut }
+bases:
+  vegetable: { sum: ingredients, where: { roles: [substrate] } }
+scaling: { pivot: vegetable }
+ingredients:
+  - { id: couve, item: ingredient.vegetable.cabbage.white, amount: { value: 1000, unit: g }, roles: [substrate] }
+  - id: sal
+    item: ingredient.salt.sea.fine
+    amount: { value: 20, unit: g, scaling: fixed }
+    roles: [salt]
+    constraints:
+      - min_ratio: 0.02
+        of: vegetable
+        severity: critical
+        reason:
+          pt: Abaixo de 2% a fermentação láctica não é fiável nem segura.
+          en: Below 2% brine, lacto-fermentation is not reliably safe.
+steps:
+  - { id: s, primitive: { id: primitive.salt-and-massage, v: 1 }, uses: [couve, sal] }

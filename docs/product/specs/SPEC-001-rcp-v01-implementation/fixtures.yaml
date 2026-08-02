@@ -198,44 +198,56 @@ scenarios:
       - entity: case
         records:
           - id: chucrute-under-salt
-            input: examples/other-categories.rcp.yaml#chucrute
-            scale: 0.6
-            status: aspirational
+            input: tools/rcplint/testdata/clamp/fixed-salt-chucrute.rcp.yaml
+            scale: 2.0
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
-            target_contract: "refused; authored pt/en reason surfaced (salt below min_ratio 0.02 of vegetable) (AC-SAFE-001-1)"
-            _note: "the exact 2% brine floor from research 03 — the canonical safety case"
+            target_contract: "refused; authored pt/en reason surfaced (salt below min_ratio 0.02 of vegetable) (AC-SAFE-001-1). CONTRACT CORRECTED at P9: uniform scaling is ratio-invariant and cannot violate a ratio bound — the refusal case is ASYMMETRIC scaling (gram-fixed salt, scaling: fixed, while the substrate scales)"
+            _note: "the exact 2% brine floor from research 03 — the canonical safety case, in its mathematically honest form"
           - id: chucrute-in-range
             input: examples/other-categories.rcp.yaml#chucrute
             scale: 1.5
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
             target_contract: "accepted — ratios preserved, no bound crossed"
             _note: "proves the clamp refuses violations, not scaling itself"
           - id: warn-bound-crossed
             input: tools/rcplint/testdata/clamp/warn-bound.rcp.yaml
             scale: 3.0
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
             target_contract: "ACCEPTED with the warn-severity violation surfaced — only critical refuses (DS-SAFE-001 refusal scope boundary)"
             _note: "severity: warn bound crossed under scale; the refuse/surface distinction"
           - id: missing-quantity-data
             input: tools/rcplint/testdata/clamp/missing-quantity.rcp.yaml
             scale: 2.0
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
             target_contract: "refused — critical constraint over an ingredient whose quantity cannot resolve; missing data defaults to refusal (AC-SAFE-001-2)"
             _note: "the second uncertainty branch, distinct from unresolvable basis"
           - id: min-batch-floor
             input: examples/alentejano.rcp.yaml
             scale: 0.05
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
             target_contract: "refused or floored per DS-SAFE-001: massa-mae is drawn-from not multiplied, and min_batch (100 g) cannot be breached by downscale"
             _note: "maintenance-culture clamp behaviour from the edge-case list, now pinned"
           - id: unresolvable-basis
             input: tools/rcplint/testdata/l2/undeclared-basis.rcp.yaml
             scale: 2.0
-            status: aspirational
+            status: characterized
+            verified_by: "cd tools/rcplint && go test -run TestClampBehaviours"
+            verified_at: "2026-08-02T19:24:15Z"
             target_phase: "CMP-SAFE-001"
             target_contract: "refused — uncertainty defaults to refusal (AC-SAFE-001-2)"
             _note: "constraint whose basis cannot resolve must not silently pass"

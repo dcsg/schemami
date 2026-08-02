@@ -150,10 +150,10 @@ phases:
   criteria:
   - id: AC-9.1
     verify: cd tools/rcplint && go test ./...
-    statement: '`rcplint clamp --scale 0.6` on chucrute refuses with authored pt AND en reason'
+    statement: 'clamp refuses the asymmetric case (gram-fixed salt, substrate scaled) with authored pt+en reason (contract corrected at P9: uniform scaling is ratio-invariant)'
   - id: AC-9.2
     verify: cd tools/rcplint && go test ./...
-    statement: '`--scale 1.5` accepted'
+    statement: uniform scaling of the real chucrute accepted at 0.6 and 1.5 — no false refusals
   - id: AC-9.3
     verify: cd tools/rcplint && go test ./...
     statement: 'warn-bound case: accepted WITH warning surfaced'
