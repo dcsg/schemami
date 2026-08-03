@@ -53,6 +53,24 @@ names concepts by two orthogonal axes and lets sources disagree.
   execution's output* (inter-batch dependency; `carried_over` in core).
   The extreme proof that preparations outlive single recipes.
 
+## "Protocol" is reserved (the naming collision)
+
+The word *protocol* is overloaded in kitchen speech ("follow the
+protocol" = do the steps) and would poison every design conversation.
+Reserved meanings, binding in all project prose and identifiers:
+
+| Term | Means | Never means |
+|---|---|---|
+| **The Protocol / RCP** | This project's specification: core schema, profiles, registry, Calculus, vocabularies, versioning rules. The thing integrators implement. | the steps of a recipe |
+| **Method** | The *authored* steps of a recipe document — the step list/DAG exactly as written (title, primitives, uses, until). What Peterson's prose and Escoffier's proportions both describe. | RCP; a derived ordering |
+| **Execution plan / Schedule** | The *derived* projection of a method: reading order, interleaved tracks, time-anchored schedule — Calculus output (FEAT-CALC-002), computed, never stored. | the authored method |
+| **Session** | A live run of a method: execution state, checked-off steps, actual times, deviations — separate session documents, never inside the recipe (DECISIONS #7). | the recipe or its method |
+| **Document** | One RCP file: a recipe, a component recipe, a registry entry. | the Protocol as a whole |
+
+Usage rule: "the recipe's protocol" is banned; say **method** (authored)
+or **execution plan** (derived) or **session** (live). "Protocol
+change" always means an RCP specification change and nothing else.
+
 ## The modeling consequences (what this vocabulary buys)
 
 1. **Never encode the recipe-vs-technique boundary in a type** — sources
