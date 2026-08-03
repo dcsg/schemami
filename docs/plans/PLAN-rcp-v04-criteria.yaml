@@ -475,59 +475,59 @@ phases:
     verify: make validate && make accept
 - phase: 11
   title: 'Viewer: see the method, seek the moment'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-11.1
     text: A new capability + paired member exist; engine version stays 1; the pairing test passes both
       directions
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/viewer && bun test src/engine-js/engine.test.ts
   - id: AC-11.2
     text: The linked method renders without losing the parent, with no duplicate ids
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/viewer && bun test src/see-the-method.test.ts
   - id: AC-11.3
     text: An engine lacking the capability renders an explicit omission notice, never a silently incomplete
       plan
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/viewer && bun test src/see-the-method.test.ts -t omission
   - id: AC-11.4
     text: A `#t=` uri resolves its asset and the fragment reaches the element; two ranges of one asset
       render independently; an invalid fragment is dropped
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/viewer && bun test src/media.test.ts
   - id: AC-11.5
     text: dist is rebuilt and matches src
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/viewer && mise exec -- bun run build.ts && git diff --exit-code tools/viewer/dist/
   - id: AC-11.GATE
     text: '** all gates green'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make conformance && make calculus && make accept
 - phase: 12
   title: Acceptance, ledger, ship

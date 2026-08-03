@@ -50,7 +50,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 8     | done | 1/5 | 2026-08-03 |
 | 9     | done | 1/5 | 2026-08-03 |
 | 10    | done | 1/5 | 2026-08-03 |
-| 11    | in-progress | 1/5 | 2026-08-03 |
+| 11    | done | 1/5 | 2026-08-03 |
 | 12    | pending | 0/5 | — |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
@@ -798,6 +798,14 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
   implementation. Golden-vector tested; a divergence is caught by determinism.
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
+
+Phase 11:
+- AC-11.1: PASS — 2026-08-03 (new `links` capability paired with a new `resolveLinks` member — a SEPARATE member, not a widened schedule() signature, because a future WASM engine written against v1 would ignore an extra argument and return a silently wrong plan. Version stays 1. The capability is declared only when the corpus is injected: the capability map is a contract, not a wish)
+- AC-11.2: PASS — 2026-08-03 (the linked method renders in place via renderDocument, NEVER renderDocumentBlock — asserted absent of doc-block and scale-input, because app.ts's querySelector is first-match-wins and scaling would silently target the embedded copy. details/summary gives keyboard + AT semantics for free and keeps the renderer pure)
+- AC-11.3: PASS — 2026-08-03 (an engine lacking `links` renders an explicit omission notice with role=status rather than a complete-looking plan missing a linked multi-hour preparation. Silence is right for a CONTROL and wrong for a PLAN)
+- AC-11.4: PASS — 2026-08-03 (fragments stripped BEFORE basename matching then re-appended to the object URL, so two ranges of one asset work for free; the temporal grammar is an ALLOWLIST — javascript:, xywh=, track= and malformed forms are dropped, and the raw uri NEVER becomes a src)
+- AC-11.5: PASS — 2026-08-03 (dist rebuilt, 201.3 KiB < 500 KB, CSP shape unchanged. DIST-FRESH added to accept.sh — dist is committed and hand-built, so the viewer work could otherwise ship green while being absent from the bundle. 41 checks now)
+- LAYER 4 GATE: GREEN — 2026-08-03 (validate, accept 41/41, conformance 96, calculus 27, four Go packages, provenance clean, vectors byte-unchanged).
 
 Phase 10:
 - AC-10.1: PASS — 2026-08-03 (the extraction rule is documented as BINDING in registry/README.md: method given → inline component; method absent → class reference; prose never invented, never silently dropped)
