@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/difficulty-six.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-difficulty-six",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

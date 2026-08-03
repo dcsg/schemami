@@ -1,0 +1,4 @@
+# Toolchain pins (ADR-002: Bun via mise is the only sanctioned JS toolchain;
+# installed only through mise, never curl|bash). Exact pins — never floated.
+[tools]
+bun = "1.3.14"

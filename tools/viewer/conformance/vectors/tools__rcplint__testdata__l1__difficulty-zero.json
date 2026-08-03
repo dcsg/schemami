@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/difficulty-zero.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-difficulty-zero",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

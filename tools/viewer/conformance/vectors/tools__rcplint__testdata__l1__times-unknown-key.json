@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/times-unknown-key.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-times-unknown-key",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

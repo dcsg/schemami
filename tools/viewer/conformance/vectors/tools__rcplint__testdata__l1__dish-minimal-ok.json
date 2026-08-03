@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/dish-minimal-ok.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-dish-minimal-ok",
+      "layer": "l1",
+      "valid": true,
+      "profile": "dish",
+      "maturity": "hardened"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/storage-bad-where.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-storage-bad-where",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

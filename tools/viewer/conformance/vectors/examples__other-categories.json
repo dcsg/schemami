@@ -1,0 +1,41 @@
+{
+  "source": "examples/other-categories.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "negroni",
+      "layer": "l1",
+      "valid": true,
+      "profile": "drink",
+      "maturity": "draft"
+    },
+    {
+      "doc": "chucrute",
+      "layer": "l1",
+      "valid": true,
+      "profile": "ferment",
+      "maturity": "draft"
+    },
+    {
+      "doc": "pasteis-de-nata",
+      "layer": "l1",
+      "valid": true,
+      "profile": "pastry",
+      "maturity": "hardened"
+    },
+    {
+      "doc": "ganache-chocolate",
+      "layer": "l1",
+      "valid": true,
+      "profile": "component",
+      "maturity": "draft"
+    },
+    {
+      "doc": "brownie-ganache",
+      "layer": "l1",
+      "valid": true,
+      "profile": "pastry",
+      "maturity": "hardened"
+    }
+  ]
+}

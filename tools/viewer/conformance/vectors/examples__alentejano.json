@@ -1,0 +1,13 @@
+{
+  "source": "examples/alentejano.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "pao-alentejano",
+      "layer": "l1",
+      "valid": true,
+      "profile": "bread",
+      "maturity": "hardened"
+    }
+  ]
+}

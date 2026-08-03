@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/ratio-without-of.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-ratio-without-of",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

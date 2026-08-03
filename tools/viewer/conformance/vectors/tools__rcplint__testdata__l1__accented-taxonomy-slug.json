@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/accented-taxonomy-slug.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-accented-taxonomy-slug",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/times-storage-source-ok.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-v02-fields-ok",
+      "layer": "l1",
+      "valid": true,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

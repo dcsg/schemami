@@ -1,0 +1,10 @@
+{
+  "name": "rcp-viewer",
+  "private": true,
+  "description": "RCP lightweight viewer (SR-TOOL-001; ADR-002). Engine seam: the UI depends only on src/engine.ts; the v0.2 JS engine is replaced later by the WASM Go core behind the same interface. Exactly 2 exact-pinned runtime deps — the budget is law (SAC-TOOL-001).",
+  "type": "module",
+  "dependencies": {
+    "yaml": "2.9.0",
+    "@cfworker/json-schema": "4.1.1"
+  }
+}

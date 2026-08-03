@@ -13,3 +13,8 @@ validate:
 .PHONY: accept
 accept:
 	bash tools/rcplint/scripts/accept.sh
+
+.PHONY: conformance
+conformance:
+	cd tools/rcplint && go run . vectors ../.. ../viewer/conformance/vectors
+	cd tools/viewer && mise exec -- bun install --frozen-lockfile && mise exec -- bun test

@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/pastry-storage-ok.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-pastry-storage-ok",
+      "layer": "l1",
+      "valid": true,
+      "profile": "pastry",
+      "maturity": "hardened"
+    }
+  ]
+}

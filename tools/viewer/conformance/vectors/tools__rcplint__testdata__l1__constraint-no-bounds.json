@@ -1,0 +1,13 @@
+{
+  "source": "tools/rcplint/testdata/l1/constraint-no-bounds.rcp.yaml",
+  "parse_ok": true,
+  "expected": [
+    {
+      "doc": "fixture-constraint-no-bounds",
+      "layer": "l1",
+      "valid": false,
+      "profile": "component",
+      "maturity": "draft"
+    }
+  ]
+}

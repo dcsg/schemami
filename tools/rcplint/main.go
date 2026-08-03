@@ -28,6 +28,12 @@ func main() {
 		os.Exit(runValidate(root))
 	case "lint":
 		os.Exit(runLint(root))
+	case "vectors":
+		out := "../viewer/conformance/vectors"
+		if len(os.Args) > 3 {
+			out = os.Args[3]
+		}
+		os.Exit(runVectors(root, out))
 	case "facts":
 		os.Exit(runFacts(root, os.Args[3:]))
 	case "clamp":

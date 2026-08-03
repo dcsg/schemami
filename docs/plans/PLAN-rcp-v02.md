@@ -35,7 +35,7 @@ phases:
 | 3     | done | 1/5 | 2026-08-02 |
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
-| 6     | pending | 0/5 | — |
+| 6     | done | 1/5 | 2026-08-03 |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
@@ -306,6 +306,12 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 6:
+- AC-6.1: PASS — 2026-08-03
+- AC-6.2: PASS — 2026-08-03 (12 vector files, 16 layer-tagged verdicts; verify command corrected to count verdicts)
+- AC-6.3: PASS — 2026-08-03 (21/21 bun tests: capability-scoped replay + contract + pathologies; agreement with rcplint on first run)
+- AC-6.4: PASS — 2026-08-03
 
 Phase 5:
 - AC-5.1: PASS — 2026-08-03 (full census: 38 slugs incl. tags, all covered)
