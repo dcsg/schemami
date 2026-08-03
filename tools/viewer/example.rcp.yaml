@@ -7,6 +7,12 @@ name:
   en: Three-layer torte (test document)
 description:
   pt: Documento sintético para testar o visualizador — três camadas, duas delas sub-receitas.
+media:
+  - role: result
+    type: photo
+    uri: media/torta-final.jpg
+    licence: all-rights-reserved (exemplo — forneça o ficheiro pelo botão Ficheiros)
+    note: { pt: Torta terminada — junte torta-final.jpg para ver a foto aqui }
 taxonomy:
   category: pastry
   subcategory:
