@@ -358,7 +358,7 @@
           "items": {
             "$ref": "#/$defs/media"
           },
-          "description": "Document-level media (result shots, plating, the finished dish). Steps carry their own step-level media; this list is for media about the recipe as a whole."
+          "description": "Document-level media — descriptive metadata about the dish as a whole, sitting beside taxonomy/tags/provenance at the root: result and plating photos, and general photos or full-recipe videos of the whole preparation. Steps carry their own step-level media for the moment of execution; a full-recipe video declared here can be referenced from steps by time range via W3C Media Fragments in uri (#t=start,end)."
         }
       },
       "patternProperties": {
