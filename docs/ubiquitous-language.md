@@ -1,8 +1,10 @@
 # RCP ubiquitous language — the domain vocabulary
 
-**Status:** working draft (2026-08-03, Daniel + research 08 evidence).
+**Status:** working draft v2 (2026-08-03) — terms now ALIGNED WITH
+INDUSTRY USAGE per the terminology survey (track D, web-verified against
+culinary schools, ERPs, recipe publishing and pt-PT professional sources).
 Feeds PRD-004 / FEAT-REG-006 modeling. Becomes binding via a DECISIONS
-entry once the model lands; until then this is the vocabulary we argue in.
+entry once the model lands.
 
 The founding confusion this document kills: "is a roux a recipe or a
 technique?" is a **property of the source, not of the roux** (Peterson
@@ -22,13 +24,16 @@ names concepts by two orthogonal axes and lets sources disagree.
 
 ## The terms
 
-| Term | Definition | Nature | Consumption | Protocol home |
+Each term carries its verified industry currency and pt-PT display term
+(identifiers stay English-base per DECISIONS #24; pt-PT is display).
+
+| Term | Definition | Industry currency | pt-PT | Protocol home |
 |---|---|---|---|---|
-| **Technique** | A named way of transforming — fold, sear, refogar-as-gesture, bulhão-pato-as-style. May have a *teaching recipe* demonstrating it, but the technique itself has no yield; you cannot store "two jars of folding". | gesture | n/a (not consumed) | `technique.` registry entry; optional link to a teaching recipe (FEAT-REG-006) |
-| **Preparation** | A named yielded output whose reason to exist is consumption by other recipes — roux, stock, refogado-as-output, calda, chile paste, massa velha. Batchable and storable; carries net yield; professionally managed with par levels and holding windows (operational attributes, not definitional ones). | yielded output | intermediate | `ingredient.preparation.*` (or other ingredient classes) registry entry; optional link to a canonical recipe |
-| **Component recipe** | The independent document describing how to produce a preparation — own id, method, provenance, yield, version; referenceable by any consumer. Escoffier's roux "proportions pour un kilogramme" is this. | document | (describes an intermediate) | `kind: component` document + `componentRef` |
-| **Dish** | A terminal consumable — eaten as itself. | yielded output | terminal | terminal `kind` values (dish, bread, pastry, drink, …) |
-| **Recipe (document)** | The protocol's unit of description. ANY concept above may have one: a technique's teaching recipe, a preparation's batch recipe, a dish's recipe. "Has a recipe" therefore distinguishes NOTHING — consumption position and nature do. | document | — | any RCP document |
+| **Technique** | A named way of transforming — fold, sear, refogar-as-gesture, bulhão-pato-as-style. May have a *teaching recipe*, but the technique itself has no yield; you cannot store "two jars of folding". | Confirmed native: culinary schools teach "techniques" (Escoffier School; Turismo de Portugal "Técnicas de Cozinha"). NEVER say "method" for this — trade usage overloads "cooking method" (braise/roast). | técnica | `technique.` registry entry; optional teaching-recipe link (FEAT-REG-006) |
+| **Preparation (prep)** | A named yielded output whose reason to exist is consumption by other recipes — roux, stock, refogado-as-output, calda, massa velha. Batchable, storable, carries net yield. Inventory-state qualifiers when needed: *semi-finished*, *stockable* (Apicbase's exact words — never invent a state name). | Kitchen floor says "prep"; MarketMan lists "Preparations"; pt tradition says preparação — the EN/pt pair holds. | preparação | `ingredient.preparation.*` (or other classes) registry entry; optional canonical-recipe link |
+| **Sub-recipe** | The independent document describing how to produce a preparation — own id, method, provenance, NET yield, version; referenceable by any consumer with scaling across the boundary. Escoffier's roux "proportions pour un kilogramme" is one. (Was "component recipe" in draft v1 — renamed: "sub-recipe" is UNANIMOUS across professional ERPs: meez, Apicbase, Galley, MarketMan, xtraCHEF.) | The industry's own word, verbatim, everywhere costing happens. | sub-receita / ficha técnica de preparação | `kind: component` document + `componentRef` (schema kind name unchanged — this is prose vocabulary) |
+| **Dish** | A terminal consumable — eaten as itself. ERPs distinguish the *sellable* (**menu item**) from its recipe — that split is app-side vocabulary RCP acknowledges but does not model (DECISIONS #19). | "Menu item / sellable" verified (Galley, MarketMan, xtraCHEF). | prato | terminal `kind` values |
+| **Recipe (document)** | The protocol's unit of description. ANY concept may have one — a technique's teaching recipe, a preparation's sub-recipe, a dish's recipe. "Has a recipe" distinguishes NOTHING; nature and consumption position do. Institutional foodservice's **standardized recipe** (current per USDA/Penn State) ≈ a yield-and-portion-controlled recipe — pt-PT: **ficha técnica**. | — | receita / ficha técnica | any RCP document |
 
 ## The clarifying cases (the spectrum, with names)
 
@@ -62,10 +67,10 @@ Reserved meanings, binding in all project prose and identifiers:
 | Term | Means | Never means |
 |---|---|---|
 | **The Protocol / RCP** | This project's specification: core schema, profiles, registry, Calculus, vocabularies, versioning rules. The thing integrators implement. | the steps of a recipe |
-| **Method** | The *authored* steps of a recipe document — the step list/DAG exactly as written (title, primitives, uses, until). What Peterson's prose and Escoffier's proportions both describe. | RCP; a derived ordering |
-| **Execution plan / Schedule** | The *derived* projection of a method: reading order, interleaved tracks, time-anchored schedule — Calculus output (FEAT-CALC-002), computed, never stored. Includes **prerequisite placement**: referenced preparations scheduled relative to the main method's t0, including before it (stock the day before; beans overnight). | the authored method |
-| **Session** | A live run of a method: execution state, checked-off steps, actual times, deviations — separate session documents, never inside the recipe (DECISIONS #7). | the recipe or its method |
-| **Document** | One RCP file: a recipe, a component recipe, a registry entry. | the Protocol as a whole |
+| **Method** | The *authored* steps of a recipe document — the step list/DAG exactly as written. Verified as THE professional steps-section header (Great British Chefs, BBC Food; pt-PT: **modo de preparação**, Teleculinária-verified). Reserved strictly for the authored steps — a braise/roast is a *technique* or *cooking method* in trade speech, never "the method" in ours. | RCP; a derived ordering; a cooking technique |
+| **Production schedule / Prep list** | The *derived* projection of a method: reading order, interleaved tracks, time-anchored schedule — Calculus output (FEAT-CALC-002), computed, never stored. Named by the kitchen's own two artifacts: **prep list** at day/shift granularity, **production schedule** at multi-day/catering granularity ("run sheet" in events). Includes **prerequisite placement** (stock the day before; beans overnight). (Draft v1 said "execution plan" — renamed: that is software language no kitchen source uses.) | the authored method |
+| **Session (guided cooking)** | A live run of a method: execution state, checked-off steps, actual times, deviations — separate session documents, never inside the recipe (DECISIONS #7). Surface language for apps: **guided cooking / cook mode** (the app industry's own category terms). Professional "service" means the whole nightly operation, never one recipe's run — do not borrow it. pt-PT for the act of cooking a recipe: **confeção**. | the recipe or its method; the restaurant's nightly service |
+| **Document** | One RCP file: a recipe, a sub-recipe, a registry entry. | the Protocol as a whole |
 
 Usage rule: "the recipe's protocol" is banned; say **method** (authored)
 or **execution plan** (derived) or **session** (live). "Protocol
