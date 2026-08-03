@@ -45,3 +45,17 @@ textarea#input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; 
 .media-role.media-failure { color: #b04a4a; opacity: 1; }
 .media-absent { border: 1px dashed color-mix(in srgb, currentColor 30%, transparent); border-radius: 6px; padding: .5rem .6rem; }
 .media-missing { opacity: .7; font-style: italic; }
+.scale-control { display: flex; gap: .5rem; align-items: baseline; flex-wrap: wrap; margin: .75rem 0; }
+.scale-control label { font-size: .85rem; }
+.scale-control input { font: inherit; width: 5rem; padding: .25rem .4rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.scale-control input:focus-visible, .scale-control button:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; }
+.scale-control button { font: inherit; font-size: .85rem; padding: .25rem .8rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); background: color-mix(in srgb, currentColor 8%, transparent); cursor: pointer; }
+.scale-msg-invalid { color: #b04a4a; font-size: .85rem; }
+.clamp-refusal { border: 1px solid #b04a4a88; border-radius: 8px; padding: .5rem .75rem; margin: .5rem 0; }
+.clamp-refusal p { font-weight: 600; color: #b04a4a; }
+.schedule { margin-top: 1rem; border-top: 1px dashed color-mix(in srgb, currentColor 25%, transparent); padding-top: .5rem; }
+.sched-day h4 { margin: .5rem 0 .25rem; text-transform: uppercase; letter-spacing: .04em; font-size: .78rem; opacity: .8; }
+.sched-day ol { padding-left: 1.25rem; }
+.sched-offset { font-variant-numeric: tabular-nums; font-weight: 600; }
+.sched-range { opacity: .7; font-size: .85rem; }
+.schedule time { font-variant-numeric: tabular-nums; }

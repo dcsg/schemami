@@ -19,11 +19,15 @@ ingredients:
     amount: { value: 10, unit: g }
 `;
 
-test("contract: capabilities declares l1 and no clamp; scale is absent", () => {
+test("contract: capabilities match defined members (clamp↔scale, timeline↔schedule)", () => {
   expect(engine.version).toBe(1);
   expect(engine.capabilities.l1).toBe(true);
-  expect(engine.capabilities.clamp).toBeUndefined();
-  expect(engine.scale).toBeUndefined();
+  // v0.3: the JS engine computes — declared capability and defined member
+  // must agree in BOTH directions (the reserved-member rule).
+  expect(engine.capabilities.clamp).toBe(true);
+  expect(typeof engine.scale).toBe("function");
+  expect(engine.capabilities.timeline).toBe(true);
+  expect(typeof engine.schedule).toBe("function");
 });
 
 test("contract: analyze never throws; parse failure yields ok:false and no documents", async () => {

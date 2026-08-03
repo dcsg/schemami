@@ -14,7 +14,13 @@
  * language toggle never changes this signature — v0.2 ships always-pt-PT
  * by recorded decision.
  */
-import type { AnalysisResult, Capabilities, Diagnostic, DocumentAnalysis } from "./engine.ts";
+import type {
+  AnalysisResult,
+  Capabilities,
+  Diagnostic,
+  DocumentAnalysis,
+  TimelineEntry,
+} from "./engine.ts";
 
 export interface I18nVocab {
   taxonomy: Record<string, string>;
@@ -292,6 +298,134 @@ export function renderVerdicts(result: AnalysisResult, _caps: Capabilities): str
     })
     .join("");
   return `<div class="verdicts" role="status">${headline}${groups}</div>`;
+}
+
+/**
+ * Per-document scale control (SR-TOOL-003). Pure markup — app.ts wires
+ * the submit by delegation. Client-side rejections render into the
+ * aria-described message span, DISTINCT from an engine refusal (which
+ * renders as a role="alert" block).
+ */
+export function renderScaleControl(index: number): string {
+  return (
+    `<form class="scale-control" data-doc="${index}">` +
+    `<label for="scale-input-${index}">Fator de escala</label>` +
+    `<input id="scale-input-${index}" name="factor" inputmode="decimal" value="1" ` +
+    `autocomplete="off" aria-describedby="scale-msg-${index}">` +
+    `<button type="submit">Aplicar</button>` +
+    `<span id="scale-msg-${index}" class="scale-msg"></span>` +
+    `<div class="clamp-refusals" id="scale-refusals-${index}"></div></form>`
+  );
+}
+
+/** Engine refusals: authored reasons verbatim, pt primary (text() convention). */
+export function renderClampRefusals(reasons: { pt?: string; en?: string }[]): string {
+  const items = reasons
+    .map((r) => `<li lang="pt-PT">${esc(text(r, "pt-PT"))}</li>`)
+    .join("");
+  return `<div role="alert" class="clamp-refusal"><p>Escala recusada:</p><ul>${items}</ul></div>`;
+}
+
+/**
+ * One capability-driven document block: the article plus (iff the
+ * engine clamps) its scale control. Mock richer/poorer engines pin that
+ * controls appear/vanish with zero UI code change.
+ */
+export function renderDocumentBlock(
+  d: DocumentAnalysis,
+  index: number,
+  ctx: RenderContext,
+  caps: Capabilities,
+): string {
+  const control = caps.clamp ? renderScaleControl(index) : "";
+  return `<div class="doc-block" data-doc="${index}">${renderDocument(d, ctx)}${control}` +
+    `<div class="schedule-slot"></div></div>`;
+}
+
+/** Seconds -> humanized pt-PT ("2 h 30 min", "45 min", "1 d 12 h"). */
+export function humanizeDuration(seconds: number): string {
+  const s = Math.abs(Math.round(seconds));
+  if (s === 0) return "0 min";
+  const units: [number, string][] = [
+    [86400, "d"],
+    [3600, "h"],
+    [60, "min"],
+    [1, "s"],
+  ];
+  const parts: string[] = [];
+  let rest = s;
+  for (const [size, label] of units) {
+    if (parts.length === 2) break;
+    const n = Math.floor(rest / size);
+    if (n > 0) {
+      parts.push(`${n} ${label}`);
+      rest -= n * size;
+    }
+  }
+  return parts.join(" ");
+}
+
+/** ISO-8601 duration for <time datetime> (magnitude only). */
+function isoDuration(seconds: number): string {
+  const s = Math.abs(Math.round(seconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return `PT${h ? `${h}H` : ""}${m ? `${m}M` : ""}${sec || (!h && !m) ? `${sec}S` : ""}`;
+}
+
+/** Relative-day bucket for a start offset ("2 dias antes" / "véspera" / "no dia").
+ *  Rounding is symmetric away from zero: −12 h is a véspera task, not "no dia"
+ *  (JS Math.round(−0.5) would round toward +∞ and swallow it). */
+function dayLabel(targetSeconds: number): string {
+  const days = Math.sign(targetSeconds) * Math.round(Math.abs(targetSeconds) / 86400);
+  if (days === 0) return "no dia";
+  if (days === -1) return "véspera";
+  if (days < 0) return `${-days} dias antes`;
+  return days === 1 ? "dia seguinte" : `${days} dias depois`;
+}
+
+/**
+ * Timeline entries -> a kitchen plan (SR-TOOL-003 schedule half):
+ * grouped by relative day, target offset prominent, min–max as the
+ * secondary range, humanized pt-PT durations, semantic <ol>/<time>.
+ * Anchor is t0 (serve-anchoring is a later transform).
+ */
+export function renderSchedule(entries: TimelineEntry[]): string {
+  if (!entries.length) return "";
+  const groups = new Map<string, TimelineEntry[]>();
+  for (const e of entries) {
+    const label = dayLabel(e.start.target);
+    groups.set(label, [...(groups.get(label) ?? []), e]);
+  }
+  const ordered = [...groups.entries()].sort(
+    (a, b) => (a[1][0]?.start.target ?? 0) - (b[1][0]?.start.target ?? 0),
+  );
+  const sections = ordered
+    .map(([label, list]) => {
+      const items = [...list]
+        .sort((a, b) => a.start.target - b.start.target)
+        .map((e) => {
+          const off = e.start.target;
+          const offLabel =
+            off === 0 ? "no início" : off < 0 ? `${humanizeDuration(off)} antes` : `+${humanizeDuration(off)}`;
+          const dur = e.duration.target
+            ? ` <time datetime="${isoDuration(e.duration.target)}">${humanizeDuration(e.duration.target)}</time>`
+            : "";
+          const range =
+            e.duration.min !== e.duration.max
+              ? ` <span class="sched-range">(${humanizeDuration(e.duration.min)}–${humanizeDuration(e.duration.max)})</span>`
+              : "";
+          return (
+            `<li><span class="sched-offset">${esc(offLabel)}</span> ` +
+            `<span class="sched-item">${esc(e.item)}</span>${dur}${range}</li>`
+          );
+        })
+        .join("");
+      return `<section class="sched-day"><h4>${esc(label)}</h4><ol>${items}</ol></section>`;
+    })
+    .join("");
+  return `<section class="schedule"><h3>Plano de execução</h3>${sections}</section>`;
 }
 
 export function renderEmptyState(): string {

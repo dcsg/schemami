@@ -25,6 +25,7 @@ export interface Capabilities {
   l2?: boolean;
   cue?: boolean;
   clamp?: boolean;
+  timeline?: boolean;
 }
 
 export interface Diagnostic {
@@ -61,6 +62,25 @@ export interface AnalysisResult {
 export interface ClampResult {
   accepted: boolean;
   reasons: { pt?: string; en?: string }[];
+  /**
+   * The scaled canonical document — present only when accepted
+   * (pre-authorized additive shape; the render layer's input for the
+   * happy path).
+   */
+  scaled?: unknown;
+}
+
+/** One scheduled item: offsets from t0 in seconds (Recipe Calculus). */
+export interface TimelineWindow {
+  min: number;
+  target: number;
+  max: number;
+}
+
+export interface TimelineEntry {
+  item: string;
+  start: TimelineWindow;
+  duration: TimelineWindow;
 }
 
 export interface RcpEngine {
@@ -69,4 +89,6 @@ export interface RcpEngine {
   analyze(text: string): Promise<AnalysisResult>;
   /** Reserved: only clamp-capable engines define this. */
   scale?(canonical: unknown, factor: number): Promise<ClampResult>;
+  /** Reserved: only timeline-capable engines define this. */
+  schedule?(canonical: unknown): Promise<TimelineEntry[]>;
 }

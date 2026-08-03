@@ -14,11 +14,14 @@ import { Validator } from "@cfworker/json-schema";
 import type {
   AnalysisResult,
   Capabilities,
+  ClampResult,
   Diagnostic,
   DocumentAnalysis,
   ParseError,
   RcpEngine,
+  TimelineEntry,
 } from "../engine.ts";
+import * as calc from "../calc/index.ts";
 
 export interface SchemaSet {
   core: Record<string, unknown>;
@@ -41,7 +44,7 @@ export function createJsEngine(schemas: SchemaSet): RcpEngine {
     });
   }
 
-  const capabilities: Capabilities = { l1: true };
+  const capabilities: Capabilities = { l1: true, clamp: true, timeline: true };
 
   return {
     version: 1,
@@ -111,6 +114,39 @@ export function createJsEngine(schemas: SchemaSet): RcpEngine {
       }
       return { parse: { ok: true, errors: [] }, documents };
     },
-    // NO scale(): this engine does not declare the clamp capability.
+
+    /**
+     * Fail-closed scaling via the TS Recipe Calculus (vector-conformant
+     * — src/calc replays calculus/vectors/). Refusal strings are the
+     * Calculus's normative messages, which EMBED the authored pt/en
+     * reasons verbatim; the engine passes them through opaque rather
+     * than pretending to re-split authored text.
+     */
+    async scale(canonical: unknown, factor: number): Promise<ClampResult> {
+      const doc = (canonical ?? {}) as Record<string, unknown>;
+      const findings: calc.Findings = { refusals: [], warnings: [] };
+      calc.enforceConstraints(String(doc["id"] ?? "doc"), doc, factor, findings);
+      if (!Number.isFinite(factor) || factor <= 0) {
+        return { accepted: false, reasons: [{ pt: `fator de escala inválido: ${factor}` }] };
+      }
+      if (findings.refusals.length > 0) {
+        return { accepted: false, reasons: findings.refusals.map((r) => ({ pt: r })) };
+      }
+      const scaled = calc.scale(doc, factor);
+      if (scaled === null) {
+        return { accepted: false, reasons: [{ pt: `fator de escala inválido: ${factor}` }] };
+      }
+      return { accepted: true, reasons: [], scaled };
+    },
+
+    /** Timeline derivation via the TS Recipe Calculus (two-stage schedule). */
+    async schedule(canonical: unknown): Promise<TimelineEntry[]> {
+      const doc = (canonical ?? {}) as Record<string, unknown>;
+      return calc.schedule(doc).map((e) => ({
+        item: e.item,
+        start: { min: e.start.Min, target: e.start.Target, max: e.start.Max },
+        duration: { min: e.duration.Min, target: e.duration.Target, max: e.duration.Max },
+      }));
+    },
   };
 }
