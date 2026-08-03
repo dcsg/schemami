@@ -196,7 +196,8 @@ open_questions:
   handling of local assets. SPEC decides.'
 - 'OQ-4: Frozen v0.1-era reader — pinned schema snapshot from the tag vs generated minimal decoder. SPEC
   decides.'
-source_specs: []
+source_specs:
+- SPEC-003
 supersedes: null
 superseded_by: null
 deprecated_at: null
@@ -242,8 +243,12 @@ revision_history:
   author: Daniel Gomes
   action: edited
   note: Accepted by Daniel after non-goals review fix. Proceeding to SPEC-003.
+- at: '2026-08-03T07:09:58Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Back-reference added: source_specs += SPEC-003'
 extensions: {}
 _sync:
   md_hash: 5c662241dec4813c0a23e104f809aebe58246ac1ab80feea4e6ab1880ae289ba
-  yaml_hash: fef6585c7a441e7b48f5d97a51eddde03c438675dc4a9c7af593930272297911
-  synced_at: '2026-08-03T07:06:49Z'
+  yaml_hash: 3023ae9e33af13108bef29804be4eab5a00cbe059dc2ecd6129092357576111d
+  synced_at: '2026-08-03T07:09:58Z'

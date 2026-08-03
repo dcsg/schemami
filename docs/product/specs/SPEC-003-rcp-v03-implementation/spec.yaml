@@ -1,0 +1,348 @@
+# yaml-language-server: $schema=../../../../.edikt/schemas/spec-sidecar.v1.schema.json
+schema_version: '1.0'
+type: spec
+id: SPEC-003
+title: RCP v0.3 implementation — the Calculus, its vectors, timeline, decode-compat, media
+slug: rcp-v03-implementation
+status: draft
+author: Daniel Gomes
+created_at: '2026-08-03T07:09:43Z'
+source_prd: PRD-003
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-003
+  covered:
+  - fr: FR-CALC-001
+    by:
+    - SR-CALC-001
+  - fr: FR-CALC-002
+    by:
+    - SR-CALC-002
+  - fr: FR-CALC-003
+    by:
+    - SR-CALC-003
+  - fr: FR-TOOL-002
+    by:
+    - SR-TOOL-002
+  - fr: FR-TOOL-003
+    by:
+    - SR-TOOL-003
+  - fr: FR-PR-004
+    by:
+    - SR-PR-004
+  deferred: []
+  uncovered: []
+requirements:
+- id: SR-CALC-001
+  implements: FR-CALC-001
+  text: 'Normative Calculus spec at calculus/SPEC.md (every exported function: scaling uniform+pivot,
+    basis resolution, guard-path selection, fail-closed enforcement with authored reasons, min_batch floors,
+    fixed-quantity asymmetry, duration re-estimation — domain/unit/edge semantics defined). Normative
+    surface gains calculus/ (DS-PR-001 extended). Go reference at tools/rcplint/calc (pure package, stdlib
+    only); rcplint clamp subcommand rewired through it; every existing clamp test case passes verbatim
+    (outcomes + pt/en reasons); clamp.go then deleted.'
+  status: proposed
+- id: SR-CALC-002
+  implements: FR-CALC-002
+  text: 'Conformance vectors at calculus/vectors/ (normative data): {function, edge_classes[], input,
+    expected} JSON written by rcplint calc-vectors — never hand-authored. TS implementation at tools/viewer/src/calc/
+    (inside the viewer package — zero new packages/deps; import-free so later extraction is mechanical)
+    replays the full set via bun test. Edge-class enumeration machine-readable in calculus/SPEC.md; a
+    coverage checker fails when any class lacks vectors. Disagreements fixed in the replayer; vectors
+    regenerate only on SPEC change.'
+  status: proposed
+- id: SR-CALC-003
+  implements: FR-CALC-003
+  text: 'Ordering and timeline as Calculus functions, vector-covered in both implementations: topological
+    reading order (specifying v0.2''s mise-en-place order), parallel-track interleaving via track, and
+    the schedule — offsets from t0, {item, start_offset:{min,target,max}, duration:{min,target,max}},
+    target as scalar, min/max as conservative interval bounds; serve-anchored views are a presentation
+    transform. Referencing documents contribute WHEN edges; referenced documents contribute HOW internals.'
+  status: proposed
+- id: SR-TOOL-002
+  implements: FR-TOOL-002
+  text: 'Media conventions at schema/MEDIA.md (normative): relative URIs from document location; private
+    assets in private/collection/media/ (gitignored, covered by the standing privacy guard); licence required;
+    source-book media never — enforced by a repo media attestation check (no binary media outside an allowlist).
+    Viewer renders media by role (failure visibly labelled) via drag-in object URLs; CSP img-src extends
+    to data: blob: ONLY; placeholder URIs marked absent, never silently skipped.'
+  status: proposed
+- id: SR-TOOL-003
+  implements: FR-TOOL-003
+  text: 'Viewer consumes the TS Calculus through the seam: capabilities.clamp defines the reserved scale();
+    capabilities.timeline gates a new OPTIONAL schedule() member (additive; RcpEngine stays version 1).
+    Scale control exists only when clamp is declared and renders authored pt/en refusals past critical
+    bounds; schedule view exists only when timeline is declared. Mock-engine test extended to {l1, clamp,
+    timeline} proving zero UI changes; UI never imports the Calculus directly — engine interface only.'
+  status: proposed
+- id: SR-PR-004
+  implements: FR-PR-004
+  text: 'Decode-compat CI gate: the frozen v0.1-era reader is hand-written Go decode structs capturing
+    exactly the tag rcp-v0.1 field surface (tag SHA pinned in a comment), default unknown-field tolerance
+    — NOT the v0.1 schema, which is deliberately closed and tests the wrong thing. Fixtures both directions:
+    frozen reader decodes every current document; current tooling decodes rcp-v0.1-tagged documents (extracted
+    to testdata/compat/v01/). A breaking fixture proves the gate CAN fail, run as an inverted test. Wired
+    into make accept.'
+  status: proposed
+acceptance_criteria:
+- id: AC-CALC-001-1
+  fr: FR-CALC-001
+  given: every v0.2 refusal case in the acceptance sweep
+  when: re-run through the Calculus
+  then: accept/refuse outcomes and authored reasons are identical, and the throwaway clamp is deleted
+  source: prd
+- id: AC-CALC-001-2
+  fr: FR-CALC-001
+  given: the Calculus spec
+  when: reviewed against the reference implementation
+  then: every exported function has domain, unit and edge semantics defined — no behaviour exists only
+    in code
+  source: prd
+- id: AC-CALC-002-1
+  fr: FR-CALC-002
+  given: the full Calculus vector set
+  when: both implementations replay it in CI
+  then: both are green — equivalence is mechanical, not claimed
+  source: prd
+- id: AC-CALC-002-2
+  fr: FR-CALC-002
+  given: the enumerated edge classes
+  when: coverage is checked mechanically
+  then: every class has vectors; a class without vectors fails the check
+  source: prd
+- id: AC-CALC-003-1
+  fr: FR-CALC-003
+  given: the torta example document
+  when: ordering derivation runs
+  then: the mise-en-place order and an interleaved schedule with start offsets emerge — pinned by vectors
+    in both implementations
+  source: prd
+- id: AC-CALC-003-2
+  fr: FR-CALC-003
+  given: an entremet-class fixture (multi-day, parallel tracks)
+  when: the schedule derives
+  then: component start times respect the DAG and duration windows — vectors, both implementations
+  source: prd
+- id: AC-TOOL-002-1
+  fr: FR-TOOL-002
+  given: the documented asset conventions and a private document referencing a personal photo
+  when: the viewer renders locally
+  then: the asset displays; example placeholder URIs are resolved or explicitly marked absent
+  source: prd
+- id: AC-TOOL-002-2
+  fr: FR-TOOL-002
+  given: media entries across roles
+  when: rendered
+  then: failure media is visibly labelled; no repo asset originates from a source book (reviewed attestation)
+  source: prd
+- id: AC-TOOL-003-1
+  fr: FR-TOOL-003
+  given: an engine declaring the clamp capability
+  when: the user scales past a critical bound
+  then: the authored pt/en refusal renders; without the capability the control does not exist
+  source: prd
+- id: AC-TOOL-003-2
+  fr: FR-TOOL-003
+  given: the schedule view on the torta
+  when: rendered
+  then: derived start offsets show; the mock-engine test proves a capability-richer engine changes zero
+    UI code
+  source: prd
+- id: AC-PR-004-1
+  fr: FR-PR-004
+  given: the frozen v0.1-era reader and the current reader
+  when: both run over the cross-version corpus in CI
+  then: old reader tolerates v0.3 documents; current reader decodes v0.1-tagged documents
+  source: prd
+- id: AC-PR-004-2
+  fr: FR-PR-004
+  given: a deliberately breaking fixture (new required field without default)
+  when: the compat gate runs
+  then: it FAILS — the gate is proven able to fail
+  source: prd
+- id: SAC-CALC-001
+  source: spec
+  given: the full Calculus vector set and both implementations
+  when: make calculus runs
+  then: the Go vector suite and the TS replay both exit green in one command
+  verify: make calculus
+- id: SAC-CALC-002
+  source: spec
+  given: the machine-readable edge-class enumeration
+  when: the coverage checker runs against a set with a deliberately emptied class
+  then: it exits nonzero naming the class — the gate is proven able to fail (inverted test)
+  verify: cd tools/rcplint && go test -run TestCalcCoverage ./...
+- id: SAC-PR-002
+  source: spec
+  given: the decode-compat gate wired into make accept
+  when: the breaking fixture's inverted test runs
+  then: the gate fails on it while staying green on the real corpus
+  verify: cd tools/rcplint && go test -run TestDecodeCompat ./...
+- id: SAC-TOOL-003
+  source: spec
+  given: the rebuilt viewer
+  when: the CSP and purity checks run
+  then: 'img-src is exactly data: blob:, no other new source; forbidden-API greps green; bundle under
+    500 KB'
+  verify: 'sh -c ''f=tools/viewer/dist/index.html; grep -q "img-src data: blob:" $f && ! grep -q connect-src
+    $f && [ $(wc -c < $f) -lt 512000 ]'''
+design:
+  statements:
+  - id: DS-CALC-001
+    text: 'Calculus placement (resolves PRD-003 OQ-1): normative spec + vectors at top-level calculus/
+      (they ship WITH the protocol — engineering obligation #1''s own words); Go reference inside tools/rcplint/calc
+      (informative surface, consumed by the clamp subcommand); TS inside tools/viewer/src/calc (no new
+      package — no second consumer exists, the code is import-free pure functions, extraction later is
+      mechanical; premature packaging rejected). Two-surface split extended: calculus/ is normative.'
+    serves:
+    - SR-CALC-001
+    - SR-CALC-002
+    status: proposed
+  - id: DS-CALC-002
+    text: 'Vector discipline: the reference writes, replayers replay (v0.2''s proven L1 loop, generalized).
+      Record shape {function, edge_classes[], input, expected}; edge-class enumeration is a machine-readable
+      block in calculus/SPEC.md; the coverage gate fails on any vectorless class — attacking the recorded
+      riskiest assumption mechanically. Vectors regenerate ONLY when the SPEC changes; a replay disagreement
+      is always a replayer bug until the SPEC says otherwise.'
+    serves:
+    - SR-CALC-002
+    status: proposed
+  - id: DS-CALC-003
+    text: 'Timeline semantics (resolves OQ-2): offsets from t0 — never wall-clock (purity; vector determinism).
+      Schedule = {item, start_offset window, duration window}: target propagates as scalar arithmetic;
+      min/max as conservative interval bounds, semantics DEFINED with worked examples in calculus/SPEC.md.
+      Serve-time anchoring is a render transform (total − offset), not a second derivation.'
+    serves:
+    - SR-CALC-003
+    status: proposed
+  - id: DS-TOOL-003
+    text: 'Media conventions (resolves OQ-3): documents reference assets by relative URI from their own
+      location (schema/MEDIA.md, normative); private assets under private/collection/media/ (gitignored).
+      The pasted-document viewer has no filesystem context, so assets arrive by dragging the files in
+      — object URLs, CSP img-src data: blob: only (neither scheme can reach a network; connect-src stays
+      absent). Failure-role media visibly labelled. Book media kept out mechanically: repo attestation
+      check, binary media only on an allowlist.'
+    serves:
+    - SR-TOOL-002
+    status: proposed
+  - id: DS-TOOL-004
+    text: 'Seam growth without seam change: scale() was reserved in RcpEngine v1 and now gets its definition
+      under capabilities.clamp; schedule() enters as a NEW OPTIONAL member under capabilities.timeline
+      — additive in the decode-compat sense, version stays 1 (SP-003). UI gates every Calculus-powered
+      control on the capability and imports only the engine interface; the extended mock-engine test ({l1,
+      clamp, timeline}) is the executable no-rewrite proof.'
+    serves:
+    - SR-TOOL-003
+    status: proposed
+  - id: DS-PR-009
+    text: 'Frozen reader (resolves OQ-4): hand-written Go decode structs for the exact rcp-v0.1 field
+      surface (tag SHA pinned), tolerating unknowns by decoder default — because the v0.1 SCHEMA is deliberately
+      closed (unevaluatedProperties: false): it validates strictness, it cannot test tolerance; #14 binds
+      decoders. Both directions fixtured; the gate''s ability to fail is itself proven by an inverted
+      breaking-fixture test.'
+    serves:
+    - SR-PR-004
+    status: proposed
+  components:
+  - id: CMP-CALC-001
+    path: calculus/SPEC.md + calculus/vectors/
+    description: 'The normative Calculus: function semantics with machine-readable edge-class enumeration;
+      reference-written vector set'
+    serves:
+    - SR-CALC-001
+    - SR-CALC-002
+    status: proposed
+  - id: CMP-CALC-002
+    path: tools/rcplint/calc/ + rcplint calc-vectors subcommand + clamp rewiring
+    description: Go reference implementation (pure, stdlib-only); vector writer; clamp parity migration
+      then clamp.go deletion
+    serves:
+    - SR-CALC-001
+    - SR-CALC-002
+    status: proposed
+  - id: CMP-CALC-003
+    path: tools/viewer/src/calc/ + conformance replay
+    description: Import-free TS implementation; bun-test vector replay; purity check
+    serves:
+    - SR-CALC-002
+    - SR-CALC-003
+    status: proposed
+  - id: CMP-TOOL-002
+    path: schema/MEDIA.md + private/collection/media/ + media attestation check
+    description: Asset conventions (normative), personal asset home, book-media keep-out gate
+    serves:
+    - SR-TOOL-002
+    status: proposed
+  - id: CMP-TOOL-003
+    path: tools/viewer/src/{engine.ts capabilities, render.ts scale+schedule+media views, app.ts drag-in}
+      + build CSP
+    description: Seam capability growth; scale control with authored refusals; schedule view; media rendering
+      via object URLs
+    serves:
+    - SR-TOOL-002
+    - SR-TOOL-003
+    status: proposed
+  - id: CMP-PR-004
+    path: tools/rcplint/compat/ (frozen v0.1 structs) + testdata/compat/v01/ + accept.sh wiring
+    description: Bidirectional decode-compat gate with inverted breaking-fixture proof
+    serves:
+    - SR-PR-004
+    status: proposed
+protections:
+- id: SP-001
+  text: 'Fail-closed parity: the clamp-to-Calculus replacement changes no refusal outcome and no authored
+    reason; safety semantics survive verbatim (DECISIONS #15).'
+  source: prd
+- id: SP-002
+  text: 'ADDITION-only continues: every document valid at rcp-v0.2 remains valid throughout v0.3 per schema/VERSIONING.md.'
+  source: prd
+- id: SP-003
+  text: 'Engine-seam stability: RcpEngine version 1 unchanged; new powers arrive only as additive capabilities
+    (ADR-002 no-rewrite guarantee).'
+  source: prd
+- id: SP-004
+  text: 'Media boundary: licence stays required; personal assets only; source-book media never enters
+    the repo in any form.'
+  source: prd
+- id: SSP-005
+  text: 'Calculus purity: no IO, no clock, no randomness, no globals, in both implementations — structurally
+    checked (import allowlists), not promised.'
+  source: spec
+solution_references:
+- type: doc
+  path_or_url: docs/product/ROADMAP.md
+  description: v1 table — the adopted cut
+- type: doc
+  path_or_url: tools/rcplint/clamp.go
+  description: The throwaway being replaced; its refusal cases are the parity oracle
+- type: doc
+  path_or_url: tools/viewer/conformance/
+  description: The vector mechanism's proven v0.2 precedent
+- type: doc
+  path_or_url: docs/architecture/decisions/ADR-002-viewer-engine-seam-bun.md
+  description: The seam the TS Calculus enters through
+- type: doc
+  path_or_url: docs/research/CONCLUSIONS.md
+  description: §7 — the founding obligations this PRD discharges
+- type: doc
+  path_or_url: docs/product/specs/SPEC-002-rcp-v02-implementation/spec.yaml
+  description: 'DS/CMP numbering baseline and the seam this spec grows (source: spec)'
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+revision_history:
+- at: '2026-08-03T07:09:43Z'
+  author: Daniel Gomes
+  action: created
+  note: Initial draft. Resolves all four PRD-003 OQs (DS-CALC-001 packaging, DS-CALC-003 timeline semantics,
+    DS-TOOL-003 media conventions, DS-PR-009 frozen reader — decode structs, not the closed schema). FR
+    coverage 6/6; 12 PRD ACs passed through + 4 SACs with verify commands.
+extensions: {}
+_sync:
+  md_hash: 4594e85df4653ad03aa92ff9bb671f6dffd341225b1fa4f1590727aa728c5580
+  yaml_hash: da0907605365d18026a4e4a1d2e8fa2fdefd651c46cc48a16bf2945c11e040e1
+  synced_at: '2026-08-03T07:09:43Z'
