@@ -366,7 +366,8 @@ open_questions:
 - 'OQ-6: Render-time shadowing (a user''s own roux shadows the canonical link): confirm it
   stays a surface concern with only the resolution ORDER named by the protocol — CSS''s split
   — or whether the protocol must say more.'
-source_specs: []
+source_specs:
+- SPEC-004
 supersedes: null
 superseded_by: null
 deprecated_at: null
@@ -442,8 +443,14 @@ revision_history:
   action: edited
   note: Accepted by Daniel after the BRAIN-001 reshape (identity ahead of teaching; one big
     cut, size flagged and chosen).
+- at: '2026-08-03T16:55:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Back-reference added: source_specs += SPEC-004'
+  affected:
+  - SPEC-004
 extensions: {}
 _sync:
   md_hash: fc011dc8aa1ad15417941c9d88c503247dc2049e62b3591b735a0ffdfc7afc65
-  yaml_hash: 543984ab478564ec6f885320ccdca0b5e42b07b3777529fcef80ff8a2312b48e
-  synced_at: '2026-08-03T16:40:00Z'
+  yaml_hash: 13613d2985f81f697e56efd5a502971794c5f1baa21516d92fe145ba36ad452d
+  synced_at: '2026-08-03T16:55:00Z'

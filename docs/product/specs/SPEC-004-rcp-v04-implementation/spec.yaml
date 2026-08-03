@@ -1,0 +1,418 @@
+# yaml-language-server: $schema=../../../../.edikt/schemas/spec-sidecar.v1.schema.json
+schema_version: '1.0'
+type: spec
+id: SPEC-004
+title: RCP v0.4 implementation — identity, trust and teaching
+slug: rcp-v04-implementation
+status: draft
+author: Daniel Gomes
+created_at: '2026-08-03T16:50:00Z'
+source_prd: PRD-004
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-004
+  covered:
+  - fr: FR-PACK-001
+    by:
+    - SR-PACK-001
+    - SR-PACK-002
+    - SR-VAL-002
+  - fr: FR-PACK-002
+    by:
+    - SR-PACK-003
+  - fr: FR-PR-007
+    by:
+    - SR-CORE-001
+    - SR-CORE-003
+  - fr: FR-PR-008
+    by:
+    - SR-CORE-002
+  - fr: FR-VAL-003
+    by:
+    - SR-VAL-001
+  - fr: FR-REG-007
+    by:
+    - SR-REG-003
+  - fr: FR-PUB-001
+    by:
+    - SR-PUB-001
+    - SR-PUB-002
+  - fr: FR-REG-005
+    by:
+    - SR-REG-001
+  - fr: FR-REG-006
+    by:
+    - SR-REG-002
+  - fr: FR-TOOL-004
+    by:
+    - SR-TOOL-001
+  - fr: FR-PR-005
+    by:
+    - SR-CORE-004
+  - fr: FR-PR-006
+    by:
+    - SR-CORE-005
+  deferred: []
+  uncovered: []
+requirements:
+- id: SR-PACK-001
+  implements: FR-PACK-001
+  text: 'An id MUST be unique within a COLLECTION (the document set a consumer loads together).
+    An unqualified reference MUST resolve inside the referring document''s own collection and
+    MUST NOT be resolved against any other collection. Merging collections MUST NOT rewrite an
+    id nor flatten the sets: two documents sharing an id across collections both remain resolvable.'
+- id: SR-PACK-002
+  implements: FR-PACK-001
+  text: A reference targeting another collection MUST carry that collection's identifier. Validation
+    MUST fail an unqualified reference that has no target in its own collection, naming the reference
+    — it MUST NOT fall back to searching other collections.
+- id: SR-PACK-003
+  implements: FR-PACK-002
+  text: The pack manifest MUST be a separate file (`rcp-pack.yaml`) with its own schema (`schema/rcp-pack-v1.schema.json`),
+    declaring the collection identifier plus optional publisher, licence and version. It MUST
+    NOT be a `kind:` value on the recipe core. A document MAY carry the collection identifier;
+    on conflict the manifest MUST win and the conflict MUST be reported.
+- id: SR-CORE-001
+  implements: FR-PR-007
+  text: Every `lineage` field MUST carry a schema description, and `forked_from`/`variant_of`
+    MUST support a pinned revision in componentRef's shape (target-declared `version` + reference-site
+    pin), optionally qualified by collection. A fork MUST remain a complete self-contained document.
+- id: SR-CORE-002
+  implements: FR-PR-008
+  text: A variant MUST express its distinction as `axis` (closed enum with an `other` catch-all)
+    + `value`. Value resolution MUST be defined per axis against an existing registry kind, a
+    named external standard already used by core, or an enum defined in this spec — no axis may
+    ship resolving against an absent registry. `variant_label` MUST remain human-only and MUST
+    NOT be machine-read.
+- id: SR-CORE-003
+  implements: FR-PR-007
+  text: '`schema/VERSIONING.md` MUST gain a document-revision section stating when `version` increments,
+    that a published (collection, id, version) triple is immutable, and how supersession is signalled.
+    (Closes PRD OQ-5.)'
+- id: SR-CORE-004
+  implements: FR-PR-005
+  text: W3C Media Fragments (`#t=start,end`) MUST be the sole normative encoding for temporal
+    media addressing in MODEL 1; `schema/MEDIA.md` MUST document it and renderers MUST pass the
+    fragment through to playback. Structured start/end fields MUST NOT be added to core. (Closes
+    PRD OQ-1.)
+- id: SR-CORE-005
+  implements: FR-PR-006
+  text: Stage-forked identity MUST be settled as a DECISIONS entry naming where stage outcomes
+    live, with two validating example documents demonstrating both sides of the line.
+- id: SR-VAL-001
+  implements: FR-VAL-003
+  text: Validation MUST report staleness when a lineage pin names revision N and the target declares
+    a later revision, naming the variant and both revisions; and MUST fail a componentRef whose
+    pin does not match the target's declared version (today only the presence of a version is
+    checked).
+- id: SR-VAL-002
+  implements: FR-PACK-001
+  text: The harness MUST carry a second-collection fixture with a deliberate id collision against
+    `examples/`, proving both documents resolve, no id is rewritten, and each document's pointers
+    bind within its own collection.
+- id: SR-PUB-001
+  implements: FR-PUB-001
+  text: A resolved reference record MUST carry target (collection, id, version), source locator,
+    `content_hash` over the canonical JSON serialisation of the resolved document, and `resolver_version`.
+    Hashing MUST use the Go standard library only. The spec text MUST state that the claim is
+    content-addressing, not input-addressing.
+- id: SR-PUB-002
+  implements: FR-PUB-001
+  text: 'Verification MUST provide two modes: reconcile (compute and write records) and frozen
+    (verify only — any divergence FAILS and nothing is rewritten). A missing target, changed hash,
+    or unknown resolver_version MUST fail naming the reference. An inverted proof (mutated target)
+    MUST ship with the gate.'
+- id: SR-REG-001
+  implements: FR-REG-005
+  text: Technique and preparation-class registry entries MUST support an OPTIONAL `canonical_recipe`
+    link ({collection?, id, version}); an entry without it MUST stay valid, and the link MUST
+    resolve under the scope rule.
+- id: SR-REG-002
+  implements: FR-REG-006
+  text: 'The extraction rule MUST be documented as binding and enforced by the linter: method
+    given → inline component; method absent → class reference; prose never invented nor silently
+    dropped. The linter MUST warn on (a) step prose containing a registry-known preparation/technique
+    term that nothing anchors, and (b) authored patterns (`faça um X` / `prepare um X` / `make
+    a X`) where X is unknown to the registry, from a maintained pt/en pattern list.'
+- id: SR-REG-003
+  implements: FR-REG-007
+  text: Every shipped axis value MUST have its resolution backing in place before the enum ships
+    — registry kind, named external standard, or spec-defined enum — and at least one example
+    document MUST exercise each shipped axis.
+- id: SR-TOOL-001
+  implements: FR-TOOL-004
+  text: 'The viewer MUST gain a capability-gated see-the-method affordance: from a linked mention,
+    render the linked method without losing the parent document, and place the linked preparation
+    before its consuming step in the schedule via the existing two-stage Calculus schedule. The
+    engine seam version MUST stay 1 (capabilities only, ADR-002).'
+acceptance_criteria:
+- id: AC-PACK-001-1
+  fr: FR-PACK-001
+  given: two collections each containing a document with the id "pao-alentejano", loaded together
+  when: validation and reference resolution run
+  then: both documents survive and stay individually resolvable; no id is rewritten and no pointer
+    rebinds — the collision is not an error
+  status: proposed
+  source: prd
+- id: AC-PACK-001-2
+  fr: FR-PACK-001
+  given: a document whose lineage or component reference names an id present in BOTH its own collection
+    and another loaded collection
+  when: the reference resolves
+  then: it resolves to its OWN collection's document; a reference intended for the other collection
+    is only valid when qualified
+  status: proposed
+  source: prd
+- id: AC-PACK-002-1
+  fr: FR-PACK-002
+  given: a collection with a manifest declaring its identifier, and a document declaring a different
+    one
+  when: the collection loads
+  then: the manifest identifier wins and the conflict is reported; a lone document with no manifest
+    still self-describes via its own field
+  status: proposed
+  source: prd
+- id: AC-PACK-002-2
+  fr: FR-PACK-002
+  given: the v0.1-era frozen reader from the decode-compat gate
+  when: it decodes documents carrying collection qualifiers and pack manifests exist alongside
+  then: decoding succeeds with v0.1 fields intact — the recipe id pattern is unchanged and qualification
+    rode in on new optional fields
+  status: proposed
+  source: prd
+- id: AC-PR-007-1
+  fr: FR-PR-007
+  given: a variant document declaring lineage.variant_of pinned to parent revision N
+  when: the schema and linter validate it
+  then: every lineage field carries a description in the schema, the pin validates in componentRef's
+    shape, and the variant remains a complete self-contained document
+  status: proposed
+  source: prd
+- id: AC-PR-008-1
+  fr: FR-PR-008
+  given: two sibling variants of one family differing on a declared axis (e.g. axis=diet, values
+    gluten-free vs classic)
+  when: a consumer inspects them without reading prose
+  then: the axis and value are machine-readable and resolve; a document omitting the discriminator
+    stays valid; an unknown axis decodes into the catch-all rather than failing
+  status: proposed
+  source: prd
+- id: AC-VAL-003-1
+  fr: FR-VAL-003
+  given: a variant pinned to parent revision 3 and a parent that has since declared revision 4
+  when: validation runs
+  then: staleness is reported naming the variant, the pinned revision and the current one — and
+    the same run FAILS a componentRef whose pin no longer matches the target's declared version
+  status: proposed
+  source: prd
+- id: AC-VAL-003-2
+  fr: FR-VAL-003
+  given: the rejection of compiled variants
+  when: the decision record is read
+  then: DECISIONS carries the entry naming the founding-non-goal grounds (second execution semantics;
+    formulas-in-data) so the rejection is recorded rather than silent
+  status: proposed
+  source: prd
+- id: AC-REG-007-1
+  fr: FR-REG-007
+  given: the axis enum shipped by FR-PR-008
+  when: the registry is validated
+  then: every non-catch-all axis value has its registry kind and at least one seed entry drawn
+    from a real document; no axis ships pointing at an absent registry
+  status: proposed
+  source: prd
+- id: AC-REG-005-1
+  fr: FR-REG-005
+  given: a technique or preparation-class registry entry carrying a canonical-recipe link
+  when: the registry validates
+  then: the link's shape (document id + version) validates and the reference resolves to an existing
+    document; an entry WITHOUT the link stays valid (optional, never required)
+  status: proposed
+  source: prd
+- id: AC-REG-006-1
+  fr: FR-REG-006
+  given: a source recipe whose method embeds a sub-preparation WITH its method given (the sauces-bible
+    roux)
+  when: ingested per the extraction rule
+  then: the sub-preparation is an inline component with its own method — no prose parked in notes
+  status: proposed
+  source: prd
+- id: AC-REG-006-2
+  fr: FR-REG-006
+  given: a source recipe that names a sub-preparation WITHOUT giving its method
+  when: ingested and linted
+  then: the mention is a preparation-class reference with no invented steps; a mention anchoring
+    to nothing raises a linter warning naming it
+  status: proposed
+  source: prd
+- id: AC-TOOL-004-1
+  fr: FR-TOOL-004
+  given: the viewer rendering a document whose ingredient or technique carries a canonical link
+    resolvable within the loaded corpus
+  when: the user activates the see-the-method affordance
+  then: the linked method renders (ingredients + steps) without losing the parent recipe view
+  status: proposed
+  source: prd
+- id: AC-TOOL-004-2
+  fr: FR-TOOL-004
+  given: a linked sub-recipe with durations, consumed by a parent step
+  when: the schedule view renders
+  then: 'the linked preparation''s placement appears before the consuming step per the Calculus
+    two-stage schedule (the end goal: ''say when that procedure must be done before you start'')'
+  status: proposed
+  source: prd
+- id: AC-PR-005-1
+  fr: FR-PR-005
+  given: 'a media entry whose uri carries #t=120,180 and whose asset is supplied'
+  when: rendered
+  then: playback starts at the fragment start (seek honoured), and a second entry referencing
+    the SAME asset with a different range renders independently
+  status: proposed
+  source: prd
+- id: AC-PUB-001-1
+  fr: FR-PUB-001
+  given: a document with cross-document references, resolved at publish time
+  when: verification tooling runs
+  then: every reference carries resolver_version + content hash and verification passes green
+  status: proposed
+  source: prd
+- id: AC-PUB-001-2
+  fr: FR-PUB-001
+  given: a resolved reference whose target document has since changed (or vanished)
+  when: verification tooling runs
+  then: verification FAILS naming the reference and the nature of the break — the inverted proof
+    ships with the gate
+  status: proposed
+  source: prd
+- id: AC-PR-006-1
+  fr: FR-PR-006
+  given: the recorded identity decision and two example documents — a stage-fork that keeps identity
+    and a fork that becomes a new recipe
+  when: both validate against core
+  then: lineage fields distinguish the two cases exactly as the decision prescribes
+  status: proposed
+  source: prd
+- id: SAC-PACK-001
+  source: spec
+  given: the core schema after this cut
+  when: the id/slug definitions are diffed against the rcp-v0.1 pin
+  then: they are byte-identical — the id value pattern never widened
+- id: SAC-PR-001
+  source: spec
+  given: the frozen v0.1 reader and the current core
+  when: the decode-compat gate runs
+  then: both directions stay green and no new REQUIRED field exists in core
+  verify: cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./...
+- id: SAC-REG-001
+  source: spec
+  given: the shipped axis enum
+  when: registry/axis coverage is checked
+  then: every value resolves against an existing registry kind, a named external standard, or
+    a spec-defined enum, and at least one example exercises each
+- id: SAC-PUB-001
+  source: spec
+  given: an intact corpus and a corpus with one mutated target
+  when: frozen-mode verification runs on both
+  then: it passes on the intact corpus and FAILS naming the reference on the mutated one
+- id: SAC-CALC-001
+  source: spec
+  given: the Calculus vectors and both implementations
+  when: make calculus runs after the cut
+  then: vectors are byte-identical and both implementations are green
+  verify: make calculus
+- id: SAC-TOOL-001
+  source: spec
+  given: the rebuilt viewer
+  when: the acceptance sweep runs
+  then: the CSP meta string is unchanged and the bundle stays under 500 KB
+  verify: bash tools/rcplint/scripts/accept.sh
+protections:
+- id: SP-001
+  text: 'Fail-closed safety semantics and authored refusal reasons are untouched: the frozen calculus
+    vectors stay byte-identical; any vector change outside a calculus/SPEC.md-change commit is
+    a defect.'
+  source: prd
+- id: SP-002
+  text: 'Decode-compatibility holds both directions: no new required fields without defaults;
+    the frozen v0.1 reader gate and the current-accepts-old gate stay green.'
+  source: prd
+- id: SP-003
+  text: calculus/SPEC.md remains public-normative and self-contained — no project ids, no internal
+    references enter it through this cut.
+  source: prd
+- id: SP-004
+  text: 'DECISIONS #26 vocabulary is binding (sub-recipe / preparação / técnica used exactly);
+    DECISIONS #27 media boundary and the attestation stay in force — canonical links and fragments
+    never smuggle book media.'
+  source: prd
+- id: SP-005
+  text: 'Dependency freeze: PUB-001 hashing and resolution use the standard library only; any
+    new dependency requires a recorded decision first.'
+  source: prd
+- id: SP-006
+  text: The recipe `id` value pattern MUST NOT widen. Qualification rides on new OPTIONAL fields
+    in the qualifier's value space — widening the pattern breaks v0.1-era readers and forces a
+    MODEL bump, the one outcome this cut must avoid (architect brief 2026-08-03).
+  source: prd
+- id: SP-007
+  text: 'Pack SERVICES stay outside the protocol: hosting, publishing workflow and any registry
+    server remain app-side per DECISIONS #19/#21. This cut ships the pack FORMAT and its resolution
+    semantics — the thing that makes a distribution layer possible later, not the layer.'
+  source: prd
+- id: SSP-001
+  text: 'Layer ordering is binding: identity before trust before teaching. A later layer MUST
+    NOT be implemented before the layer it depends on is green — canonical links resolve through
+    the scope rule.'
+  source: spec
+- id: SSP-002
+  text: Each layer MUST end with the full standing gate green (validate, conformance, calculus,
+    accept) and be independently committable — the cut is ~2x v0.3, so it must be taggable at
+    any completed layer.
+  source: spec
+solution_references:
+- type: doc
+  path_or_url: docs/research/08-implicit-subrecipes.md
+  description: F1–F8 findings — the roux problem, three layers
+  source: prd
+- type: doc
+  path_or_url: docs/product/features.yaml
+  description: FEAT-REG-006, FEAT-CORE-006, FEAT-PUB-001 entries (full design intent)
+  source: prd
+- type: url
+  path_or_url: https://www.w3.org/TR/media-frags/
+  description: 'W3C Media Fragments URI 1.0 — the existing uri-level #t= encoding'
+  source: prd
+- type: doc
+  path_or_url: ../Calculador PAo/api/migrations/0002_recipes.up.sql
+  description: Fornada padaria.recipes.forked_from — the identity question made concrete in a
+    real consumer
+  source: prd
+- type: doc
+  path_or_url: docs/research/09-variant-identity-and-selection.md
+  description: 'Four-track verified research: prior art (STEP/SAP/Gradle/Maven), the recipe domain
+    gap, selection semantics, internal sweep'
+  source: prd
+- type: doc
+  path_or_url: docs/brainstorms/BRAIN-001-recipe-identity-across-systems.md
+  description: The brainstorm that produced the identity decisions (collections do not flatten)
+  source: prd
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+revision_history:
+- at: '2026-08-03T16:50:00Z'
+  author: Daniel Gomes
+  action: created
+  note: 'Initial draft. Daniel''s spec-interview calls: full axis enum (resolved per-axis against
+    existing backings rather than minting empty registries), manifest as its own file not a recipe
+    kind, qualification MANDATORY across collections, document versioning closed here (OQ-5).
+    OQ-1 resolved in-spec: fragments are the sole normative temporal encoding.'
+extensions: {}
+_sync:
+  md_hash: eac65bbcba6eee78a0c2d3f72f049056ba72256ee5fb4ad77b72a0e40a19475e
+  yaml_hash: e987f10e535af4076df0307d16c4608b309b830695a70fd719c4ca796d0b5ea9
+  synced_at: '2026-08-03T16:55:00Z'
