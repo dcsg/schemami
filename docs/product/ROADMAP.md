@@ -39,17 +39,32 @@ Small, additive, demanded by the five ingested recipes — all delivered, tag `r
 
 *(Delivered per PLAN-rcp-v02: 9 phases, 4-lens pre-flight, one mint checkpoint. The viewer shipped as the ADR-002 engine seam — JS engine + conformance vectors now, WASM behind the same interface later. Plus unplanned wins the run surfaced: severity-aware bounds pipeline, English-base equipment refactor with deprecate+alias, provenance.notes.)*
 
-## v1 — the heavyweights (PRD-003+)
+## v0.3 — SHIPPED: "the protocol computes" (PRD-003 → SPEC-003 → PLAN-rcp-v03)
+
+The engineering obligations became executable — tag `rcp-v0.3`:
+
+| Feature | What shipped |
+|---|---|
+| FEAT-CALC-001 Recipe Calculus + conformance vectors | `calculus/SPEC.md` (public-normative, 10 functions, rule/WE ids) + frozen `calculus/vectors/` (21 vectors, coverage-gated); Go reference is the oracle |
+| FEAT-CALC-002 Derived ordering & timeline | readingOrder / interleave / two-stage schedule (negative offsets = "start the day before"), proven on the multi-day entremet |
+| FEAT-CORE-003 Decode-compatibility CI fixtures | frozen v0.1 reader ⇄ current core, both directions, inverted breaking fixture, struct-vs-pinned-tag mechanical diff |
+| FEAT-TOOL-002 Media surfaces | `schema/MEDIA.md`, smuggle-proof attestation (self-testing), file-input ingress with magic-byte triage, all four types rendered, DECISIONS #27 boundary proven with real content |
+
+*(Second implementation: the TS Calculus in the viewer replays every frozen
+vector — equivalence is tested, not asserted. The viewer now scales
+(fail-closed, authored refusals) and renders kitchen-plan schedules
+("2 dias antes / véspera / no dia"). FEAT-CORE-006 media temporal
+fragments captured for PRD-004.)*
+
+## v1 — the heavyweights (PRD-004+)
 
 | Feature | Trace |
 |---|---|
-| FEAT-CALC-001 Recipe Calculus + conformance vectors | #13, #15 |
-| FEAT-CALC-002 Derived execution ordering & timeline (DAG + durations → schedule; when-vs-how split; brownie/entremet cases) | #3, research 04, Daniel 2026-08-03 |
-| FEAT-CORE-003 Decode-compatibility CI fixtures | #14 |
 | FEAT-CORE-004 Codegen decode types (Swift/TS) | #8 |
 | FEAT-PROF-004 Ferment profile hardened | #18 |
 | FEAT-SUB-001 Global substitution catalog | #9, #17 |
 | FEAT-REG-006 Implicit preparations: mention → method (roux problem; PRD-004 candidate) | #7, #11, Daniel 2026-08-03 |
+| FEAT-CORE-006 Media temporal fragments (video `#t=` ranges for techniques/sub-recipes; composes with REG-006) | Daniel 2026-08-03 |
 | FEAT-PUB-001 Verified publish-time resolution | #21, obligation 3 |
 | FEAT-REG-005 Derived search index (edges + facets) | #7, #10 |
 

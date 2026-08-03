@@ -175,7 +175,8 @@ features:
       (the disease RCP exists to cure). Replaces the throwaway clamp.
     personas: [rcp.dev.surface-engineer, rcp.cook.home-cook, rcp.cook.production-scaler]
     icp: ICP-1
-    status: deferred
+    status: shipped
+    realized_by: [FR-CALC-001, FR-CALC-002]
     target: v1
     trace: ["DECISIONS #13", "DECISIONS #15"]
     graduates_to: PRD-003
@@ -189,7 +190,8 @@ features:
       offline snapshots ship.
     personas: [rcp.dev.surface-engineer]
     icp: ICP-1
-    status: deferred
+    status: shipped
+    realized_by: [FR-PR-004]
     target: v1
     trace: ["DECISIONS #14"]
     graduates_to: PRD-003
@@ -356,7 +358,8 @@ features:
       boundary.
     personas: [rcp.cook.home-cook, rcp.cook.production-scaler, rcp.dev.surface-engineer]
     icp: both
-    status: deferred
+    status: shipped
+    realized_by: [FR-CALC-003, FR-TOOL-003]
     target: v1 — PRD-003 candidate (Daniel 2026-08-03), with FEAT-CALC-001 (the derivations are Calculus functions; the viewer consumes them through the engine seam)
     trace: ["DECISIONS #3", "research 04:61-80", "CONCLUSIONS §7", "Daniel 2026-08-03 viewer review"]
     graduates_to: PRD-003
@@ -446,7 +449,8 @@ features:
  
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
-    status: deferred
+    status: shipped
+    realized_by: [FR-TOOL-002]
     target: post-v0.2; scope decided at the next PRD interview (viewer rendering is the cheap half; conventions + real assets the substantive half)
     trace: ["research 04 media_hint findings", "core $defs/media (v0.1)", "Daniel 2026-08-03 viewer review"]
     graduates_to: PRD-003
@@ -551,6 +555,10 @@ features:
       the WASM-compiled rcplint drops in behind the same interface for
       exact-CI L2 + CUE verdicts in-browser, and the clamp-guarded scaling
       slider — the signature demo. UI survives the engine swap by design.
+      v0.3 SHIPPED THE COMPUTE HALF: scale control + schedule view via
+      the TS Recipe Calculus (capabilities clamp + timeline), engine
+      seam unchanged; the WASM Go core still lands later with zero UI
+      change (ADR-002).
     trace: ["DECISIONS #19", "DECISIONS #21", "PRD-001 integrator guarantee"]
     graduates_to: PRD-002
 
