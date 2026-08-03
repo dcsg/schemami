@@ -380,24 +380,28 @@ features:
   - id: FEAT-REG-006
     name: "Implicit preparations resolve from mention to method (the roux problem)"
     description: >-
-      A recipe's method often embeds a sub-preparation without declaring
-      a component — "faça um roux", "prepare um caramelo" — and the
-      reader deserves a path from the mention to the method. The
-      protocol already expresses the EXPLICIT case (components /
-      componentRef — the brownie referencing the published ganache) and
-      already has mention-level anchors: ingredient.preparation.*
-      classes and technique. entries. The gap is the bridge: registry
-      entries (preparation classes and techniques) gain an optional
-      canonical-recipe link — "the recipe that teaches me" — resolving a
-      mention to a full kind: component document; renderers surface a
-      see-the-method affordance wherever a linked mention appears
-      (viewer: expandable inline or side panel). Extraction rule
-      (documented now, enforced then): an embedded sub-preparation is
-      lifted to an inline component when the source gives its method, or
-      referenced as a preparation class when it only names it — never
-      left dissolved in prose. Cross-document resolution respects the
-      private-vs-published boundary (a private roux recipe resolves
-      locally only). Raised by Daniel 2026-08-03 (sauce→roux case).
+      A recipe's method often embeds a sub-preparation without declaring a
+      component — "faça um roux", "prepare um caramelo" — and the reader
+      deserves a path from the mention to the method. Three layers, two of
+      which already exist: (1) the roux as an INDEPENDENT recipe — kind:
+      component, own id/method/provenance/version, referenceable by any
+      consumer via componentRef (the ganache pattern, v0.1; an ingredient can
+      be another recipe's finished yield). (2) The class —
+      ingredient.preparation.* or technique. entry: the noun a bare mention
+      anchors to. (3) The bridge (this feature): registry entries gain an
+      optional canonical-recipe link — "the recipe that teaches me" — and
+      renderers surface a see-the-method affordance wherever a linked mention
+      appears. Canonical is CURATION, not essence (core's no-special-base-type
+      rule): many roux recipes may exist — the user's private one, a published
+      one, variants — the steward picks what the class points at, and a user's
+      own recipe may shadow the canonical at render time (resolution order is
+      a surface concern). Extraction rule (documented in the registry README,
+      binding now): an embedded sub-preparation is lifted to an inline
+      component when the source gives its method, or referenced as a
+      preparation class when it only names it — never dissolved in prose.
+      Cross-document resolution respects the private-vs-published boundary.
+      Raised by Daniel 2026-08-03 (sauce→roux); sharpened same day: the roux
+      is an independent recipe.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
     status: deferred
