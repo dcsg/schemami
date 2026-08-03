@@ -178,7 +178,7 @@ features:
     status: deferred
     target: v1
     trace: ["DECISIONS #13", "DECISIONS #15"]
-    graduates_to: null
+    graduates_to: PRD-003
   - id: FEAT-CORE-003
     name: "Decode-compatibility CI fixtures (old reader/new doc, both directions)"
     description: >-
@@ -192,7 +192,7 @@ features:
     status: deferred
     target: v1
     trace: ["DECISIONS #14"]
-    graduates_to: null
+    graduates_to: PRD-003
   - id: FEAT-CORE-004
     name: "Codegen decode types (quicktype → Swift Codable + TS) from the frozen schema"
     description: >-
@@ -359,6 +359,7 @@ features:
     status: deferred
     target: v1 — PRD-003 candidate (Daniel 2026-08-03), with FEAT-CALC-001 (the derivations are Calculus functions; the viewer consumes them through the engine seam)
     trace: ["DECISIONS #3", "research 04:61-80", "CONCLUSIONS §7", "Daniel 2026-08-03 viewer review"]
+    graduates_to: PRD-003
 
   - id: FEAT-TOOL-002
     name: "Media surfaces: asset conventions + rendering"
@@ -384,6 +385,7 @@ features:
     status: deferred
     target: post-v0.2; scope decided at the next PRD interview (viewer rendering is the cheap half; conventions + real assets the substantive half)
     trace: ["research 04 media_hint findings", "core $defs/media (v0.1)", "Daniel 2026-08-03 viewer review"]
+    graduates_to: PRD-003
   - id: FEAT-CORE-005
     name: "Dogfood field additions (times, difficulty, storage, source detail)"
     description: >-

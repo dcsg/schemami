@@ -28,7 +28,9 @@ sidecars.
   `PR` `protocol-core`, `REG` `registry`, `PROF` `profiles`,
   `VAL` `validator`, `SAFE` `safety-clamp`, `TOOL` `developer tooling
   (viewer/playground)`, `I18N` `localization layer` (added 2026-08-02
-  for PRD-002). New components MUST be added to this guideline (new
+  for PRD-002), `CALC` `recipe calculus — the cook-time pure-function
+  library and its conformance vectors` (added 2026-08-03 for PRD-003).
+  New components MUST be added to this guideline (new
   code) before use — never invented ad hoc. FR numbering continues
   across PRDs within a component (PRD-002 protocol-core starts at
   FR-PR-003) — ids are globally unique, never per-PRD.
