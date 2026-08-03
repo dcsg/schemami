@@ -96,48 +96,48 @@ phases:
     verify: make validate && make conformance && make accept
 - phase: 3
   title: Ship a second collection in the published corpus
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-3.1
     text: '`examples/` contains two collections, each with a manifest, and one id appears in both'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go run . validate ../.. | grep -c 'collection'
   - id: AC-3.2
     text: '`make validate` walks both collections and is green'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate
   - id: AC-3.3
     text: No document in `examples/` names a provenance source unique to the private corpus
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: python3 tools/rcplint/scripts/corpus-provenance-check.py .
   - id: AC-3.4
     text: Media attestation and privacy checks still green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make accept
   - id: AC-3.GATE
     text: '** all gates green, worktree clean, tag opportunity'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make conformance && make calculus && make accept
 - phase: 4
   title: 'Lineage: described, pinned, and the pin check hardened'

@@ -30,24 +30,33 @@ func TestL1FixturesRejected(t *testing.T) {
 	}
 }
 
+// The corpus is collection-aware since v0.4 (SR-PACK-001): the count is
+// asserted PER COLLECTION, so adding a collection can never silently
+// change what the founding regression suite is expected to contain.
 func TestExamplesPassCore(t *testing.T) {
 	v := coreValidator(t)
-	paths, _ := filepath.Glob(filepath.Join(root, "examples/*.rcp.yaml"))
-	n := 0
-	for _, p := range paths {
-		docs, err := LoadDocuments(p)
-		if err != nil {
-			t.Fatalf("%s: %v", p, err)
-		}
-		for _, d := range docs {
-			n++
+	corpus, err := LoadCorpus(filepath.Join(root, "examples"))
+	if err != nil {
+		t.Fatalf("load corpus: %v", err)
+	}
+	if len(corpus.Errors) != 0 {
+		t.Fatalf("corpus errors: %v", corpus.Errors)
+	}
+	counts := map[string]int{}
+	for _, col := range corpus.Collections {
+		for _, d := range col.Docs {
+			counts[col.ID]++
 			if err := v.Validate(d.Value); err != nil {
-				t.Errorf("%s", FormatError(p, d.ID, err))
+				t.Errorf("%s", FormatError(d.File, d.ID, err))
 			}
 		}
 	}
-	if n != 6 {
-		t.Errorf("expected 6 documents, got %d", n)
+	// The founding six are the regression suite (VERSIONING.md, the freeze).
+	if counts["rcp-examples"] != 6 {
+		t.Errorf("collection rcp-examples: expected the founding 6 documents, got %d", counts["rcp-examples"])
+	}
+	if len(corpus.Collections) < 2 {
+		t.Errorf("expected at least 2 published collections, got %d", len(corpus.Collections))
 	}
 }
 

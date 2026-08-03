@@ -1,0 +1,18 @@
+rcp: 1
+collection: boston-1910
+name:
+  en: The Boston Cooking-School Cook Book (1910)
+description:
+  en: >-
+    Documents transcribed from Fannie Merritt Farmer's revised 1910 edition,
+    which is in the public domain (the author died in 1915). The collection
+    exists to demonstrate what the founding six cannot: cross-document
+    references to a named sub-preparation, a variant family that differs only
+    in one quantity, and a stage-forked preparation — all from a real,
+    citable source rather than invented text.
+publisher:
+  name: Project Gutenberg (transcription source)
+  url: https://www.gutenberg.org/ebooks/65061
+licence:
+  en: Public domain — author died 1915; US pre-1929 and EU life+70 both clear.
+version: 1

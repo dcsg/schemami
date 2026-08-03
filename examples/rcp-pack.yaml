@@ -1,0 +1,12 @@
+rcp: 1
+collection: rcp-examples
+name:
+  en: RCP reference examples
+  pt: Exemplos de referência do RCP
+description:
+  en: The founding six documents — the regression suite every schema change must keep validating.
+publisher:
+  name: RCP
+licence:
+  en: CC BY 4.0 (written content)
+version: 1

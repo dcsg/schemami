@@ -1,0 +1,72 @@
+rcp: 1
+id: scalloped-eggs
+kind: dish
+lang: en
+name:
+  en: Scalloped Eggs
+version: 1
+description:
+  en: >-
+    The reason this collection exists. The book lists "1 pint White Sauce I"
+    as an INGREDIENT — a named sub-preparation whose method lives in another
+    document. Before v0.4 that reference had nowhere to resolve.
+taxonomy:
+  category: dish
+  subcategory: [eggs, baked]
+components:
+  - id: molho
+    ref: white-sauce-i
+    version: 1
+    draw: { value: 1, unit: pint }
+ingredients:
+  - id: ovos
+    item: ingredient.egg.whole
+    amount: { value: 3, unit: piece }
+    roles: [binder]
+    prep:
+      state: hard-boiled
+      note:
+        en: '"Hard-boiled", chopped finely.'
+    raw: 3 "hard-boiled" eggs
+  - id: carne
+    raw: 3/4 cup chopped cold meat
+    amount: { value: 0.75, unit: cup }
+    roles: [substrate]
+    note:
+      en: Ham is the best meat to use for this dish. Chicken, veal, or fish may be used.
+  - id: pao-ralado
+    raw: 3/4 cup buttered cracker crumbs
+    amount: { value: 0.75, unit: cup }
+    roles: [coating]
+steps:
+  - id: camadas
+    primitive: { id: primitive.assemble, v: 1 }
+    uses: [pao-ralado, ovos, molho, carne]
+    title:
+      en: >-
+        Sprinkle bottom of a buttered baking dish with crumbs, cover with half
+        the eggs, eggs with sauce, and sauce with meat; repeat
+  - id: cobrir
+    primitive: { id: primitive.assemble, v: 1 }
+    after: [camadas]
+    uses: [pao-ralado]
+    title:
+      en: Cover with remaining crumbs
+  - id: cozer
+    primitive: { id: primitive.bake, v: 1 }
+    after: [cobrir]
+    title:
+      en: Place in oven on centre grate, and bake until crumbs are brown
+    until:
+      - kind: sensory
+        test: visual
+        expect: crumbs are brown
+provenance:
+  confidence: HIGH
+  status: published
+  sources:
+    - label: Farmer, The Boston Cooking-School Cook Book, rev. ed. 1910, "Eggs"
+      url: https://www.gutenberg.org/ebooks/65061
+      type: book
+licence:
+  text: Public domain (source work, author died 1915); transcription CC BY 4.0.

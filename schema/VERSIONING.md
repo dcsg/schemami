@@ -66,6 +66,6 @@ become CI-enforced in v1 (FEAT-CORE-003).
 The annotated tag **`rcp-v0.1`** marks the first frozen protocol state:
 hardened core, registry formats + seed, bread + pastry hardened profiles,
 five draft profiles, declarative bounds. From that tag forward, every
-schema change is classified under the rules above and the six example
-documents remain the regression suite (`make validate` green is a merge
+schema change is classified under the rules above and the six documents
+of the `rcp-examples` collection remain the regression suite (`make validate` green is a merge
 requirement).

@@ -1,0 +1,84 @@
+rcp: 1
+id: white-sauce-i
+kind: component
+lang: en
+name:
+  en: White Sauce I
+version: 1
+description:
+  en: >-
+    The American method: butter melted and bubbling, flour stirred in, milk
+    added gradually. Two tablespoons each of butter and flour to one cup of
+    liquid is the book's stated rule for a sauce of average thickness.
+taxonomy:
+  category: sauce
+lineage:
+  family: farmer-white-sauce
+ingredients:
+  - id: manteiga
+    item: ingredient.fat.butter
+    amount: { value: 2, unit: tbsp }
+    roles: [fat]
+    raw: 2 tablespoons butter
+  - id: farinha
+    item: ingredient.flour.wheat.plain
+    amount: { value: 2, unit: tbsp }
+    roles: [flour, thickener]
+    raw: 2 tablespoons flour
+  - id: leite
+    item: ingredient.dairy.milk.whole
+    amount: { value: 1, unit: cup }
+    roles: [hydration]
+    raw: 1 cup milk
+  - id: sal
+    item: ingredient.salt.sea.fine
+    amount: { value: 0.25, unit: tsp }
+    roles: [salt]
+    raw: 1/4 teaspoon salt
+steps:
+  - id: derreter
+    primitive: { id: primitive.heat, v: 1 }
+    uses: [manteiga]
+    title:
+      en: Put butter in saucepan, stir until melted and bubbling
+    until:
+      - kind: sensory
+        test: visual
+        expect: melted and bubbling
+  - id: juntar-farinha
+    primitive: { id: primitive.incorporate, v: 1 }
+    after: [derreter]
+    uses: [farinha, sal]
+    title:
+      en: Add flour mixed with seasonings, and stir until thoroughly blended
+    produces: roux
+    note:
+      en: >-
+        This is the roux. The book names it directly: "Butter and flour are
+        usually cooked together for thickening sauces. When not browned, it is
+        called roux; when browned, brown roux." Left pale here; browning it
+        would make a different preparation from the same two ingredients.
+  - id: juntar-leite
+    primitive: { id: primitive.emulsify, v: 1 }
+    after: [juntar-farinha]
+    uses: [roux, leite]
+    title:
+      en: Pour on gradually the milk, about one-third at a time, beating until smooth and glossy
+    until:
+      - kind: sensory
+        test: visual
+        expect: smooth and glossy
+provenance:
+  confidence: HIGH
+  status: published
+  sources:
+    - label: Farmer, The Boston Cooking-School Cook Book, rev. ed. 1910, "Fish and Meat Sauces"
+      url: https://www.gutenberg.org/ebooks/65061
+      type: book
+  notes:
+    en: >-
+      Public domain: Fannie Merritt Farmer died in 1915, so the work is clear
+      under both US pre-1929 and EU life+70 rules. Quantities transcribed
+      verbatim; the method is the book's own wording, condensed into steps.
+licence:
+  text: Public domain (source work, author died 1915); transcription CC BY 4.0.

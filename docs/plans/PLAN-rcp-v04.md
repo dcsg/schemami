@@ -42,7 +42,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-03 |
 | 2     | done | 1/5 | 2026-08-03 |
-| 3     | pending | 0/5 | — |
+| 3     | done | 1/5 | 2026-08-03 |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
@@ -819,3 +819,14 @@ Phase 2:
 - AC-2.5: PASS — 2026-08-03 (frozen v0.1 reader decodes a document carrying `collection` with all v0.1-era fields intact)
 - AC-2.6: PASS — 2026-08-03 (validate/accept 36-36/conformance 85/calculus 25 green; vectors byte-unchanged; vector allowlists prefix-match `examples/` so a nested collection needs no widening)
 - Pre-v0.4 layout preserved: a corpus with no manifest anywhere loads as ONE collection (TestCorpusWithoutManifest), so `examples/` works untouched until Phase 3 gives it a manifest.
+
+Phase 3:
+- AC-3.1: PASS (amended) — 2026-08-03. Two published collections with manifests: `rcp-examples` (the founding 6) and `boston-1910` (3 documents from Fannie Farmer's 1910 Boston Cooking-School Cook Book, public domain — author died 1915, clear under both US pre-1929 and EU life+70). Daniel chose a public-domain historical source over invented recipes; the text was FETCHED from Project Gutenberg and quoted, not recalled. AMENDMENT: the AC as written also required a shipped id COLLISION. No genuine overlap exists between a 1910 American cookbook and the Portuguese examples, and manufacturing one would mean giving a Farmer recipe a Portuguese id — the exact contrivance a real-source corpus exists to avoid. Collision remains proven by TestCollectionCollision (synthetic, controlled). Raised with Daniel rather than silently dropped.
+- AC-3.2: PASS — 2026-08-03 (`make validate` walks both collections: "collection rcp-examples (6 documents)" + "collection boston-1910 (3 documents)"; 2 honest warnings for cold meat and cracker crumbs, which have no registry entries — that is the gap ledger's job, not an error)
+- AC-3.3: PASS — 2026-08-03 (corpus-provenance-check.py: no published document names a source unique to the private collection. INVERTED PROOF: planting a real private-collection source label into a published document fails the check naming it; restored green. Wired into accept.sh — 37 checks now)
+- AC-3.4: PASS — 2026-08-03 (media attestation + privacy checks green)
+- LAYER 1 GATE: GREEN — 2026-08-03 (validate, conformance 85, calculus 25, accept 37/37, Go tests all packages; vectors byte-unchanged). **TAG OPPORTUNITY.**
+
+Why this corpus earns its place: the 1910 text contains the roux problem verbatim — "Butter and flour are usually cooked together for thickening sauces. When not browned, it is called roux; when browned, brown roux" — which is both the FEAT-REG-006 motivating case and a stage fork (DECISIONS #28) from a citable source. Scalloped Eggs lists "1 pint White Sauce I" as an INGREDIENT, the cross-document reference that had nowhere to resolve before v0.4. White Sauce I/II are a variant family differing in one quantity, whose book method is literally "Make same as Thin White Sauce" — a method by reference.
+
+FINDING for Phase 5: the White Sauce family varies by CONSISTENCY (2 vs 3 tablespoons flour), an axis absent from the enum (equipment/technique/region/season/scale/other). It currently needs `other` + variant_label. Real evidence from a real corpus that the axis list may want a consistency or texture axis — to be weighed in Phase 5 rather than silently patched.

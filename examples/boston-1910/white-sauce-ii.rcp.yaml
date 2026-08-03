@@ -1,0 +1,73 @@
+rcp: 1
+id: white-sauce-ii
+kind: component
+lang: en
+name:
+  en: White Sauce II
+version: 1
+description:
+  en: >-
+    The same preparation as White Sauce I with one quantity changed — three
+    tablespoons of flour instead of two. The book's own method for it is a
+    reference, not a procedure: "Make same as Thin White Sauce."
+taxonomy:
+  category: sauce
+lineage:
+  family: farmer-white-sauce
+  variant_of: white-sauce-i
+  variant_label:
+    en: Thicker — 3 tablespoons flour to 1 cup milk
+ingredients:
+  - id: manteiga
+    item: ingredient.fat.butter
+    amount: { value: 2, unit: tbsp }
+    roles: [fat]
+    raw: 2 tablespoons butter
+  - id: farinha
+    item: ingredient.flour.wheat.plain
+    amount: { value: 3, unit: tbsp }
+    roles: [flour, thickener]
+    raw: 3 tablespoons flour
+  - id: leite
+    item: ingredient.dairy.milk.whole
+    amount: { value: 1, unit: cup }
+    roles: [hydration]
+    raw: 1 cup milk
+  - id: sal
+    item: ingredient.salt.sea.fine
+    amount: { value: 0.25, unit: tsp }
+    roles: [salt]
+    raw: 1/4 teaspoon salt
+steps:
+  - id: derreter
+    primitive: { id: primitive.heat, v: 1 }
+    uses: [manteiga]
+    title:
+      en: Put butter in saucepan, stir until melted and bubbling
+  - id: juntar-farinha
+    primitive: { id: primitive.incorporate, v: 1 }
+    after: [derreter]
+    uses: [farinha, sal]
+    title:
+      en: Add flour mixed with seasonings, and stir until thoroughly blended
+    produces: roux
+  - id: juntar-leite
+    primitive: { id: primitive.emulsify, v: 1 }
+    after: [juntar-farinha]
+    uses: [roux, leite]
+    title:
+      en: Pour on gradually the milk, beating until smooth and glossy
+provenance:
+  confidence: HIGH
+  status: published
+  sources:
+    - label: Farmer, The Boston Cooking-School Cook Book, rev. ed. 1910, "Fish and Meat Sauces"
+      url: https://www.gutenberg.org/ebooks/65061
+      type: book
+  notes:
+    en: >-
+      The steps are written out here rather than left as "make same as", because
+      a document must render standalone offline — variants are self-contained
+      snapshots, never computed diffs.
+licence:
+  text: Public domain (source work, author died 1915); transcription CC BY 4.0.

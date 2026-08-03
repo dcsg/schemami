@@ -20,10 +20,11 @@ check "AC-TOOL-001-2 viewer page self-contained: hash CSP, no external refs" sh 
 check "AC-PR-003-2  no prose-parked metadata; hat-mapping notes present" python3 tools/rcplint/scripts/prose-parking.py
 check "AC-I18N-001-1 every used taxonomy slug has a pt-PT term" python3 tools/rcplint/scripts/i18n-coverage.py
 check "DEP-FREEZE    dependency surface exact (2 pinned viewer deps; go.mod unchanged)" sh -c "python3 -c \"import json; p=json.load(open('tools/viewer/package.json')); d=p.get('dependencies',{}); assert d=={'yaml':'2.9.0','@cfworker/json-schema':'4.1.1'}, d\" && python3 -c \"t=open('tools/rcplint/go.mod').read(); assert t.count('github.com/santhosh-tekuri/jsonschema/v6')>=1 and t.count('gopkg.in/yaml.v3')>=1; import re; reqs=re.findall(r'^\t[a-z][^ ]+ v', t, re.M); assert len(reqs)==2, reqs\""
+check "AC-3.3       published corpus names no source unique to the private collection" python3 tools/rcplint/scripts/corpus-provenance-check.py .
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
 
 echo "── Shape + composition (FR-VAL-001, FR-PROF-001/002/003) ──"
-check "AC-VAL-001-1  make validate green: 6 docs, 60 entries, L1+L2+CUE" make validate
+check "AC-VAL-001-1  make validate green: 2 collections, 9 docs, L1+L2+CUE" make validate
 check "AC-PROF-001-1 alentejano passes core ∧ bread (hardened)" sh -c "cd tools/rcplint && go run . validate ../.. | grep -q 'pao-alentejano (core ∧ bread, maturity: hardened)'"
 check "AC-PROF-002-1 nata's embedded BREAD component validated per-component" sh -c "cd tools/rcplint && go run . validate ../.. | grep -q 'massa-folhada (component, bread profile'"
 check "AC-PROF-003-1 draft passes labelled, never silent" sh -c "cd tools/rcplint && go run . validate ../.. | grep -q 'negroni (core ∧ drink, maturity: draft)'"
