@@ -72,6 +72,7 @@ fragments captured for PRD-004.)*
 
 | Feature | Gate |
 |---|---|
+| "Fornada speaks RCP" — export the real Fornada recipes (padaria.recipes blend/agua/mv/mm/sal → core ∧ bread; other_recipes prose → ingestion; bake_log → session documents per #7) and migrate the app to consume the protocol (Go API imports the reference Calculus; decode types = FEAT-CORE-004) | Daniel 2026-08-03: deliberately gated on a MORE STABLE protocol version — the strongest consumer test, run it when the core stops moving |
 | FEAT-PROF-006 Preserve/drink/coffee hardened | sequenced by dogfood demand |
 | FEAT-SUB-002 Pack/shelf projection format | AT-2/AT-4 expansion evidence |
 
