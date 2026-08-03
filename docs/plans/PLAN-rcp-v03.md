@@ -34,7 +34,7 @@ phases:
 
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
-| 1     | pending | 0/5 | — |
+| 1     | done — AWAITING CHECKPOINT | 1/5 | 2026-08-03 |
 | 2     | pending (BLOCKED until checkpoint green) | 0/5 | — |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
@@ -278,3 +278,11 @@ None — full coverage (model.mmd reference-only).
 ## Verify evidence
 
 <!-- `AC-N.M: PASS — <date>` lines appended as gates pass. Checkpoint entries: `CHECKPOINT: CALC SPEC GREEN — <date>`; media outcome: `MEDIA ASSET: PASS|FAIL|DEFERRED — <date>`. -->
+
+Phase 1:
+- AC-1.1: PASS — 2026-08-03 (10 fn sections, all four sub-headings each)
+- AC-1.2: PASS — 2026-08-03 (6 edge classes, fenced + parseable)
+- AC-1.3: PASS — 2026-08-03
+- AC-1.4: PASS — 2026-08-03 (CLAUDE.md + project-context list calculus/ as normative)
+- AC-1.5: PASS — 2026-08-03
+- CHECKPOINT NOTE for Daniel: resolveBases DEFINES include_components decomposition — the clamp refused these as unresolvable; no pinned parity case depends on the old behaviour, but it is a semantic upgrade flagged in the SPEC's Edges for your ruling.

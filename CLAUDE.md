@@ -21,6 +21,9 @@ lives on that branch.
 
 - `schema/rcp-core-v1.schema.json` — the executable core schema
   (JSON Schema 2020-12). The current source of truth for the protocol shape.
+- `calculus/` — the Recipe Calculus: `SPEC.md` (normative function
+  semantics) + `vectors/` (cross-stack conformance vectors). NORMATIVE —
+  ships with the protocol (engineering obligation #1; SPEC-003).
 - `examples/*.rcp.yaml` — six validated example recipes in two files (Pão
   Alentejano; a cocktail, sauerkraut, pastéis de nata, and a ganache + the
   brownie that references it). Every schema change must keep these

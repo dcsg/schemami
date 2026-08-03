@@ -45,3 +45,11 @@ is a first-class boundary.
 ---
 
 *Initialized by edikt: 2026-08-02*
+
+
+## Normative surface (updated 2026-08-03, SPEC-003)
+
+Normative: `schema/` (core + profiles + VERSIONING.md + constraints),
+`registry/`, `i18n/`, `calculus/` (SPEC.md + vectors — the Recipe
+Calculus, engineering obligation #1). Informative: `tools/`, `Makefile`,
+docs. The two-surface split is DS-PR-001; calculus/ joined in v0.3.
