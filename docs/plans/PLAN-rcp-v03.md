@@ -34,8 +34,8 @@ phases:
 
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
-| 1     | done — AWAITING CHECKPOINT | 1/5 | 2026-08-03 |
-| 2     | pending (BLOCKED until checkpoint green) | 0/5 | — |
+| 1     | done | 1/5 | 2026-08-03 |
+| 2     | done | 1/5 | 2026-08-03 |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
@@ -274,6 +274,16 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 ## Deferred Artifacts
 
 None — full coverage (model.mmd reference-only).
+
+CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 2:
+- AC-2.1: PASS — 2026-08-03 (all 8 pinned clamp cases green through calc — clamp_test.go retained verbatim as the CLI-level parity suite; WE-ENFORCE-1/WE-MINBATCH-1 assert authored pt/en reason strings; slight deviation from the letter: parity lives in the unchanged clamp_test.go + calc WE tests rather than a renamed parity_test.go — stronger evidence, recorded)
+- AC-2.2: PASS — 2026-08-03 (clamp.go deleted; subcommand routes through calc; accept.sh refusal checks untouched and green)
+- AC-2.3: PASS — 2026-08-03 (TestCalcPurity structural; 8 WE-named verbatim table tests incl. R-BASIS-2 decomposition)
+- AC-2.4: PASS — 2026-08-03 (basis resolution single-sourced in calc; completeness gate forced resolvedRatio/basisDeclared unexported — export surface == SPEC surface)
+- AC-2.5: PASS — 2026-08-03 (TestSpecCompleteness: every exported calc func has its `## fn:` section — the gate caught two violations before they shipped)
+- AC-2.6: PASS — 2026-08-03 (make conformance green — facts CUE payload pinned; DEP-FREEZE check live in accept.sh)
 
 ## Checkpoint notes (project-side — kept OUT of the public SPEC per Daniel's ruling)
 

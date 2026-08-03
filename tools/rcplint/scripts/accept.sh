@@ -19,6 +19,7 @@ check "AC-PROF-004-1 dish profile exists at hardened maturity" sh -c "python3 -c
 check "AC-TOOL-001-2 viewer page self-contained: hash CSP, no external refs" sh -c "f=tools/viewer/dist/index.html; test -f \$f && grep -q Content-Security-Policy \$f && ! grep -q \"'self'\" \$f && ! grep -qE '(src|href)=\"https?://' \$f"
 check "AC-PR-003-2  no prose-parked metadata; hat-mapping notes present" python3 tools/rcplint/scripts/prose-parking.py
 check "AC-I18N-001-1 every used taxonomy slug has a pt-PT term" python3 tools/rcplint/scripts/i18n-coverage.py
+check "DEP-FREEZE    dependency surface exact (2 pinned viewer deps; go.mod unchanged)" sh -c "python3 -c \"import json; p=json.load(open('tools/viewer/package.json')); d=p.get('dependencies',{}); assert d=={'yaml':'2.9.0','@cfworker/json-schema':'4.1.1'}, d\" && python3 -c \"t=open('tools/rcplint/go.mod').read(); assert t.count('github.com/santhosh-tekuri/jsonschema/v6')>=1 and t.count('gopkg.in/yaml.v3')>=1; import re; reqs=re.findall(r'^\t[a-z][^ ]+ v', t, re.M); assert len(reqs)==2, reqs\""
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
 
 echo "── Shape + composition (FR-VAL-001, FR-PROF-001/002/003) ──"
