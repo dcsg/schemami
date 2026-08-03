@@ -104,13 +104,13 @@ phases:
     statement: Attestation green AND provably fails on both planted cases (binary + base64) — AC-TOOL-002-2 gate.
     verify: bash tools/rcplint/scripts/accept.sh | grep -qi attestation
   - id: AC-7.3
-    statement: 'Render tests: roles at doc+step level, failure text-labelled, alt policy, absent-state for placeholder AND unmatched, basename matching, revocation unit test.'
+    statement: 'Render tests: roles at doc+step level across ALL FOUR media types (img/video/audio elements per type), failure text-labelled, alt policy, absent-state for placeholder AND unmatched, basename matching, revocation unit test'
     verify: cd tools/viewer && mise exec -- bun test
   - id: AC-7.4
     statement: Daniel's photo outcome recorded (PASS/FAIL/DEFERRED — operational).
     verify: 'grep -q ''AC-7.4: PASS'' docs/plans/PLAN-rcp-v03.md'
   - id: AC-7.5
-    statement: CSP exact-string assertion live in accept.sh; bundle < 500 KB; file-input ingress works without drag.
+    statement: 'CSP exact-string assertion live in accept.sh (img-src AND media-src exactly data: blob:); bundle < 500 KB; file-input ingress works without drag'
     verify: bash tools/rcplint/scripts/accept.sh | grep -qi CSP && test $(stat -f%z tools/viewer/dist/index.html) -lt 512000 && cd tools/viewer && mise exec -- bun test -t ingress
 - id: 8
   classification: testable
