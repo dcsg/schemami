@@ -252,6 +252,20 @@ strawman proposal is still a proposal.
     industry terminology) and three rounds of Daniel's refinement.
     Changes to the vocabulary require a new decision entry.
 
+27. **Book-derived media: private-local carve-out** (2026-08-03,
+    amends the #11/SP-004 media boundary). Media derived from source
+    books (page photographs, crops of their step photography) MAY exist
+    in the gitignored private collection (`private/collection/media/`)
+    for Daniel's personal use only — format-shifting of books he owns.
+    ABSOLUTE and mechanically enforced remainder: such media never
+    enters commits, dist, artifacts, conformance vectors, or any
+    published/shared surface — the media attestation (binary + base64
+    text scan) enforces the repo side; the never-serialized rule keeps
+    it out of anything the viewer persists. Personal photos of Daniel's
+    own cooking remain the only media class eligible beyond the local
+    boundary. Supersedes the stricter never-reproduced reading recorded
+    in FEAT-TOOL-002 (2026-08-03, same day).
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
