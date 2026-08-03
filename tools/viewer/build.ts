@@ -63,7 +63,8 @@ const csp = [
   "default-src 'none'",
   `script-src '${hash(js)}'`,
   `style-src '${hash(css)}'`,
-  "img-src data:",
+  "img-src data: blob:",
+  "media-src data: blob:",
 ].join("; ");
 
 // 4. Single-file page. charset FIRST; semantic structure; aria-live verdicts.
@@ -81,7 +82,7 @@ const html = `<!doctype html>
 <h1>RCP viewer</h1>
 <p>Valide e leia um documento RCP — tudo corre localmente, nada é enviado. A caixa aceita colar (teclado) ou arrastar o ficheiro.</p>
 <label for="input">Documento .rcp.yaml ou JSON</label>
-<div class="toolbar"><button id="load-example" type="button">Carregar exemplo (torta de três camadas)</button></div>
+<div class="toolbar"><button id="load-example" type="button">Carregar exemplo (torta de três camadas)</button>\n<label class="file-label" for="file-input">Ficheiros (documento e/ou media)</label>\n<input id="file-input" type="file" multiple></div>
 <textarea id="input" spellcheck="false" autocomplete="off"></textarea>
 <p id="busy" hidden>a validar…</p>
 <div id="verdicts" aria-live="polite"></div>

@@ -3,380 +3,727 @@
   "$id": "https://paodeportugal.pt/schema/rcp/1/core.schema.json",
   "title": "RCP Core v1",
   "description": "Universal recipe protocol — core layer. Category profiles extend this additively via allOf; a profile may add fields and tighten constraints but may never remove or redefine a core field, so a core-only consumer can always render any RCP document correctly if incompletely.",
-
   "$ref": "#/$defs/recipe",
-  "required": ["rcp"],
-
+  "required": [
+    "rcp"
+  ],
   "$defs": {
     "recipe": {
       "type": "object",
-      "required": ["id", "kind", "name"],
-      "anyOf": [{ "required": ["ingredients"] }, { "required": ["components"] }],
+      "required": [
+        "id",
+        "kind",
+        "name"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "ingredients"
+          ]
+        },
+        {
+          "required": [
+            "components"
+          ]
+        }
+      ],
       "unevaluatedProperties": false,
       "properties": {
-    "rcp": { "const": 1, "description": "Protocol major version. Required at the document root; omitted on nested components." },
-    "id": { "$ref": "#/$defs/slug" },
-    "kind": { "$ref": "#/$defs/kind" },
-    "lang": { "type": "string", "default": "pt-PT" },
-    "name": { "$ref": "#/$defs/text" },
-    "description": { "$ref": "#/$defs/text" },
-
-    "taxonomy": {
-      "type": "object",
-      "properties": {
-        "category": { "$ref": "#/$defs/slug" },
-        "subcategory": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-        "difficulty": {
+        "rcp": {
+          "const": 1,
+          "description": "Protocol major version. Required at the document root; omitted on nested components."
+        },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "kind": {
+          "$ref": "#/$defs/kind"
+        },
+        "lang": {
+          "type": "string",
+          "default": "pt-PT"
+        },
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "description": {
+          "$ref": "#/$defs/text"
+        },
+        "taxonomy": {
+          "type": "object",
+          "properties": {
+            "category": {
+              "$ref": "#/$defs/slug"
+            },
+            "subcategory": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            },
+            "difficulty": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Asserted facet (DECISIONS #10; PRD-002 OQ-3): integer 1..5. Source books using coarser scales (1–3 chef hats) map in per-ingest; the mapping call is recorded in provenance notes, never guessed silently."
+            }
+          },
+          "additionalProperties": false
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "origin": {
+          "type": "object",
+          "properties": {
+            "country": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}$"
+            },
+            "region": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "bases": {
+          "type": "object",
+          "description": "Named quantities that ratios are expressed relative to. This is what generalizes baker's percentage to every domain.",
+          "additionalProperties": {
+            "$ref": "#/$defs/basis"
+          }
+        },
+        "scaling": {
+          "type": "object",
+          "properties": {
+            "pivot": {
+              "type": "string",
+              "description": "Name of a declared basis."
+            },
+            "mode": {
+              "enum": [
+                "absolute",
+                "ratio-first"
+              ],
+              "default": "absolute"
+            },
+            "default_yield": {
+              "$ref": "#/$defs/yield"
+            }
+          },
+          "additionalProperties": false
+        },
+        "ingredients": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ingredient"
+          }
+        },
+        "components": {
+          "type": "array",
+          "description": "Sub-recipes whose output is an ingredient of the parent. May be of a different `kind` than the parent — this is why the core must be shared across profiles. Each entry is either an INLINE recipe (one-off element) or a REFERENCE to any published recipe by id (shared building block: ganache, stock, syrup). There is no special 'base recipe' type — being a base is curation (packs, kind: component), not essence.",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/recipe"
+              },
+              {
+                "$ref": "#/$defs/componentRef"
+              }
+            ]
+          }
+        },
+        "maintenance": {
+          "type": "boolean",
+          "description": "Component-level: a recurring culture (massa-mãe, SCOBY, lievito madre) that survives the recipe rather than being consumed by it."
+        },
+        "min_batch": {
+          "$ref": "#/$defs/quantity",
+          "description": "Component-level: minimum viable batch — scaling the parent may not shrink this component below it (you cannot build 3 g of levain)."
+        },
+        "feed_ratio": {
+          "type": "string",
+          "pattern": "^\\d+(\\.\\d+)?(:\\d+(\\.\\d+)?)+$"
+        },
+        "carried_over": {
+          "type": "boolean",
+          "description": "Component-level: backslopped — the output of batch N-1 is the input of batch N (massa velha, kombucha starter liquid)."
+        },
+        "derived": {
+          "type": "array",
+          "description": "Values the app computes rather than the author states: final ABV from components + dilution, extraction yield from dose/yield/TDS, OG/FG to ABV.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "compute"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "compute": {
+                "enum": [
+                  "abv",
+                  "extraction-yield",
+                  "hydration",
+                  "total-mass",
+                  "cost",
+                  "nutrition"
+                ]
+              },
+              "from": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/step"
+          }
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/equipmentRef"
+          }
+        },
+        "options": {
+          "type": "array",
+          "description": "Author-declared choices that reshape the method (autolise on/off, double vs single fermentation). Optional steps are NOT deletions — each option selects between fully-authored alternative paths via step guards, so every path is reviewed and testable. Downstream steps anchor on produced intermediates, not step ids, so whichever path is active satisfies the DAG.",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "kind"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/slug"
+              },
+              "kind": {
+                "enum": [
+                  "toggle",
+                  "choice"
+                ]
+              },
+              "default": {
+                "type": [
+                  "boolean",
+                  "string"
+                ]
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/slug"
+                }
+              },
+              "label": {
+                "$ref": "#/$defs/text"
+              },
+              "note": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "substitutions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/substitution"
+          }
+        },
+        "execution_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/executionMode"
+          }
+        },
+        "serving": {
+          "type": "object"
+        },
+        "times": {
+          "description": "Recipe-level time metadata (DS-PR-005; research 04:79-80). `active` (hands-on) and `total` are deliberately separate fields — same total, opposite effort (stir-fry vs risotto). Each value is a duration window; single book values encode as `target`. Closed object: a new phase name is a schema change, not authoring freedom.",
+          "type": "object",
+          "properties": {
+            "active": {
+              "$ref": "#/$defs/duration"
+            },
+            "total": {
+              "$ref": "#/$defs/duration"
+            },
+            "prep": {
+              "$ref": "#/$defs/duration"
+            },
+            "cook": {
+              "$ref": "#/$defs/duration"
+            },
+            "chill": {
+              "$ref": "#/$defs/duration"
+            },
+            "rest": {
+              "$ref": "#/$defs/duration"
+            }
+          },
+          "additionalProperties": false
+        },
+        "storage": {
+          "description": "Storage guidance (DS-PR-007). An array because book pages routinely give multiple conditions (days airtight at room, months frozen). `where` is a closed enum; free-text nuance goes in `container`/`note`.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "where"
+            ],
+            "properties": {
+              "where": {
+                "enum": [
+                  "room",
+                  "refrigerator",
+                  "freezer"
+                ]
+              },
+              "container": {
+                "$ref": "#/$defs/text"
+              },
+              "duration": {
+                "$ref": "#/$defs/duration"
+              },
+              "note": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
+        },
+        "licence": {
+          "type": "object",
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "media": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "version": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 5,
-          "description": "Asserted facet (DECISIONS #10; PRD-002 OQ-3): integer 1..5. Source books using coarser scales (1–3 chef hats) map in per-ingest; the mapping call is recorded in provenance notes, never guessed silently."
+          "description": "Revision number of THIS document, pinned by componentRef.version at reference sites. HARDENED (P8 triage): componentRef always pinned a version, but no field existed for the target to declare one — the gap the brownie→ganache defect exposed."
+        },
+        "lineage": {
+          "type": "object",
+          "properties": {
+            "forked_from": {
+              "$ref": "#/$defs/slug"
+            },
+            "family": {
+              "$ref": "#/$defs/slug"
+            },
+            "variant_of": {
+              "$ref": "#/$defs/slug"
+            },
+            "variant_label": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "additionalProperties": false
+        },
+        "profile": {
+          "type": "object",
+          "description": "Category-specific extension block. Validated by the profile schema selected by `kind`."
+        },
+        "import": {
+          "$ref": "#/$defs/import"
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/media"
+          },
+          "description": "Document-level media (result shots, plating, the finished dish). Steps carry their own step-level media; this list is for media about the recipe as a whole."
         }
       },
-      "additionalProperties": false
-    },
-    "tags": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-
-    "origin": {
-      "type": "object",
-      "properties": {
-        "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
-        "region": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-
-    "bases": {
-      "type": "object",
-      "description": "Named quantities that ratios are expressed relative to. This is what generalizes baker's percentage to every domain.",
-      "additionalProperties": { "$ref": "#/$defs/basis" }
-    },
-
-    "scaling": {
-      "type": "object",
-      "properties": {
-        "pivot": { "type": "string", "description": "Name of a declared basis." },
-        "mode": { "enum": ["absolute", "ratio-first"], "default": "absolute" },
-        "default_yield": { "$ref": "#/$defs/yield" }
-      },
-      "additionalProperties": false
-    },
-
-    "ingredients": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/ingredient" }
-    },
-    "components": {
-      "type": "array",
-      "description": "Sub-recipes whose output is an ingredient of the parent. May be of a different `kind` than the parent — this is why the core must be shared across profiles. Each entry is either an INLINE recipe (one-off element) or a REFERENCE to any published recipe by id (shared building block: ganache, stock, syrup). There is no special 'base recipe' type — being a base is curation (packs, kind: component), not essence.",
-      "items": {
-        "oneOf": [
-          { "$ref": "#/$defs/recipe" },
-          { "$ref": "#/$defs/componentRef" }
-        ]
+      "patternProperties": {
+        "^x-": {
+          "description": "Vendor extension bucket. Consumers MUST ignore and MUST preserve unknown x- fields on round-trip."
+        }
       }
     },
-    "maintenance": {
-      "type": "boolean",
-      "description": "Component-level: a recurring culture (massa-mãe, SCOBY, lievito madre) that survives the recipe rather than being consumed by it."
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
     },
-    "min_batch": {
-      "$ref": "#/$defs/quantity",
-      "description": "Component-level: minimum viable batch — scaling the parent may not shrink this component below it (you cannot build 3 g of levain)."
-    },
-    "feed_ratio": { "type": "string", "pattern": "^\\d+(\\.\\d+)?(:\\d+(\\.\\d+)?)+$" },
-    "carried_over": {
-      "type": "boolean",
-      "description": "Component-level: backslopped — the output of batch N-1 is the input of batch N (massa velha, kombucha starter liquid)."
-    },
-    "derived": {
-      "type": "array",
-      "description": "Values the app computes rather than the author states: final ABV from components + dilution, extraction yield from dose/yield/TDS, OG/FG to ABV.",
-      "items": {
-        "type": "object",
-        "required": ["id", "compute"],
-        "properties": {
-          "id": { "$ref": "#/$defs/slug" },
-          "compute": { "enum": ["abv", "extraction-yield", "hydration", "total-mass", "cost", "nutrition"] },
-          "from": { "type": "array", "items": { "type": "string" } }
-        },
-        "additionalProperties": false
-      }
-    },
-    "steps": { "type": "array", "items": { "$ref": "#/$defs/step" } },
-    "equipment": { "type": "array", "items": { "$ref": "#/$defs/equipmentRef" } },
-    "options": {
-      "type": "array",
-      "description": "Author-declared choices that reshape the method (autolise on/off, double vs single fermentation). Optional steps are NOT deletions — each option selects between fully-authored alternative paths via step guards, so every path is reviewed and testable. Downstream steps anchor on produced intermediates, not step ids, so whichever path is active satisfies the DAG.",
-      "items": {
-        "type": "object",
-        "required": ["id", "kind"],
-        "properties": {
-          "id": { "$ref": "#/$defs/slug" },
-          "kind": { "enum": ["toggle", "choice"] },
-          "default": { "type": ["boolean", "string"] },
-          "choices": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-          "label": { "$ref": "#/$defs/text" },
-          "note": { "$ref": "#/$defs/text" }
-        },
-        "additionalProperties": false
-      }
-    },
-    "substitutions": { "type": "array", "items": { "$ref": "#/$defs/substitution" } },
-    "execution_modes": { "type": "array", "items": { "$ref": "#/$defs/executionMode" } },
-    "serving": { "type": "object" },
-
-    "times": {
-      "description": "Recipe-level time metadata (DS-PR-005; research 04:79-80). `active` (hands-on) and `total` are deliberately separate fields — same total, opposite effort (stir-fry vs risotto). Each value is a duration window; single book values encode as `target`. Closed object: a new phase name is a schema change, not authoring freedom.",
-      "type": "object",
-      "properties": {
-        "active": { "$ref": "#/$defs/duration" },
-        "total": { "$ref": "#/$defs/duration" },
-        "prep": { "$ref": "#/$defs/duration" },
-        "cook": { "$ref": "#/$defs/duration" },
-        "chill": { "$ref": "#/$defs/duration" },
-        "rest": { "$ref": "#/$defs/duration" }
-      },
-      "additionalProperties": false
-    },
-
-    "storage": {
-      "description": "Storage guidance (DS-PR-007). An array because book pages routinely give multiple conditions (days airtight at room, months frozen). `where` is a closed enum; free-text nuance goes in `container`/`note`.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["where"],
-        "properties": {
-          "where": { "enum": ["room", "refrigerator", "freezer"] },
-          "container": { "$ref": "#/$defs/text" },
-          "duration": { "$ref": "#/$defs/duration" },
-          "note": { "$ref": "#/$defs/text" }
-        },
-        "additionalProperties": false
-      }
-    },
-
-    "provenance": { "$ref": "#/$defs/provenance" },
-    "licence": {
-      "type": "object",
-      "properties": {
-        "text": { "type": "string" },
-        "media": { "type": "string" }
-      },
-      "additionalProperties": false
-    },
-    "version": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "Revision number of THIS document, pinned by componentRef.version at reference sites. HARDENED (P8 triage): componentRef always pinned a version, but no field existed for the target to declare one — the gap the brownie→ganache defect exposed."
-    },
-    "lineage": {
-      "type": "object",
-      "properties": {
-        "forked_from": { "$ref": "#/$defs/slug" },
-        "family": { "$ref": "#/$defs/slug" },
-        "variant_of": { "$ref": "#/$defs/slug" },
-        "variant_label": { "$ref": "#/$defs/text" }
-      },
-      "additionalProperties": false
-    },
-    "profile": {
-      "type": "object",
-      "description": "Category-specific extension block. Validated by the profile schema selected by `kind`."
-    },
-    "import": { "$ref": "#/$defs/import" }
-  },
-
-  "patternProperties": {
-    "^x-": {
-      "description": "Vendor extension bucket. Consumers MUST ignore and MUST preserve unknown x- fields on round-trip."
-    }
-  }
-    },
-
-    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
-
     "componentRef": {
       "description": "A component included by reference to another recipe document. Rules: (1) only `published` recipes may be referenced — a draft ref is a validation warning; (2) `version` pins the referenced revision, so editing the ganache never silently changes every brownie; (3) at publish/bundle time the ref is RESOLVED and the component embedded (SPEC-006: delivered snapshots are self-contained for offline), keeping ref+version as lineage; (4) the validator rejects reference cycles.",
       "type": "object",
-      "required": ["id", "ref"],
+      "required": [
+        "id",
+        "ref"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/slug", "description": "Local alias used by `ingredients[].component` and step `uses`/`after` in THIS recipe." },
-        "ref": { "$ref": "#/$defs/slug", "description": "Id of the referenced recipe document." },
-        "version": { "type": "integer", "minimum": 1, "description": "Pinned revision of the referenced recipe. Omit only in authoring; publish resolves and pins." },
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "Local alias used by `ingredients[].component` and step `uses`/`after` in THIS recipe."
+        },
+        "ref": {
+          "$ref": "#/$defs/slug",
+          "description": "Id of the referenced recipe document."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pinned revision of the referenced recipe. Omit only in authoring; publish resolves and pins."
+        },
         "draw": {
           "$ref": "#/$defs/quantity",
           "description": "How much of the referenced recipe's yield this parent consumes ('makes 500 g, use 200 g'). The scaler sizes the component batch from this, respecting the child's min_batch."
         },
         "overrides": {
           "type": "array",
-          "items": { "$ref": "#/$defs/substitution" },
+          "items": {
+            "$ref": "#/$defs/substitution"
+          },
           "description": "Reference-site adjustments ('this brownie's ganache uses 70% chocolate') expressed with the same substitution ops, scoped to the referenced component. Large divergence should fork a variant instead — same promotion rule as D8c."
         },
-        "note": { "$ref": "#/$defs/text" }
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "text": {
       "description": "Prose. Either a bare string in the document's `lang`, or a locale map. Prose is permitted ONLY where the sole consumer is a human eye — anything the renderer, scaler, substitution engine or safety checker reads must be an enum or a registry reference.",
       "oneOf": [
-        { "type": "string" },
+        {
+          "type": "string"
+        },
         {
           "type": "object",
           "minProperties": 1,
-          "propertyNames": { "pattern": "^[a-z]{2}(-[A-Z]{2})?$" },
-          "additionalProperties": { "type": "string" }
+          "propertyNames": {
+            "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       ]
     },
-
     "kind": {
       "description": "CLOSED ENUM. Selects the profile schema. Adding a category is a new profile file, not a change to core.",
-      "enum": ["bread", "pastry", "ferment", "preserve", "drink", "coffee", "dish", "component"]
+      "enum": [
+        "bread",
+        "pastry",
+        "ferment",
+        "preserve",
+        "drink",
+        "coffee",
+        "dish",
+        "component"
+      ]
     },
-
     "role": {
       "description": "CLOSED ENUM. The functional role an ingredient plays. Substitution matches on roles, not names — which is why egg (binder + leavener + emulsifier + moisture + colourant) has no drop-in replacement.",
       "enum": [
-        "flour", "hydration", "leaven", "salt", "fat", "sweetener", "acid",
-        "binder", "emulsifier", "thickener", "gelling", "aromatic", "spirit",
-        "bitter", "aromatised-wine", "tannin", "substrate", "preservative",
-        "colourant", "enzyme", "tenderiser", "lamination", "flavour",
-        "fermentation-control", "dilution", "inclusion", "coating"
+        "flour",
+        "hydration",
+        "leaven",
+        "salt",
+        "fat",
+        "sweetener",
+        "acid",
+        "binder",
+        "emulsifier",
+        "thickener",
+        "gelling",
+        "aromatic",
+        "spirit",
+        "bitter",
+        "aromatised-wine",
+        "tannin",
+        "substrate",
+        "preservative",
+        "colourant",
+        "enzyme",
+        "tenderiser",
+        "lamination",
+        "flavour",
+        "fermentation-control",
+        "dilution",
+        "inclusion",
+        "coating"
       ]
     },
-
     "quantity": {
       "description": "TAGGED UNION. A bare number cannot honestly hold every domain's quantities.",
       "oneOf": [
         {
           "title": "fixed",
           "type": "object",
-          "required": ["value", "unit"],
+          "required": [
+            "value",
+            "unit"
+          ],
           "properties": {
-            "value": { "type": "number", "exclusiveMinimum": 0 },
-            "unit": { "$ref": "#/$defs/unit" },
-            "scaling": { "$ref": "#/$defs/scalingBehaviour" }
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "$ref": "#/$defs/unit"
+            },
+            "scaling": {
+              "$ref": "#/$defs/scalingBehaviour"
+            }
           },
           "additionalProperties": false
         },
         {
           "title": "ratio",
           "type": "object",
-          "required": ["ratio", "of"],
+          "required": [
+            "ratio",
+            "of"
+          ],
           "properties": {
-            "ratio": { "type": "number", "exclusiveMinimum": 0 },
-            "of": { "type": "string", "description": "Name of a declared basis." },
-            "unit": { "$ref": "#/$defs/unit" }
+            "ratio": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "of": {
+              "type": "string",
+              "description": "Name of a declared basis."
+            },
+            "unit": {
+              "$ref": "#/$defs/unit"
+            }
           },
           "additionalProperties": false
         },
         {
           "title": "parts",
           "type": "object",
-          "required": ["parts"],
-          "properties": { "parts": { "type": "number", "exclusiveMinimum": 0 } },
+          "required": [
+            "parts"
+          ],
+          "properties": {
+            "parts": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            }
+          },
           "additionalProperties": false,
           "description": "Dimensionless until instantiated at a chosen target. A Negroni is genuinely 1:1:1 with no absolute quantities."
         },
         {
           "title": "range",
           "type": "object",
-          "required": ["min", "max", "unit"],
+          "required": [
+            "min",
+            "max",
+            "unit"
+          ],
           "properties": {
-            "min": { "type": "number" },
-            "max": { "type": "number" },
-            "unit": { "$ref": "#/$defs/unit" },
-            "scaling": { "$ref": "#/$defs/scalingBehaviour" }
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            },
+            "unit": {
+              "$ref": "#/$defs/unit"
+            },
+            "scaling": {
+              "$ref": "#/$defs/scalingBehaviour"
+            }
           },
           "additionalProperties": false
         },
         {
           "title": "open",
           "type": "object",
-          "required": ["variant"],
+          "required": [
+            "variant"
+          ],
           "properties": {
             "variant": {
-              "enum": ["to_taste", "as_needed", "to_consistency"],
+              "enum": [
+                "to_taste",
+                "as_needed",
+                "to_consistency"
+              ],
               "description": "Never scales. `to_consistency` (choux egg) additionally carries a non-binding guide and a sensory endpoint, because the true amount is not knowable in advance."
             },
-            "guide": { "$ref": "#/$defs/quantity" },
-            "until": { "type": "array", "items": { "$ref": "#/$defs/endpoint" } }
+            "guide": {
+              "$ref": "#/$defs/quantity"
+            },
+            "until": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/endpoint"
+              }
+            }
           },
           "additionalProperties": false
         }
       ]
     },
-
     "unit": {
       "description": "TWO TIERS. `convertible` units map to UCUM and support exact arithmetic. `discrete` units are only ever multiplied, never converted — and the list is registry-backed, not frozen, because a closed unit enum (Crouton's mistake) cannot add a regional unit without a client update. Weight/volume conversion is per-ingredient via catalog density, never assumed 1 g = 1 ml.",
       "type": "string",
       "anyOf": [
-        { "enum": ["g", "kg", "ml", "l", "C", "F", "cup", "tbsp", "tsp", "floz", "oz", "lb"] },
-        { "$ref": "#/$defs/slug" }
+        {
+          "enum": [
+            "g",
+            "kg",
+            "ml",
+            "l",
+            "C",
+            "F",
+            "cup",
+            "tbsp",
+            "tsp",
+            "floz",
+            "oz",
+            "lb"
+          ]
+        },
+        {
+          "$ref": "#/$defs/slug"
+        }
       ]
     },
-
     "scalingBehaviour": {
       "description": "CLOSED ENUM. A single global multiplier is wrong in every domain. `area` covers pan geometry (r², so 20cm→23cm is ~1.32x, not 1.15x).",
-      "enum": ["linear", "fixed", "sublinear", "stepwise", "area", "formula"],
+      "enum": [
+        "linear",
+        "fixed",
+        "sublinear",
+        "stepwise",
+        "area",
+        "formula"
+      ],
       "default": "linear"
     },
-
     "basis": {
       "type": "object",
       "oneOf": [
         {
-          "required": ["sum"],
+          "required": [
+            "sum"
+          ],
           "properties": {
-            "sum": { "const": "ingredients" },
+            "sum": {
+              "const": "ingredients"
+            },
             "where": {
               "type": "object",
               "properties": {
-                "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } }
+                "roles": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/role"
+                  }
+                }
               },
               "additionalProperties": false
             },
-            "include_components": { "type": "boolean", "default": false }
+            "include_components": {
+              "type": "boolean",
+              "default": false
+            }
           },
           "additionalProperties": false
         },
         {
-          "required": ["ingredient"],
-          "properties": { "ingredient": { "$ref": "#/$defs/slug" } },
+          "required": [
+            "ingredient"
+          ],
+          "properties": {
+            "ingredient": {
+              "$ref": "#/$defs/slug"
+            }
+          },
           "additionalProperties": false
         }
       ]
     },
-
     "ingredient": {
       "type": "object",
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
         "item": {
           "anyOf": [
-            { "$ref": "#/$defs/slug" },
-            { "type": "null" }
+            {
+              "$ref": "#/$defs/slug"
+            },
+            {
+              "type": "null"
+            }
           ],
           "description": "REGISTRY REFERENCE into the ingredient-class catalog (e.g. ingredient.flour.wheat.t65). Recipes reference a class, never a purchasable product — the shopping layer resolves class to product. HARDENED (SR-PR-002/DS-PR-003): null is schema-valid and marks an unresolved import (freshly-ingested, not yet mapped) — the semantic linter WARNS on null, the schema never errors; `raw` always survives for audit and re-parsing."
         },
-        "amount": { "$ref": "#/$defs/quantity" },
-        "roles": { "type": "array", "items": { "$ref": "#/$defs/role" } },
-        "component": { "$ref": "#/$defs/slug", "description": "This ingredient is produced by the named component." },
+        "amount": {
+          "$ref": "#/$defs/quantity"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          }
+        },
+        "component": {
+          "$ref": "#/$defs/slug",
+          "description": "This ingredient is produced by the named component."
+        },
         "prep": {
           "type": "object",
           "properties": {
-            "cut": { "$ref": "#/$defs/slug" },
-            "state": { "$ref": "#/$defs/slug" },
-            "note": { "$ref": "#/$defs/text" }
+            "cut": {
+              "$ref": "#/$defs/slug"
+            },
+            "state": {
+              "$ref": "#/$defs/slug"
+            },
+            "note": {
+              "$ref": "#/$defs/text"
+            }
           },
           "additionalProperties": false
         },
-        "constraints": { "type": "array", "items": { "$ref": "#/$defs/constraint" } },
-        "optional": { "type": "boolean", "default": false },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/constraint"
+          }
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false
+        },
         "removed_after": {
           "$ref": "#/$defs/slug",
           "description": "Step id. For cultures/SCOBYs/aromatics present during the process but removed rather than consumed — excluded from final nutrition."
@@ -385,78 +732,170 @@
           "$ref": "#/$defs/slug",
           "description": "Extraction's proposed canonical ENGLISH class for an unresolved item (item: null) — the gap ledger groups by this so cross-language raws (cebola/onion) consolidate under one mint candidate (SR-REG-005). Never a mint; a proposal for the steward."
         },
-        "raw": { "type": "string", "description": "Original text as scraped or extracted. Preserved for audit and re-parsing even after canonical resolution." },
-        "note": { "$ref": "#/$defs/text" }
+        "raw": {
+          "type": "string",
+          "description": "Original text as scraped or extracted. Preserved for audit and re-parsing even after canonical resolution."
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "constraint": {
       "description": "Bounded quantity. A `critical` constraint may not be violated by scaling or substitution — the engine must refuse and explain, not silently produce an unsafe recipe. HARDENED (SR-PR-002): at least one bound is required — a constraint without bounds is not a constraint; ratio bounds require `of` naming the basis they are ratios of.",
       "type": "object",
-      "required": ["severity", "reason"],
+      "required": [
+        "severity",
+        "reason"
+      ],
       "anyOf": [
-        { "required": ["min_ratio"] },
-        { "required": ["max_ratio"] },
-        { "required": ["min_value"] },
-        { "required": ["max_value"] }
+        {
+          "required": [
+            "min_ratio"
+          ]
+        },
+        {
+          "required": [
+            "max_ratio"
+          ]
+        },
+        {
+          "required": [
+            "min_value"
+          ]
+        },
+        {
+          "required": [
+            "max_value"
+          ]
+        }
       ],
       "dependentRequired": {
-        "min_ratio": ["of"],
-        "max_ratio": ["of"]
+        "min_ratio": [
+          "of"
+        ],
+        "max_ratio": [
+          "of"
+        ]
       },
       "properties": {
-        "min_ratio": { "type": "number" },
-        "max_ratio": { "type": "number" },
-        "min_value": { "type": "number" },
-        "max_value": { "type": "number" },
-        "of": { "type": "string" },
-        "unit": { "$ref": "#/$defs/unit" },
-        "severity": { "enum": ["info", "warn", "critical"] },
-        "reason": { "$ref": "#/$defs/text" },
-        "source": { "type": "string", "format": "uri" }
+        "min_ratio": {
+          "type": "number"
+        },
+        "max_ratio": {
+          "type": "number"
+        },
+        "min_value": {
+          "type": "number"
+        },
+        "max_value": {
+          "type": "number"
+        },
+        "of": {
+          "type": "string"
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warn",
+            "critical"
+          ]
+        },
+        "reason": {
+          "$ref": "#/$defs/text"
+        },
+        "source": {
+          "type": "string",
+          "format": "uri"
+        }
       },
       "additionalProperties": false
     },
-
     "duration": {
       "description": "A window, never a bare number — lamination rests, cold retard and macaron skinning all fail on BOTH sides.",
       "type": "object",
-      "anyOf": [{ "required": ["target"] }, { "required": ["min"] }],
+      "anyOf": [
+        {
+          "required": [
+            "target"
+          ]
+        },
+        {
+          "required": [
+            "min"
+          ]
+        }
+      ],
       "properties": {
-        "min": { "$ref": "#/$defs/isoDuration" },
-        "target": { "$ref": "#/$defs/isoDuration" },
-        "max": { "$ref": "#/$defs/isoDuration" }
+        "min": {
+          "$ref": "#/$defs/isoDuration"
+        },
+        "target": {
+          "$ref": "#/$defs/isoDuration"
+        },
+        "max": {
+          "$ref": "#/$defs/isoDuration"
+        }
       },
       "additionalProperties": false
     },
-
     "isoDuration": {
       "type": "string",
       "pattern": "^(\\d+(\\.\\d+)?(s|m|h|d|w))+$",
       "description": "Compound durations allowed: 4h30m, 1h15m."
     },
-
     "temperature": {
       "description": "FOUR SHAPES: scalar; band with tolerance (crème anglaise 80-84C, where 86C is scrambled); a registry-backed named stage (sugar work, with fuzzy source-dependent boundaries); or a curve of waypoints (chocolate tempering: melt to cool to rework, all three differing by chocolate type).",
       "type": "object",
       "properties": {
-        "target": { "type": "number" },
-        "min": { "type": "number" },
-        "max": { "type": "number" },
-        "falling_to": { "type": "number" },
-        "unit": { "enum": ["C", "F"], "default": "C" },
-        "stage": { "$ref": "#/$defs/slug", "description": "Registry reference, e.g. soft-ball, hard-crack." },
+        "target": {
+          "type": "number"
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "falling_to": {
+          "type": "number"
+        },
+        "unit": {
+          "enum": [
+            "C",
+            "F"
+          ],
+          "default": "C"
+        },
+        "stage": {
+          "$ref": "#/$defs/slug",
+          "description": "Registry reference, e.g. soft-ball, hard-crack."
+        },
         "curve": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["phase", "target"],
+            "required": [
+              "phase",
+              "target"
+            ],
             "properties": {
-              "phase": { "$ref": "#/$defs/slug" },
-              "target": { "type": "number" },
-              "min": { "type": "number" },
-              "max": { "type": "number" }
+              "phase": {
+                "$ref": "#/$defs/slug"
+              },
+              "target": {
+                "type": "number"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
             },
             "additionalProperties": false
           }
@@ -464,290 +903,727 @@
         "altitude_correction": {
           "type": "object",
           "properties": {
-            "per_300m": { "type": "number" },
-            "unit": { "enum": ["C", "F"] }
+            "per_300m": {
+              "type": "number"
+            },
+            "unit": {
+              "enum": [
+                "C",
+                "F"
+              ]
+            }
           },
           "additionalProperties": false
         },
-        "reason": { "$ref": "#/$defs/text" }
+        "reason": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "endpoint": {
       "description": "How you know it is ready. CLOSED ENUM on `kind`. Multiple endpoints coexist — '96C core OR hollow when tapped' is how people actually bake. Sensory endpoints are where per-step media earns its place; 'smells lactic, not putrid' resists numeric encoding entirely.",
       "type": "object",
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "properties": {
-        "kind": { "enum": ["sensory", "core-temperature", "volume", "pH", "specific-gravity", "visual", "weight"] },
-        "test": { "$ref": "#/$defs/slug" },
-        "expect": { "$ref": "#/$defs/text" },
-        "op": { "enum": ["<", "<=", "=", ">=", ">"] },
-        "value": { "type": ["number", "string"] },
-        "change": { "type": "string", "pattern": "^[+-]\\d+%$" },
-        "unit": { "$ref": "#/$defs/unit" }
+        "kind": {
+          "enum": [
+            "sensory",
+            "core-temperature",
+            "volume",
+            "pH",
+            "specific-gravity",
+            "visual",
+            "weight"
+          ]
+        },
+        "test": {
+          "$ref": "#/$defs/slug"
+        },
+        "expect": {
+          "$ref": "#/$defs/text"
+        },
+        "op": {
+          "enum": [
+            "<",
+            "<=",
+            "=",
+            ">=",
+            ">"
+          ]
+        },
+        "value": {
+          "type": [
+            "number",
+            "string"
+          ]
+        },
+        "change": {
+          "type": "string",
+          "pattern": "^[+-]\\d+%$"
+        },
+        "unit": {
+          "$ref": "#/$defs/unit"
+        }
       },
       "additionalProperties": false
     },
-
     "trigger": {
       "description": "When a scheduled event fires. FOUR SHAPES, one union: elapsed (V60 pour at 0:45), remaining (hop addition 20 min before boil-end), recurring (fold every 30min x4; burp daily), and measurement-triggered (rack when SG < 1.005 — no calendar date at all).",
       "type": "object",
-      "required": ["kind"],
+      "required": [
+        "kind"
+      ],
       "properties": {
-        "kind": { "enum": ["at_elapsed", "at_remaining", "recurring", "on_measurement"] },
-        "at": { "$ref": "#/$defs/isoDuration" },
-        "anchor": { "enum": ["step_start", "step_end", "process_start", "process_end"] },
-        "first": { "$ref": "#/$defs/isoDuration" },
-        "increment": { "$ref": "#/$defs/isoDuration" },
-        "times": { "type": "integer", "minimum": 1 },
-        "until": { "$ref": "#/$defs/endpoint" },
-        "measurement": { "$ref": "#/$defs/slug" },
-        "op": { "enum": ["<", "<=", "=", ">=", ">"] },
-        "value": { "type": "number" },
-        "action": { "$ref": "#/$defs/slug" },
-        "note": { "$ref": "#/$defs/text" }
+        "kind": {
+          "enum": [
+            "at_elapsed",
+            "at_remaining",
+            "recurring",
+            "on_measurement"
+          ]
+        },
+        "at": {
+          "$ref": "#/$defs/isoDuration"
+        },
+        "anchor": {
+          "enum": [
+            "step_start",
+            "step_end",
+            "process_start",
+            "process_end"
+          ]
+        },
+        "first": {
+          "$ref": "#/$defs/isoDuration"
+        },
+        "increment": {
+          "$ref": "#/$defs/isoDuration"
+        },
+        "times": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "until": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "measurement": {
+          "$ref": "#/$defs/slug"
+        },
+        "op": {
+          "enum": [
+            "<",
+            "<=",
+            "=",
+            ">=",
+            ">"
+          ]
+        },
+        "value": {
+          "type": "number"
+        },
+        "action": {
+          "$ref": "#/$defs/slug"
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "step": {
       "type": "object",
-      "required": ["id", "primitive"],
+      "required": [
+        "id",
+        "primitive"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
         "primitive": {
           "description": "REGISTRY REFERENCE, versioned. Follows SPEC-008's rule: a new capability is a new id, never a repurposed one; params only ever grow optionally.",
           "type": "object",
-          "required": ["id", "v"],
+          "required": [
+            "id",
+            "v"
+          ],
           "properties": {
-            "id": { "$ref": "#/$defs/slug" },
-            "v": { "type": "integer", "minimum": 1 }
+            "id": {
+              "$ref": "#/$defs/slug"
+            },
+            "v": {
+              "type": "integer",
+              "minimum": 1
+            }
           },
           "additionalProperties": false
         },
         "after": {
           "type": "array",
-          "items": { "$ref": "#/$defs/slug" },
+          "items": {
+            "$ref": "#/$defs/slug"
+          },
           "description": "Step ids, component ids, OR produced-intermediate ids this depends on. Anchoring on an intermediate (massa-misturada) rather than a step id is what lets guarded alternative paths coexist: whichever active step `produces` it satisfies the dependency. OMIT for simple sequential order — the DAG is opt-in."
         },
-        "uses": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-        "produces": { "$ref": "#/$defs/slug", "description": "Intermediate product, e.g. 'the poolish'." },
-        "track": { "enum": ["main", "prep", "overnight", "day-before"] },
+        "uses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "produces": {
+          "$ref": "#/$defs/slug",
+          "description": "Intermediate product, e.g. 'the poolish'."
+        },
+        "track": {
+          "enum": [
+            "main",
+            "prep",
+            "overnight",
+            "day-before"
+          ]
+        },
         "section": {
           "$ref": "#/$defs/slug",
           "description": "Named method section this step belongs to (mistura, fermentacao, cozedura). Sections are the unit method-level substitutions can replace wholesale."
         },
-        "title": { "$ref": "#/$defs/text" },
-        "body": { "$ref": "#/$defs/text" },
-        "duration": { "$ref": "#/$defs/duration" },
-        "temperature": { "$ref": "#/$defs/temperature" },
-        "scales_with": { "enum": ["temperature", "batch", "thickness", "none"] },
-        "scaling": { "$ref": "#/$defs/scalingBehaviour" },
-        "until": { "type": "array", "items": { "$ref": "#/$defs/endpoint" } },
-        "triggers": { "type": "array", "items": { "$ref": "#/$defs/trigger" } },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "body": {
+          "$ref": "#/$defs/text"
+        },
+        "duration": {
+          "$ref": "#/$defs/duration"
+        },
+        "temperature": {
+          "$ref": "#/$defs/temperature"
+        },
+        "scales_with": {
+          "enum": [
+            "temperature",
+            "batch",
+            "thickness",
+            "none"
+          ]
+        },
+        "scaling": {
+          "$ref": "#/$defs/scalingBehaviour"
+        },
+        "until": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/endpoint"
+          }
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trigger"
+          }
+        },
         "repeat": {
           "type": "object",
           "properties": {
-            "times": { "type": "integer", "minimum": 1 },
-            "until": { "$ref": "#/$defs/endpoint" },
-            "note": { "$ref": "#/$defs/text" }
+            "times": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "until": {
+              "$ref": "#/$defs/endpoint"
+            },
+            "note": {
+              "$ref": "#/$defs/text"
+            }
           },
           "additionalProperties": false
         },
-        "rest": { "$ref": "#/$defs/duration" },
-        "equipment": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
+        "rest": {
+          "$ref": "#/$defs/duration"
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
         "params": {
           "type": "object",
           "description": "Primitive-specific parameters (SPEC-008 paramValues): lamination geometry, fold type, pour weight. Validated by the primitive's ParamSpec in the registry, not by core.",
-          "additionalProperties": { "type": ["number", "string", "boolean"] }
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string",
+              "boolean"
+            ]
+          }
         },
-        "media": { "type": "array", "items": { "$ref": "#/$defs/media" } },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/media"
+          }
+        },
         "cues": {
           "description": "Troubleshooting: if you observe X, do Y. Structured, not buried in prose.",
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["condition", "action"],
+            "required": [
+              "condition",
+              "action"
+            ],
             "properties": {
-              "condition": { "$ref": "#/$defs/text" },
-              "action": { "$ref": "#/$defs/text" },
-              "severity": { "enum": ["info", "warn", "critical"] },
-              "recoverable": { "type": "boolean", "description": "False for irreversible failures like over-mixed macaronage." }
+              "condition": {
+                "$ref": "#/$defs/text"
+              },
+              "action": {
+                "$ref": "#/$defs/text"
+              },
+              "severity": {
+                "enum": [
+                  "info",
+                  "warn",
+                  "critical"
+                ]
+              },
+              "recoverable": {
+                "type": "boolean",
+                "description": "False for irreversible failures like over-mixed macaronage."
+              }
             },
             "additionalProperties": false
           }
         },
-        "when": { "$ref": "#/$defs/guard" },
-        "constraints": { "type": "array", "items": { "$ref": "#/$defs/constraint" } },
-        "note": { "$ref": "#/$defs/text" },
-        "source": { "$ref": "#/$defs/text" }
+        "when": {
+          "$ref": "#/$defs/guard"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/constraint"
+          }
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        },
+        "source": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "guard": {
       "description": "Conditional content. A step or ingredient is active only when the guard matches the currently selected options. This ONE mechanism serves substitution deltas, equipment branches, execution modes and dietary transforms — four things four domain tracks independently asked for.",
       "type": "object",
       "properties": {
-        "execution_mode": { "type": ["string", "array"] },
-        "equipment": { "type": ["string", "array"] },
-        "substitution": { "type": ["string", "array"] },
-        "diet": { "type": ["string", "array"] },
+        "execution_mode": {
+          "type": [
+            "string",
+            "array"
+          ]
+        },
+        "equipment": {
+          "type": [
+            "string",
+            "array"
+          ]
+        },
+        "substitution": {
+          "type": [
+            "string",
+            "array"
+          ]
+        },
+        "diet": {
+          "type": [
+            "string",
+            "array"
+          ]
+        },
         "option": {
-          "type": ["string", "array"],
+          "type": [
+            "string",
+            "array"
+          ],
           "description": "Matches when the named toggle option is on, or 'id:value' for a choice option."
         },
-        "not": { "$ref": "#/$defs/guard" }
+        "not": {
+          "$ref": "#/$defs/guard"
+        }
       },
       "additionalProperties": false
     },
-
     "media": {
       "type": "object",
-      "required": ["role", "type", "uri", "licence"],
+      "required": [
+        "role",
+        "type",
+        "uri",
+        "licence"
+      ],
       "properties": {
         "role": {
-          "enum": ["technique", "result", "ingredient", "equipment", "failure"],
+          "enum": [
+            "technique",
+            "result",
+            "ingredient",
+            "equipment",
+            "failure"
+          ],
           "description": "`failure` matters: kahm yeast vs mould is a photo, not a sentence."
         },
-        "type": { "enum": ["photo", "video", "audio", "diagram"] },
-        "uri": { "type": "string" },
-        "licence": { "type": "string", "description": "REQUIRED. This project runs two tiers deliberately: written heritage CC BY 4.0, media all rights reserved. A media model without a licence field quietly erases that." },
-        "credit": { "type": "string" },
-        "source_url": { "type": "string", "format": "uri" },
-        "note": { "$ref": "#/$defs/text" }
+        "type": {
+          "enum": [
+            "photo",
+            "video",
+            "audio",
+            "diagram"
+          ]
+        },
+        "uri": {
+          "type": "string"
+        },
+        "licence": {
+          "type": "string",
+          "description": "REQUIRED. This project runs two tiers deliberately: written heritage CC BY 4.0, media all rights reserved. A media model without a licence field quietly erases that."
+        },
+        "credit": {
+          "type": "string"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "equipmentRef": {
       "type": "object",
-      "required": ["ref"],
+      "required": [
+        "ref"
+      ],
       "properties": {
-        "ref": { "$ref": "#/$defs/slug", "description": "Registry reference to an equipment profile document." },
-        "role": { "enum": ["primary", "vessel", "mould", "tool", "measuring"] },
-        "required": { "type": "boolean", "default": true, "description": "False where the equipment is a convenience; true where it is a feasibility gate (brioche at 60% butter, Italian meringue)." },
-        "substitutes": { "type": "array", "items": { "$ref": "#/$defs/slug" }, "description": "Swapping these triggers a method delta via the same mechanism as ingredient substitution." },
-        "note": { "$ref": "#/$defs/text" }
+        "ref": {
+          "$ref": "#/$defs/slug",
+          "description": "Registry reference to an equipment profile document."
+        },
+        "role": {
+          "enum": [
+            "primary",
+            "vessel",
+            "mould",
+            "tool",
+            "measuring"
+          ]
+        },
+        "required": {
+          "type": "boolean",
+          "default": true,
+          "description": "False where the equipment is a convenience; true where it is a feasibility gate (brioche at 60% butter, Italian meringue)."
+        },
+        "substitutes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          },
+          "description": "Swapping these triggers a method delta via the same mechanism as ingredient substitution."
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "substitution": {
       "description": "Substitution targets are NOT only ingredients. `scope` says what is being swapped: an ingredient slot, a piece of equipment, one or more steps, a whole named section of the method (hand-knead vs mixer vs no-knead folds; steam vs bake), or an entire component sub-recipe (levain -> commercial-yeast prep). Method-level substitutions use `with_steps`; everything else uses `with`.",
       "type": "object",
-      "required": ["replaces", "class"],
-      "anyOf": [{ "required": ["with"] }, { "required": ["with_steps"] }],
+      "required": [
+        "replaces",
+        "class"
+      ],
+      "anyOf": [
+        {
+          "required": [
+            "with"
+          ]
+        },
+        {
+          "required": [
+            "with_steps"
+          ]
+        }
+      ],
       "properties": {
         "scope": {
-          "enum": ["ingredient", "equipment", "steps", "section", "component"],
+          "enum": [
+            "ingredient",
+            "equipment",
+            "steps",
+            "section",
+            "component"
+          ],
           "default": "ingredient"
         },
-        "replaces": { "oneOf": [{ "$ref": "#/$defs/slug" }, { "type": "array", "items": { "$ref": "#/$defs/slug" } }] },
-        "with": { "$ref": "#/$defs/slug" },
+        "replaces": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/slug"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            }
+          ]
+        },
+        "with": {
+          "$ref": "#/$defs/slug"
+        },
         "with_steps": {
           "type": "array",
-          "items": { "$ref": "#/$defs/step" },
+          "items": {
+            "$ref": "#/$defs/step"
+          },
           "description": "Replacement steps when scope is steps/section. Must produce the same intermediate (`produces`) as the replaced ones so downstream steps still resolve."
         },
-        "ratio": { "type": "number" },
-        "amount": { "$ref": "#/$defs/quantity" },
-        "formula": { "type": "string", "description": "Closed arithmetic grammar, never eval. E.g. hop substitution by alpha-acid units." },
+        "ratio": {
+          "type": "number"
+        },
+        "amount": {
+          "$ref": "#/$defs/quantity"
+        },
+        "formula": {
+          "type": "string",
+          "description": "Closed arithmetic grammar, never eval. E.g. hop substitution by alpha-acid units."
+        },
         "class": {
-          "enum": ["direct", "quantity-forcing", "technique-forcing", "balance-forcing", "compensation-forcing", "computed", "method-changing"],
+          "enum": [
+            "direct",
+            "quantity-forcing",
+            "technique-forcing",
+            "balance-forcing",
+            "compensation-forcing",
+            "computed",
+            "method-changing"
+          ],
           "description": "What else must be recomputed or warned about. `compensation-forcing`: one swap requires correlated additions (NA spirit needs added acid + tannin)."
         },
-        "quality": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "tested": { "type": "boolean" },
-        "preserves": { "type": "array", "items": { "$ref": "#/$defs/role" } },
-        "loses": { "type": "array", "items": { "$ref": "#/$defs/role" } },
-        "tags": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-        "requires_additions": { "type": "array", "items": { "$ref": "#/$defs/ingredient" } },
+        "quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "tested": {
+          "type": "boolean"
+        },
+        "preserves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          }
+        },
+        "loses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/role"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
+        "requires_additions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ingredient"
+          }
+        },
         "when_applied": {
           "description": "The method delta. See 06-substitution-model.md.",
           "type": "object",
           "properties": {
-            "remove_steps": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
-            "add_steps": { "type": "array", "items": { "$ref": "#/$defs/step" } },
+            "remove_steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/slug"
+              }
+            },
+            "add_steps": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/step"
+              }
+            },
             "patch": {
               "type": "array",
               "items": {
                 "type": "object",
-                "required": ["step", "set"],
+                "required": [
+                  "step",
+                  "set"
+                ],
                 "properties": {
-                  "step": { "$ref": "#/$defs/slug" },
-                  "set": { "type": "object" }
+                  "step": {
+                    "$ref": "#/$defs/slug"
+                  },
+                  "set": {
+                    "type": "object"
+                  }
                 },
                 "additionalProperties": false
               }
             },
-            "warn": { "$ref": "#/$defs/text" }
+            "warn": {
+              "$ref": "#/$defs/text"
+            }
           },
           "additionalProperties": false
         },
-        "source": { "type": "string", "format": "uri" },
-        "note": { "$ref": "#/$defs/text" }
+        "source": {
+          "type": "string",
+          "format": "uri"
+        },
+        "note": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "executionMode": {
       "description": "The same recipe executed differently. Dilution is the canonical case: water that ice contributes for free to a stirred drink must become an explicit measured ingredient when batching, or the batch is ~20% over-strength.",
       "type": "object",
-      "required": ["id"],
+      "required": [
+        "id"
+      ],
       "properties": {
-        "id": { "$ref": "#/$defs/slug" },
-        "technique": { "$ref": "#/$defs/slug" },
-        "equipment": { "type": "array", "items": { "$ref": "#/$defs/slug" } },
+        "id": {
+          "$ref": "#/$defs/slug"
+        },
+        "technique": {
+          "$ref": "#/$defs/slug"
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/slug"
+          }
+        },
         "dilution": {
           "type": "object",
           "properties": {
-            "ratio": { "type": "number" },
-            "of": { "type": "string" },
-            "source": { "enum": ["ice", "added-water", "none"] }
+            "ratio": {
+              "type": "number"
+            },
+            "of": {
+              "type": "string"
+            },
+            "source": {
+              "enum": [
+                "ice",
+                "added-water",
+                "none"
+              ]
+            }
           },
           "additionalProperties": false
         },
-        "adds_ingredient": { "$ref": "#/$defs/ingredient" },
-        "warn": { "$ref": "#/$defs/text" }
+        "adds_ingredient": {
+          "$ref": "#/$defs/ingredient"
+        },
+        "warn": {
+          "$ref": "#/$defs/text"
+        }
       },
       "additionalProperties": false
     },
-
     "yield": {
       "type": "object",
       "properties": {
-        "units": { "type": "number" },
-        "unit_weight": { "$ref": "#/$defs/quantity" },
-        "servings": { "type": "number" },
-        "serving_volume": { "$ref": "#/$defs/quantity" },
-        "total": { "$ref": "#/$defs/quantity" },
-        "loss": { "type": "number", "description": "Fractional loss between raw and finished, e.g. baker's loss ~0.12." },
-        "variable": { "type": "boolean", "description": "True where yield genuinely cannot be predicted, e.g. oleo saccharum." }
+        "units": {
+          "type": "number"
+        },
+        "unit_weight": {
+          "$ref": "#/$defs/quantity"
+        },
+        "servings": {
+          "type": "number"
+        },
+        "serving_volume": {
+          "$ref": "#/$defs/quantity"
+        },
+        "total": {
+          "$ref": "#/$defs/quantity"
+        },
+        "loss": {
+          "type": "number",
+          "description": "Fractional loss between raw and finished, e.g. baker's loss ~0.12."
+        },
+        "variable": {
+          "type": "boolean",
+          "description": "True where yield genuinely cannot be predicted, e.g. oleo saccharum."
+        }
       },
       "additionalProperties": false
     },
-
     "provenance": {
       "description": "First-class, and disagreement is data. Almost nobody else models this; for a heritage archive it is the whole point.",
       "type": "object",
       "properties": {
-        "confidence": { "enum": ["HIGH", "MEDIUM-HIGH", "MEDIUM", "LOW"] },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM-HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
         "notes": {
           "$ref": "#/$defs/text",
           "description": "Provenance working notes — where per-ingest judgment calls are recorded (e.g. the DS-PR-006 hat-scale-to-1..5 difficulty mapping, a storage-location reading the book left implicit). ADDITION during PLAN-rcp-v02 Phase 8: DS-PR-006 mandated the record but no field existed."
         },
-        "status": { "enum": ["draft", "unverified", "published", "archived"] },
+        "status": {
+          "enum": [
+            "draft",
+            "unverified",
+            "published",
+            "archived"
+          ]
+        },
         "sources": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["label"],
+            "required": [
+              "label"
+            ],
             "properties": {
-              "label": { "type": "string" },
-              "url": { "type": "string", "format": "uri" },
-              "type": { "enum": ["official", "academic", "press", "testimony", "blog", "book"] },
+              "label": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "type": {
+                "enum": [
+                  "official",
+                  "academic",
+                  "press",
+                  "testimony",
+                  "blog",
+                  "book"
+                ]
+              },
               "work": {
                 "type": "string",
                 "description": "Publication/book title (DS-PR-008) — the work the page reference points into."
@@ -765,11 +1641,21 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": { "type": "string" },
-              "role": { "$ref": "#/$defs/text" },
-              "place": { "type": "string" },
-              "quote": { "$ref": "#/$defs/text" },
-              "source": { "type": "string" }
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "$ref": "#/$defs/text"
+              },
+              "place": {
+                "type": "string"
+              },
+              "quote": {
+                "$ref": "#/$defs/text"
+              },
+              "source": {
+                "type": "string"
+              }
             },
             "additionalProperties": false
           }
@@ -779,16 +1665,25 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["topic", "versions"],
+            "required": [
+              "topic",
+              "versions"
+            ],
             "properties": {
-              "topic": { "$ref": "#/$defs/text" },
+              "topic": {
+                "$ref": "#/$defs/text"
+              },
               "versions": {
                 "type": "array",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "claim": { "$ref": "#/$defs/text" },
-                    "source": { "type": "string" }
+                    "claim": {
+                      "$ref": "#/$defs/text"
+                    },
+                    "source": {
+                      "type": "string"
+                    }
                   },
                   "additionalProperties": false
                 }
@@ -800,32 +1695,63 @@
         "verified": {
           "type": "object",
           "properties": {
-            "by": { "type": "string" },
-            "role": { "$ref": "#/$defs/text" },
-            "place": { "type": "string" },
-            "date": { "type": "string", "format": "date" }
+            "by": {
+              "type": "string"
+            },
+            "role": {
+              "$ref": "#/$defs/text"
+            },
+            "place": {
+              "type": "string"
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            }
           },
           "additionalProperties": false
         }
       },
       "additionalProperties": false
     },
-
     "import": {
       "description": "Ingestion metadata. Capture loosely, resolve canonically later, never block on perfect identity resolution. Imported recipes land unverified — for this archive an import is a lead, not a publication.",
       "type": "object",
       "properties": {
-        "source_url": { "type": "string", "format": "uri" },
-        "method": { "enum": ["json-ld", "microdata", "opengraph", "selector", "vision-llm", "manual"] },
-        "extracted_at": { "type": "string", "format": "date-time" },
-        "extractor": { "type": "string" },
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "method": {
+          "enum": [
+            "json-ld",
+            "microdata",
+            "opengraph",
+            "selector",
+            "vision-llm",
+            "manual"
+          ]
+        },
+        "extracted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "extractor": {
+          "type": "string"
+        },
         "field_confidence": {
           "type": "object",
-          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
         },
         "unresolved": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Paths the extractor could not resolve to registry values. It emits null and keeps `raw`; it never invents."
         }
       },

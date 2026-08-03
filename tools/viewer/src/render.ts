@@ -26,6 +26,11 @@ export interface RenderContext {
   /** Registry display-name layer: entry id -> {pt?, en?}. */
   names: Record<string, Record<string, string>>;
   lang: string; // "pt-PT" in v0.2
+  /**
+   * Locally supplied media: URI BASENAME -> object URL (schema/MEDIA.md).
+   * Presentation state only — never serialized back into documents.
+   */
+  assets: Record<string, string>;
 }
 
 export function esc(v: unknown): string {
@@ -160,9 +165,60 @@ function stepList(doc: Dict, ctx: RenderContext): string {
     if (durLabel) chips.push(`<span class="chip">${esc(durLabel)}</span>`);
     const body = s["body"] ? `<p class="note">${esc(text(s["body"], ctx.lang))}</p>` : "";
     const note = s["note"] ? `<p class="note">${esc(text(s["note"], ctx.lang))}</p>` : "";
-    return `<li>${head}${chips.length ? " " + chips.join(" ") : ""}${body}${note}</li>`;
+    const media = mediaBlock(s["media"], ctx);
+    return `<li>${head}${chips.length ? " " + chips.join(" ") : ""}${body}${note}${media}</li>`;
   });
   return `<ol class="steps">${items.join("")}</ol>`;
+}
+
+/** Role labels (pt-PT). Failure is labelled by TEXT — never color/position alone. */
+const MEDIA_ROLE_LABEL: Record<string, string> = {
+  technique: "técnica",
+  result: "resultado",
+  ingredient: "ingrediente",
+  equipment: "equipamento",
+  failure: "falha",
+};
+
+/**
+ * Media list -> figures (schema/MEDIA.md). Matching is by URI basename
+ * against ctx.assets; placeholder URIs and unmatched URIs collapse to
+ * the SAME labelled-absent state — never a broken element. All four
+ * types render their own element; video/audio get controls, no autoplay.
+ */
+function mediaBlock(list: unknown, ctx: RenderContext): string {
+  const entries = asList(list).map(asDict);
+  if (!entries.length) return "";
+  const figures = entries.map((m) => {
+    const role = String(m["role"] ?? "");
+    const roleLabel = MEDIA_ROLE_LABEL[role] ?? role;
+    const caption = m["caption"] ? text(m["caption"], ctx.lang) : "";
+    const alt = caption || roleLabel;
+    const uri = String(m["uri"] ?? "");
+    const basename = uri.split("/").pop() ?? uri;
+    const src = ctx.assets[basename];
+    const failureClass = role === "failure" ? " media-failure" : "";
+    const label =
+      `<span class="media-role${failureClass}">${esc(roleLabel)}</span>` +
+      (caption ? `<span class="media-caption">${esc(caption)}</span>` : "");
+    if (!src) {
+      return (
+        `<figure class="media media-absent${failureClass}">` +
+        `<figcaption>${label}<span class="media-missing">sem ficheiro local</span></figcaption></figure>`
+      );
+    }
+    const type = String(m["type"] ?? "photo");
+    let element: string;
+    if (type === "video") {
+      element = `<video controls src="${esc(src)}" aria-label="${esc(alt)}"></video>`;
+    } else if (type === "audio") {
+      element = `<audio controls src="${esc(src)}" aria-label="${esc(alt)}"></audio>`;
+    } else {
+      element = `<img src="${esc(src)}" alt="${esc(alt)}">`;
+    }
+    return `<figure class="media${failureClass}">${element}<figcaption>${label}</figcaption></figure>`;
+  });
+  return `<div class="media-list">${figures.join("")}</div>`;
 }
 
 function taxonomyLine(doc: Dict, ctx: RenderContext): string {
@@ -196,7 +252,7 @@ export function renderDocument(analysis: DocumentAnalysis, ctx: RenderContext): 
     : "";
   return (
     `<article class="recipe"><header><h2 lang="pt-PT">${title}</h2>${maturityBadge}</header>` +
-    `${taxonomyLine(doc, ctx)}${ingredientList(doc, ctx)}${components}${mainMethod}</article>`
+    `${taxonomyLine(doc, ctx)}${mediaBlock(doc["media"], ctx)}${ingredientList(doc, ctx)}${components}${mainMethod}</article>`
   );
 }
 

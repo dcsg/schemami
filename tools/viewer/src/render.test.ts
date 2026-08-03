@@ -21,6 +21,7 @@ const ctx = {
     "primitive.melt": { pt: "Derreter", en: "Melt" },
     "primitive.cook-syrup": { pt: "Cozer calda", en: "Cook syrup" },
   },
+  assets: {},
 };
 
 test("sections: nata renders name, ingredients with ORACLE-pinned basis strings, steps, maturity badge", async () => {

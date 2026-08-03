@@ -48,6 +48,21 @@ echo "── The freeze (FR-PR-001) ──"
 check "AC-PR-001-*   rcp-v0.1 annotated tag exists" sh -c "test \"\$(git cat-file -t rcp-v0.1)\" = tag"
 check "              VERSIONING.md covers \$id / rcp / SchemaVer / decode-compat" sh -c "grep -q 'SchemaVer' schema/VERSIONING.md && grep -qi 'decode' schema/VERSIONING.md"
 
+echo "── Media (schema/MEDIA.md, DECISIONS #27) ──"
+check "AC-TOOL-002-1 MEDIA.md carries the four mandated anchors" sh -c "grep -q '^## Asset location' schema/MEDIA.md && grep -q '^## Licence' schema/MEDIA.md && grep -q '^## Prohibition: source-book media' schema/MEDIA.md && grep -q '^## Never serialized' schema/MEDIA.md"
+check "AC-TOOL-002-2 media attestation green (commit-eligible tree, allowlisted only)" python3 tools/rcplint/scripts/media-attest.py .
+check "              attestation self-test: planted binary + base64 DETECTED (inverted)" python3 tools/rcplint/scripts/media-attest.py --self-test
+check "CSP-EXACT     dist CSP exact string (default-src 'none'; hashes; img+media data: blob:); bundle < 500 KB; file input present" sh -c "python3 -c \"
+import re,sys
+h=open('tools/viewer/dist/index.html').read()
+m=re.search(r'Content-Security-Policy\\\" content=\\\"([^\\\"]+)\\\"',h)
+assert m, 'no CSP meta'
+pat=r\\\"^default-src 'none'; script-src 'sha256-[A-Za-z0-9+/=]+'; style-src 'sha256-[A-Za-z0-9+/=]+'; img-src data: blob:; media-src data: blob:\$\\\"
+assert re.match(pat,m.group(1)), m.group(1)
+assert len(h) < 500*1024, len(h)
+assert 'id=\\\"file-input\\\"' in h and 'type=\\\"file\\\"' in h
+\""
+
 echo "── Decode-compat gate (SR-PR-004, DS-PR-009) ──"
 check "AC-PR-004-1   both directions green: frozen reader ⇄ current core (incl. inverted breaking fixture + struct-vs-pinned-tag diff)" sh -c "cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./..."
 

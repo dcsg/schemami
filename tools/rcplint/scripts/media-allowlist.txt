@@ -1,0 +1,4 @@
+# Media attestation allowlist (schema/MEDIA.md — Prohibition section).
+# Exact repo-relative paths of binary media PERMITTED in the
+# commit-eligible tree. One per line. Adding a line requires a recorded
+# decision (source-book media is never eligible — DECISIONS #27).
