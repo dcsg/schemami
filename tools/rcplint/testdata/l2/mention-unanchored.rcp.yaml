@@ -1,0 +1,14 @@
+# Target rule (WARNING): step prose names a teachable preparation that
+# nothing in the document anchors.
+rcp: 1
+id: fx-mention-unanchored
+kind: dish
+name: { en: Sauce with an unanchored roux }
+ingredients:
+  - { id: b, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp } }
+steps:
+  - id: s
+    primitive: { id: primitive.mix, v: 1 }
+    uses: [b]
+    note:
+      en: Start from a pale roux and thin it with stock.

@@ -429,49 +429,49 @@ phases:
     verify: make validate && make conformance && make calculus && make accept
 - phase: 10
   title: Canonical authoring and the extraction linter
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-10.1
     text: A sub-preparation with its method ingests as an inline component; one without becomes a class
       reference with no invented steps
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestExtractionRule ./...
   - id: AC-10.2
     text: An unanchored registry-known term WARNS naming it
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestL2WarningFixtures ./...
   - id: AC-10.3
     text: An authored pattern with an unknown X WARNS
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestMentionPattern ./...
   - id: AC-10.4
     text: At least one canonical link is authored and resolves under the scope rule
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestCanonicalResolves ./...
   - id: AC-10.5
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make accept
 - phase: 11
   title: 'Viewer: see the method, seek the moment'

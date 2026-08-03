@@ -120,6 +120,7 @@ func lintDocument(d Document, reg *Registry, siblings map[string]map[string]any,
 	lintRecipeScope(loc, m, nil, reg, siblings, l)
 	lintLineage(loc, m, siblings, l)
 	lintStageRefs(loc, m, loadStages(reg.TechniqueEntries), l)
+	lintMentions(loc, m, reg, l)
 }
 
 func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, reg *Registry, siblings map[string]map[string]any, l *Lint) {

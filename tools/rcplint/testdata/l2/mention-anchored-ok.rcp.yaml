@@ -1,0 +1,21 @@
+# NEGATIVE CONTROL: the same mention, properly anchored by a component.
+# Must be SILENT — a detector that fires on correct documents is noise.
+rcp: 1
+id: fx-mention-anchored
+kind: dish
+name: { en: Sauce with an anchored roux }
+components:
+  - id: roux
+    name: { en: Roux }
+    ingredients:
+      - { id: rb, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp } }
+    steps:
+      - { id: rs, primitive: { id: primitive.heat, v: 1 }, uses: [rb] }
+ingredients:
+  - { id: b, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp }, component: roux }
+steps:
+  - id: s
+    primitive: { id: primitive.mix, v: 1 }
+    uses: [roux]
+    note:
+      en: Start from a pale roux and thin it with stock.

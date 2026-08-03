@@ -1,0 +1,14 @@
+# Target rule (WARNING): an authored pattern whose subject the registry
+# cannot name — a vocabulary gap, surfaced rather than guessed at.
+rcp: 1
+id: fx-mention-unknown
+kind: dish
+name: { en: Calls for something unnamed }
+ingredients:
+  - { id: b, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp } }
+steps:
+  - id: s
+    primitive: { id: primitive.mix, v: 1 }
+    uses: [b]
+    note:
+      en: First make a beurremanie, then whisk it in.

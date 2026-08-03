@@ -49,7 +49,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 7     | done | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
 | 9     | done | 1/5 | 2026-08-03 |
-| 10    | pending | 0/5 | — |
+| 10    | done | 1/5 | 2026-08-03 |
 | 11    | pending | 0/5 | — |
 | 12    | pending | 0/5 | — |
 
@@ -798,6 +798,14 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
   implementation. Golden-vector tested; a divergence is caught by determinism.
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
+
+Phase 10:
+- AC-10.1: PASS — 2026-08-03 (the extraction rule is documented as BINDING in registry/README.md: method given → inline component; method absent → class reference; prose never invented, never silently dropped)
+- AC-10.2: PASS — 2026-08-03 (an unanchored teachable mention WARNS naming the class and citing the rule; the negative control — the same mention properly anchored by a component — is SILENT)
+- AC-10.3: PASS — 2026-08-03 (authored pt/en patterns fire on an unknown subject)
+- AC-10.4: PASS — 2026-08-03 (technique.roux carries canonical_recipe → white-sauce-i, resolving under the scope rule)
+- AC-10.5: PASS — 2026-08-03 (validate green, accept 40/40)
+- PRECISION, twice corrected against the real corpus: (1) the first run flagged "stir", a VERB. Fixed by using a signal that already exists — only classes carrying `canonical_recipe` participate, which is exactly the noun/verb line: you MAKE a roux, you DO a stir. Precision now improves as curation does. (2) the authored pattern then caught "make a different" — an adjective. Fixed by requiring the captured word to END its noun phrase. A detector that reports adjectives gets muted within a week, and a muted detector is worse than none. The corpus now yields exactly ONE true positive and zero false ones.
 
 Phase 9:
 - AC-9.1: PASS — 2026-08-03 (record = target + source + content_hash + resolver_version. RFC 8785 named explicitly and implemented stdlib-only: sorted by UTF-16 code units, minimal escaping, ES number formatting. Hashing the GENERIC MAP is enforced — Canonicalise REFUSES a typed struct, because a struct silently drops exactly the unknown fields decode-compat requires readers to tolerate. Target bound INTO the preimage: identical bodies in different collections hash differently, so a record cannot be transplanted by relabelling a pack)
