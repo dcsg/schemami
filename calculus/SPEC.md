@@ -19,35 +19,47 @@ outside its stated domain as *unresolvable* (never as zero, never as a
 guess) — uncertainty flows to `enforceConstraints`, where critical
 severity refuses (DECISIONS #15).
 
+## Identifiers
+
+Every normative rule in this document carries a stable id, cited by
+tests, vectors and commits (the project's anything-implemented-has-an-id
+rule, applied protocol-side — the Calculus's own scheme, like registry
+ids): **R-<FN>-n** for rules (per-function Edges and the shared models),
+**N-n** for numeric-discipline rules, **WE-<FN>-n** for worked examples
+(each becomes a verbatim table test citing its id). Ids are append-only:
+a changed rule keeps its id with the change versioned; a removed rule's
+id is never reused. Conformance vectors reference rule ids in a
+`rules: []` field alongside `edge_classes`.
+
 ## Numeric discipline
 
-- Internal arithmetic: IEEE-754 binary64 (float64/JS number).
-- **Vector comparison tolerance:** numeric fields agree when
+- **N-1** — Internal arithmetic: IEEE-754 binary64 (float64/JS number).
+- **N-2** — **Vector comparison tolerance:** numeric fields agree when
   `|a − b| ≤ 1e−9 × max(1, |a|, |b|)` (relative-absolute hybrid).
   Integer-valued fields (counts, indices) must match exactly.
-- **Display rounding is a consumer concern.** Vectors and inter-function
+- **N-3** — **Display rounding is a consumer concern.** Vectors and inter-function
   values are NEVER pre-rounded. Where this SPEC shows a rounded number in
   prose it is presentation, not semantics.
-- Durations compute in **seconds** (integers where the source grammar
+- **N-4** — Durations compute in **seconds** (integers where the source grammar
   allows only whole units; the `s|m|h|d|w` grammar admits decimals, so
   duration arithmetic is float64 seconds under the same tolerance).
-- Division by zero, and any operation on an unresolvable operand, yields
+- **N-5** — Division by zero, and any operation on an unresolvable operand, yields
   *unresolvable* — a first-class outcome, not NaN propagation.
 
 ## Scaling model (shared by several functions)
 
 A **scale transformation** with factor `k > 0` maps quantities:
 
-- `{value, unit}` amounts: `value → value × k`, unless the amount carries
+- **R-MODEL-1** — `{value, unit}` amounts: `value → value × k`, unless the amount carries
   `scaling: fixed`, in which case `value → value` (the **fixed-quantity
   asymmetry** — the one thing uniform scaling cannot keep safe).
-- `{ratio, of}` amounts: unchanged (`ratio` is dimensionless against a
+- **R-MODEL-2** — `{ratio, of}` amounts: unchanged (`ratio` is dimensionless against a
   basis that itself scales — **ratio invariance**).
-- `{parts}` amounts: unchanged (ratio-first documents scale as a whole;
+- **R-MODEL-3** — `{parts}` amounts: unchanged (ratio-first documents scale as a whole;
   parts have no mass semantics).
-- `to_consistency` and other sensory quantities: unchanged (they are
+- **R-MODEL-4** — `to_consistency` and other sensory quantities: unchanged (they are
   tests, not numbers).
-- `k ≤ 0`, non-finite `k`: outside the domain — unresolvable.
+- **R-MODEL-5** — `k ≤ 0`, non-finite `k`: outside the domain — unresolvable.
 
 ## fn: scale
 
@@ -64,18 +76,18 @@ Unit-preserving: scaling never converts units. `{value: 250, unit: g} ×2
 = {value: 500, unit: g}`. Non-numeric quantities pass through unchanged.
 
 ### Edges
-- `scaling: fixed` quantities do not transform (asymmetry — see
+- **R-SCALE-1** — `scaling: fixed` quantities do not transform (asymmetry — see
   `enforceConstraints` for why this can refuse).
-- Maintenance components (`maintenance: true`) are **drawn from, not
+- **R-SCALE-2** — Maintenance components (`maintenance: true`) are **drawn from, not
   multiplied**: their internal quantities do not transform; the parent's
   *draw* of their output scales. `minBatchFloor` guards the draw.
-- Component references (`ref`) are boundary-crossing: the referenced
+- **R-SCALE-3** — Component references (`ref`) are boundary-crossing: the referenced
   document scales by the SAME factor composed with the reference's own
   quantity relationship (the referencing document owns *how much*; the
   referenced document owns *how* — when-vs-how, DECISIONS #26 glossary).
-- `k = 1` is the identity for every quantity, fixed or not.
+- **R-SCALE-4** — `k = 1` is the identity for every quantity, fixed or not.
 
-### Worked example
+### Worked example (WE-SCALE-1)
 Chucrute-shaped scope: cabbage `{value: 1000, unit: g}`, salt
 `{ratio: 0.02, of: veg}` where basis `veg` sums role `substrate`.
 `scale(doc, 0.6)` → cabbage `600 g`; salt ratio **unchanged at 0.02**
@@ -96,9 +108,9 @@ gram-valued (`unit: g`). Mixed or non-mass contributions make the basis
 unresolvable — never a partial sum (refusing beats under-counting).
 
 ### Edges
-- Role filter: an ingredient contributes when its `roles` intersect
+- **R-BASIS-1** — Role filter: an ingredient contributes when its `roles` intersect
   `where.roles`; an empty filter matches all ingredients.
-- **`include_components: true` — DEFINED HERE (the throwaway clamp
+- **R-BASIS-2** — **`include_components: true` — DEFINED HERE (the throwaway clamp
   refused these; the Calculus resolves them, which is the point):** the
   basis additionally includes matching ingredients of every INLINE
   component in the scope, recursively. Component REFERENCES (`ref`)
@@ -108,14 +120,14 @@ unresolvable — never a partial sum (refusing beats under-counting).
   ⚠ CHECKPOINT NOTE (Daniel): this upgrades clamp behaviour — no pinned
   parity case depends on the old refusal, but it is a semantic change
   from "always unresolvable" to "resolvable when decomposable".
-- `scaling: fixed` contributions: a basis total under a scale
+- **R-BASIS-3** — `scaling: fixed` contributions: a basis total under a scale
   transformation sums TRANSFORMED amounts — fixed contributions do not
   scale, so the basis total is scale-dependent when any contributor is
   fixed (this is exactly what breaks fixed-quantity ratios).
-- Zero total (no contributors, or all zero): the basis resolves to 0;
+- **R-BASIS-4** — Zero total (no contributors, or all zero): the basis resolves to 0;
   any ratio against it is *unresolvable* (division guard).
 
-### Worked example
+### Worked example (WE-BASIS-1)
 Massa-folhada scope: farinha `{500 g, roles: [flour]}`; basis `flour`
 sums role `flour`, no include_components → **500 g**. Água
 `{ratio: 0.55, of: flour}` resolves to `275 g`; sal `{ratio: 0.02}` to
@@ -132,17 +144,17 @@ the selection is silent).
 None — pure step-set computation.
 
 ### Edges
-- A step is active when it has no `when`, or its `when` is satisfied by
+- **R-GUARD-1** — A step is active when it has no `when`, or its `when` is satisfied by
   the selection (guard grammar per core `$defs/guard`).
-- Every selection MUST yield a connected, terminating DAG — this is
+- **R-GUARD-2** — Every selection MUST yield a connected, terminating DAG — this is
   L2-lint-guaranteed for authored documents (AC-VAL-002-3); the Calculus
   assumes it and MUST NOT re-verify (purity of concern), but an
   unsatisfiable selection (unknown option id, out-of-enum choice) is
   *unresolvable*, never an empty path.
-- Steps of inactive paths contribute nothing downstream (their produces
+- **R-GUARD-3** — Steps of inactive paths contribute nothing downstream (their produces
   never anchor).
 
-### Worked example
+### Worked example (WE-GUARD-1)
 Options `[{id: autolise, kind: toggle, default: true}]`; steps s1
 (no guard), s2 `{when: {option: autolise, is: true}}`, s3
 `{when: {option: autolise, is: false}}`, s4 (no guard).
@@ -162,7 +174,7 @@ ratios. Absolute bounds (`min_value`/`max_value`) compare in the
 amount's own unit AFTER transformation.
 
 ### Edges
-- **Fail-closed (DECISIONS #15):** an unresolvable resolved-value under
+- **R-ENFORCE-1** — **Fail-closed (DECISIONS #15):** an unresolvable resolved-value under
   a critical constraint REFUSES, carrying the kind of uncertainty and
   the authored reason. Warn severity surfaces an advisory instead.
   Uncertainty kinds (normative strings): `missing amount`,
@@ -170,17 +182,17 @@ amount's own unit AFTER transformation.
   `no basis named`, `basis "<name>" not gram-resolvable`,
   `parts-based (ratio-first): no gram semantics`,
   `quantity form not resolvable`.
-- Resolved ratio of a `{ratio, of}` amount is the ratio itself
+- **R-ENFORCE-2** — Resolved ratio of a `{ratio, of}` amount is the ratio itself
   (invariant). Of a gram amount vs a gram basis:
   `(value × fixedAwareFactor) ÷ (basisTotal under the same transform)`.
-- Absolute bounds move with scale: `min_value`/`max_value` compare the
+- **R-ENFORCE-3** — Absolute bounds move with scale: `min_value`/`max_value` compare the
   TRANSFORMED amount (fixed quantities transform by 1).
-- **Authored reasons are opaque pt/en strings** — passed through
+- **R-ENFORCE-4** — **Authored reasons are opaque pt/en strings** — passed through
   verbatim, never generated, never translated by the Calculus.
-- Severity routing matches v0.2: only `critical` refuses; `warn`
+- **R-ENFORCE-5** — Severity routing matches v0.2: only `critical` refuses; `warn`
   advises; absent severity defaults to warn (advisory).
 
-### Worked example
+### Worked example (WE-ENFORCE-1)
 Fixed-salt chucrute: cabbage `1000 g` (scalable), salt
 `{value: 20, unit: g, scaling: fixed}` with critical
 `{min_ratio: 0.018, of: veg}` (authored reason attached).
@@ -199,16 +211,16 @@ under a scale factor `k`.
 `min_batch`'s own unit (grams in practice).
 
 ### Edges
-- Maintenance cultures are drawn from, not multiplied (see `scale`).
-- **The floor guards the draw:** `k < 1` implies a draw below the
+- **R-MINBATCH-1** — Maintenance cultures are drawn from, not multiplied (see `scale`).
+- **R-MINBATCH-2** — **The floor guards the draw:** `k < 1` implies a draw below the
   minimum viable batch → REFUSE (you cannot build 3 g of levain).
   `k ≥ 1` never violates the floor (the culture is not multiplied; a
   larger draw is bounded by the culture's actual batch, an execution
   concern outside the Calculus).
-- Non-maintenance `min_batch` components: the floor compares the
+- **R-MINBATCH-3** — Non-maintenance `min_batch` components: the floor compares the
   component's scaled output against `min_batch` directly.
 
-### Worked example
+### Worked example (WE-MINBATCH-1)
 Massa-mãe `maintenance: true, min_batch: {value: 100, unit: g}`;
 `scale(doc, 0.05)` → implied draw `5 g < 100 g` → **REFUSED** with the
 min_batch floor message. `scale(doc, 3)` → no floor violation.
@@ -228,7 +240,7 @@ TOTAL (every quantity form has a defined outcome: numeric transforms,
 non-numeric passes through). It exists so `scale`, `resolveBases` and
 `enforceConstraints` provably share one asymmetry rule.
 
-### Worked example
+### Worked example (WE-FIXED-1)
 `{value: 20, unit: g, scaling: fixed}` under k=2 → `20 g`.
 `{value: 1000, unit: g}` under k=2 → `2000 g`.
 `{ratio: 0.02, of: veg}` under any k → unchanged.
@@ -244,13 +256,13 @@ not mass — doubling a cake does not double bake time).
 Seconds internally; the document's duration grammar externally.
 
 ### Edges
-- v1: identity on every window; the function exists as the NAMED
+- **R-DUR-1** — **R-FIXED-1** — v1: identity on every window; the function exists as the NAMED
   extension point so a future geometry-aware model changes this SPEC,
   not call sites.
-- Windows never invert (min ≤ target ≤ max holds by admission; identity
+- **R-DUR-2** — **R-FIXED-2** — Windows never invert (min ≤ target ≤ max holds by admission; identity
   preserves it).
 
-### Worked example
+### Worked example (WE-DUR-1)
 `{min: 25m, target: 30m, max: 35m}` under k=2 → unchanged
 `{min: 25m, target: 30m, max: 35m}` (advisory territory: the renderer
 may flag that scaled geometry can shift bake behaviour — presentation,
@@ -265,15 +277,15 @@ An admitted document: its inline components and its method (steps).
 None.
 
 ### Edges
-- Mise-en-place projection (DECISIONS #26 glossary; the v0.2 viewer's
+- **R-ORDER-1** — Mise-en-place projection (DECISIONS #26 glossary; the v0.2 viewer's
   order, now specified): every inline component's method precedes the
   parent method that consumes it.
-- Component order among themselves: dependency order when one component
+- **R-ORDER-2** — Component order among themselves: dependency order when one component
   `uses` another's output; declaration order otherwise (stable).
-- Component references (`ref`) contribute a placeholder position (their
+- **R-ORDER-3** — Component references (`ref`) contribute a placeholder position (their
   method lives in the referenced document).
 
-### Worked example
+### Worked example (WE-ORDER-1)
 Torta: components [ganache-cobertura, calda-cafe], parent steps s1–s5
 with s5 `uses: [ganache-cobertura, calda-cafe]` →
 **ganache-cobertura, calda-cafe, then s1…s5**.
@@ -288,17 +300,17 @@ inline components, with each step's optional `track`.
 None.
 
 ### Edges
-- Steps without `track` inherit their scope's implicit track (one per
+- **R-INTERLEAVE-1** — Steps without `track` inherit their scope's implicit track (one per
   component, one for the parent).
-- Output: a topological order of ALL active steps respecting `after`
+- **R-INTERLEAVE-2** — Output: a topological order of ALL active steps respecting `after`
   and produced-intermediate anchoring, annotated with track lanes —
   steps on different tracks with no dependency path between them are
   concurrent ("meanwhile" pairs).
-- Determinism: ties break by (track declaration order, then step
+- **R-INTERLEAVE-3** — Determinism: ties break by (track declaration order, then step
   declaration order) — the same document always interleaves
   identically.
 
-### Worked example
+### Worked example (WE-INTERLEAVE-1)
 Tracks A: a1→a2, B: b1→b2, with a2 `after: [b1]` →
 order `a1, b1, {a2 ∥ b2}` where a2/b2 are concurrent; rendered as
 "meanwhile" in consumers.
@@ -314,7 +326,7 @@ An admitted document with durations on its steps/components. Produces
 Seconds internally (window fields are duration windows).
 
 ### Edges
-- **Window arithmetic:** `target` propagates by scalar arithmetic
+- **R-SCHED-1** — **Window arithmetic:** `target` propagates by scalar arithmetic
   (start = max over predecessors of (their start.target + their
   duration.target)). `min`/`max` propagate as CONSERVATIVE interval
   bounds: earliest possible start = max over predecessors of
@@ -322,22 +334,22 @@ Seconds internally (window fields are duration windows).
   duration.max). Missing `min`/`max` on a source window inherit its
   `target` (a point window). A step with NO duration contributes zero
   time (point event) — its window is `{0,0,0}` for propagation.
-- Prerequisite placement: a component consumed by step S starts early
+- **R-SCHED-2** — Prerequisite placement: a component consumed by step S starts early
   enough that its own schedule completes by S's start — component
   start_offset = S.start − component total duration (window-wise, same
   conservative rule). Offsets MAY therefore be negative relative to the
   parent method's t0; consumers render "the day before" from exactly
   this.
-- Cycles cannot occur (admitted documents are DAG-checked at L2).
-- Steps excluded by guard selection do not appear.
+- **R-SCHED-3** — Cycles cannot occur (admitted documents are DAG-checked at L2).
+- **R-SCHED-4** — Steps excluded by guard selection do not appear.
 
-### Worked example: window-propagation
+### Worked example: window-propagation (WE-SCHED-1)
 s1 duration `{min: 10m, target: 12m, max: 15m}`; s2 after s1, duration
 `{target: 30m}` (point window 30/30/30). s2.start = `{min: 600s,
 target: 720s, max: 900s}`; s2 end = `{min: 2400s, target: 2520s,
 max: 2700s}`.
 
-### Worked example: prerequisite-placement
+### Worked example: prerequisite-placement (WE-SCHED-2)
 Torta: s5 (assemble) start.target computed from s1–s4 = say `T`. Calda
 total duration `{target: 20m}` → calda start_offset.target = `T − 1200s`
 (before the parent's later steps — and if a component outlasts the lead

@@ -100,6 +100,10 @@ sidecars.
   (`examples/*.rcp.yaml`) or registry entries — their identifier rules are
   the protocol's own (DECISIONS #23, registry-governance guideline), not
   this project-artifact scheme.
+- `calculus/SPEC.md` likewise carries the protocol's own scheme (defined
+  in its Identifiers section, 2026-08-03): `R-<FN>-n` normative rules,
+  `N-n` numeric rules, `WE-<FN>-n` worked examples — append-only, cited
+  by conformance vectors (`rules:` field), table tests and commits.
 - Feature-scoped protections (SP-NNN) and open questions (OQ-N) keep their
   simple sequential ids — they are PRD-local by design.
 
