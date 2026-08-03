@@ -4,7 +4,7 @@ type: prd
 id: PRD-003
 title: RCP v0.3 — the protocol computes
 slug: rcp-v03-protocol-computes
-status: draft
+status: accepted
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-03T06:48:24Z'
@@ -238,8 +238,12 @@ revision_history:
   action: edited
   note: 'Daniel''s review: non-goals lacked deferral ids (traceability rule). Book-media non-goal now
     cites DECISIONS #11; nutrition/cost minted as FEAT-CALC-003 (deferred) and cited.'
+- at: '2026-08-03T07:06:49Z'
+  author: Daniel Gomes
+  action: edited
+  note: Accepted by Daniel after non-goals review fix. Proceeding to SPEC-003.
 extensions: {}
 _sync:
-  md_hash: 9a74b3457f6f491627e62570eeaf79adca3b99128b992efb877f15b6700fbc9d
-  yaml_hash: 667bb32a0e84a10c992e18f5f1645c60cd3d82152930cf6c58460bc4a80c238d
-  synced_at: '2026-08-03T07:05:15Z'
+  md_hash: 5c662241dec4813c0a23e104f809aebe58246ac1ab80feea4e6ab1880ae289ba
+  yaml_hash: fef6585c7a441e7b48f5d97a51eddde03c438675dc4a9c7af593930272297911
+  synced_at: '2026-08-03T07:06:49Z'

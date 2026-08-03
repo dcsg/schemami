@@ -1,6 +1,6 @@
 # PRD-003: RCP v0.3 — the protocol computes
 
-**Status:** draft
+**Status:** accepted
 **Rigor:** solo
 **Author:** Daniel Gomes
 **Created:** 2026-08-03T01:10:00Z
