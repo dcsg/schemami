@@ -12,6 +12,7 @@ created_at: 2026-08-03T01:35:00Z
 references:
   adrs: [ADR-001, ADR-002]
   invariants: []
+  vocabulary: docs/ubiquitous-language.md (DECISIONS #26)
 ---
 
 # SPEC-003: RCP v0.3 implementation
@@ -50,7 +51,10 @@ the PRD: the "old reader" for decode-compat cannot be the v0.1 schema —
 DECODERS, so the fixture needs v0.1-era decode structs that must-ignore
 unknowns. The vector mechanism scales up from its proven v0.2 precedent:
 the reference implementation writes, the second implementation replays,
-disagreements are fixed in the replayer, never in vectors.
+disagreements are fixed in the replayer, never in vectors. Prose
+throughout conforms to the binding ubiquitous language (DECISIONS #26):
+schedule (of a method) — never "execution plan"; sub-recipe for the
+producing document; method strictly for authored steps.
 
 ## Existing Architecture
 

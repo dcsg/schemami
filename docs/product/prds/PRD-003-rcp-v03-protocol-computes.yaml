@@ -183,6 +183,9 @@ solution_references:
 - type: doc
   path_or_url: docs/research/CONCLUSIONS.md
   description: §7 — the founding obligations this PRD discharges
+- type: doc
+  path_or_url: docs/ubiquitous-language.md
+  description: 'Binding domain vocabulary (DECISIONS #26) this PRD''s prose conforms to'
 stakeholders: []
 dependencies: []
 nfrs: []
@@ -247,8 +250,13 @@ revision_history:
   author: Daniel Gomes
   action: edited
   note: 'Back-reference added: source_specs += SPEC-003'
+- at: '2026-08-03T08:30:56Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Vocabulary sweep after DECISIONS #26: prose already conformant (written post-research); binding
+    glossary cited in solution references.'
 extensions: {}
 _sync:
-  md_hash: 5c662241dec4813c0a23e104f809aebe58246ac1ab80feea4e6ab1880ae289ba
-  yaml_hash: 3023ae9e33af13108bef29804be4eab5a00cbe059dc2ecd6129092357576111d
-  synced_at: '2026-08-03T07:09:58Z'
+  md_hash: ef4d8ef156baa8f3b067f79abc48053681e5d88b9ed785362a2924318891d12f
+  yaml_hash: ac8e429a51bd95c16efe127ed78918379f2be716c5e423153766ca4f2082a133
+  synced_at: '2026-08-03T08:30:56Z'

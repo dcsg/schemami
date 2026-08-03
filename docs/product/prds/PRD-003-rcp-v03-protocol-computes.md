@@ -103,6 +103,7 @@ Same canonical personas ([docs/personas.md](../../personas.md)).
 - `tools/viewer/conformance/` — the vector mechanism's proven precedent (L1, v0.2)
 - [ADR-002](../../architecture/decisions/ADR-002-viewer-engine-seam-bun.md) — the seam the TS Calculus enters through
 - `docs/research/CONCLUSIONS.md` §7 — the founding obligations this PRD discharges
+- [ubiquitous-language.md](../../ubiquitous-language.md) — binding vocabulary (DECISIONS #26): schedule (of a method), sub-recipe, prep, technique
 
 ## Protections
 

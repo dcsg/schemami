@@ -328,6 +328,10 @@ solution_references:
 - type: doc
   path_or_url: docs/product/specs/SPEC-002-rcp-v02-implementation/spec.yaml
   description: 'DS/CMP numbering baseline and the seam this spec grows (source: spec)'
+- type: doc
+  path_or_url: docs/ubiquitous-language.md
+  description: 'Binding domain vocabulary (DECISIONS #26) — schedule (of a method), sub-recipe, prep,
+    technique (source: spec)'
 supersedes: null
 superseded_by: null
 deprecated_at: null
@@ -345,8 +349,13 @@ revision_history:
   author: Daniel Gomes
   action: edited
   note: Accepted by Daniel. Proceeding to artifacts.
+- at: '2026-08-03T08:30:56Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Vocabulary sweep after DECISIONS #26: prose already conformant; binding glossary cited in references
+    and Context.'
 extensions: {}
 _sync:
-  md_hash: 01b829201cfcaf01b6dfc9c9dd6b3ca5754790831906733edfc965b6d805af33
-  yaml_hash: 5cbbab5c00bebd54c595c8d577ac32c0615e86654832f0656f83599c2f3c17bb
-  synced_at: '2026-08-03T07:27:07Z'
+  md_hash: b3940f63b3049703b563c8a1c7db5bf8d75a51ba26ed003eae70cfb04404aac1
+  yaml_hash: f1af27495e34ac06ce8d7cd9fcee6405e191feb92bc8c16063400e74a14862f2
+  synced_at: '2026-08-03T08:30:56Z'
