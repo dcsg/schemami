@@ -46,7 +46,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
-| 7     | pending | 0/5 | — |
+| 7     | done | 1/5 | 2026-08-03 |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
 | 10    | pending | 0/5 | — |
@@ -798,6 +798,13 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
   implementation. Golden-vector tested; a divergence is caught by determinism.
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
+
+Phase 7:
+- AC-7.1: PASS — 2026-08-03 (VERSIONING.md gains "## Document revisions (binding, v0.4)" between Change rules and Decode-compat; every pre-existing anchor survives, asserted by test as well as by accept.sh. Closes PRD OQ-5: when version increments, published (collection,id,version) immutable, supersession by successor alone — recorded as a deliberate minimalism rather than an oversight)
+- AC-7.2: PASS — 2026-08-03 (DECISIONS #28 stage-forked identity in BOTH homes with the measurement-wins contradiction rule; #29 compiled variants rejected on constitutional grounds — a second execution semantics beside the Calculus, formulas-in-data. A test asserts the OPERATIVE GROUNDS are present, not just the entries: a rejection recorded without its reasoning invites silent re-adoption)
+- AC-7.3: PASS — 2026-08-03 (measurement outside stage bounds WARNS naming measurement, stage, class and decision, and the document STANDS; an unknown stage id is an ERROR; within bounds is SILENT — a rule that warns on correct documents is noise, and noise is how warnings get ignored. INVERTED PROOF: disabling the comparison fails TestStageContradiction)
+- AC-7.4: PASS — 2026-08-03 (technique.roux minted with graded stages from the 1910 source — pale 2-5 min, brown 8-20 min — plus a canonical_recipe link to white-sauce-i. TestRouxClassHasGradedStages asserts ordering and that each stage carries a measured checkpoint: a stage without one is a label, not a stage. Registry now 109 entries)
+- LAYER 2 GATE: GREEN — 2026-08-03 (validate, accept 37/37, conformance 85, calculus 25, Go tests all packages, provenance clean, vectors byte-unchanged). **TAG OPPORTUNITY.**
 
 ## Phase 5 note — the enum shrank, on evidence
 

@@ -279,50 +279,50 @@ phases:
     verify: make validate && make accept
 - phase: 7
   title: Document revisions, stages, and two recorded decisions
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-7.1
     text: VERSIONING.md carries the document-revision section and every pre-existing H2 anchor is unchanged
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: grep -q 'SchemaVer' schema/VERSIONING.md && grep -qi 'decode' schema/VERSIONING.md && grep
       -q 'revision' schema/VERSIONING.md
   - id: AC-7.2
     text: 'DECISIONS #28 and #29 exist with their stated grounds'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: grep -q '^### 28' docs/research/DECISIONS.md && grep -q '^### 29' docs/research/DECISIONS.md
   - id: AC-7.3
     text: A measurement outside its stage bounds WARNS with measurement authoritative, while a severity-critical
       constraint in the same document still REFUSES
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestStageContradiction ./...
   - id: AC-7.4
     text: Two example documents demonstrate both sides of the identity line and both validate
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate
   - id: AC-7.GATE
     text: '** all gates green, tag opportunity'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make conformance && make calculus && make accept
 - phase: 8
   title: 'Calculus: referenced preparations become schedulable (opus)'

@@ -47,6 +47,43 @@ happen later; narrowing never will. Typo'd fields are rejected everywhere
 (virtuous intolerance): the writer side stays strict so the reader side's
 tolerance means something.
 
+## Document revisions (binding, v0.4)
+
+Everything above versions the SCHEMA. This section versions a
+DOCUMENT — a distinction the file carried implicitly until v0.4 made
+pins load-bearing. `rcp:` is the protocol MODEL; `version:` is the
+revision of the document you are reading.
+
+**When `version` MUST increment.** Any change to a PUBLISHED document's
+ingredients, steps, constraints, yields or lineage. Prose-only edits
+(a clearer note, a fixed typo, a translation added) MAY leave it
+unchanged — a revision marks a change to what the recipe *is*, not to
+how it reads. A document that has never been published (`provenance.status`
+of `draft` or `unverified`) may change freely without incrementing:
+revisions exist for consumers, and a draft has none.
+
+**A published revision is immutable.** The triple
+`(collection, id, version)` names exactly one document body, forever. A
+correction is a NEW revision, never an edit in place. This is what makes
+a pin meaningful: `ref: ganache-chocolate, version: 1` is a promise that
+the bytes behind it cannot change under the reference.
+
+**Supersession is signalled by the successor alone.** There is no
+`superseded_by` pointer in MODEL 1. Revision N+1 of an id supersedes
+revision N by existing; a consumer holding both renders the higher one
+unless pinned to the lower. This is a deliberate minimalism, recorded
+so its absence is a choice rather than an oversight — a separate
+pointer would need its own consistency rules, and the ordering already
+carries the fact. Revisit if a real case needs to say "N is withdrawn"
+rather than "N+1 exists".
+
+**A pin that no longer matches is reported, not repaired.** When a
+target moves past a pinned revision, validation reports staleness
+naming both revisions; when a pin names a revision the target does not
+declare, that is an error. Nothing propagates automatically — variants
+are self-contained snapshots and drift is detected rather than
+compiled away (DECISIONS #29).
+
 ## Decode-compatibility contract (binding, DECISIONS #14)
 
 "Data outlives code." Every reader implementation MUST:

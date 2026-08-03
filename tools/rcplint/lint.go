@@ -32,11 +32,15 @@ type Registry struct {
 	Stages      map[string]bool
 	Techniques  map[string]bool
 	Roles       map[string]bool
+	// TechniqueEntries keeps the full technique bodies, not just their
+	// ids: graded stages (DECISIONS #28) live inside them.
+	TechniqueEntries map[string]map[string]any
 }
 
 func loadRegistry(root string) (*Registry, *Lint, error) {
 	r := &Registry{Ingredients: map[string]bool{}, Primitives: map[string]bool{}, Equipment: map[string]bool{},
-		Tests: map[string]bool{}, Stages: map[string]bool{}, Techniques: map[string]bool{}, Roles: map[string]bool{}}
+		Tests: map[string]bool{}, Stages: map[string]bool{}, Techniques: map[string]bool{}, Roles: map[string]bool{},
+		TechniqueEntries: map[string]map[string]any{}}
 	l := &Lint{}
 	for kind, set := range map[string]map[string]bool{"ingredient": r.Ingredients, "primitive": r.Primitives, "equipment": r.Equipment} {
 		glob, _ := filepath.Glob(filepath.Join(root, "registry/entries", kind, "*.yaml"))
@@ -82,7 +86,9 @@ func loadRegistry(root string) (*Registry, *Lint, error) {
 	for _, tp := range techGlob {
 		if docs, err := LoadDocuments(tp); err == nil && len(docs) == 1 {
 			if tm, ok := docs[0].Value.(map[string]any); ok {
-				r.Techniques[fmt.Sprintf("%v", tm["id"])] = true
+				id := fmt.Sprintf("%v", tm["id"])
+				r.Techniques[id] = true
+				r.TechniqueEntries[id] = tm
 			}
 		}
 	}
@@ -113,6 +119,7 @@ func lintDocument(d Document, reg *Registry, siblings map[string]map[string]any,
 	loc := fmt.Sprintf("%s#%s", filepath.Base(d.File), d.ID)
 	lintRecipeScope(loc, m, nil, reg, siblings, l)
 	lintLineage(loc, m, siblings, l)
+	lintStageRefs(loc, m, loadStages(reg.TechniqueEntries), l)
 }
 
 func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, reg *Registry, siblings map[string]map[string]any, l *Lint) {

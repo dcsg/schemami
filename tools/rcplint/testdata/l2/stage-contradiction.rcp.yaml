@@ -1,0 +1,18 @@
+# Target rule (WARNING fixture): a measurement outside the referenced
+# stage's class bounds. The MEASUREMENT wins and the document stands —
+# a naming disagreement, not a safety bound (DECISIONS #28).
+rcp: 1
+id: fx-stage-disagree
+kind: component
+name: { en: Roux cooked past its label }
+ingredients:
+  - { id: b, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp } }
+steps:
+  - id: cook
+    primitive: { id: primitive.heat, v: 1 }
+    uses: [b]
+    until:
+      - kind: measurement
+        value: 15
+        unit: min
+        stage: { class: technique.roux, id: pale }

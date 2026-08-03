@@ -1,0 +1,16 @@
+# Target rule: a stage id the class does not declare.
+rcp: 1
+id: fx-stage-unknown
+kind: component
+name: { en: Unknown stage }
+ingredients:
+  - { id: b, item: ingredient.fat.butter, amount: { value: 2, unit: tbsp } }
+steps:
+  - id: cook
+    primitive: { id: primitive.heat, v: 1 }
+    uses: [b]
+    until:
+      - kind: measurement
+        value: 3
+        unit: min
+        stage: { class: technique.roux, id: mahogany }

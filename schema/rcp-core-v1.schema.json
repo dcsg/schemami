@@ -979,6 +979,26 @@
         },
         "unit": {
           "$ref": "#/$defs/unit"
+        },
+        "stage": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "class",
+            "id"
+          ],
+          "description": "Reference to a graded stage on a preparation class (DECISIONS #28). The class owns what the stage MEANS; this names which one the recipe is cooking to. When the recipe's own measurement falls outside the class's bounds for that stage, validation WARNS naming both and the MEASUREMENT WINS — books name stages loosely and an author who measured did so deliberately. A labelling disagreement, never a safety bound: severity-critical constraints stay fail-closed under the Calculus.",
+          "properties": {
+            "class": {
+              "$ref": "#/$defs/slug",
+              "description": "The registry class carrying the stages."
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9._-]*$",
+              "description": "The stage id within that class."
+            }
+          }
         }
       },
       "additionalProperties": false

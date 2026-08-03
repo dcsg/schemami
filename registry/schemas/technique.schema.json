@@ -98,6 +98,56 @@
           "description": "Pinned revision. Unpinned links resolve to whatever the target currently is; pinned ones report drift when it moves."
         }
       }
+    },
+    "stages": {
+      "type": "array",
+      "description": "GRADED STAGE OUTCOMES (DECISIONS #28): one preparation whose identity forks on a measured checkpoint, rather than N near-duplicate sibling classes. Escoffier's roux blanc/blond/brun differ only by cook time; Portugal's pontos de açúcar are temperature-indexed stages of one calda. A recipe's endpoint may REFERENCE a stage by id, binding the measurement to the name. Distinct from a VARIANT, which is a parallel preparation with different inputs.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "display_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "description": "Stage id, unique within this class."
+          },
+          "display_name": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The stage's name in the kitchen (blanc, blond, brun; pérola, caramelo)."
+          },
+          "order": {
+            "type": "integer",
+            "description": "Position in the graded sequence — what makes these stages rather than siblings."
+          },
+          "checkpoint": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "The MEASURED bound that defines this stage. Bounded data, never prose: a stage a renderer cannot check is a label, not a stage.",
+            "properties": {
+              "quantity": {
+                "type": "string",
+                "description": "What is measured: temperature, duration, colour."
+              },
+              "unit": {
+                "type": "string"
+              },
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "additionalProperties": false,

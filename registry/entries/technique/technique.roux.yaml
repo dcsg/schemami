@@ -1,0 +1,38 @@
+id: technique.roux
+kind: technique
+display_name: { pt: Roux, en: Roux }
+definition: >-
+  Butter and flour cooked together as the thickening base of a sauce. One
+  preparation whose identity forks on how far the cooking goes: left pale it
+  is a roux, cooked to colour it is a brown roux, and the two behave
+  differently — browning lessens flour's thickening power because its starch
+  is changed to dextrine. Graded stages of one technique, not separate
+  techniques.
+stages:
+  - id: pale
+    display_name: { pt: Roux claro, en: Pale roux }
+    order: 1
+    checkpoint:
+      quantity: duration
+      unit: min
+      min: 2
+      max: 5
+  - id: brown
+    display_name: { pt: Roux escuro, en: Brown roux }
+    order: 2
+    checkpoint:
+      quantity: duration
+      unit: min
+      min: 8
+      max: 20
+teaches:
+  - label: >-
+      Farmer, The Boston Cooking-School Cook Book (1910), "Fish and Meat
+      Sauces": "Butter and flour are usually cooked together for thickening
+      sauces. When not browned, it is called roux; when browned, brown roux."
+    url: https://www.gutenberg.org/ebooks/65061
+canonical_recipe:
+  collection: boston-1910
+  id: white-sauce-i
+  version: 1
+status: active
