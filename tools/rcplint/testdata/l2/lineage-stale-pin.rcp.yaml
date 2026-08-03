@@ -1,0 +1,23 @@
+# Target rule (WARNING fixture): the target has moved PAST the pin.
+# Drift is detected, never compiled away (DECISIONS #29).
+rcp: 1
+id: fx-stale-parent
+kind: component
+version: 3
+name: { en: Parent now at version 3 }
+ingredients:
+  - { id: t, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: st, primitive: { id: primitive.mix, v: 1 }, uses: [t] }
+---
+rcp: 1
+id: fx-stale-child
+kind: component
+name: { en: Variant pinned at an older revision }
+lineage:
+  family: fx-stale-family
+  variant_of: { id: fx-stale-parent, version: 1 }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

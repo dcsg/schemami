@@ -1,0 +1,23 @@
+# Target rule: a component pin naming a DIFFERENT revision than the
+# target declares. Before v0.4 only the PRESENCE of a version was
+# checked, so this passed silently — the hardening (SR-VAL-003).
+rcp: 1
+id: fx-mismatch-target
+kind: component
+version: 2
+name: { en: Target at version 2 }
+ingredients:
+  - { id: t, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: st, primitive: { id: primitive.mix, v: 1 }, uses: [t] }
+---
+rcp: 1
+id: fx-mismatch-pinner
+kind: component
+name: { en: Pinner pinning a revision that does not exist }
+components:
+  - { id: dep, ref: fx-mismatch-target, version: 1 }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g }, component: dep }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

@@ -112,6 +112,7 @@ func lintDocument(d Document, reg *Registry, siblings map[string]map[string]any,
 	}
 	loc := fmt.Sprintf("%s#%s", filepath.Base(d.File), d.ID)
 	lintRecipeScope(loc, m, nil, reg, siblings, l)
+	lintLineage(loc, m, siblings, l)
 }
 
 func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, reg *Registry, siblings map[string]map[string]any, l *Lint) {
@@ -178,12 +179,15 @@ func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, 
 			} else if !known {
 				l.errf("%s: component %q references %q which does not resolve in this collection — a reference into another collection MUST name it (SR-PACK-002)", loc, id, ref)
 			}
-			// unversioned pin: version pinned but target declares no version
-			if _, pinned := cm["version"]; pinned {
-				if known {
-					if _, has := target["version"]; !has {
-						l.errf("%s: component %q pins version against target %q which declares no version", loc, id, ref)
-					}
+			// Pin discipline (SR-VAL-003). Before v0.4 this checked only
+			// that the target declared SOME version — a stale pin passed
+			// silently. It now compares.
+			if pinnedRaw, pinned := cm["version"]; pinned && known {
+				declared, declares := declaredVersion(target)
+				if !declares {
+					l.errf("%s: component %q pins version against target %q which declares no version", loc, id, ref)
+				} else if want, ok := toFloat(pinnedRaw); ok && int(want) != declared {
+					l.errf("%s", formatPinMismatch(loc, id, ref, int(want), declared))
 				}
 			}
 		} else {
@@ -644,6 +648,7 @@ func runLint(root string) int {
 		for _, d := range col.Docs {
 			lintDocument(d, reg, siblings, l)
 		}
+		lintFamilies(col.ID, col.Docs, l)
 		lintComponentCycles(siblings, l)
 	}
 	for _, w := range l.Warnings {

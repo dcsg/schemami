@@ -43,7 +43,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 1     | done | 1/5 | 2026-08-03 |
 | 2     | done | 1/5 | 2026-08-03 |
 | 3     | done | 1/5 | 2026-08-03 |
-| 4     | pending | 0/5 | — |
+| 4     | done | 1/5 | 2026-08-03 |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
@@ -828,5 +828,12 @@ Phase 3:
 - LAYER 1 GATE: GREEN — 2026-08-03 (validate, conformance 85, calculus 25, accept 37/37, Go tests all packages; vectors byte-unchanged). **TAG OPPORTUNITY.**
 
 Why this corpus earns its place: the 1910 text contains the roux problem verbatim — "Butter and flour are usually cooked together for thickening sauces. When not browned, it is called roux; when browned, brown roux" — which is both the FEAT-REG-006 motivating case and a stage fork (DECISIONS #28) from a citable source. Scalloped Eggs lists "1 pint White Sauce I" as an INGREDIENT, the cross-document reference that had nowhere to resolve before v0.4. White Sauce I/II are a variant family differing in one quantity, whose book method is literally "Make same as Thin White Sauce" — a method by reference.
+
+Phase 4:
+- AC-4.1: PASS — 2026-08-03 (every lineage field described, and the three axes named as distinct rather than overloaded per research 09 F3: forked_from = DERIVATION, variant_of = SIBLING RELATION, family = CAPABILITY grouping. New $defs/lineageRef gives forked_from/variant_of componentRef's pin shape — id + optional collection + optional version)
+- AC-4.2: PASS — 2026-08-03 (mismatched pin FAILS naming both revisions; unversioned-pin still yields its exact original "declares no version" verdict and is asserted NOT to report a mismatch — the two paths provably did not collapse. INVERTED PROOF: reverting the compare to presence-only fails both TestPinMismatchAndPresenceAreDistinctPaths and TestL2FixturesOneRuleEach; restored green)
+- AC-4.3: PASS — 2026-08-03 (stale pin + hard mismatch on one document: exactly 1 warning and exactly 1 error, the error unmasked. Staleness is deliberately a WARNING — the variant still renders; a pin AHEAD of the target is an ERROR, since it names a revision that does not exist)
+- AC-4.4: PASS — 2026-08-03 (same-family agreement silent; single-member family warns naming the family and the likely cause; each collection judges only its own members)
+- AC-4.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 85, calculus 25, Go tests all packages, vectors byte-unchanged; TestHardenedPinLeavesCorpusGreen asserts the shipped brownie→ganache pin did not redden)
 
 FINDING for Phase 5: the White Sauce family varies by CONSISTENCY (2 vs 3 tablespoons flour), an axis absent from the enum (equipment/technique/region/season/scale/other). It currently needs `other` + variant_label. Real evidence from a real corpus that the axis list may want a consistency or texture axis — to be weighed in Phase 5 rather than silently patched.

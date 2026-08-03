@@ -1,0 +1,23 @@
+# Target rule: a lineage pin AHEAD of the target — the pin names a
+# revision that does not exist. Distinct from staleness (target ahead
+# of pin), which is a warning, not an error.
+rcp: 1
+id: fx-lineage-parent
+kind: component
+version: 1
+name: { en: Parent at version 1 }
+ingredients:
+  - { id: t, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: st, primitive: { id: primitive.mix, v: 1 }, uses: [t] }
+---
+rcp: 1
+id: fx-lineage-child
+kind: component
+name: { en: Child pinning a future revision }
+lineage:
+  variant_of: { id: fx-lineage-parent, version: 4 }
+ingredients:
+  - { id: x, item: ingredient.water, amount: { value: 1, unit: g } }
+steps:
+  - { id: s, primitive: { id: primitive.mix, v: 1 }, uses: [x] }

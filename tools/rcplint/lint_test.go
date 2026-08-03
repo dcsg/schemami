@@ -47,6 +47,8 @@ func TestL2FixturesOneRuleEach(t *testing.T) {
 		{"too-many-options.rcp.yaml", "soft cap of 3"},
 		{"component-cycle.rcp.yaml", "component reference cycle"},
 		{"unversioned-pin.rcp.yaml", "declares no version"},
+		{"componentref-pin-mismatch.rcp.yaml", "must name the revision it was written against"},
+		{"lineage-pin-ahead.rcp.yaml", "names a revision that does not exist"},
 		{"profile-numeric-bound.rcp.yaml", "restates a numeric safety bound"},
 		{"unknown-technique.rcp.yaml", "has no entry under registry/entries/technique/"},
 	}

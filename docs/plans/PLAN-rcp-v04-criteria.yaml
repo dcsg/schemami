@@ -141,49 +141,49 @@ phases:
     verify: make validate && make conformance && make calculus && make accept
 - phase: 4
   title: 'Lineage: described, pinned, and the pin check hardened'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-4.1
     text: Every lineage field carries a schema description
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestLineageDescribed ./...
   - id: AC-4.2
     text: A mismatched componentRef pin FAILS, and `unversioned-pin` still produces its exact existing
       "declares no version" verdict
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run 'TestL2FixturesOneRuleEach|TestPinMismatch'
   - id: AC-4.3
     text: Stale pin + mismatch on one edge → one warning and one failure, failure unmasked
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestPinStaleAndMismatch ./...
   - id: AC-4.4
     text: Same-family disagreement errors; single-member family warns; cross-collection silent
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestFamilyValidation ./...
   - id: AC-4.5
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make accept
 - phase: 5
   title: 'Variant discriminator: machine-readable at last'

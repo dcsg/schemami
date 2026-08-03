@@ -330,21 +330,26 @@
         },
         "lineage": {
           "type": "object",
+          "description": "Where this document came from and what it sits beside. Three distinct axes, never overloaded (research 09 F3: every mature domain — STEP, SAP, Gradle, Maven — keeps version, variant and fork on separate fields): `forked_from` is DERIVATION (this document began as a copy of that one), `variant_of` is SIBLING RELATION (a parallel form of the same thing, coexisting now), `family` is CAPABILITY grouping (these documents fill the same role). A fork or variant is always a NEW document with its own id and a complete self-contained body — never a computed diff.",
+          "additionalProperties": false,
           "properties": {
             "forked_from": {
-              "$ref": "#/$defs/slug"
+              "$ref": "#/$defs/lineageRef",
+              "description": "DERIVATION: the document this one began as a copy of. Version-pinnable, so a parent that moves past the pin is reported as drift rather than diverging silently."
             },
             "family": {
-              "$ref": "#/$defs/slug"
+              "$ref": "#/$defs/slug",
+              "description": "CAPABILITY grouping — the answer to 'which documents fill this same role?' (all the white sauces, all the rouxs). Members of one family agree on this slug within a collection; a family with exactly one member is warned as a probable typo. Not a type and not a container: being a family member is curation, not essence."
             },
             "variant_of": {
-              "$ref": "#/$defs/slug"
+              "$ref": "#/$defs/lineageRef",
+              "description": "SIBLING RELATION: this document is a parallel form of that one, both legitimate and coexisting. Distinct from forked_from, which is about origin: a variant may be authored fresh, and a fork may never become a variant."
             },
             "variant_label": {
-              "$ref": "#/$defs/text"
+              "$ref": "#/$defs/text",
+              "description": "Human display string for what makes this the variant it is ('Thicker — 3 tablespoons flour'). PROSE: never machine-read (decision #4). The MACHINE-READABLE discriminator is the axis/value pair — a renderer that filters or groups variants must use that, never this."
             }
-          },
-          "additionalProperties": false
+          }
         },
         "profile": {
           "type": "object",
@@ -1767,6 +1772,37 @@
       "maxLength": 200,
       "pattern": "^[^\\s]+$",
       "description": "A collection identifier — an opaque string in its own value space, deliberately separate from the recipe `id` slug so a distribution layer can use domains or URIs here without widening the frozen id pattern."
+    },
+    "lineageRef": {
+      "description": "A pointer to another document, in componentRef's shape: the target id, an OPTIONAL collection qualifier (required only when crossing collections — an unqualified pointer resolves in this document's own collection), and an OPTIONAL pinned revision. Pinning is what makes drift DETECTABLE: when the target moves past the pinned revision, validation reports staleness naming both. Compiled variants were considered and rejected (DECISIONS #29) — a variant is a self-contained snapshot, so detection replaces propagation.",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/slug",
+          "description": "Shorthand: the target id, unqualified and unpinned."
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id"
+          ],
+          "properties": {
+            "id": {
+              "$ref": "#/$defs/slug",
+              "description": "The target document's id."
+            },
+            "collection": {
+              "$ref": "#/$defs/collectionId",
+              "description": "The target's collection. REQUIRED when the pointer crosses collections; omitted means this document's own collection."
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Pinned revision of the target. When the target declares a later revision, validation reports staleness; when the target declares a DIFFERENT revision than pinned, that is a mismatch and fails."
+            }
+          }
+        }
+      ]
     }
   }
 }
