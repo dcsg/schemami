@@ -59,9 +59,9 @@ Same canonical personas ([docs/personas.md](../../personas.md)).
   FEAT-CORE-004 (codegen), FEAT-REG-005, FEAT-PUB-001 — remaining v1
   table, later PRDs.
 - Reproducing any source-book media — the private-use ingestion right
-  does not extend to media, ever (SP-004).
-- Nutrition/cost derivations (core `derived` enum lists them; not this
-  cut).
+  does not extend to media, ever (DECISIONS #11; enforced here as SP-004).
+- Nutrition/cost derivations — FEAT-CALC-003, deferred: needs per-entry
+  registry data before the math means anything.
 
 ## Requirements
 

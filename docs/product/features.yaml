@@ -361,6 +361,22 @@ features:
     trace: ["DECISIONS #3", "research 04:61-80", "CONCLUSIONS §7", "Daniel 2026-08-03 viewer review"]
     graduates_to: PRD-003
 
+  - id: FEAT-CALC-003
+    name: "Nutrition & cost derivations"
+    description: >-
+      Core's derived enum has listed compute: nutrition and compute: cost
+      since v0.1 — app-computable values the author never states — but no
+      derivation exists. Requires per-entry nutrition/cost data on
+      registry ingredient classes (a data acquisition problem, not just
+      math) and Calculus functions over resolved quantities. Ledgered
+      2026-08-03 when PRD-003's non-goals needed an id to defer to
+      (traceability rule: no deferral without a name).
+    personas: [rcp.cook.home-cook, rcp.cook.production-scaler]
+    icp: ICP-2
+    status: deferred
+    target: unscheduled — after FEAT-CALC-001 exists and registry entries carry the data
+    trace: ["core $defs/derived compute enum (v0.1)", "PRD-003 non-goals"]
+
   - id: FEAT-TOOL-002
     name: "Media surfaces: asset conventions + rendering"
     description: >-

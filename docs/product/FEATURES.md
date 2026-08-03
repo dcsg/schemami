@@ -79,6 +79,11 @@ viewer ignores media, and asset conventions are unwritten. Hosting is
 app-side; the reference shape is protocol. Book media is never reproduced.
 *home-cook, personal-collector, surface-engineer · both*
 
+**FEAT-CALC-003 — Nutrition & cost derivations** (core derived enum, v0.1)
+compute: nutrition and compute: cost have existed in core since v0.1 with
+no derivation behind them; needs per-entry registry data before the math
+means anything. Unscheduled. *home-cook, production-scaler · ICP-2*
+
 **FEAT-CORE-003 — Decode-compatibility CI fixtures** (#14)
 Bidirectional old-reader/new-doc fixtures in CI — "data outlives code" made
 mechanical. *surface-engineer · ICP-1*
