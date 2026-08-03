@@ -108,3 +108,24 @@ describe("media fragments", () => {
     }
   });
 });
+
+// The gap the frontend pre-flight predicted and this test now closes:
+// build.ts projects only what it is told to, so see-the-method could
+// pass every unit test while being UNREACHABLE in the shipped bundle.
+// DIST-FRESH proves dist matches src; this proves the feature is
+// actually wired through the build.
+describe("the shipped bundle can resolve links", () => {
+  test("build.ts projects a non-empty link corpus", async () => {
+    const { EMBEDDED_LINKS } = await import("./generated/embedded.ts");
+    expect(Object.keys(EMBEDDED_LINKS).length).toBeGreaterThan(0);
+    const first = Object.values(EMBEDDED_LINKS)[0] as { label: string; document: unknown };
+    expect(first.label).toBeTruthy();
+    expect(first.document).toBeTruthy();
+  });
+
+  test("an engine built from the embedded corpus declares links", async () => {
+    const { EMBEDDED_LINKS, EMBEDDED_SCHEMAS } = await import("./generated/embedded.ts");
+    const engine = createJsEngine({ ...(EMBEDDED_SCHEMAS as never), links: EMBEDDED_LINKS });
+    expect(engine.capabilities.links).toBe(true);
+  });
+});
