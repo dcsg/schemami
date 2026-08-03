@@ -38,7 +38,7 @@ phases:
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
-| 9     | pending | 0/5 | — |
+| 9     | in_progress (awaiting Daniel's manual checks) | 1/5 | 2026-08-03 |
 
 **IMPORTANT:** Update this table as phases complete. This table is the persistent state that survives context compaction.
 
@@ -306,6 +306,14 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 9:
+- AC-9.1: PASS — 2026-08-03 (make accept: 26/26 incl. all new v0.2 checks)
+- AC-9.2: PASS — 2026-08-03 (clean worktree: mise install + frozen bun install + validate + conformance green; private checks skip-with-notice)
+- AC-9.3: PASS — 2026-08-03 (5 features shipped w/ realized_by; FEAT-TOOL-001 lightweight delivered; ROADMAP v0.2 SHIPPED)
+- AC-9.4: AWAITING DANIEL — checklist presented (paste-test, network silence, prose review, file:// x2 browsers)
+- AC-9.5: pending AC-9.4 (tag after Daniel's green)
+- edikt verify spec SPEC-002: 5 passed, 0 failed (verify-carrying SACs), 19 evidence-tracked
 
 Phase 8:
 - AC-8.1: PASS — 2026-08-03 (all parked metadata moved to fields; absent data stayed absent — biscuits/chili/feijoada carry no times/storage because their pages stated none; all 5 validate core ∧ profile locally)

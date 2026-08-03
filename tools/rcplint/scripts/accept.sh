@@ -10,6 +10,13 @@ bad()  { FAIL=$((FAIL+1)); printf "  ✗ %s\n" "$1"; }
 check(){ local desc="$1"; shift; if "$@" >/dev/null 2>&1; then ok "$desc"; else bad "$desc"; fi; }
 
 echo "── v0.2 standing guards (PLAN-rcp-v02) ──"
+check "SAC-REG-002   technique entries live, interim vocab retired" sh -c "ls registry/entries/technique/*.yaml >/dev/null && test ! -f registry/vocab/techniques.yaml"
+check "AC-REG-004-1  grounding audit: every ingredient entry grounded or no-match" sh -c "cd tools/rcplint && go run . lint ../.. | grep -q 'lint: 0 error'"
+check "AC-REG-004-2  gap ledger groups cross-language raws by proposed class" sh -c "python3 tools/rcplint/scripts/gap-ledger.py --self-test | grep PROPOSAL | grep cebola | grep -q onion"
+check "SAC-TOOL-001  bun-only toolchain, exactly 2 exact-pinned deps, frozen installs" sh -c "python3 -c \"import json; p=json.load(open('tools/viewer/package.json')); d=p.get('dependencies',{}); assert set(d)=={'yaml','@cfworker/json-schema'}; assert all(v[0].isdigit() for v in d.values()); assert 'trustedDependencies' not in p\" && test -f tools/viewer/bun.lock && grep -Eq 'bun *= *\"[0-9]' .mise.toml && grep -q -- '--frozen-lockfile' Makefile"
+check "SAC-TOOL-002  conformance vectors green (bun test, capability-scoped)" make conformance
+check "AC-PROF-004-1 dish profile exists at hardened maturity" sh -c "python3 -c \"import json; s=json.load(open('schema/profiles/dish.schema.json')); assert s['x-rcp-maturity']=='hardened'\""
+check "AC-TOOL-001-2 viewer page self-contained: hash CSP, no external refs" sh -c "f=tools/viewer/dist/index.html; test -f \$f && grep -q Content-Security-Policy \$f && ! grep -q \"'self'\" \$f && ! grep -qE '(src|href)=\"https?://' \$f"
 check "AC-PR-003-2  no prose-parked metadata; hat-mapping notes present" python3 tools/rcplint/scripts/prose-parking.py
 check "AC-I18N-001-1 every used taxonomy slug has a pt-PT term" python3 tools/rcplint/scripts/i18n-coverage.py
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"

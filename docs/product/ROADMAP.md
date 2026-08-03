@@ -24,11 +24,11 @@ edge-regression suite, technique vocabulary seed + L2 enforcement, gap
 ledger, CUE reason surfacing, English-base taxonomy migration (#24),
 ontology-paths rule, 6 + N governed registry mints from the dogfood.*
 
-## v0.2 — proposed: "what the dogfood taught" (PRD-002 candidate cut)
+## v0.2 — SHIPPED: "what the dogfood taught" (PRD-002 → SPEC-002 → PLAN-rcp-v02)
 
-Small, additive, demanded by the five ingested recipes:
+Small, additive, demanded by the five ingested recipes — all delivered, tag `rcp-v0.2`:
 
-| Feature | Why now |
+| Feature | Why now (shipped) |
 |---|---|
 | FEAT-CORE-005 Dogfood field additions (times, difficulty, storage, source) | every book page asked for them |
 | FEAT-PROF-005 Dish profile hardened | two real dish documents exist and run core-only |
@@ -37,7 +37,7 @@ Small, additive, demanded by the five ingested recipes:
 | FEAT-I18N-001 Translation layer over English bases | pairs with REG-004 |
 | **FEAT-TOOL-001 RCP viewer — lightweight first cut** | paste/drop → validate + render, static page; the WASM clamp-slider playground follows later (jwt.io move) |
 
-*(The cut is decided in the PRD-002 interview — this table is the proposal.)*
+*(Delivered per PLAN-rcp-v02: 9 phases, 4-lens pre-flight, one mint checkpoint. The viewer shipped as the ADR-002 engine seam — JS engine + conformance vectors now, WASM behind the same interface later. Plus unplanned wins the run surfaced: severity-aware bounds pipeline, English-base equipment refactor with deprecate+alias, provenance.notes.)*
 
 ## v1 — the heavyweights (PRD-003+)
 

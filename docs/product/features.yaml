@@ -229,10 +229,11 @@ features:
       dish). The profile that makes 'any recipe' credible for daily use.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector]
     icp: both
-    status: deferred
+    status: shipped
     target: v1
     trace: ["DECISIONS #18"]
     graduates_to: PRD-002
+    realized_by: ['FR-PROF-004']
   - id: FEAT-SUB-001
     name: "Global substitution catalog (typed op-lists + variants, curated)"
     description: >-
@@ -267,10 +268,11 @@ features:
       (previously the only unvalidated vocabulary).
     personas: [rcp.cook.home-cook, rcp.dev.surface-engineer, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: deferred
+    status: shipped
     target: v1
     trace: ["research 00 D2b (techniques/gestures as registry-backed vocabulary)", "research 06:270-286 (technique as substitution anchor)", "DECISIONS #10 (derived facet)"]
     graduates_to: PRD-002
+    realized_by: ['FR-REG-003']
 
   - id: FEAT-I18N-001
     name: "Translation layer over English bases"
@@ -285,10 +287,11 @@ features:
       translations and content fields, never in the identifiers.
     personas: [rcp.dev.surface-engineer, rcp.cook.home-cook]
     icp: ICP-1
-    status: deferred
+    status: shipped
     target: v1
     trace: ["DECISIONS #24", "registry-governance guideline (IDs never localized)"]
     graduates_to: PRD-002
+    realized_by: ['FR-I18N-001']
 
   - id: FEAT-REG-004
     name: "Ontology grounding & cross-language matching"
@@ -305,10 +308,11 @@ features:
       resolve by prefix.
     personas: [rcp.registry.steward, rcp.ingester.personal-collector]
     icp: ICP-1
-    status: deferred
+    status: shipped
     target: v1
     trace: ["registry-governance rule 6 (2026-08-02)", "research 02:367-378 (cross-refs)", "dogfood run #5 finding"]
     graduates_to: PRD-002
+    realized_by: ['FR-REG-004']
 
   - id: FEAT-REG-005
     name: "Derived search index (edges + facets over the ontology)"
@@ -342,10 +346,11 @@ features:
       MODEL-1-legal per VERSIONING.md.
     personas: [rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: ICP-1
-    status: deferred
+    status: shipped
     target: v0.2 (proposed — the dogfood-taught release)
     trace: ["dogfood runs #1-#5 findings", "DECISIONS #10", "research 04:76-80"]
     graduates_to: PRD-002
+    realized_by: ['FR-PR-003']
 
   - id: FEAT-PUB-001
     name: "Verified publish-time reference resolution (resolver_version + content hashes)"
@@ -381,8 +386,8 @@ features:
       in thirty seconds.
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: both
-    status: deferred
-    target: v0.2 lightweight first cut (Daniel 2026-08-02), full playground later
+    status: shipped-lightweight
+    target: lightweight cut DELIVERED in v0.2 (FR-TOOL-001, engine seam per ADR-002); full playground later
     phasing: >-
       v0.2 LIGHTWEIGHT VIEWER: paste/drop a document, see L1 validation
       verdicts and the recipe rendered human-readable (ingredients with
