@@ -41,7 +41,7 @@ phases:
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done (AC-7.4 DEFERRED) | 1/5 | 2026-08-03 |
-| 8     | pending | 0/5 | — |
+| 8     | done | 1/5 | 2026-08-03 |
 | 9     | pending | 0/5 | — |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
@@ -276,6 +276,12 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 8:
+- AC-8.1: PASS — 2026-08-03 (accepted 0.6 factor re-renders: cabbage 1000 g → 600 g asserted in the rendered HTML, fixed salt unmoved — the control is not a no-op; factor state app-side, persists across re-analyses, resets on document change)
+- AC-8.2: PASS — 2026-08-03 (refusal renders authored pt/en verbatim inside the normative Calculus strings, role=alert; control present iff capabilities.clamp — richer {l1,clamp,timeline} vs poorer {l1} mock engines, zero UI code change; client-side invalid factor is a DISTINCT surface via aria-describedby)
+- AC-8.3: PASS — 2026-08-03 (schedule humanized pt-PT + day-grouped, tested on torta [all 'no dia'] AND entremet ['2 dias antes'/'véspera'/'no dia'/'dia seguinte']; Math.round(−0.5)→−0 quirk fixed with symmetric rounding — a −12 h sponge is a véspera task; <ol>/<time> semantics; timeline only when declared)
+- Contract test updated deliberately: v0.2 pinned "no clamp"; v0.3 pins capability↔member agreement in both directions. 80 bun tests, accept 32/32, calculus both implementations green, bundle 191 KiB.
 
 Phase 7 (build half done — PAUSED at the media drop):
 - AC-7.1: PASS — 2026-08-03 (schema/MEDIA.md with the four mandated anchors; grep check live in accept.sh; adequacy still owed Daniel's Phase 9 read)
