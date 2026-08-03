@@ -63,6 +63,15 @@ The one library of cook-time pure functions (scale, basis, guards, clamps,
 re-estimation), specified once with vectors proving TS/Swift/Go equivalent.
 *surface-engineer, home-cook, production-scaler · ICP-1*
 
+**FEAT-CALC-002 — Derived execution ordering & timeline** (#3, research 04; PRD-003 candidate)
+Order and schedule are derived from the DAG, never stored: topological
+reading order (shipped in the v0.2 viewer), parallel-track interleaving,
+and the time-anchored schedule (DAG + durations → "start the ganache 40
+minutes before assembly"). The referencing recipe owns WHEN, the referenced
+recipe owns HOW; the schedule is computed. Cross-document stitching needs
+verified reference resolution. *home-cook, production-scaler,
+surface-engineer · both*
+
 **FEAT-CORE-003 — Decode-compatibility CI fixtures** (#14)
 Bidirectional old-reader/new-doc fixtures in CI — "data outlives code" made
 mechanical. *surface-engineer · ICP-1*

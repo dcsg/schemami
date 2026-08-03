@@ -44,6 +44,7 @@ Small, additive, demanded by the five ingested recipes — all delivered, tag `r
 | Feature | Trace |
 |---|---|
 | FEAT-CALC-001 Recipe Calculus + conformance vectors | #13, #15 |
+| FEAT-CALC-002 Derived execution ordering & timeline (DAG + durations → schedule; when-vs-how split; brownie/entremet cases) | #3, research 04, Daniel 2026-08-03 |
 | FEAT-CORE-003 Decode-compatibility CI fixtures | #14 |
 | FEAT-CORE-004 Codegen decode types (Swift/TS) | #8 |
 | FEAT-PROF-004 Ferment profile hardened | #18 |

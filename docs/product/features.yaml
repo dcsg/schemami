@@ -333,6 +333,32 @@ features:
     trace: ["DECISIONS #7", "DECISIONS #10", "DECISIONS #21", "research 07:396-420"]
     graduates_to: null
 
+
+  - id: FEAT-CALC-002
+    name: "Derived execution ordering & timeline (DAG + durations → schedule)"
+    description: >-
+      Presentation order and cooking schedule are DERIVED from the
+      document, never stored in it (DECISIONS #3: the DAG is data). Three
+      escalating projections over the same graph: (1) topological reading
+      order — component methods before the steps that consume them (the
+      mise-en-place projection the v0.2 viewer ships); (2) interleaved
+      execution with parallel tracks — 'meanwhile, cook the calda' — via
+      the step track field; (3) the time-anchored schedule: combining the
+      DAG with times and step durations to compute WHEN to start each
+      part ('start the ganache 40 minutes before assembly'; the entremet
+      multi-day case, research 04). Ownership split captured 2026-08-03
+      (Daniel, viewer session): the referencing recipe owns WHEN a
+      component applies (its steps anchor the componentRef); the
+      referenced recipe owns HOW; the schedule is computed, not authored.
+      Cross-document stitching (brownie inlining the published ganache's
+      method) additionally requires verified reference resolution
+      (engineering obligation #3) and respects the private-vs-published
+      boundary.
+    personas: [rcp.cook.home-cook, rcp.cook.production-scaler, rcp.dev.surface-engineer]
+    icp: both
+    status: deferred
+    target: v1 — PRD-003 candidate (Daniel 2026-08-03), with FEAT-CALC-001 (the derivations are Calculus functions; the viewer consumes them through the engine seam)
+    trace: ["DECISIONS #3", "research 04:61-80", "CONCLUSIONS §7", "Daniel 2026-08-03 viewer review"]
   - id: FEAT-CORE-005
     name: "Dogfood field additions (times, difficulty, storage, source detail)"
     description: >-
@@ -387,7 +413,15 @@ features:
     personas: [rcp.dev.surface-engineer, rcp.ingester.personal-collector, rcp.cook.home-cook]
     icp: both
     status: shipped-lightweight
-    target: lightweight cut DELIVERED in v0.2 (FR-TOOL-001, engine seam per ADR-002); full playground later
+    target: >-
+      lightweight cut DELIVERED in v0.2 (FR-TOOL-001, engine seam per
+      ADR-002); full playground later. Render rules shipped 2026-08-03
+      from Daniel's live review: registry display-name resolution (both
+      localization layers consumed), composed instruction lines for
+      prose-less steps (verb from primitive, objects from uses, until
+      chips — authored title always wins), and mise-en-place reading
+      order (component methods before the parent method that consumes
+      them). All pinned by render tests.
     phasing: >-
       v0.2 LIGHTWEIGHT VIEWER: paste/drop a document, see L1 validation
       verdicts and the recipe rendered human-readable (ingredients with
