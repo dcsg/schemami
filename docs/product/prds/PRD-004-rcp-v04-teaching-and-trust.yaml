@@ -4,7 +4,7 @@ type: prd
 id: PRD-004
 title: 'RCP v0.4 — identity, trust and teaching: which recipe, which variant, which method'
 slug: rcp-v04-identity-trust-teaching
-status: accepted
+status: shipped
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-03T14:55:00Z'
@@ -23,7 +23,7 @@ requirements:
   - research 09 F9
   - 'DECISIONS #21'
   - research 08 F2 (Mealie slug collapse)
-  status: proposed
+  status: shipped
 - id: FR-PACK-002
   component: collections and packs
   text: 'The pack/collection manifest is a normative document format: it declares the collection''s
@@ -37,7 +37,7 @@ requirements:
   - architect brief 2026-08-03
   - 'DECISIONS #19'
   - 'DECISIONS #14 (decode-compat)'
-  status: proposed
+  status: shipped
 - id: FR-PR-007
   component: protocol-core
   text: The lineage block gains defined semantics and version-pinned pointers. Every lineage
@@ -51,7 +51,7 @@ requirements:
   - research 09 F1/F3/F4
   - schema componentRef :374-393
   - research 02 D.4
-  status: proposed
+  status: shipped
 - id: FR-PR-008
   component: protocol-core
   text: 'Variant discriminators MUST be machine-readable: a variant declares a typed AXIS
@@ -64,7 +64,7 @@ requirements:
   - research 09 F2 (the blocker)
   - 'DECISIONS #4'
   - architect brief (catch-all + absent-registry risk)
-  status: proposed
+  status: shipped
 - id: FR-VAL-003
   component: validator
   text: 'Drift is DETECTED, not compiled away: when a document''s lineage pointer pins revision
@@ -80,7 +80,7 @@ requirements:
   - research 06 §6 (compiled-not-forked)
   - research 09 F8/F9
   - lint.go:165-174
-  status: proposed
+  status: shipped
 - id: FR-REG-007
   component: registry
   text: 'The registry gains the entry kinds the variant discriminator resolves against, seeded
@@ -93,7 +93,7 @@ requirements:
   - architect brief 2026-08-03
   - 'DECISIONS #23'
   - 'DECISIONS #25'
-  status: proposed
+  status: shipped
 - id: FR-PUB-001
   component: publish-time resolution
   text: 'Publish-time reference resolution MUST be verified (engineering obligation 3): a
@@ -105,7 +105,7 @@ requirements:
   - FEAT-PUB-001
   - 'DECISIONS #21'
   - 'engineering obligation #3'
-  status: proposed
+  status: shipped
 - id: FR-REG-005
   component: registry
   text: 'Registry entries for preparation classes (ingredient.preparation.*) and techniques
@@ -118,7 +118,7 @@ requirements:
   - research 08 (F1–F8)
   - 'DECISIONS #7'
   - 'DECISIONS #11'
-  status: proposed
+  status: shipped
 - id: FR-REG-006
   component: registry
   text: 'The ingestion extraction rule MUST be binding and machine-checked: an embedded sub-preparation
@@ -130,7 +130,7 @@ requirements:
   - research 08
   - 'DECISIONS #11'
   - prose-parking rule (v0.2)
-  status: proposed
+  status: shipped
 - id: FR-TOOL-004
   component: developer tooling
   text: 'Renderers MUST surface a see-the-method affordance wherever a linked mention appears:
@@ -141,7 +141,7 @@ requirements:
   - FEAT-REG-006
   - 'Daniel 2026-08-02 (end goal: load the technique and do the procedure)'
   - ADR-002 engine seam
-  status: proposed
+  status: shipped
 - id: FR-PR-005
   component: protocol-core
   text: 'Media temporal fragments MUST be normative: schema/MEDIA.md blesses W3C Media Fragments
@@ -154,7 +154,7 @@ requirements:
   - FEAT-CORE-006
   - Daniel 2026-08-03 (video technique ranges)
   - W3C Media Fragments URI 1.0
-  status: proposed
+  status: shipped
 - id: FR-PR-006
   component: protocol-core
   text: 'The stage-forked identity question MUST be settled as a recorded decision (DECISIONS
@@ -165,7 +165,7 @@ requirements:
   - FEAT-REG-006 (stage-forked identity Q)
   - Fornada padaria.recipes.forked_from
   - 'DECISIONS #7'
-  status: proposed
+  status: shipped
 acceptance_criteria:
 - id: AC-PACK-001-1
   fr: FR-PACK-001
@@ -173,7 +173,7 @@ acceptance_criteria:
   when: validation and reference resolution run
   then: both documents survive and stay individually resolvable; no id is rewritten and no
     pointer rebinds — the collision is not an error
-  status: proposed
+  status: shipped
 - id: AC-PACK-001-2
   fr: FR-PACK-001
   given: a document whose lineage or component reference names an id present in BOTH its own
@@ -181,7 +181,7 @@ acceptance_criteria:
   when: the reference resolves
   then: it resolves to its OWN collection's document; a reference intended for the other collection
     is only valid when qualified
-  status: proposed
+  status: shipped
 - id: AC-PACK-002-1
   fr: FR-PACK-002
   given: a collection with a manifest declaring its identifier, and a document declaring a
@@ -189,21 +189,21 @@ acceptance_criteria:
   when: the collection loads
   then: the manifest identifier wins and the conflict is reported; a lone document with no
     manifest still self-describes via its own field
-  status: proposed
+  status: shipped
 - id: AC-PACK-002-2
   fr: FR-PACK-002
   given: the v0.1-era frozen reader from the decode-compat gate
   when: it decodes documents carrying collection qualifiers and pack manifests exist alongside
   then: decoding succeeds with v0.1 fields intact — the recipe id pattern is unchanged and
     qualification rode in on new optional fields
-  status: proposed
+  status: shipped
 - id: AC-PR-007-1
   fr: FR-PR-007
   given: a variant document declaring lineage.variant_of pinned to parent revision N
   when: the schema and linter validate it
   then: every lineage field carries a description in the schema, the pin validates in componentRef's
     shape, and the variant remains a complete self-contained document
-  status: proposed
+  status: shipped
 - id: AC-PR-008-1
   fr: FR-PR-008
   given: two sibling variants of one family differing on a declared axis (e.g. axis=diet,
@@ -211,7 +211,7 @@ acceptance_criteria:
   when: a consumer inspects them without reading prose
   then: the axis and value are machine-readable and resolve; a document omitting the discriminator
     stays valid; an unknown axis decodes into the catch-all rather than failing
-  status: proposed
+  status: shipped
 - id: AC-VAL-003-1
   fr: FR-VAL-003
   given: a variant pinned to parent revision 3 and a parent that has since declared revision
@@ -220,28 +220,28 @@ acceptance_criteria:
   then: staleness is reported naming the variant, the pinned revision and the current one
     — and the same run FAILS a componentRef whose pin no longer matches the target's declared
     version
-  status: proposed
+  status: shipped
 - id: AC-VAL-003-2
   fr: FR-VAL-003
   given: the rejection of compiled variants
   when: the decision record is read
   then: DECISIONS carries the entry naming the founding-non-goal grounds (second execution
     semantics; formulas-in-data) so the rejection is recorded rather than silent
-  status: proposed
+  status: shipped
 - id: AC-REG-007-1
   fr: FR-REG-007
   given: the axis enum shipped by FR-PR-008
   when: the registry is validated
   then: every non-catch-all axis value has its registry kind and at least one seed entry drawn
     from a real document; no axis ships pointing at an absent registry
-  status: proposed
+  status: shipped
 - id: AC-REG-005-1
   fr: FR-REG-005
   given: a technique or preparation-class registry entry carrying a canonical-recipe link
   when: the registry validates
   then: the link's shape (document id + version) validates and the reference resolves to an
     existing document; an entry WITHOUT the link stays valid (optional, never required)
-  status: proposed
+  status: shipped
 - id: AC-REG-006-1
   fr: FR-REG-006
   given: a source recipe whose method embeds a sub-preparation WITH its method given (the
@@ -249,55 +249,55 @@ acceptance_criteria:
   when: ingested per the extraction rule
   then: the sub-preparation is an inline component with its own method — no prose parked in
     notes
-  status: proposed
+  status: shipped
 - id: AC-REG-006-2
   fr: FR-REG-006
   given: a source recipe that names a sub-preparation WITHOUT giving its method
   when: ingested and linted
   then: the mention is a preparation-class reference with no invented steps; a mention anchoring
     to nothing raises a linter warning naming it
-  status: proposed
+  status: shipped
 - id: AC-TOOL-004-1
   fr: FR-TOOL-004
   given: the viewer rendering a document whose ingredient or technique carries a canonical
     link resolvable within the loaded corpus
   when: the user activates the see-the-method affordance
   then: the linked method renders (ingredients + steps) without losing the parent recipe view
-  status: proposed
+  status: shipped
 - id: AC-TOOL-004-2
   fr: FR-TOOL-004
   given: a linked sub-recipe with durations, consumed by a parent step
   when: the schedule view renders
   then: 'the linked preparation''s placement appears before the consuming step per the Calculus
     two-stage schedule (the end goal: ''say when that procedure must be done before you start'')'
-  status: proposed
+  status: shipped
 - id: AC-PR-005-1
   fr: FR-PR-005
   given: 'a media entry whose uri carries #t=120,180 and whose asset is supplied'
   when: rendered
   then: playback starts at the fragment start (seek honoured), and a second entry referencing
     the SAME asset with a different range renders independently
-  status: proposed
+  status: shipped
 - id: AC-PUB-001-1
   fr: FR-PUB-001
   given: a document with cross-document references, resolved at publish time
   when: verification tooling runs
   then: every reference carries resolver_version + content hash and verification passes green
-  status: proposed
+  status: shipped
 - id: AC-PUB-001-2
   fr: FR-PUB-001
   given: a resolved reference whose target document has since changed (or vanished)
   when: verification tooling runs
   then: verification FAILS naming the reference and the nature of the break — the inverted
     proof ships with the gate
-  status: proposed
+  status: shipped
 - id: AC-PR-006-1
   fr: FR-PR-006
   given: the recorded identity decision and two example documents — a stage-fork that keeps
     identity and a fork that becomes a new recipe
   when: both validate against core
   then: lineage fields distinguish the two cases exactly as the decision prescribes
-  status: proposed
+  status: shipped
 protections:
 - id: SP-001
   text: 'Fail-closed safety semantics and authored refusal reasons are untouched: the frozen
@@ -449,8 +449,17 @@ revision_history:
   note: 'Back-reference added: source_specs += SPEC-004'
   affected:
   - SPEC-004
+- at: '2026-08-03T19:00:00Z'
+  author: Daniel Gomes
+  action: ship
+  note: All requirements shipped at v0.4 (PLAN-rcp-v04, 12 phases, no phase needing a second
+    attempt). Collections real corpus-wide with a second published collection from a public-domain
+    1910 source; lineage pinned and drift detected; variant discriminator seeded from evidence;
+    resolution order published with a failing tiebreak; Calculus extended (R-SCHED-5) so referenced
+    preparations are schedulable; resolution records RFC 8785-canonicalised with twelve fail-closed
+    paths; extraction rule enforced; viewer teaches. accept.sh 41/41; clean-clone proof green.
 extensions: {}
 _sync:
-  md_hash: fc011dc8aa1ad15417941c9d88c503247dc2049e62b3591b735a0ffdfc7afc65
-  yaml_hash: 13613d2985f81f697e56efd5a502971794c5f1baa21516d92fe145ba36ad452d
-  synced_at: '2026-08-03T16:55:00Z'
+  md_hash: a2135476b26614d7535c0b6f45381a5343d6a6d2b328bc6f0967a2bbed5e763e
+  yaml_hash: f7f57e41507fbe99bccc21d285407838a2260dc04e483f27b50bddbc0cb8c4aa
+  synced_at: '2026-08-03T19:00:00Z'

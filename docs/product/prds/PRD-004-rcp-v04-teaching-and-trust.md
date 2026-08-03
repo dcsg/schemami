@@ -1,6 +1,6 @@
 # PRD-004: RCP v0.4 — identity, trust and teaching: which recipe, which variant, which method
 
-**Status:** accepted
+**Status:** shipped
 **Rigor:** solo
 **Author:** Daniel Gomes
 **Created:** 2026-08-03

@@ -53,7 +53,7 @@ echo "── Recipe Calculus (SR-CALC-001/002, DS-CALC-002) ──"
 check "AC-CALC-002-* both implementations agree: Go writes, TS replays the frozen vectors" make calculus
 check "SAC-CALC-001  coverage gate: every SPEC edge class has vectors (incl. inverted proof)" sh -c "cd tools/rcplint && go test -count=1 -run 'TestCalcCoverage' ."
 check "AC-CALC-001-1 SPEC completeness: exported calc surface == SPEC fn sections; purity" sh -c "cd tools/rcplint && go test -count=1 -run 'TestSpecCompleteness|TestCalcPurity' ./calc/"
-check "AC-9.3        ledger truthful: 4 FEATs shipped + realized_by; TOOL-001 phased; roadmap" python3 tools/rcplint/scripts/ledger-check.py
+check "AC-12.3       ledger truthful: v0.3 + v0.4 FEATs shipped with realized_by; roadmap" python3 tools/rcplint/scripts/ledger-check.py
 
 echo "── Media (schema/MEDIA.md, DECISIONS #27) ──"
 check "AC-TOOL-002-1 MEDIA.md carries the four mandated anchors" sh -c "grep -q '^## Asset location' schema/MEDIA.md && grep -q '^## Licence' schema/MEDIA.md && grep -q '^## Prohibition: source-book media' schema/MEDIA.md && grep -q '^## Never serialized' schema/MEDIA.md"
