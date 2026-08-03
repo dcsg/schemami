@@ -132,11 +132,8 @@ function untilChip(u: Dict): string {
   return String(u["kind"] ?? "");
 }
 
-function stepList(doc: Dict, ctx: RenderContext): string {
-  const steps = asList(doc["steps"]).map(asDict);
-  if (!steps.length) return "";
-  // uses references ingredient ids in the SAME scope — resolve them to
-  // registry display names for composed lines.
+/** Per-scope resolver: ingredient/component id -> display text. */
+function usesNames(doc: Dict, ctx: RenderContext): Map<string, string> {
   const ingName = new Map<string, string>();
   for (const raw of asList(doc["ingredients"])) {
     const ing = asDict(raw);
@@ -149,18 +146,35 @@ function stepList(doc: Dict, ctx: RenderContext): string {
     const c = asDict(raw);
     if (c["id"]) ingName.set(String(c["id"]), text(c["name"], ctx.lang) || String(c["id"]));
   }
+  return ingName;
+}
+
+/**
+ * One step's human head as PLAIN TEXT: authored title always wins — the
+ * author's voice. Otherwise COMPOSE from the machine layer (renderer-
+ * prototype seed, CONCLUSIONS §7): verb = primitive display name,
+ * objects = resolved uses. Structured, never fake prose.
+ */
+function stepHeadText(s: Dict, ingName: Map<string, string>, ctx: RenderContext): string {
+  const title = s["title"] ? text(s["title"], ctx.lang) : "";
+  if (title) return title;
+  const prim = asDict(s["primitive"])["id"];
+  const verb = prim ? displayName(String(prim), ctx) : String(s["id"] ?? "");
+  const objects = asList(s["uses"]).map((u) => ingName.get(String(u)) ?? String(u));
+  return objects.length ? `${verb} — ${objects.join(", ")}` : verb;
+}
+
+function stepList(doc: Dict, ctx: RenderContext): string {
+  const steps = asList(doc["steps"]).map(asDict);
+  if (!steps.length) return "";
+  const ingName = usesNames(doc, ctx);
   const items = steps.map((s) => {
-    // Authored title always wins — the author's voice. Otherwise COMPOSE
-    // the instruction from the machine layer (renderer-prototype seed,
-    // CONCLUSIONS §7): verb = primitive display name, objects = resolved
-    // uses, conditions = until chips + duration. Structured, never fake
-    // prose the author did not write.
-    const prim = asDict(s["primitive"])["id"];
     const title = s["title"] ? text(s["title"], ctx.lang) : "";
     let head: string;
     if (title) {
       head = esc(title);
     } else {
+      const prim = asDict(s["primitive"])["id"];
       const verb = prim ? displayName(String(prim), ctx) : String(s["id"] ?? "");
       const objects = asList(s["uses"]).map((u) => ingName.get(String(u)) ?? String(u));
       head = `<strong>${esc(verb)}</strong>${objects.length ? ` — ${esc(objects.join(", "))}` : ""}`;
@@ -300,18 +314,36 @@ export function renderVerdicts(result: AnalysisResult, _caps: Capabilities): str
   return `<div class="verdicts" role="status">${headline}${groups}</div>`;
 }
 
+/** The document's authored yield anchor (scaling.default_yield.units), or null. */
+export function docYield(canonical: unknown): number | null {
+  const u = asDict(asDict(asDict(canonical)["scaling"])["default_yield"])["units"];
+  return typeof u === "number" && u > 0 ? u : null;
+}
+
 /**
  * Per-document scale control (SR-TOOL-003). Pure markup — app.ts wires
  * the submit by delegation. Client-side rejections render into the
  * aria-described message span, DISTINCT from an engine refusal (which
  * renders as a role="alert" block).
+ *
+ * YIELD-AWARE (Daniel's acceptance rework): when the document authors a
+ * default yield ("makes 3 cakes", "12 madalenas"), people think in
+ * quantities, not factors — the control asks "Quantidade" prefilled with
+ * the default, and the factor is derived (wanted ÷ default). Documents
+ * without a yield keep the bare factor control.
  */
-export function renderScaleControl(index: number): string {
+export function renderScaleControl(index: number, yieldUnits: number | null = null): string {
+  const field = yieldUnits
+    ? `<label for="scale-input-${index}">Quantidade</label>` +
+      `<input id="scale-input-${index}" name="factor" inputmode="decimal" value="${yieldUnits}" ` +
+      `autocomplete="off" aria-describedby="scale-msg-${index}">` +
+      `<span class="scale-default">unidades (padrão: ${yieldUnits})</span>`
+    : `<label for="scale-input-${index}">Fator de escala</label>` +
+      `<input id="scale-input-${index}" name="factor" inputmode="decimal" value="1" ` +
+      `autocomplete="off" aria-describedby="scale-msg-${index}">`;
   return (
-    `<form class="scale-control" data-doc="${index}">` +
-    `<label for="scale-input-${index}">Fator de escala</label>` +
-    `<input id="scale-input-${index}" name="factor" inputmode="decimal" value="1" ` +
-    `autocomplete="off" aria-describedby="scale-msg-${index}">` +
+    `<form class="scale-control" data-doc="${index}"${yieldUnits ? ` data-yield="${yieldUnits}"` : ""}>` +
+    field +
     `<button type="submit">Aplicar</button>` +
     `<span id="scale-msg-${index}" class="scale-msg"></span>` +
     `<div class="clamp-refusals" id="scale-refusals-${index}"></div></form>`
@@ -337,7 +369,7 @@ export function renderDocumentBlock(
   ctx: RenderContext,
   caps: Capabilities,
 ): string {
-  const control = caps.clamp ? renderScaleControl(index) : "";
+  const control = caps.clamp ? renderScaleControl(index, docYield(d.canonical)) : "";
   return `<div class="doc-block" data-doc="${index}">${renderDocument(d, ctx)}${control}` +
     `<div class="schedule-slot"></div></div>`;
 }
@@ -386,18 +418,48 @@ function dayLabel(targetSeconds: number): string {
 }
 
 /**
+ * Timeline item id -> human label, resolved exactly like the step list:
+ * authored title wins, else the composed verb — objects; components
+ * label by their name. Covers parent AND inline component scopes (the
+ * schedule flattens both). The plan must read as real actions, never as
+ * ids (Daniel's acceptance finding).
+ */
+export function scheduleLabels(canonical: unknown, ctx: RenderContext): Record<string, string> {
+  const labels: Record<string, string> = {};
+  const addScope = (scope: Dict) => {
+    const ingName = usesNames(scope, ctx);
+    for (const raw of asList(scope["steps"])) {
+      const s = asDict(raw);
+      if (s["id"]) labels[String(s["id"])] = stepHeadText(s, ingName, ctx);
+    }
+  };
+  const doc = asDict(canonical);
+  addScope(doc);
+  for (const raw of asList(doc["components"])) {
+    const c = asDict(raw);
+    if ("ref" in c) continue;
+    if (c["id"]) labels[String(c["id"])] = text(c["name"], ctx.lang) || String(c["id"]);
+    addScope(c);
+  }
+  return labels;
+}
+
+/**
  * Timeline entries -> a kitchen plan (SR-TOOL-003 schedule half):
  * grouped by relative day, target offset prominent, min–max as the
  * secondary range, humanized pt-PT durations, semantic <ol>/<time>.
- * Anchor is t0 (serve-anchoring is a later transform).
+ * Anchor is t0 (serve-anchoring is a later transform). Zero offsets are
+ * silent — <ol> numbering already carries the sequence — and a lone
+ * "no dia" group drops its header: a single-day plan is just the plan.
  */
-export function renderSchedule(entries: TimelineEntry[]): string {
+export function renderSchedule(entries: TimelineEntry[], labels: Record<string, string> = {}): string {
   if (!entries.length) return "";
   const groups = new Map<string, TimelineEntry[]>();
   for (const e of entries) {
     const label = dayLabel(e.start.target);
     groups.set(label, [...(groups.get(label) ?? []), e]);
   }
+  const soleDay = groups.size === 1 && groups.has("no dia");
   const ordered = [...groups.entries()].sort(
     (a, b) => (a[1][0]?.start.target ?? 0) - (b[1][0]?.start.target ?? 0),
   );
@@ -407,8 +469,10 @@ export function renderSchedule(entries: TimelineEntry[]): string {
         .sort((a, b) => a.start.target - b.start.target)
         .map((e) => {
           const off = e.start.target;
-          const offLabel =
-            off === 0 ? "no início" : off < 0 ? `${humanizeDuration(off)} antes` : `+${humanizeDuration(off)}`;
+          const zeroStart = off === 0 && e.start.min === 0 && e.start.max === 0;
+          const offLabel = zeroStart
+            ? ""
+            : `<span class="sched-offset">${esc(off < 0 ? `${humanizeDuration(off)} antes` : `+${humanizeDuration(off)}`)}</span> `;
           const dur = e.duration.target
             ? ` <time datetime="${isoDuration(e.duration.target)}">${humanizeDuration(e.duration.target)}</time>`
             : "";
@@ -416,13 +480,11 @@ export function renderSchedule(entries: TimelineEntry[]): string {
             e.duration.min !== e.duration.max
               ? ` <span class="sched-range">(${humanizeDuration(e.duration.min)}–${humanizeDuration(e.duration.max)})</span>`
               : "";
-          return (
-            `<li><span class="sched-offset">${esc(offLabel)}</span> ` +
-            `<span class="sched-item">${esc(e.item)}</span>${dur}${range}</li>`
-          );
+          return `<li>${offLabel}<span class="sched-item">${esc(labels[e.item] ?? e.item)}</span>${dur}${range}</li>`;
         })
         .join("");
-      return `<section class="sched-day"><h4>${esc(label)}</h4><ol>${items}</ol></section>`;
+      const heading = soleDay ? "" : `<h4>${esc(label)}</h4>`;
+      return `<section class="sched-day">${heading}<ol>${items}</ol></section>`;
     })
     .join("");
   return `<section class="schedule"><h3>Plano de execução</h3>${sections}</section>`;

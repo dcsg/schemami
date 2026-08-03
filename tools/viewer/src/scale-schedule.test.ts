@@ -12,11 +12,14 @@ import { createJsEngine } from "./engine-js/index.ts";
 import { loadSchemas, readSource } from "../conformance/repo.ts";
 import type { Capabilities, DocumentAnalysis } from "./engine.ts";
 import {
+  docYield,
   humanizeDuration,
   renderClampRefusals,
   renderDocument,
   renderDocumentBlock,
   renderSchedule,
+  renderScaleControl,
+  scheduleLabels,
 } from "./render.ts";
 import { parseFactor } from "./app.ts";
 
@@ -120,6 +123,38 @@ describe("capability-driven controls (zero UI code change)", () => {
   });
 });
 
+describe("yield-aware scale control (a recipe 'makes 12 madalenas')", () => {
+  test("docYield reads scaling.default_yield.units", () => {
+    expect(docYield({ scaling: { default_yield: { units: 3 } } })).toBe(3);
+    expect(docYield({ scaling: {} })).toBe(null);
+    expect(docYield({})).toBe(null);
+    expect(docYield({ scaling: { default_yield: { units: 0 } } })).toBe(null);
+  });
+
+  test("with a yield: control asks Quantidade, prefilled with the default", () => {
+    const html = renderScaleControl(0, 12);
+    expect(html).toContain("Quantidade");
+    expect(html).toContain('value="12"');
+    expect(html).toContain("padrão: 12");
+    expect(html).toContain('data-yield="12"');
+    expect(html).not.toContain("Fator de escala");
+  });
+
+  test("without a yield: bare factor control unchanged", () => {
+    const html = renderScaleControl(0, null);
+    expect(html).toContain("Fator de escala");
+    expect(html).toContain('value="1"');
+    expect(html).not.toContain("data-yield");
+  });
+
+  test("document block derives the yield from the canonical", () => {
+    const d = analysisOf({ name: "T", scaling: { default_yield: { units: 12 } } });
+    const html = renderDocumentBlock(d, 0, ctx, { l1: true, clamp: true });
+    expect(html).toContain("Quantidade");
+    expect(html).toContain("padrão: 12");
+  });
+});
+
 describe("comma-tolerant factor parsing (pt-PT UI)", () => {
   test("accepts comma and dot decimals", () => {
     expect(parseFactor("1,5")).toBe(1.5);
@@ -143,19 +178,45 @@ describe("schedule view", () => {
     expect(humanizeDuration(0)).toBe("0 min");
   });
 
-  test("TORTA: single-day plan — everything groups under 'no dia'", async () => {
+  test("TORTA: single-day plan — lone day header suppressed, real labels not ids", async () => {
     const text = readFileSync(join(import.meta.dir, "..", "example.rcp.yaml"), "utf8");
     const r = await engine.analyze(text);
     const torta = r.documents[0]!;
     const entries = await engine.schedule!(torta.canonical);
     expect(entries.length).toBeGreaterThan(0);
-    const html = renderSchedule(entries);
+    const html = renderSchedule(entries, scheduleLabels(torta.canonical, ctx));
     expect(html).toContain("Plano de execução");
-    expect(html).toContain("no dia");
+    // one-day plan: no day headings at all — the plan is just the plan
+    expect(html).not.toContain("<h4>");
     expect(html).not.toContain("véspera");
-    expect(html).not.toContain("dias antes");
     expect(html).toContain("<ol>");
     expect(html).toContain("<time");
+    // labels resolve to the authored step voice, never raw ids
+    expect(html).toContain("Bater a manteiga");
+    expect(html).not.toContain("sched-item\">montar<");
+  });
+
+  test("labels: title wins, else verb — objects; components label by name; zero offsets silent", () => {
+    const canonical = {
+      name: { pt: "Bolos mármore" },
+      ingredients: [{ id: "manteiga", raw: "manteiga", amount: { value: 180, unit: "g" } }],
+      steps: [
+        { id: "bater-manteiga", primitive: { id: "primitive.mix", v: 1 }, uses: ["manteiga"] },
+        { id: "cozer", primitive: { id: "primitive.bake", v: 1 }, title: { pt: "Cozer 35 minutos a 170 C" }, after: ["bater-manteiga"], duration: { target: "35m" } },
+      ],
+    };
+    const labels = scheduleLabels(canonical, ctx);
+    expect(labels["bater-manteiga"]).toBe("primitive.mix — manteiga");
+    expect(labels["cozer"]).toBe("Cozer 35 minutos a 170 C");
+    const entries = [
+      { item: "bater-manteiga", start: { min: 0, target: 0, max: 0 }, duration: { min: 0, target: 0, max: 0 } },
+      { item: "cozer", start: { min: 0, target: 0, max: 0 }, duration: { min: 2100, target: 2100, max: 2100 } },
+    ];
+    const html = renderSchedule(entries, labels);
+    expect(html).toContain("Cozer 35 minutos a 170 C");
+    expect(html).toContain("primitive.mix — manteiga");
+    expect(html).not.toContain("sched-offset"); // zero starts: numbering carries sequence
+    expect(html).not.toContain("no início");
   });
 
   test("ENTREMET: multi-day plan — day grouping surfaces 'dias antes' and 'véspera'", async () => {

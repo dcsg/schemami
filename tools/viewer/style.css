@@ -59,3 +59,4 @@ textarea#input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; 
 .sched-offset { font-variant-numeric: tabular-nums; font-weight: 600; }
 .sched-range { opacity: .7; font-size: .85rem; }
 .schedule time { font-variant-numeric: tabular-nums; }
+.scale-default { font-size: .85rem; opacity: .8; }
