@@ -42,7 +42,7 @@ phases:
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done (AC-7.4 DEFERRED) | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
-| 9     | pending | 0/5 | — |
+| 9     | PAUSED at Daniel's acceptance gate | 1/5 | 2026-08-03 |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
 
@@ -276,6 +276,14 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 9 (mechanical half done — PAUSED at Daniel's gate):
+- AC-9.1: PASS — 2026-08-03 (accept.sh finalized: 36 named checks incl. Calculus section — both implementations, coverage gate + inverted, SPEC completeness + purity, ledger; all green)
+- AC-9.2: PASS — 2026-08-03 (fresh file:// clone in scratchpad: no private/ [skip-with-notice], mise trust+install, frozen bun install, validate + conformance [80 tests] + calculus [25 tests] + accept 36/36 all green, worktree clean after — regeneration byte-stable)
+- AC-9.3: PASS — 2026-08-03 (ledger-check.py named command: four FEATs shipped with realized_by → PRD-003 FRs; FEAT-TOOL-001 v0.3 phasing; ROADMAP v0.3 SHIPPED; wired into accept.sh)
+- edikt verify spec SPEC-003: 4 passed, 0 failed (18 statement-only ACs covered by the named accept checks). PRD-003 shipped: all six FRs, sidecar schema-valid, ship revision recorded.
+- AC-9.4: AWAITING DANIEL (checklist: Calc-SPEC final read = AC-CALC-001-2; scale refusal pt/en reads right; schedule sanity vs human reading; DEFERRED media resolution — personal photo optional; file:// in two browsers)
+- AC-9.5: tag rcp-v0.3 BLOCKED on AC-9.4 by design.
 
 Phase 8:
 - AC-8.1: PASS — 2026-08-03 (accepted 0.6 factor re-renders: cabbage 1000 g → 600 g asserted in the rendered HTML, fixed salt unmoved — the control is not a no-op; factor state app-side, persists across re-analyses, resets on document change)
