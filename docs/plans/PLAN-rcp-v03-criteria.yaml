@@ -1,0 +1,147 @@
+schema_version: 1
+plan: rcp-v03
+phases:
+- id: 1
+  classification: testable
+  criteria:
+  - id: AC-1.1
+    statement: calculus/SPEC.md has a `## fn:` section for every SR-CALC-001/003 function, each containing the four mandated sub-headings (grep).
+    verify: 'python3 -c "import re; t=open(''calculus/SPEC.md'').read(); fns=[''scale'',''resolveBases'',''selectGuardPath'',''enforceConstraints'',''min_batch'',''fixed-quantity'',''duration re-estimation'',''readingOrder'',''interleave'',''schedule'']; secs=re.findall(r''## fn: (.+)'', t); assert len(secs)>=9, secs; assert all(h in t for h in [''### Domain'',''### Units'',''### Edges'',''### Worked example'']); print(''OK'', len(secs))"'
+  - id: AC-1.2
+    statement: The ```rcp-edge-classes fenced block exists with ≥6 `class:` lines (grep + count).
+    verify: 'python3 -c "import re; t=open(''calculus/SPEC.md'').read(); m=re.search(r''```rcp-edge-classes\n(.*?)```'', t, re.S); assert m; n=len(re.findall(r''^class: [a-z-]+$'', m.group(1), re.M)); assert n>=6, n; print(''OK'', n)"'
+  - id: AC-1.3
+    statement: '`### Worked example: window-propagation`, `### Worked example: prerequisite-placement` and `## Numeric discipline` anchors present (grep); adequacy = Daniel''s checkpoint.'
+    verify: 'sh -c "grep -q ''### Worked example: window-propagation'' calculus/SPEC.md && grep -q ''### Worked example: prerequisite-placement'' calculus/SPEC.md && grep -q ''## Numeric discipline'' calculus/SPEC.md"'
+  - id: AC-1.4
+    statement: CLAUDE.md + docs/project-context.md list calculus/ as normative.
+    verify: grep -B2 -A2 'calculus/' CLAUDE.md | grep -qi normative && grep -B2 -A2 'calculus/' docs/project-context.md | grep -qi normative
+  - id: AC-1.5
+    statement: '`make validate` green (nothing else touched).'
+    verify: make validate && test -z "$(git diff --name-only | grep -vE '^(calculus/SPEC.md|CLAUDE.md|docs/project-context.md)$')"
+- id: 2
+  classification: testable
+  criteria:
+  - id: AC-2.1
+    statement: 'Every migrated parity case: identical accept/refuse + authored reasons — AC-CALC-001-1.'
+    verify: cd tools/rcplint && go test -run Parity ./calc/... -v
+  - id: AC-2.2
+    statement: clamp.go absent; clamp subcommand routes through calc; accept.sh refusal checks green untouched.
+    verify: test ! -f tools/rcplint/clamp.go && cd tools/rcplint && ! go run . clamp --scale 2.0 testdata/clamp/fixed-salt-chucrute.rcp.yaml && ! go run . clamp --scale 2.0 testdata/clamp/missing-quantity.rcp.yaml
+  - id: AC-2.3
+    statement: TestCalcPurity green; SPEC worked examples for P2 functions pass as verbatim table tests.
+    verify: cd tools/rcplint && go test -run TestCalcPurity ./calc/... && go test ./calc/...
+  - id: AC-2.4
+    statement: 'Single-sourcing mechanical: one exported basis symbol, facts.go consumes it (test-asserted).'
+    verify: cd tools/rcplint && go test ./... -run 'Basis|Single'
+  - id: AC-2.5
+    statement: SPEC-completeness test green (every exported calc symbol appears in calculus/SPEC.md).
+    verify: cd tools/rcplint && go test ./... -run 'SpecComplete|Completeness'
+  - id: AC-2.6
+    statement: facts CUE payload unchanged (make conformance green) + dependency-freeze check live in accept.sh.
+    verify: make conformance && grep -qi 'dependency.freeze\|dependency-freeze' tools/rcplint/scripts/accept.sh
+- id: 3
+  classification: testable
+  criteria:
+  - id: AC-3.1
+    statement: SPEC worked examples for timeline pass verbatim as table tests.
+    verify: cd tools/rcplint && go test ./calc/... -run Timeline
+  - id: AC-3.2
+    statement: 'Torta: mise-en-place order + offsets + prerequisite placement — AC-CALC-003-1 (Go half).'
+    verify: cd tools/rcplint && go test ./calc/... -run Torta
+  - id: AC-3.3
+    statement: 'Entremet (original-authored): multi-day multi-track schedule respects DAG + windows — AC-CALC-003-2 (Go half).'
+    verify: cd tools/rcplint && go test ./calc/... -run Entremet
+  - id: AC-3.4
+    statement: SPEC-completeness test still green; standing gates green.
+    verify: cd tools/rcplint && go test ./... && cd ../.. && make validate && make conformance
+- id: 4
+  classification: testable
+  criteria:
+  - id: AC-4.1
+    statement: calc-vectors covers every exported function; determinism test green; no absolute paths in records.
+    verify: cd tools/rcplint && go run . calc-vectors /tmp/cv1 && go run . calc-vectors /tmp/cv2 && diff -r /tmp/cv1 /tmp/cv2 && ! grep -rl "$(cd ../.. && pwd)" /tmp/cv1
+  - id: AC-4.2
+    statement: Coverage gate green on the real set (all classes); inverted test proves failure — SAC-CALC-002.
+    verify: cd tools/rcplint && go test ./calc/... -run TestCalcCoverage -v
+  - id: AC-4.3
+    statement: Private-path input REFUSED (tested); allowlist hard-coded.
+    verify: cd tools/rcplint && go test ./... -run 'Allowlist|PrivatePath'
+  - id: AC-4.4
+    statement: '`make calculus` (Go half) green.'
+    verify: make calculus
+- id: 5
+  classification: testable
+  criteria:
+  - id: AC-5.1
+    statement: Full replay green in TS — AC-CALC-002-1 second implementation.
+    verify: cd tools/viewer && mise exec -- bun test
+  - id: AC-5.2
+    statement: TS purity (zero imports) green.
+    verify: cd tools/viewer && mise exec -- bun test -t purity
+  - id: AC-5.3
+    statement: '`make calculus` runs both, green — SAC-CALC-001; dependency surface unchanged.'
+    verify: make calculus && python3 -c "import json; p=json.load(open('tools/viewer/package.json')); d=p.get('dependencies',{}); assert set(d)=={'yaml','@cfworker/json-schema'}"
+- id: 6
+  classification: testable
+  criteria:
+  - id: AC-6.1
+    statement: Both directions green — AC-PR-004-1.
+    verify: cd tools/rcplint && go test ./compat/... -run TestDecodeCompat -v
+  - id: AC-6.2
+    statement: Breaking fixture fails; inverted test — AC-PR-004-2, SAC-PR-002.
+    verify: cd tools/rcplint && go test ./compat/... -run TestDecodeCompat -v | grep -qi break
+  - id: AC-6.3
+    statement: Struct-vs-tag field diff test green; gate in make accept.
+    verify: cd tools/rcplint && go test ./compat/... -run 'StructTag|FieldDiff' && bash scripts/accept.sh | grep -q 'AC-PR-004-1'
+- id: 7
+  classification: testable
+  criteria:
+  - id: AC-7.1
+    statement: MEDIA.md carries the four mandated section anchors (grep) — AC-TOOL-002-1 doc half; adequacy at Daniel's Phase 9 read.
+    verify: 'sh -c "grep -q ''## Asset location'' schema/MEDIA.md && grep -q ''## Licence'' schema/MEDIA.md && grep -q ''## Prohibition: source-book media'' schema/MEDIA.md && grep -q ''## Never serialized'' schema/MEDIA.md"'
+  - id: AC-7.2
+    statement: Attestation green AND provably fails on both planted cases (binary + base64) — AC-TOOL-002-2 gate.
+    verify: bash tools/rcplint/scripts/accept.sh | grep -qi attestation
+  - id: AC-7.3
+    statement: 'Render tests: roles at doc+step level, failure text-labelled, alt policy, absent-state for placeholder AND unmatched, basename matching, revocation unit test.'
+    verify: cd tools/viewer && mise exec -- bun test
+  - id: AC-7.4
+    statement: Daniel's photo outcome recorded (PASS/FAIL/DEFERRED — operational).
+    verify: 'grep -q ''AC-7.4: PASS'' docs/plans/PLAN-rcp-v03.md'
+  - id: AC-7.5
+    statement: CSP exact-string assertion live in accept.sh; bundle < 500 KB; file-input ingress works without drag.
+    verify: bash tools/rcplint/scripts/accept.sh | grep -qi CSP && test $(stat -f%z tools/viewer/dist/index.html) -lt 512000 && cd tools/viewer && mise exec -- bun test -t ingress
+- id: 8
+  classification: testable
+  criteria:
+  - id: AC-8.1
+    statement: 'Scale happy path: accepted factor re-renders scaled amounts (bun-tested) — the control is not a no-op.'
+    verify: cd tools/viewer && mise exec -- bun test -t scale
+  - id: AC-8.2
+    statement: Refusal renders authored pt/en verbatim, role=alert; control present iff clamp — AC-TOOL-003-1.
+    verify: cd tools/viewer && mise exec -- bun test -t refus
+  - id: AC-8.3
+    statement: Schedule view humanized + day-grouped, tested on torta AND entremet — AC-TOOL-003-2 render half.
+    verify: cd tools/viewer && mise exec -- bun test -t schedule
+  - id: AC-8.4
+    statement: 'Mock engines richer AND poorer: zero UI changes — AC-TOOL-003-2; purity greps; CSP exact-string; < 500 KB.'
+    verify: cd tools/viewer && mise exec -- bun test && bash ../rcplint/scripts/accept.sh | grep -qi CSP && test $(stat -f%z dist/index.html) -lt 512000
+- id: 9
+  classification: testable
+  criteria:
+  - id: AC-9.1
+    statement: make accept green (all v0.3 checks incl. inverted proofs).
+    verify: make accept
+  - id: AC-9.2
+    statement: Clean-worktree run green (validate + conformance + calculus).
+    verify: git worktree add /tmp/rcp-v03-clean rcp-v0.3 && cd /tmp/rcp-v03-clean && mise install && (cd tools/viewer && mise exec -- bun install --frozen-lockfile) && make validate && make conformance && make calculus; ret=$?; cd -; git worktree remove --force /tmp/rcp-v03-clean; exit $ret
+  - id: AC-9.3
+    statement: Ledger/roadmap verified by named command (four FEATs shipped + realized_by; TOOL-001 note; ROADMAP grep).
+    verify: python3 -c "import yaml; d=yaml.safe_load(open('docs/product/features.yaml')); feats={f['id']:f for f in d['features']} if 'features' in d else {f['id']:f for f in d}; ids=['FEAT-CALC-001','FEAT-CALC-002','FEAT-CORE-003','FEAT-TOOL-002']; [exec('assert feats[i][\"status\"]==\"shipped\" and feats[i].get(\"realized_by\")') for i in ids]" && grep -qi 'v0.3.*SHIPPED\|SHIPPED.*v0.3' docs/product/ROADMAP.md
+  - id: AC-9.4
+    statement: Daniel's acceptance recorded green incl. Calc-SPEC final read and any DEFERRED media resolved (operational).
+    verify: 'grep -q ''AC-9.4: PASS'' docs/plans/PLAN-rcp-v03.md'
+  - id: AC-9.5
+    statement: Tag rcp-v0.3 exists.
+    verify: test "$(git cat-file -t rcp-v0.3)" = tag
