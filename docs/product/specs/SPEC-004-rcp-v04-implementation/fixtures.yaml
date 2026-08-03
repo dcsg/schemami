@@ -1,5 +1,5 @@
 # Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
-# edikt:artifact type=fixtures spec=SPEC-004 status=draft reviewed_by=qa
+# edikt:artifact type=fixtures spec=SPEC-004 status=accepted reviewed_by=qa
 # created_at=2026-08-03T17:50:00Z
 # All records aspirational until behaviour ships (SPEC-001 convention).
 # target_phase names the LAYER that builds them (SSP-001: identity → lineage →
