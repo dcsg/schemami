@@ -106,7 +106,7 @@ rather than four newly-empty registries:
 |---|---|---|
 | `equipment` | `equipment.*` registry | exists (10 entries) |
 | `technique` | `technique.*` registry | exists (13 entries) |
-| `diet` | closed enum seeded from schema.org `RestrictedDiet` (verified prior art, research 09) | new enum, no registry needed |
+| `diet` | the eleven schema.org `RestrictedDiet` members, **verified 2026-08-03 from the primary source**: Diabetic, GlutenFree, Halal, Hindu, Kosher, LowCalorie, LowFat, LowLactose, LowSalt, Vegan, Vegetarian | new enum; documents map straight onto `suitableForDiet` |
 | `region` | ISO 3166-1 alpha-2, optionally with ISO 3166-2 subdivision — the encoding `origin.country` already uses | reuses existing precedent |
 | `season` | closed enum (four seasons) | new enum, naturally closed |
 | `scale` | closed enum (batch context: domestic / professional) — SAP's multiple-BOM "different lot-size ranges" is the verified analogue | new enum |
@@ -123,6 +123,42 @@ that a published `(collection, id, version)` triple is immutable — a correctio
 is a new revision, never an edit in place; and that supersession is signalled
 by the successor revision alone (there is no separate supersession pointer in
 MODEL 1 — recorded as a deliberate minimalism, revisitable).
+
+**Stage-forked identity — both homes (Daniel, 2026-08-03).** The preparation or
+technique CLASS carries its graded stage outcomes as bounded data (stage id +
+the measured checkpoint that defines it: Escoffier's roux blanc/blond/brun by
+cook time, the pontos de açúcar by temperature). A recipe's endpoint MAY
+reference a stage by id, so the measurement and the name stay bound. One class
+with N graded stages is preferred over N near-duplicate sibling classes
+(research 08 F6).
+
+*Contradiction rule.* When a recipe's measured endpoint falls outside the
+referenced stage's class bounds, validation **warns naming both values and the
+recipe's measurement wins** — books name stages loosely, and an author who
+measured did so deliberately. This is deliberately NOT the fail-closed posture
+used elsewhere, because a stage label is a naming disagreement rather than a
+safety bound: severity-critical constraints remain governed by the Calculus and
+are untouched by this rule.
+
+**Family validation.** Within a collection, documents declaring the same
+`family` must agree on the slug, and a family with exactly one member raises a
+warning — the usual cause is a typo. Validation does not extend across
+collections, where full membership is not visible.
+
+**Resolution order (closes PRD OQ-6).** When more than one candidate answers a
+mention, the protocol publishes a TOTAL order, highest first:
+
+1. an explicit **pinned** reference
+2. a matching document in the consumer's **own collection** (the user's own
+   roux outranks the curated one — user above author, the direction `ld.so` had
+   to be corrected to)
+3. the class's **canonical link**
+
+Within a tier the qualified reference wins. If candidates remain tied,
+resolution **fails naming every candidate** rather than guessing — the tiebreak
+cannot silently pick. The protocol specifies no UI: a surface must be able to
+report which candidate won and which criterion decided it; how it shows that is
+its own concern (CSS's proven split, research 09 F6).
 
 ### Layer 3 — Trust
 
@@ -275,6 +311,13 @@ criteria:
   green in both implementations — Verify: `make calculus` + `git diff --stat calculus/vectors/`.
 - **SAC-TOOL-001**: The viewer bundle stays under 500 KB with the CSP string
   unchanged — Verify: existing `accept.sh` CSP-EXACT check.
+- **SAC-CORE-001**: A measurement outside its referenced stage's class bounds
+  WARNS (measurement authoritative) while a severity-critical constraint in the
+  same document still refuses — Verify: linter fixture pair.
+- **SAC-CORE-002**: Pin beats own-collection beats canonical, and a genuine tie
+  FAILS naming every candidate — Verify: resolution-order test matrix.
+- **SAC-REG-002**: All eleven schema.org RestrictedDiet members ship and no
+  invented diet value was added — Verify: enum diff against the recorded list.
 
 ## Testing Strategy
 
@@ -300,12 +343,22 @@ dependencies — hashing is stdlib.
 
 ## Open Questions
 
-- NEEDS CLARIFICATION: the exact `diet` enum value set — schema.org's
-  `RestrictedDiet` has 11 values; whether RCP ships all 11 or the subset its
-  corpus exercises is a curation call to make during Layer 2.
-- NEEDS CLARIFICATION: whether `family` grouping should be validated for
-  agreement (all members of a family declaring the same family slug) or left
-  unvalidated in MODEL 1.
+None outstanding. Both NEEDS CLARIFICATION items and two PRD open questions were
+closed in Daniel's clarification interview (2026-08-03):
+
+- **`diet` value set** → all eleven schema.org `RestrictedDiet` members, verified
+  against the primary source rather than recalled.
+- **`family` validation** → validated within a collection, including the
+  single-member warning; silent across collections.
+- **PRD OQ-6 (shadowing)** → the protocol names a total resolution order with a
+  failing tiebreak and specifies no UI.
+- **Stage identity (FR-PR-006)** → both homes, with the measurement winning on
+  contradiction.
+
+PRD OQ-3 (how `import`/`provenance` relate to the collection qualifier) remains
+open at the PRD layer and is scoped to Layer 1 implementation, where the
+qualifier's field placement makes the answer concrete — research 02 D.4's
+warning stands: do not conflate identity with provenance.
 
 ---
 

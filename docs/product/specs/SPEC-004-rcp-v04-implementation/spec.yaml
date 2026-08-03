@@ -25,6 +25,7 @@ source_prd_coverage:
     by:
     - SR-CORE-001
     - SR-CORE-003
+    - SR-VAL-003
   - fr: FR-PR-008
     by:
     - SR-CORE-002
@@ -41,6 +42,7 @@ source_prd_coverage:
   - fr: FR-REG-005
     by:
     - SR-REG-001
+    - SR-CORE-006
   - fr: FR-REG-006
     by:
     - SR-REG-002
@@ -80,11 +82,15 @@ requirements:
     pin), optionally qualified by collection. A fork MUST remain a complete self-contained document.
 - id: SR-CORE-002
   implements: FR-PR-008
-  text: A variant MUST express its distinction as `axis` (closed enum with an `other` catch-all)
-    + `value`. Value resolution MUST be defined per axis against an existing registry kind, a
-    named external standard already used by core, or an enum defined in this spec — no axis may
-    ship resolving against an absent registry. `variant_label` MUST remain human-only and MUST
-    NOT be machine-read.
+  text: 'A variant MUST express its distinction as `axis` (closed enum with an `other` catch-all)
+    + `value`. Value resolution MUST be defined per axis: `equipment` and `technique` against
+    their existing registry kinds; `diet` against the eleven schema.org RestrictedDiet values
+    (verified 2026-08-03 from schema.org/RestrictedDiet: DiabeticDiet, GlutenFreeDiet, HalalDiet,
+    HinduDiet, KosherDiet, LowCalorieDiet, LowFatDiet, LowLactoseDiet, LowSaltDiet, VeganDiet,
+    VegetarianDiet) so documents map straight onto schema.org/Recipe suitableForDiet; `region`
+    against ISO 3166-1 alpha-2 with optional ISO 3166-2 subdivision; `season` and `scale` against
+    closed enums defined in this spec. No axis may ship resolving against an absent registry.
+    `variant_label` MUST remain human-only and MUST NOT be machine-read.'
 - id: SR-CORE-003
   implements: FR-PR-007
   text: '`schema/VERSIONING.md` MUST gain a document-revision section stating when `version` increments,
@@ -98,8 +104,16 @@ requirements:
     PRD OQ-1.)
 - id: SR-CORE-005
   implements: FR-PR-006
-  text: Stage-forked identity MUST be settled as a DECISIONS entry naming where stage outcomes
-    live, with two validating example documents demonstrating both sides of the line.
+  text: 'Stage-forked identity MUST be settled as a DECISIONS entry recording BOTH homes: the
+    preparation or technique CLASS carries its graded stage outcomes as bounded data (stage id
+    + the measured checkpoint that defines it), and a recipe''s endpoint MAY REFERENCE a stage
+    by id so the measurement and the name stay bound. One class with N graded stages MUST be preferred
+    over N near-duplicate sibling classes. CONTRADICTION RULE: when a recipe''s measured endpoint
+    falls outside the referenced stage''s class bounds, validation MUST WARN naming both values
+    and the recipe''s MEASUREMENT wins — books name stages loosely and the author measured deliberately.
+    This is a labelling disagreement, NOT a safety bound: severity-critical constraints remain
+    governed fail-closed by the Calculus and are untouched by this rule. Two validating example
+    documents MUST demonstrate both sides of the identity line.'
 - id: SR-VAL-001
   implements: FR-VAL-003
   text: Validation MUST report staleness when a lineage pin names revision N and the target declares
@@ -146,6 +160,21 @@ requirements:
     render the linked method without losing the parent document, and place the linked preparation
     before its consuming step in the schedule via the existing two-stage Calculus schedule. The
     engine seam version MUST stay 1 (capabilities only, ADR-002).'
+- id: SR-VAL-003
+  implements: FR-PR-007
+  text: 'Family membership MUST be validated within a collection: documents declaring the same
+    `family` MUST agree on the slug, and a family with exactly one member MUST raise a warning
+    naming it (the usual cause is a typo). Validation MUST NOT extend across collections, where
+    the full membership is not visible.'
+- id: SR-CORE-006
+  implements: FR-REG-005
+  text: 'The protocol MUST publish a TOTAL resolution order for a mention answered by more than
+    one candidate, highest precedence first: (1) an explicit pinned reference; (2) a matching
+    document in the consumer''s own collection; (3) the class''s canonical link. Within a tier
+    the QUALIFIED reference wins; if candidates remain tied, resolution MUST FAIL naming every
+    candidate rather than guessing — the tiebreak cannot silently pick. The protocol MUST NOT
+    specify UI: a surface MUST be able to report which candidate won and which criterion decided
+    it, and how it shows that is its own concern.'
 acceptance_criteria:
 - id: AC-PACK-001-1
   fr: FR-PACK-001
@@ -327,6 +356,24 @@ acceptance_criteria:
   when: the acceptance sweep runs
   then: the CSP meta string is unchanged and the bundle stays under 500 KB
   verify: bash tools/rcplint/scripts/accept.sh
+- id: SAC-CORE-001
+  source: spec
+  given: a recipe whose endpoint measurement falls outside the class bounds of the stage it references
+  when: validation runs
+  then: a WARNING names both values and the document stays valid with the measurement authoritative;
+    a severity-critical constraint in the same document still refuses fail-closed
+- id: SAC-CORE-002
+  source: spec
+  given: a mention answered by an explicit pin, a document in the own collection, and a canonical
+    link
+  when: resolution runs
+  then: the pin wins; with the pin removed the own-collection document wins; with both removed
+    the canonical link wins; and a genuine tie FAILS naming every candidate
+- id: SAC-REG-002
+  source: spec
+  given: the shipped diet axis values
+  when: they are compared against schema.org RestrictedDiet
+  then: all eleven members are present and no invented value was added
 protections:
 - id: SP-001
   text: 'Fail-closed safety semantics and authored refusal reasons are untouched: the frozen calculus
@@ -411,8 +458,22 @@ revision_history:
     existing backings rather than minting empty registries), manifest as its own file not a recipe
     kind, qualification MANDATORY across collections, document versioning closed here (OQ-5).
     OQ-1 resolved in-spec: fragments are the sole normative temporal encoding.'
+- at: '2026-08-03T17:10:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Daniel''s clarification interview resolved both NEEDS CLARIFICATION items and two PRD
+    open questions: stages live on BOTH class and recipe endpoint with measurement winning on
+    contradiction (warn, not refuse — a labelling disagreement, not a safety bound); diet adopts
+    all eleven verified schema.org RestrictedDiet values; family validated within a collection
+    incl. single-member warning; resolution order named as pin > own collection > canonical with
+    a failing tiebreak. Two SRs and three SACs added; no NEEDS CLARIFICATION remains.'
+  affected:
+  - SR-CORE-002
+  - SR-CORE-005
+  - SR-VAL-003
+  - SR-CORE-006
 extensions: {}
 _sync:
-  md_hash: eac65bbcba6eee78a0c2d3f72f049056ba72256ee5fb4ad77b72a0e40a19475e
-  yaml_hash: e987f10e535af4076df0307d16c4608b309b830695a70fd719c4ca796d0b5ea9
-  synced_at: '2026-08-03T16:55:00Z'
+  md_hash: 41157c5e4e2e3a00b7f131b89617ef3829f4ca64d8ae8e54dba436034cedd134
+  yaml_hash: 8690e047a9b117b7793a683e483476c85ca6f33c8740021d239f1a5a6134cafa
+  synced_at: '2026-08-03T17:10:00Z'
