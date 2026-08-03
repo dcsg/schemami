@@ -438,11 +438,12 @@ features:
       where assets live relative to documents, how the single-file
       viewer handles them, and the boundary that asset HOSTING is
       app-side (DECISIONS #19/#21) while the reference shape is
-      protocol. Privacy line recorded: personal photos of one's own
-      cooking are fine in the private collection; a source book's media
-      is never reproduced (the private-use ingestion right does not
-      extend to media). Surfaced by Daniel 2026-08-03: no media visible
-      anywhere in the viewer.
+      protocol. Privacy line (amended by DECISIONS #27): personal photos of
+      one's own cooking may go anywhere media goes; book-derived media
+      is permitted ONLY in the gitignored private collection for
+      personal use — never in commits, dist, artifacts or vectors
+      (attestation-enforced).
+ 
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
     status: deferred
