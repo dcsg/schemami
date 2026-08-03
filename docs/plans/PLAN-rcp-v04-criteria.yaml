@@ -1,0 +1,576 @@
+plan: rcp-v04
+generated: '2026-08-03T18:10:00Z'
+last_evaluated: null
+phases:
+- phase: 1
+  title: 'Pack manifest: the collection becomes nameable'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-1.1
+    text: '`schema/rcp-pack-v1.schema.json` exists and validates a manifest declaring only the collection
+      identifier'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestPackManifest ./...
+  - id: AC-1.2
+    text: A manifest/document identifier conflict is reported and the MANIFEST value is the one used
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestPackManifestConflict ./...
+  - id: AC-1.3
+    text: '`kind` enum is unchanged and no new required field entered core'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./...
+  - id: AC-1.4
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make accept
+- phase: 2
+  title: 'Collection scope: discovery, and references that cannot misbind (opus)'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-2.1
+    text: Two collections each holding an id `pao-alentejano` both load and both resolve; no id is rewritten
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestCollectionCollision ./...
+  - id: AC-2.2
+    text: An unqualified reference resolves in its own collection; the same reference with no local target
+      FAILS naming it, and never binds to the other collection
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestUnqualifiedScope ./...
+  - id: AC-2.3
+    text: An id collision WITHIN one collection is an error
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestIntraCollectionCollision ./...
+  - id: AC-2.4
+    text: The recipe id pattern is byte-identical to the v0.1 pin
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestIdPatternFrozen ./...
+  - id: AC-2.5
+    text: Decode-compat green both directions with qualifiers present
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./...
+  - id: AC-2.6
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make accept
+- phase: 3
+  title: Ship a second collection in the published corpus
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-3.1
+    text: '`examples/` contains two collections, each with a manifest, and one id appears in both'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go run . validate ../.. | grep -c 'collection'
+  - id: AC-3.2
+    text: '`make validate` walks both collections and is green'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate
+  - id: AC-3.3
+    text: No document in `examples/` names a provenance source unique to the private corpus
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: python3 tools/rcplint/scripts/corpus-provenance-check.py .
+  - id: AC-3.4
+    text: Media attestation and privacy checks still green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make accept
+  - id: AC-3.GATE
+    text: '** all gates green, worktree clean, tag opportunity'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make calculus && make accept
+- phase: 4
+  title: 'Lineage: described, pinned, and the pin check hardened'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-4.1
+    text: Every lineage field carries a schema description
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestLineageDescribed ./...
+  - id: AC-4.2
+    text: A mismatched componentRef pin FAILS, and `unversioned-pin` still produces its exact existing
+      "declares no version" verdict
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run 'TestL2FixturesOneRuleEach|TestPinMismatch'
+  - id: AC-4.3
+    text: Stale pin + mismatch on one edge → one warning and one failure, failure unmasked
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestPinStaleAndMismatch ./...
+  - id: AC-4.4
+    text: Same-family disagreement errors; single-member family warns; cross-collection silent
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestFamilyValidation ./...
+  - id: AC-4.5
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make accept
+- phase: 5
+  title: 'Variant discriminator: machine-readable at last'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-5.1
+    text: Two sibling variants differing on a declared axis are machine-distinguishable without reading
+      prose
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestVariantDiscriminator ./...
+  - id: AC-5.2
+    text: An unknown axis decodes into the catch-all rather than failing; a document without a discriminator
+      stays valid
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestAxisCatchAll ./...
+  - id: AC-5.3
+    text: Every shipped axis value has live backing and ≥1 exercising example
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestAxisBacking ./...
+  - id: AC-5.4
+    text: '`diet` does not appear in the axis enum'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestNoDietAxis ./...
+  - id: AC-5.5
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make accept
+- phase: 6
+  title: Canonical links and the published resolution order (opus)
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-6.1
+    text: '`canonical_recipe` validates on a registry entry and its absence keeps the entry valid'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestCanonicalLinkSchema ./...
+  - id: AC-6.2
+    text: Pin beats own-collection beats canonical, across the full matrix
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestResolutionOrder ./...
+  - id: AC-6.3
+    text: A genuine tie FAILS naming every candidate
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestResolutionTieFails ./...
+  - id: AC-6.4
+    text: An explanation carries candidate set, winner and deciding criterion
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestResolutionExplanation ./...
+  - id: AC-6.5
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make accept
+- phase: 7
+  title: Document revisions, stages, and two recorded decisions
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-7.1
+    text: VERSIONING.md carries the document-revision section and every pre-existing H2 anchor is unchanged
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: grep -q 'SchemaVer' schema/VERSIONING.md && grep -qi 'decode' schema/VERSIONING.md && grep
+      -q 'revision' schema/VERSIONING.md
+  - id: AC-7.2
+    text: 'DECISIONS #28 and #29 exist with their stated grounds'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: grep -q '^### 28' docs/research/DECISIONS.md && grep -q '^### 29' docs/research/DECISIONS.md
+  - id: AC-7.3
+    text: A measurement outside its stage bounds WARNS with measurement authoritative, while a severity-critical
+      constraint in the same document still REFUSES
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestStageContradiction ./...
+  - id: AC-7.4
+    text: Two example documents demonstrate both sides of the identity line and both validate
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate
+  - id: AC-7.GATE
+    text: '** all gates green, tag opportunity'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make calculus && make accept
+- phase: 8
+  title: 'Calculus: referenced preparations become schedulable (opus)'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-8.1
+    text: '`calculus/SPEC.md` gains the rule, a worked example and an edge class; no project ids entered
+      it'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run 'TestSpecCompleteness|TestCalcCoverage' ./...
+  - id: AC-8.2
+    text: A referenced preparation is placed before its consuming step, matching the worked example's
+      numbers, in BOTH implementations
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make calculus
+  - id: AC-8.3
+    text: An unresolvable reference REFUSES with the normative uncertainty string rather than placing
+      at zero
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestScheduleRefUnresolvable ./calc/
+  - id: AC-8.4
+    text: Vectors changed ONLY in this commit, alongside the SPEC change
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: git show --stat HEAD | grep -q 'calculus/SPEC.md'
+  - id: AC-8.5
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make calculus && make accept
+- phase: 9
+  title: 'Resolution records: verifiable, and fail-closed on every path (opus)'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-9.1
+    text: Records carry target, source, content_hash and resolver_version; hashing is JCS over the generic
+      map, covering target ‖ document
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestResolutionRecordShape ./...
+  - id: AC-9.2
+    text: Frozen mode FAILS on every enumerated path (no records, zero verified, unparseable, empty/absent
+      hash, wrong prefix, duplicate, missing target)
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestFrozenFailClosed ./...
+  - id: AC-9.3
+    text: Inverted proof — a mutated target FAILS, an intact corpus passes
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestFrozenInvertedProof ./...
+  - id: AC-9.4
+    text: The writer refuses a source locator under `private/` or outside the collection root
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestRecordSourceRefusesPrivate ./...
+  - id: AC-9.5
+    text: Hashing imports stdlib only; hash output is deterministic across runs
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run 'TestHashDeterminism|TestHashImportAllowlist' ./...
+  - id: AC-9.GATE
+    text: '** all gates green + frozen wired into accept.sh, tag opportunity'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make calculus && make accept
+- phase: 10
+  title: Canonical authoring and the extraction linter
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-10.1
+    text: A sub-preparation with its method ingests as an inline component; one without becomes a class
+      reference with no invented steps
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestExtractionRule ./...
+  - id: AC-10.2
+    text: An unanchored registry-known term WARNS naming it
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestL2WarningFixtures ./...
+  - id: AC-10.3
+    text: An authored pattern with an unknown X WARNS
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestMentionPattern ./...
+  - id: AC-10.4
+    text: At least one canonical link is authored and resolves under the scope rule
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/rcplint && go test -run TestCanonicalResolves ./...
+  - id: AC-10.5
+    text: Standing gates green
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make accept
+- phase: 11
+  title: 'Viewer: see the method, seek the moment'
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-11.1
+    text: A new capability + paired member exist; engine version stays 1; the pairing test passes both
+      directions
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/viewer && bun test src/engine-js/engine.test.ts
+  - id: AC-11.2
+    text: The linked method renders without losing the parent, with no duplicate ids
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/viewer && bun test src/see-the-method.test.ts
+  - id: AC-11.3
+    text: An engine lacking the capability renders an explicit omission notice, never a silently incomplete
+      plan
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/viewer && bun test src/see-the-method.test.ts -t omission
+  - id: AC-11.4
+    text: A `#t=` uri resolves its asset and the fragment reaches the element; two ranges of one asset
+      render independently; an invalid fragment is dropped
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/viewer && bun test src/media.test.ts
+  - id: AC-11.5
+    text: dist is rebuilt and matches src
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: cd tools/viewer && mise exec -- bun run build.ts && git diff --exit-code tools/viewer/dist/
+  - id: AC-11.GATE
+    text: '** all gates green'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make validate && make conformance && make calculus && make accept
+- phase: 12
+  title: Acceptance, ledger, ship
+  status: pending
+  attempt: 0
+  criteria:
+  - id: AC-12.1
+    text: '`make accept` green with every new gate named by its AC'
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: make accept
+  - id: AC-12.2
+    text: Clean-clone run green, with its reduced coverage stated
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: bash tools/rcplint/scripts/clean-clone-proof.sh
+  - id: AC-12.3
+    text: Ledger and roadmap truthful
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: python3 tools/rcplint/scripts/ledger-check.py
+  - id: AC-12.4
+    text: Daniel's acceptance recorded (operational)
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: null
+  - id: AC-12.5
+    text: Tag `rcp-v0.4` exists
+    status: pending
+    fail_count: 0
+    fail_reason: null
+    block_reason: null
+    last_evaluated: null
+    verify: test "$(git cat-file -t rcp-v0.4)" = tag
