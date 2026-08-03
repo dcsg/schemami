@@ -34,16 +34,23 @@ func runValidate(root string) int {
 		maturity[kind] = readMaturity(p)
 	}
 
-	exGlob, _ := filepath.Glob(filepath.Join(root, "examples/*.rcp.yaml"))
-	sort.Strings(exGlob)
+	corpus, err := LoadCorpus(corpusRootFor(root))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "load corpus: %v\n", err)
+		return 2
+	}
+	for _, e := range corpus.Errors {
+		fmt.Printf("FAIL %s\n", e)
+		failures++
+	}
+	for _, c := range corpus.Conflicts {
+		fmt.Printf("FAIL %s\n", c)
+		failures++
+	}
 	nDocs := 0
-	for _, path := range exGlob {
-		docs, err := LoadDocuments(path)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "load %s: %v\n", path, err)
-			return 2
-		}
-		for _, d := range docs {
+	for _, col := range corpus.Collections {
+		fmt.Printf("--   collection %q (%d documents)\n", col.ID, len(col.Docs))
+		for _, d := range col.Docs {
 			nDocs++
 			ok := true
 			if err := core.Validate(d.Value); err != nil {

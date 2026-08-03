@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 )
 
@@ -163,9 +162,25 @@ func lintRecipeScope(loc string, m map[string]any, parentBases map[string]bool, 
 		id, _ := cm["id"].(string)
 		compIDs[id] = true
 		if ref, isRef := cm["ref"].(string); isRef {
+			// SCOPE RULE (SR-PACK-001/002): an unqualified reference
+			// resolves ONLY in the referring document's own collection
+			// — represented here by `siblings`, which the caller scoped.
+			// There is deliberately NO fallback search: a reference that
+			// does not resolve in its own scope FAILS rather than
+			// silently binding to a same-named document elsewhere.
+			qualifier, targetID := SplitRef(ref)
+			target, known := siblings[targetID]
+			if qualifier != "" {
+				// Cross-collection references are resolved by the caller
+				// (which holds the whole index); within one collection's
+				// lint pass a qualified ref is out of scope, not missing.
+				known = false
+			} else if !known {
+				l.errf("%s: component %q references %q which does not resolve in this collection — a reference into another collection MUST name it (SR-PACK-002)", loc, id, ref)
+			}
 			// unversioned pin: version pinned but target declares no version
 			if _, pinned := cm["version"]; pinned {
-				if target, known := siblings[ref]; known {
+				if known {
 					if _, has := target["version"]; !has {
 						l.errf("%s: component %q pins version against target %q which declares no version", loc, id, ref)
 					}
@@ -608,27 +623,29 @@ func runLint(root string) int {
 			}
 		}
 	}
-	exGlob, _ := filepath.Glob(filepath.Join(root, "examples/*.rcp.yaml"))
-	sort.Strings(exGlob)
-	siblings := map[string]map[string]any{}
-	var all []Document
-	for _, path := range exGlob {
-		docs, err := LoadDocuments(path)
-		if err != nil {
-			fmt.Println("lint: load error:", err)
-			return 2
-		}
-		for _, d := range docs {
-			all = append(all, d)
-			if m, ok := d.Value.(map[string]any); ok {
-				siblings[d.ID] = m
-			}
-		}
+	corpus, err := LoadCorpus(corpusRootFor(root))
+	if err != nil {
+		fmt.Println("lint: load error:", err)
+		return 2
 	}
-	for _, d := range all {
-		lintDocument(d, reg, siblings, l)
+	for _, e := range corpus.Errors {
+		l.errf("%s", e)
 	}
-	lintComponentCycles(siblings, l)
+	for _, c := range corpus.Conflicts {
+		l.errf("%s", c)
+	}
+	idx := corpus.Index()
+	// Collection-scoped resolution (SR-PACK-001/002): each document is
+	// linted against ITS OWN collection. Two collections may hold the
+	// same id; neither shadows the other, and an unqualified reference
+	// never reaches across.
+	for _, col := range corpus.Collections {
+		siblings := idx[col.ID]
+		for _, d := range col.Docs {
+			lintDocument(d, reg, siblings, l)
+		}
+		lintComponentCycles(siblings, l)
+	}
 	for _, w := range l.Warnings {
 		fmt.Println("WARN", w)
 	}

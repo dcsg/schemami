@@ -41,7 +41,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-03 |
-| 2     | pending | 0/5 | — |
+| 2     | done | 1/5 | 2026-08-03 |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
@@ -810,3 +810,12 @@ Phase 1:
 - AC-1.3: PASS — 2026-08-03 (kind enum still 8 values; recipe.required still [id, kind, name]; `collection` is optional; core REJECTS a manifest — pack is provably a separate format, not a recipe kind; decode-compat green)
 - AC-1.4: PASS — 2026-08-03 (validate/accept 36-36/conformance 85/calculus 25 all green; calculus vectors byte-unchanged)
 - Fixture discipline: testdata/pack/{ok,bad-no-id,conflict} sit outside every corpus glob, so the must-fail document cannot red make validate (pre-flight qa #3).
+
+Phase 2:
+- AC-2.1: PASS — 2026-08-03 (two collections each holding `pao-alentejano` both load and both resolve; cross-collection collision is NOT an error and neither document is rewritten — the old flat siblings map silently overwrote, which was the real defect)
+- AC-2.2: PASS — 2026-08-03 (unqualified resolves in own collection; the same id absent locally FAILS rather than reaching across; qualified resolves; unknown collection distinguishable via KnownCollection. INVERTED PROOF: adding a fallback search across collections fails TestUnqualifiedScope; restored green)
+- AC-2.3: PASS — 2026-08-03 (duplicate id WITHIN one collection is an error naming both files)
+- AC-2.4: PASS — 2026-08-03 (TestIdPatternFrozen diffs $defs/slug pattern+type and recipe.id's $ref against the v0.1 pin via git show; collectionId asserted to be its own def, so qualification can never widen the frozen pattern)
+- AC-2.5: PASS — 2026-08-03 (frozen v0.1 reader decodes a document carrying `collection` with all v0.1-era fields intact)
+- AC-2.6: PASS — 2026-08-03 (validate/accept 36-36/conformance 85/calculus 25 green; vectors byte-unchanged; vector allowlists prefix-match `examples/` so a nested collection needs no widening)
+- Pre-v0.4 layout preserved: a corpus with no manifest anywhere loads as ONE collection (TestCorpusWithoutManifest), so `examples/` works untouched until Phase 3 gives it a manifest.

@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 type Check struct {
@@ -48,11 +47,19 @@ func runFacts(root string, paths []string) int {
 			}
 		}
 	}
-	if len(paths) == 0 {
-		paths, _ = filepath.Glob(filepath.Join(root, "examples/*.rcp.yaml"))
-		sort.Strings(paths)
-	}
 	var checks []Check
+	if len(paths) == 0 {
+		// Default: the whole corpus, collection-aware (SR-PACK-001) —
+		// a second collection must reach the bounds pipeline too.
+		corpus, err := LoadCorpus(corpusRootFor(root))
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "facts:", err)
+			return 2
+		}
+		for _, d := range corpus.Documents() {
+			collectChecks(d.ID, d.Value, bounds, &checks)
+		}
+	}
 	for _, path := range paths {
 		docs, err := LoadDocuments(path)
 		if err != nil {

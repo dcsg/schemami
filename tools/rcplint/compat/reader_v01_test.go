@@ -135,3 +135,22 @@ func TestDecodeCompatStructSurfaceMatchesPinnedSchema(t *testing.T) {
 		}
 	}
 }
+
+// SR-PACK-002 / AC-2.5: a document carrying a collection qualifier — a
+// field that did not exist at v0.1 — must still decode through the
+// FROZEN v0.1 reader with its v0.1-era fields intact. This is the
+// decode-compat contract meeting the new identity work.
+func TestDecodeCompatToleratesCollectionQualifier(t *testing.T) {
+	withQualifier := []byte("rcp: 1\nid: broa-de-milho\ncollection: livro-do-avo\nkind: bread\nname:\n  pt: Broa de milho\ningredients:\n  - id: farinha\n    raw: farinha de milho\n")
+	docs, err := DecodeDocuments(withQualifier)
+	if err != nil {
+		t.Fatalf("frozen v0.1 reader rejected a collection qualifier: %v", err)
+	}
+	d := docs[0]
+	if d.ID != "broa-de-milho" || d.Kind != "bread" || d.Name == nil {
+		t.Errorf("v0.1-era fields lost alongside the new qualifier: id=%q kind=%q name=%v", d.ID, d.Kind, d.Name)
+	}
+	if len(d.Ingredients) != 1 {
+		t.Errorf("ingredients lost: %d", len(d.Ingredients))
+	}
+}
