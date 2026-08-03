@@ -41,3 +41,19 @@ Grounding is part of minting: a new ingredient entry carries `cross_refs`
 class is wider than ours) or an explicit `grounding: no-match` +
 `grounding_note` — the audit (`rcplint lint`) fails any entry with
 neither. Refs are static data; validation never touches the network.
+
+## Rendering contract (integrator note, 2026-08-03)
+
+An RCP document is deliberately NOT self-contained for display: it
+references meaning, it does not inline it (enum/registry/prose
+discipline; documents are the system of record, the registry carries
+the semantics). A renderer MUST therefore consume BOTH localization
+layers — registry `display_name` for entry ids (ingredients,
+primitives, equipment, techniques) and the taxonomy i18n vocabulary
+(`i18n/<locale>.yaml`) for slugs — or it will show raw identifiers.
+Prose-less steps are legal and expected: render them by composition
+(primitive display name + resolved `uses` + `until` conditions), with
+an authored `title` always taking precedence. Presentation ORDER is
+derived, never stored: component methods precede the steps that consume
+them (see FEAT-CALC-002 for the full derivation roadmap). First learned
+the hard way in the v0.2 viewer — Daniel's review caught all three.
