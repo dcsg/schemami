@@ -11,3 +11,8 @@ density:
   g_per_ml: 0.95
 allergens:
 - milk
+cross_refs:
+- system: foodon
+  ref: FOODON:03310351
+  label: butter
+  url: https://www.ebi.ac.uk/ols4/api/search?q=butter&ontology=foodon

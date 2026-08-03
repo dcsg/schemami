@@ -8,3 +8,9 @@ roles:
 - sweetener
 density:
   g_per_ml: 0.85
+cross_refs:
+- system: foodon
+  ref: FOODON:03420157
+  label: white sugar
+  url: https://www.ebi.ac.uk/ols4/api/search?q=white%20sugar&ontology=foodon
+  match: broader

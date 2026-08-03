@@ -9,3 +9,8 @@ roles:
 aliases:
 - pimento
 - red bell pepper
+cross_refs:
+- system: foodon
+  ref: FOODON:00002191
+  label: red bell pepper food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=red%20bell%20pepper&ontology=foodon

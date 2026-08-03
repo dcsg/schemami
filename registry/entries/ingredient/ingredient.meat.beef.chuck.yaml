@@ -9,3 +9,8 @@ roles:
 aliases:
 - beef chuck
 - acém
+cross_refs:
+- system: foodon
+  ref: FOODON:02000045
+  label: beef chuck
+  url: https://www.ebi.ac.uk/ols4/api/search?q=beef%20chuck&ontology=foodon

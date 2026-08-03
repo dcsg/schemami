@@ -3,10 +3,17 @@ kind: ingredient-class
 display_name:
   pt: Sal kosher
   en: Kosher salt
-definition: 'Coarse flaked salt; distinct crystal size and volume-per-gram behaviour from fine sea salt
-  (steward call: mint, not alias).'
+definition: 'Coarse flaked salt; distinct crystal size and volume-per-gram behaviour from fine
+  sea salt (steward call: mint, not alias).'
 roles:
 - salt
 - flavour
 aliases:
 - kosher salt
+cross_refs:
+- system: foodon
+  ref: FOODON:00002249
+  label: sodium chloride flavoring or seasoning
+  url: https://www.ebi.ac.uk/ols4/api/search?q=sodium%20chloride%20food&ontology=foodon
+  match: broader
+grounding_note: no kosher-salt class in FooDON, FDC or OFF (verified absent)

@@ -10,3 +10,9 @@ density:
   g_per_ml: 0.58
 allergens:
 - gluten
+cross_refs:
+- system: foodon
+  ref: FOODON:03540093
+  label: 00930 - wheat flour, durum (efsa foodex2)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=durum%20wheat%20flour&ontology=foodon
+  match: broader

@@ -1,0 +1,9 @@
+# Audit fixture (AC-REG-004-1): explicit no-match with a note is a
+# first-class, audit-PASSING outcome — the escape valve for heritage items.
+id: ingredient.test.no-match
+kind: ingredient-class
+display_name: { pt: Fixture, en: Fixture }
+definition: Deliberately ungroundable.
+roles: [flavour]
+grounding: no-match
+grounding_note: Heritage-specific concept with no external ontology class.

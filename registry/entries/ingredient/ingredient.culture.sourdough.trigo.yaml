@@ -3,9 +3,16 @@ kind: ingredient-class
 display_name:
   pt: Massa-mãe de trigo
   en: Wheat sourdough culture
-definition: Maintained wheat sourdough culture (massa-mãe), fed on a cadence, drawn from rather than consumed.
+definition: Maintained wheat sourdough culture (massa-mãe), fed on a cadence, drawn from rather
+  than consumed.
 roles:
 - leaven
 - acid
 allergens:
 - gluten
+cross_refs:
+- system: foodon
+  ref: FOODON:03304099
+  label: sourdough starter
+  url: https://www.ebi.ac.uk/ols4/api/search?q=sourdough&ontology=foodon
+  match: broader

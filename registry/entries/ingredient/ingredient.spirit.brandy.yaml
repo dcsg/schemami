@@ -10,3 +10,8 @@ aliases:
 - brandy
 density:
   g_per_ml: 0.95
+cross_refs:
+- system: foodon
+  ref: FOODON:03301632
+  label: brandy
+  url: https://www.ebi.ac.uk/ols4/api/search?q=brandy&ontology=foodon

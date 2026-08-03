@@ -9,3 +9,8 @@ roles:
 aliases:
 - camarão
 - prawns
+cross_refs:
+- system: foodon
+  ref: FOODON:00002239
+  label: shrimp food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=shrimp%20food%20product&ontology=foodon

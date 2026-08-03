@@ -9,3 +9,8 @@ roles:
 aliases:
 - feijão-branco
 - white beans
+cross_refs:
+- system: foodon
+  ref: FOODON:03310790
+  label: white bean (dried)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=white%20bean%20dried&ontology=foodon

@@ -6,3 +6,8 @@ display_name:
 definition: Fresh lemon peel strip; infused aromatic.
 roles:
 - aromatic
+cross_refs:
+- system: foodon
+  ref: FOODON:03306143
+  label: lemon peel
+  url: https://www.ebi.ac.uk/ols4/api/search?q=lemon%20peel&ontology=foodon

@@ -11,3 +11,8 @@ aliases:
 - óleo
 density:
   g_per_ml: 0.92
+cross_refs:
+- system: foodon
+  ref: FOODON:03305263
+  label: vegetable oil
+  url: https://www.ebi.ac.uk/ols4/api/search?q=vegetable%20oil&ontology=foodon

@@ -9,3 +9,8 @@ roles:
 - flavour
 density:
   g_per_ml: 0.91
+cross_refs:
+- system: foodon
+  ref: FOODON:03301826
+  label: olive oil
+  url: https://www.ebi.ac.uk/ols4/api/search?q=olive%20oil&ontology=foodon

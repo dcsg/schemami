@@ -6,3 +6,9 @@ display_name:
 definition: Compressed fresh baker's yeast.
 roles:
 - leaven
+cross_refs:
+- system: foodon
+  ref: FOODON:03315025
+  label: yeast (fresh)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=yeast%20fresh&ontology=foodon
+  match: broader

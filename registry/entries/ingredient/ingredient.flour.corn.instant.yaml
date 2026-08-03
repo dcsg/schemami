@@ -9,3 +9,9 @@ roles:
 aliases:
 - instant cornmeal
 - masa harina
+cross_refs:
+- system: foodon
+  ref: FOODON:03302500
+  label: corn flour
+  url: https://www.ebi.ac.uk/ols4/api/search?q=corn%20flour&ontology=foodon
+  match: broader

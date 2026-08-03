@@ -9,3 +9,8 @@ roles:
 aliases:
 - mexilhão
 - mussels
+cross_refs:
+- system: foodon
+  ref: FOODON:00002051
+  label: mussel food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=mussel%20food%20product&ontology=foodon

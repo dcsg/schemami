@@ -10,3 +10,8 @@ roles:
 aliases:
 - cocoa powder
 - cacau em pó
+cross_refs:
+- system: fdc
+  ref: '169593'
+  label: Cocoa, dry powder, unsweetened
+  url: https://api.nal.usda.gov/fdc/v1/foods/search?query=cocoa+dry+powder+unsweetened

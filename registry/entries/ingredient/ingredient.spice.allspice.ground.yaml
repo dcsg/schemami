@@ -9,3 +9,8 @@ roles:
 aliases:
 - ground allspice
 - pimenta-da-jamaica
+cross_refs:
+- system: foodon
+  ref: FOODON:03301554
+  label: allspice (ground)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=allspice%20ground&ontology=foodon

@@ -381,6 +381,10 @@
           "$ref": "#/$defs/slug",
           "description": "Step id. For cultures/SCOBYs/aromatics present during the process but removed rather than consumed — excluded from final nutrition."
         },
+        "proposed_class": {
+          "$ref": "#/$defs/slug",
+          "description": "Extraction's proposed canonical ENGLISH class for an unresolved item (item: null) — the gap ledger groups by this so cross-language raws (cebola/onion) consolidate under one mint candidate (SR-REG-005). Never a mint; a proposal for the steward."
+        },
         "raw": { "type": "string", "description": "Original text as scraped or extracted. Preserved for audit and re-parsing even after canonical resolution." },
         "note": { "$ref": "#/$defs/text" }
       },

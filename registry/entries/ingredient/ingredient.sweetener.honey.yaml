@@ -9,3 +9,8 @@ roles:
 - flavour
 density:
   g_per_ml: 1.42
+cross_refs:
+- system: foodon
+  ref: FOODON:00001178
+  label: honey food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=honey%20food%20product&ontology=foodon

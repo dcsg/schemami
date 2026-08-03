@@ -11,3 +11,8 @@ density:
   g_per_ml: 1.03
 allergens:
 - eggs
+cross_refs:
+- system: foodon
+  ref: FOODON:03316061
+  label: chicken egg
+  url: https://www.ebi.ac.uk/ols4/api/search?q=chicken%20egg&ontology=foodon

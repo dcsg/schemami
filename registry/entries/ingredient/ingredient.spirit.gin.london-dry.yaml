@@ -8,3 +8,9 @@ roles:
 - spirit
 density:
   g_per_ml: 0.94
+cross_refs:
+- system: foodon
+  ref: FOODON:03309491
+  label: gin
+  url: https://www.ebi.ac.uk/ols4/api/search?q=gin&ontology=foodon
+  match: broader

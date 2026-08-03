@@ -3,8 +3,8 @@ kind: ingredient-class
 display_name:
   pt: Açúcar em pó
   en: Icing sugar
-definition: Powdered sugar with fine dissolution behaviour — functionally distinct from granulated white
-  sugar despite the name similarity (steward call, gap ledger 2026-08-02).
+definition: Powdered sugar with fine dissolution behaviour — functionally distinct from granulated
+  white sugar despite the name similarity (steward call, gap ledger 2026-08-02).
 roles:
 - sweetener
 aliases:
@@ -12,3 +12,8 @@ aliases:
 - powdered sugar
 - confectioners' sugar
 - açúcar em pó
+cross_refs:
+- system: foodon
+  ref: FOODON:00005514
+  label: sugar (powdered)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=powdered%20sugar&ontology=foodon

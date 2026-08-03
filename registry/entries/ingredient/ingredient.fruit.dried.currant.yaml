@@ -8,3 +8,8 @@ roles:
 - flavour
 aliases:
 - currants
+cross_refs:
+- system: foodon
+  ref: FOODON:03303395
+  label: zante currant
+  url: https://www.ebi.ac.uk/ols4/api/search?q=zante%20currant&ontology=foodon

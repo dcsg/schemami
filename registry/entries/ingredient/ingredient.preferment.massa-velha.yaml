@@ -3,10 +3,19 @@ kind: ingredient-class
 display_name:
   pt: Massa velha
   en: Old dough
-definition: Carried-over fermented dough from the previous batch (massa velha ≠ isco — distinct ferments).
+definition: Carried-over fermented dough from the previous batch (massa velha ≠ isco — distinct
+  ferments).
 roles:
 - leaven
 - acid
 - flavour
 allergens:
 - gluten
+cross_refs:
+- system: foodon
+  ref: FOODON:03311552
+  label: dough
+  url: https://www.ebi.ac.uk/ols4/api/search?q=dough&ontology=foodon
+  match: broader
+grounding_note: deliberately NOT sourdough starter — massa velha and isco are distinct; heritage
+  identity carried by the id

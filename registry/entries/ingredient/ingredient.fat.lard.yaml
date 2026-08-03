@@ -9,3 +9,8 @@ roles:
 - tenderiser
 density:
   g_per_ml: 0.92
+cross_refs:
+- system: foodon
+  ref: FOODON:03543121
+  label: 31210 - pork lard (efsa foodex2)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=lard&ontology=foodon

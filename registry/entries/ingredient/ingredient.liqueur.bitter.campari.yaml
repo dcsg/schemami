@@ -8,3 +8,9 @@ roles:
 - bitter
 density:
   g_per_ml: 1.05
+cross_refs:
+- system: 'off'
+  ref: en:bitter-liqueurs
+  label: Bitter liqueurs
+  url: https://world.openfoodfacts.org/api/v2/taxonomy?tagtype=categories&tags=en:bitter-liqueurs
+  match: broader

@@ -1,0 +1,7 @@
+# Audit fixture (AC-REG-004-1): schema-valid ingredient entry with NEITHER
+# cross_refs NOR grounding: no-match — the audit must fail naming it.
+id: ingredient.test.ungrounded
+kind: ingredient-class
+display_name: { pt: Fixture, en: Fixture }
+definition: Schema-valid but ungrounded.
+roles: [flavour]

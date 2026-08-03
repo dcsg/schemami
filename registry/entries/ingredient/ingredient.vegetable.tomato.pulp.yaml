@@ -3,8 +3,8 @@ kind: ingredient-class
 display_name:
   pt: Polpa de tomate
   en: Tomato pulp
-definition: Processed tomato pulp — the book's stated alternative to fresh tomatoes; sibling form under
-  the tomato node.
+definition: Processed tomato pulp — the book's stated alternative to fresh tomatoes; sibling
+  form under the tomato node.
 roles:
 - aromatic
 - flavour
@@ -13,3 +13,8 @@ aliases:
 - tomato pulp
 density:
   g_per_ml: 1.03
+cross_refs:
+- system: foodon
+  ref: FOODON:03305005
+  label: tomato pulp
+  url: https://www.ebi.ac.uk/ols4/api/search?q=tomato%20pulp&ontology=foodon

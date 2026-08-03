@@ -3,10 +3,15 @@ kind: ingredient-class
 display_name:
   pt: Pimenta-preta
   en: Black pepper
-definition: Black peppercorn seasoning, usually freshly ground at use (grinding is prep, not a form —
-  ontology rule 6).
+definition: Black peppercorn seasoning, usually freshly ground at use (grinding is prep, not
+  a form — ontology rule 6).
 roles:
 - flavour
 aliases:
 - black pepper
 - pimenta-preta
+cross_refs:
+- system: foodon
+  ref: FOODON:00001650
+  label: black pepper food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=black%20pepper&ontology=foodon

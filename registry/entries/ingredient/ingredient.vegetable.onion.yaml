@@ -9,3 +9,8 @@ roles:
 aliases:
 - onion
 - cebola
+cross_refs:
+- system: foodon
+  ref: FOODON:03316347
+  label: onion
+  url: https://www.ebi.ac.uk/ols4/api/search?q=onion&ontology=foodon

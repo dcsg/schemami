@@ -6,3 +6,8 @@ display_name:
 definition: Food-grade citric acid; acidity compensation.
 roles:
 - acid
+cross_refs:
+- system: 'off'
+  ref: en:citric-acids
+  label: Citric acids
+  url: https://static.openfoodfacts.org/data/taxonomies/categories.json

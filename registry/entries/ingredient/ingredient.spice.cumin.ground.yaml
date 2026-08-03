@@ -9,3 +9,8 @@ roles:
 aliases:
 - ground cumin
 - cominhos
+cross_refs:
+- system: 'off'
+  ref: en:ground-cumin-seeds
+  label: Ground cumin seeds
+  url: https://static.openfoodfacts.org/data/taxonomies/categories.json

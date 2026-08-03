@@ -3,10 +3,15 @@ kind: ingredient-class
 display_name:
   pt: Fermento em pó
   en: Baking powder
-definition: Chemical raising agent (leavening.chemical in the fine-grained role taxonomy); first chemical
-  leavening in the registry.
+definition: Chemical raising agent (leavening.chemical in the fine-grained role taxonomy); first
+  chemical leavening in the registry.
 roles:
 - leaven
 aliases:
 - baking powder
 - fermento em pó
+cross_refs:
+- system: foodon
+  ref: FOODON:03301940
+  label: baking powder
+  url: https://www.ebi.ac.uk/ols4/api/search?q=baking%20powder&ontology=foodon

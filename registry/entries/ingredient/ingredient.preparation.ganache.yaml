@@ -10,3 +10,10 @@ roles:
 - flavour
 allergens:
 - milk
+cross_refs:
+- system: foodon
+  ref: FOODON:00001280
+  label: chocolate food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=chocolate%20food%20product&ontology=foodon
+  match: broader
+grounding_note: no ganache class in FooDON, FDC or OFF (verified absent)

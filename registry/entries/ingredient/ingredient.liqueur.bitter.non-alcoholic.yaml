@@ -8,3 +8,9 @@ roles:
 - bitter
 density:
   g_per_ml: 1.05
+cross_refs:
+- system: foodon
+  ref: FOODON:03303646
+  label: aperitif beverage
+  url: https://www.ebi.ac.uk/ols4/api/search?q=aperitif&ontology=foodon
+  match: broader

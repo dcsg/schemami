@@ -6,3 +6,8 @@ display_name:
 definition: Dried hibiscus; tannin and colour addition.
 roles:
 - tannin
+cross_refs:
+- system: foodon
+  ref: FOODON:03543581
+  label: 35810 - hibiscus infusion flowers (efsa foodex2)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=hibiscus&ontology=foodon

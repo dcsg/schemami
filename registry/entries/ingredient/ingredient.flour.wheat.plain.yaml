@@ -3,9 +3,9 @@ kind: ingredient-class
 display_name:
   pt: Farinha de trigo simples
   en: Plain flour
-definition: General-purpose wheat flour (UK 'plain', US 'all-purpose'); no raising agent. Distinct entry
-  rather than an alias onto a Portuguese T-class — the books' own vocabulary preserved (steward call,
-  gap ledger 2026-08-02).
+definition: General-purpose wheat flour (UK 'plain', US 'all-purpose'); no raising agent. Distinct
+  entry rather than an alias onto a Portuguese T-class — the books' own vocabulary preserved
+  (steward call, gap ledger 2026-08-02).
 roles:
 - flour
 aliases:
@@ -15,3 +15,8 @@ allergens:
 - gluten
 density:
   g_per_ml: 0.55
+cross_refs:
+- system: foodon
+  ref: FOODON:03304534
+  label: white wheat flour (all purpose)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=all-purpose%20flour&ontology=foodon

@@ -11,3 +11,9 @@ roles:
 - preservative
 density:
   g_per_ml: 1.2
+cross_refs:
+- system: foodon
+  ref: FOODON:03544059
+  label: 40590 - sea salt (efsa foodex2)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=sea%20salt&ontology=foodon
+  match: broader

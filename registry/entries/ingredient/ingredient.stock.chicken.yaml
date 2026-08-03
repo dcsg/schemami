@@ -12,3 +12,9 @@ aliases:
 - caldo de galinha
 density:
   g_per_ml: 1.0
+cross_refs:
+- system: foodon
+  ref: FOODON:03303004
+  label: chicken broth
+  url: https://www.ebi.ac.uk/ols4/api/search?q=chicken%20broth&ontology=foodon
+  match: broader

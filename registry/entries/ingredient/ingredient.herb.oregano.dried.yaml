@@ -10,3 +10,8 @@ roles:
 aliases:
 - dried oregano
 - orégãos
+cross_refs:
+- system: foodon
+  ref: FOODON:03000027
+  label: oregano leaf (dried)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=oregano%20dried&ontology=foodon

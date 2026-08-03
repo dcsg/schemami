@@ -7,3 +7,9 @@ definition: Dark couverture chocolate, 60% cocoa.
 roles:
 - fat
 - flavour
+cross_refs:
+- system: foodon
+  ref: FOODON:03303588
+  label: dark chocolate
+  url: https://www.ebi.ac.uk/ols4/api/search?q=dark%20chocolate&ontology=foodon
+  match: broader

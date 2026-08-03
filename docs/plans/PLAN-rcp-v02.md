@@ -33,7 +33,7 @@ phases:
 | 1     | done | 1/5 | 2026-08-02 |
 | 2     | done | 1/5 | 2026-08-02 |
 | 3     | done | 1/5 | 2026-08-02 |
-| 4     | pending | 0/5 | — |
+| 4     | done | 1/5 | 2026-08-03 |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
@@ -306,6 +306,13 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 4:
+- AC-4.1: PASS — 2026-08-03 (61/61 entries grounded, all refs web-verified by research agents; audit wired into lint)
+- AC-4.2: PASS — 2026-08-03
+- AC-4.3: PASS — 2026-08-03
+- AC-4.4: PASS — 2026-08-03
+- Phase 4 notes: v0.1's unexercised cross_refs placeholder (object shape, zero entries used it, verified against the tag) replaced by DS-REG-005's array shape with label/url/match evidence fields. 7 entries initially got system: False — YAML 1.1 parsed bare `off` as boolean; fixed and safe_dump now quotes it. massa-velha grounded broader-to-dough with a note refusing the sourdough-starter conflation (massa velha ≠ isco). ingredient.proposed_class added to core (extraction proposal channel).
 
 Phase 3:
 - AC-3.1: PASS — 2026-08-02 (Daniel approved all 13 at the checkpoint; orphans kept)

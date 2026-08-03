@@ -8,3 +8,8 @@ roles:
 - spirit
 density:
   g_per_ml: 0.94
+cross_refs:
+- system: 'off'
+  ref: en:mezcal
+  label: Mezcal
+  url: https://static.openfoodfacts.org/data/taxonomies/categories.json

@@ -9,3 +9,8 @@ roles:
 aliases:
 - amêijoas
 - clams
+cross_refs:
+- system: foodon
+  ref: FOODON:00001291
+  label: clam food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=clam%20food&ontology=foodon

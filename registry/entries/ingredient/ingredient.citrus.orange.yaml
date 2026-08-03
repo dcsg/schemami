@@ -6,3 +6,8 @@ display_name:
 definition: Fresh orange; expressed peel garnish.
 roles:
 - aromatic
+cross_refs:
+- system: foodon
+  ref: FOODON:03315106
+  label: orange
+  url: https://www.ebi.ac.uk/ols4/api/ontologies/foodon/terms?obo_id=FOODON:03315106

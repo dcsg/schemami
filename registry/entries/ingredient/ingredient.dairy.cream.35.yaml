@@ -3,8 +3,8 @@ kind: ingredient-class
 display_name:
   pt: Natas 35%
   en: Cream 35%
-definition: 'Heavy cream, 35% fat; ganache base. Steward call 2026-08-02: ''heavy cream'' (US, >=36%)
-  consolidates here as an alias — same culinary function, no separate class.'
+definition: 'Heavy cream, 35% fat; ganache base. Steward call 2026-08-02: ''heavy cream'' (US,
+  >=36%) consolidates here as an alias — same culinary function, no separate class.'
 roles:
 - fat
 - hydration
@@ -15,3 +15,9 @@ allergens:
 aliases:
 - heavy cream
 - natas para bater
+cross_refs:
+- system: foodon
+  ref: FOODON:03420154
+  label: mammalian light whipping cream (30%-36%)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=whipping%20cream&ontology=foodon
+  match: broader

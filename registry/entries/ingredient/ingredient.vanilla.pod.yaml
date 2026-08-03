@@ -10,3 +10,8 @@ roles:
 aliases:
 - vanilla bean
 - vanilla pod
+cross_refs:
+- system: foodon
+  ref: FOODON:00003738
+  label: vanilla bean
+  url: https://www.ebi.ac.uk/ols4/api/search?q=vanilla%20bean&ontology=foodon

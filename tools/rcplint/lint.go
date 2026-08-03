@@ -635,6 +635,10 @@ func runLint(root string) int {
 	for _, e := range l.Errors {
 		fmt.Println("LINT", e)
 	}
+	ingGlob, _ := filepath.Glob(filepath.Join(root, "registry/entries/ingredient/*.yaml"))
+	for _, f := range auditGrounding(ingGlob) {
+		l.errf("grounding audit: %s", f)
+	}
 	fmt.Printf("lint: %d error(s), %d warning(s)\n", len(l.Errors), len(l.Warnings))
 	if len(l.Errors) > 0 {
 		return 1

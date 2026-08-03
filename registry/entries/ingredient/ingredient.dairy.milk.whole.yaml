@@ -10,3 +10,8 @@ density:
   g_per_ml: 1.03
 allergens:
 - milk
+cross_refs:
+- system: foodon
+  ref: FOODON:03310780
+  label: cow whole milk 3.5% fat
+  url: https://www.ebi.ac.uk/ols4/api/search?q=whole%20milk&ontology=foodon

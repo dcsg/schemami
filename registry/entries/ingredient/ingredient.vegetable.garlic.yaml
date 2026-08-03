@@ -10,3 +10,8 @@ aliases:
 - garlic
 - alho
 - dentes de alho
+cross_refs:
+- system: foodon
+  ref: FOODON:00001895
+  label: garlic food product
+  url: https://www.ebi.ac.uk/ols4/api/search?q=garlic%20food%20product&ontology=foodon

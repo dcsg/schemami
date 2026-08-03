@@ -10,3 +10,8 @@ roles:
 aliases:
 - coentros
 - cilantro
+cross_refs:
+- system: foodon
+  ref: FOODON:03000030
+  label: coriander leaf (raw)
+  url: https://www.ebi.ac.uk/ols4/api/search?q=coriander%20leaf&ontology=foodon

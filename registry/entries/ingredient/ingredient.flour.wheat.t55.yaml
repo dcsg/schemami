@@ -10,3 +10,8 @@ density:
   g_per_ml: 0.55
 allergens:
 - gluten
+cross_refs:
+- system: 'off'
+  ref: en:wheat-flour-type-55-for-bread
+  label: Wheat flour type 55 for bread
+  url: https://static.openfoodfacts.org/data/taxonomies/categories.json

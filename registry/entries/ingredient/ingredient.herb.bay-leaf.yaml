@@ -9,3 +9,8 @@ roles:
 aliases:
 - folha de louro
 - bay leaf
+cross_refs:
+- system: foodon
+  ref: FOODON:00003802
+  label: bay leaf
+  url: https://www.ebi.ac.uk/ols4/api/search?q=bay%20leaf&ontology=foodon

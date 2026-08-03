@@ -10,3 +10,8 @@ density:
   g_per_ml: 1.04
 allergens:
 - sulphites
+cross_refs:
+- system: foodon
+  ref: FOODON:03310990
+  label: vermouth sweet
+  url: https://www.ebi.ac.uk/ols4/api/search?q=vermouth&ontology=foodon
