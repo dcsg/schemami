@@ -1,0 +1,186 @@
+[
+  {
+    "function": "resolveBases",
+    "name": "simple-role-sum",
+    "edge_classes": [
+      "unit-boundaries"
+    ],
+    "rules": [
+      "R-BASIS-1"
+    ],
+    "input": {
+      "doc": {
+        "bases": {
+          "veg": {
+            "sum": "ingredients",
+            "where": {
+              "roles": [
+                "substrate"
+              ]
+            }
+          }
+        },
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 1000
+            },
+            "id": "cabbage",
+            "roles": [
+              "substrate"
+            ]
+          },
+          {
+            "amount": {
+              "of": "veg",
+              "ratio": 0.02
+            },
+            "constraints": [
+              {
+                "min_ratio": 0.018,
+                "of": "veg",
+                "reason": {
+                  "en": "Salt below 1.8% does not preserve.",
+                  "pt": "Sal abaixo de 1,8% não preserva."
+                },
+                "severity": "critical"
+              }
+            ],
+            "id": "salt",
+            "roles": [
+              "salt"
+            ]
+          }
+        ]
+      },
+      "k": 1
+    },
+    "expected": {
+      "veg": {
+        "Grams": 1000,
+        "OK": true,
+        "Why": ""
+      }
+    }
+  },
+  {
+    "function": "resolveBases",
+    "name": "mixed-units-unresolvable",
+    "edge_classes": [
+      "unit-boundaries"
+    ],
+    "rules": [
+      "R-BASIS-4"
+    ],
+    "input": {
+      "doc": {
+        "bases": {
+          "liq": {
+            "sum": "ingredients",
+            "where": {
+              "roles": [
+                "hydration"
+              ]
+            }
+          }
+        },
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 500
+            },
+            "id": "water",
+            "roles": [
+              "hydration"
+            ]
+          },
+          {
+            "amount": {
+              "unit": "ml",
+              "value": 200
+            },
+            "id": "milk",
+            "roles": [
+              "hydration"
+            ]
+          }
+        ]
+      },
+      "k": 1
+    },
+    "expected": {
+      "liq": {
+        "Grams": 0,
+        "OK": false,
+        "Why": "basis contribution milk not gram-valued"
+      }
+    }
+  },
+  {
+    "function": "resolveBases",
+    "name": "include-components-decomposes",
+    "edge_classes": [
+      "unit-boundaries",
+      "min-batch"
+    ],
+    "rules": [
+      "R-BASIS-2",
+      "R-SCALE-2"
+    ],
+    "input": {
+      "doc": {
+        "bases": {
+          "flour": {
+            "include_components": true,
+            "sum": "ingredients",
+            "where": {
+              "roles": [
+                "flour"
+              ]
+            }
+          }
+        },
+        "components": [
+          {
+            "id": "mv",
+            "ingredients": [
+              {
+                "amount": {
+                  "unit": "g",
+                  "value": 1500
+                },
+                "id": "mv-flour",
+                "roles": [
+                  "flour"
+                ]
+              }
+            ],
+            "maintenance": true
+          }
+        ],
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 6000
+            },
+            "id": "t65",
+            "roles": [
+              "flour"
+            ]
+          }
+        ]
+      },
+      "k": 2
+    },
+    "expected": {
+      "flour": {
+        "Grams": 13500,
+        "OK": true,
+        "Why": ""
+      }
+    }
+  }
+]

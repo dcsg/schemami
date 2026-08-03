@@ -1,0 +1,210 @@
+[
+  {
+    "function": "schedule",
+    "name": "entremet-prerequisites",
+    "edge_classes": [
+      "timeline-arithmetic"
+    ],
+    "rules": [
+      "R-SCHED-1",
+      "R-SCHED-2",
+      "R-SCHED-4"
+    ],
+    "input": {
+      "source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"
+    },
+    "expected": [
+      {
+        "duration": {
+          "max": 1800,
+          "min": 1800,
+          "target": 1800
+        },
+        "item": "e1",
+        "start": {
+          "max": 0,
+          "min": 0,
+          "target": 0
+        }
+      },
+      {
+        "duration": {
+          "max": 1800,
+          "min": 1800,
+          "target": 1800
+        },
+        "item": "e2",
+        "start": {
+          "max": 1800,
+          "min": 1800,
+          "target": 1800
+        }
+      },
+      {
+        "duration": {
+          "max": 86400,
+          "min": 28800,
+          "target": 43200
+        },
+        "item": "e3",
+        "start": {
+          "max": 3600,
+          "min": 3600,
+          "target": 3600
+        }
+      },
+      {
+        "duration": {
+          "max": 1200,
+          "min": 1200,
+          "target": 1200
+        },
+        "item": "e4",
+        "start": {
+          "max": 90000,
+          "min": 32400,
+          "target": 46800
+        }
+      },
+      {
+        "duration": {
+          "max": 260400,
+          "min": 130800,
+          "target": 174000
+        },
+        "item": "fruit-insert",
+        "start": {
+          "max": -129000,
+          "min": -258600,
+          "target": -172200
+        }
+      },
+      {
+        "duration": {
+          "max": 1200,
+          "min": 1200,
+          "target": 1200
+        },
+        "item": "fi1",
+        "start": {
+          "max": -129000,
+          "min": -258600,
+          "target": -172200
+        }
+      },
+      {
+        "duration": {
+          "max": 259200,
+          "min": 129600,
+          "target": 172800
+        },
+        "item": "fi2",
+        "start": {
+          "max": -127800,
+          "min": -257400,
+          "target": -171000
+        }
+      },
+      {
+        "duration": {
+          "max": 88200,
+          "min": 30600,
+          "target": 45000
+        },
+        "item": "sponge-layer",
+        "start": {
+          "max": -28800,
+          "min": -86400,
+          "target": -43200
+        }
+      },
+      {
+        "duration": {
+          "max": 1800,
+          "min": 1800,
+          "target": 1800
+        },
+        "item": "sp1",
+        "start": {
+          "max": -28800,
+          "min": -86400,
+          "target": -43200
+        }
+      },
+      {
+        "duration": {
+          "max": 86400,
+          "min": 28800,
+          "target": 43200
+        },
+        "item": "sp2",
+        "start": {
+          "max": -27000,
+          "min": -84600,
+          "target": -41400
+        }
+      }
+    ]
+  },
+  {
+    "function": "schedule",
+    "name": "window-propagation",
+    "edge_classes": [
+      "timeline-arithmetic"
+    ],
+    "rules": [
+      "R-SCHED-1"
+    ],
+    "input": {
+      "doc": {
+        "steps": [
+          {
+            "duration": {
+              "max": "15m",
+              "min": "10m",
+              "target": "12m"
+            },
+            "id": "s1"
+          },
+          {
+            "after": [
+              "s1"
+            ],
+            "duration": {
+              "target": "30m"
+            },
+            "id": "s2"
+          }
+        ]
+      }
+    },
+    "expected": [
+      {
+        "duration": {
+          "max": 900,
+          "min": 600,
+          "target": 720
+        },
+        "item": "s1",
+        "start": {
+          "max": 0,
+          "min": 0,
+          "target": 0
+        }
+      },
+      {
+        "duration": {
+          "max": 1800,
+          "min": 1800,
+          "target": 1800
+        },
+        "item": "s2",
+        "start": {
+          "max": 900,
+          "min": 600,
+          "target": 720
+        }
+      }
+    ]
+  }
+]

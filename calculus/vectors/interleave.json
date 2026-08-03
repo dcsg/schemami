@@ -1,0 +1,50 @@
+[
+  {
+    "function": "interleave",
+    "name": "entremet-lanes",
+    "edge_classes": [
+      "timeline-arithmetic"
+    ],
+    "rules": [
+      "R-INTERLEAVE-1",
+      "R-INTERLEAVE-3"
+    ],
+    "input": {
+      "source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"
+    },
+    "expected": [
+      {
+        "id": "fi1",
+        "track": "fruit-insert"
+      },
+      {
+        "id": "fi2",
+        "track": "fruit-insert"
+      },
+      {
+        "id": "sp1",
+        "track": "sponge-layer"
+      },
+      {
+        "id": "sp2",
+        "track": "sponge-layer"
+      },
+      {
+        "id": "e1",
+        "track": "main"
+      },
+      {
+        "id": "e2",
+        "track": "main"
+      },
+      {
+        "id": "e3",
+        "track": "main"
+      },
+      {
+        "id": "e4",
+        "track": "main"
+      }
+    ]
+  }
+]

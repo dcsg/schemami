@@ -119,15 +119,15 @@ func sumScope(m map[string]any, roles []string, k float64) (float64, bool, strin
 			}
 			am, ok := im["amount"].(map[string]any)
 			if !ok {
-				continue
+				return 0, false, "basis contribution missing amount"
 			}
 			u, _ := am["unit"].(string)
 			v, hasV := toF(am["value"])
-			if !hasV {
-				continue // non-gram forms don't contribute (ratio rows resolve elsewhere)
-			}
-			if u != "g" {
-				continue
+			if !hasV || u != "g" {
+				// SPEC Units rule: mixed or non-mass contributions make the
+				// basis UNRESOLVABLE — never a partial sum.
+				id, _ := im["id"].(string)
+				return 0, false, "basis contribution " + id + " not gram-valued"
 			}
 			factor := k
 			if s, _ := am["scaling"].(string); s == "fixed" {

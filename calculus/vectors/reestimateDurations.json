@@ -1,0 +1,25 @@
+[
+  {
+    "function": "reestimateDurations",
+    "name": "identity",
+    "edge_classes": [
+      "timeline-arithmetic"
+    ],
+    "rules": [
+      "R-DUR-1"
+    ],
+    "input": {
+      "k": 2,
+      "window": {
+        "max": "35m",
+        "min": "25m",
+        "target": "30m"
+      }
+    },
+    "expected": {
+      "max": "35m",
+      "min": "25m",
+      "target": "30m"
+    }
+  }
+]

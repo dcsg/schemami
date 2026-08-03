@@ -28,6 +28,12 @@ func main() {
 		os.Exit(runValidate(root))
 	case "lint":
 		os.Exit(runLint(root))
+	case "calc-vectors":
+		out := "../../calculus/vectors"
+		if len(os.Args) > 3 {
+			out = os.Args[3]
+		}
+		os.Exit(runCalcVectors(root, out))
 	case "vectors":
 		out := "../viewer/conformance/vectors"
 		if len(os.Args) > 3 {

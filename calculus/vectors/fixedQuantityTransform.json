@@ -1,0 +1,68 @@
+[
+  {
+    "function": "fixedQuantityTransform",
+    "name": "fixed-holds",
+    "edge_classes": [
+      "fixed-quantity-refusals"
+    ],
+    "rules": [
+      "R-FIXED-1",
+      "R-MODEL-1"
+    ],
+    "input": {
+      "amount": {
+        "scaling": "fixed",
+        "unit": "g",
+        "value": 20
+      },
+      "k": 2
+    },
+    "expected": {
+      "scaling": "fixed",
+      "unit": "g",
+      "value": 20
+    }
+  },
+  {
+    "function": "fixedQuantityTransform",
+    "name": "scalable-scales",
+    "edge_classes": [
+      "unit-boundaries"
+    ],
+    "rules": [
+      "R-MODEL-1"
+    ],
+    "input": {
+      "amount": {
+        "unit": "g",
+        "value": 1000
+      },
+      "k": 2
+    },
+    "expected": {
+      "unit": "g",
+      "value": 2000
+    }
+  },
+  {
+    "function": "fixedQuantityTransform",
+    "name": "ratio-invariant",
+    "edge_classes": [
+      "ratio-invariance"
+    ],
+    "rules": [
+      "R-MODEL-2"
+    ],
+    "input": {
+      "amount": {
+        "of": "veg",
+        "ratio": 0.02
+      },
+      "k": 7
+    },
+    "expected": {
+      "of": "veg",
+      "ratio": 0.02
+    }
+  }
+]

@@ -37,7 +37,7 @@ phases:
 | 1     | done | 1/5 | 2026-08-03 |
 | 2     | done | 1/5 | 2026-08-03 |
 | 3     | done | 1/5 | 2026-08-03 |
-| 4     | pending | 0/5 | — |
+| 4     | done | 1/5 | 2026-08-03 |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
@@ -276,6 +276,13 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 4:
+- AC-4.1: PASS — 2026-08-03 (21 vectors / 10 functions; byte-identical across runs, tested; no absolute paths — document inputs referenced by repo-relative source)
+- AC-4.2: PASS — 2026-08-03 (coverage green on all 6 classes — timeline existed first, so no exemptions; inverted test proves the gate fails on a vectorless class; every vector carries rules[] citations)
+- AC-4.3: PASS — 2026-08-03 (hard-coded allowlist; private refusal at the loader; emitted files scanned)
+- AC-4.4: PASS — 2026-08-03 (make calculus Go half green)
+- VECTOR FREEZE IN EFFECT from this point (DS-CALC-002): edits outside a calculus/SPEC.md-change commit are defects.
 
 Phase 3:
 - AC-3.1: PASS — 2026-08-03 (WE-SCHED-1/2, WE-ORDER-1, WE-INTERLEAVE-1 verbatim; the two-stage schedule semantics were CORRECTED against WE-SCHED-2 — forward propagation had let component chains inflate the parent method's t0; the SPEC's own worked example arbitrated. R-SCHED-2's interval-subtraction formula pinned in the SPEC pre-freeze.)

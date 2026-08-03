@@ -1,0 +1,167 @@
+[
+  {
+    "function": "scale",
+    "name": "uniform-chucrute-06",
+    "edge_classes": [
+      "ratio-invariance",
+      "unit-boundaries"
+    ],
+    "rules": [
+      "R-SCALE-4",
+      "R-MODEL-1",
+      "R-MODEL-2"
+    ],
+    "input": {
+      "doc": {
+        "bases": {
+          "veg": {
+            "sum": "ingredients",
+            "where": {
+              "roles": [
+                "substrate"
+              ]
+            }
+          }
+        },
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 1000
+            },
+            "id": "cabbage",
+            "roles": [
+              "substrate"
+            ]
+          },
+          {
+            "amount": {
+              "of": "veg",
+              "ratio": 0.02
+            },
+            "constraints": [
+              {
+                "min_ratio": 0.018,
+                "of": "veg",
+                "reason": {
+                  "en": "Salt below 1.8% does not preserve.",
+                  "pt": "Sal abaixo de 1,8% não preserva."
+                },
+                "severity": "critical"
+              }
+            ],
+            "id": "salt",
+            "roles": [
+              "salt"
+            ]
+          }
+        ]
+      },
+      "k": 0.6
+    },
+    "expected": {
+      "bases": {
+        "veg": {
+          "sum": "ingredients",
+          "where": {
+            "roles": [
+              "substrate"
+            ]
+          }
+        }
+      },
+      "ingredients": [
+        {
+          "amount": {
+            "unit": "g",
+            "value": 600
+          },
+          "id": "cabbage",
+          "roles": [
+            "substrate"
+          ]
+        },
+        {
+          "amount": {
+            "of": "veg",
+            "ratio": 0.02
+          },
+          "constraints": [
+            {
+              "min_ratio": 0.018,
+              "of": "veg",
+              "reason": {
+                "en": "Salt below 1.8% does not preserve.",
+                "pt": "Sal abaixo de 1,8% não preserva."
+              },
+              "severity": "critical"
+            }
+          ],
+          "id": "salt",
+          "roles": [
+            "salt"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "function": "scale",
+    "name": "invalid-factor-zero",
+    "edge_classes": [
+      "unit-boundaries"
+    ],
+    "rules": [
+      "R-MODEL-5"
+    ],
+    "input": {
+      "doc": {
+        "bases": {
+          "veg": {
+            "sum": "ingredients",
+            "where": {
+              "roles": [
+                "substrate"
+              ]
+            }
+          }
+        },
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 1000
+            },
+            "id": "cabbage",
+            "roles": [
+              "substrate"
+            ]
+          },
+          {
+            "amount": {
+              "of": "veg",
+              "ratio": 0.02
+            },
+            "constraints": [
+              {
+                "min_ratio": 0.018,
+                "of": "veg",
+                "reason": {
+                  "en": "Salt below 1.8% does not preserve.",
+                  "pt": "Sal abaixo de 1,8% não preserva."
+                },
+                "severity": "critical"
+              }
+            ],
+            "id": "salt",
+            "roles": [
+              "salt"
+            ]
+          }
+        ]
+      },
+      "k": 0
+    },
+    "expected": null
+  }
+]

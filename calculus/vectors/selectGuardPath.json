@@ -1,0 +1,202 @@
+[
+  {
+    "function": "selectGuardPath",
+    "name": "defaults",
+    "edge_classes": [
+      "guard-combinations"
+    ],
+    "rules": [
+      "R-GUARD-1"
+    ],
+    "input": {
+      "doc": {
+        "options": [
+          {
+            "default": true,
+            "id": "autolise",
+            "kind": "toggle"
+          },
+          {
+            "choices": [
+              "deck",
+              "home"
+            ],
+            "default": "deck",
+            "id": "oven",
+            "kind": "choice"
+          }
+        ],
+        "steps": [
+          {
+            "id": "s1"
+          },
+          {
+            "id": "s2",
+            "when": {
+              "option": "autolise"
+            }
+          },
+          {
+            "id": "s3",
+            "when": {
+              "not": {
+                "option": "autolise"
+              }
+            }
+          },
+          {
+            "id": "s4",
+            "when": {
+              "option": "oven:home"
+            }
+          },
+          {
+            "id": "s5"
+          }
+        ]
+      },
+      "selection": {}
+    },
+    "expected": {
+      "active": [
+        "s1",
+        "s2",
+        "s5"
+      ]
+    }
+  },
+  {
+    "function": "selectGuardPath",
+    "name": "toggle-off-choice-home",
+    "edge_classes": [
+      "guard-combinations"
+    ],
+    "rules": [
+      "R-GUARD-1"
+    ],
+    "input": {
+      "doc": {
+        "options": [
+          {
+            "default": true,
+            "id": "autolise",
+            "kind": "toggle"
+          },
+          {
+            "choices": [
+              "deck",
+              "home"
+            ],
+            "default": "deck",
+            "id": "oven",
+            "kind": "choice"
+          }
+        ],
+        "steps": [
+          {
+            "id": "s1"
+          },
+          {
+            "id": "s2",
+            "when": {
+              "option": "autolise"
+            }
+          },
+          {
+            "id": "s3",
+            "when": {
+              "not": {
+                "option": "autolise"
+              }
+            }
+          },
+          {
+            "id": "s4",
+            "when": {
+              "option": "oven:home"
+            }
+          },
+          {
+            "id": "s5"
+          }
+        ]
+      },
+      "selection": {
+        "autolise": false,
+        "oven": "home"
+      }
+    },
+    "expected": {
+      "active": [
+        "s1",
+        "s3",
+        "s4",
+        "s5"
+      ]
+    }
+  },
+  {
+    "function": "selectGuardPath",
+    "name": "unsatisfiable",
+    "edge_classes": [
+      "guard-combinations"
+    ],
+    "rules": [
+      "R-GUARD-2"
+    ],
+    "input": {
+      "doc": {
+        "options": [
+          {
+            "default": true,
+            "id": "autolise",
+            "kind": "toggle"
+          },
+          {
+            "choices": [
+              "deck",
+              "home"
+            ],
+            "default": "deck",
+            "id": "oven",
+            "kind": "choice"
+          }
+        ],
+        "steps": [
+          {
+            "id": "s1"
+          },
+          {
+            "id": "s2",
+            "when": {
+              "option": "autolise"
+            }
+          },
+          {
+            "id": "s3",
+            "when": {
+              "not": {
+                "option": "autolise"
+              }
+            }
+          },
+          {
+            "id": "s4",
+            "when": {
+              "option": "oven:home"
+            }
+          },
+          {
+            "id": "s5"
+          }
+        ]
+      },
+      "selection": {
+        "nope": true
+      }
+    },
+    "expected": {
+      "error": true
+    }
+  }
+]

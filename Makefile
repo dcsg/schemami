@@ -18,3 +18,8 @@ accept:
 conformance:
 	cd tools/rcplint && go run . vectors ../.. ../viewer/conformance/vectors
 	cd tools/viewer && mise exec -- bun install --frozen-lockfile && mise exec -- bun test
+
+.PHONY: calculus
+calculus:
+	cd tools/rcplint && go run . calc-vectors ../.. ../../calculus/vectors
+	cd tools/rcplint && go test -count=1 -run 'TestCalcCoverage|TestCalcVectors|TestWE|TestSpec|TestR_' ./...

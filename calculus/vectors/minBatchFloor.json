@@ -1,0 +1,83 @@
+[
+  {
+    "function": "minBatchFloor",
+    "name": "draw-below-floor",
+    "edge_classes": [
+      "min-batch"
+    ],
+    "rules": [
+      "R-MINBATCH-1",
+      "R-MINBATCH-2"
+    ],
+    "input": {
+      "doc": {
+        "components": [
+          {
+            "id": "culture",
+            "ingredients": [],
+            "maintenance": true,
+            "min_batch": {
+              "unit": "g",
+              "value": 100
+            }
+          }
+        ],
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 1
+            },
+            "id": "x"
+          }
+        ]
+      },
+      "k": 0.05
+    },
+    "expected": {
+      "refusals": [
+        "vec/culture: maintenance culture min_batch 100 g floors the draw — scale ×0.05 implies 5 g (cannot build less than the minimum viable batch; DS-SAFE-001/min_batch)"
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "function": "minBatchFloor",
+    "name": "upscale-no-floor",
+    "edge_classes": [
+      "min-batch"
+    ],
+    "rules": [
+      "R-MINBATCH-2"
+    ],
+    "input": {
+      "doc": {
+        "components": [
+          {
+            "id": "culture",
+            "ingredients": [],
+            "maintenance": true,
+            "min_batch": {
+              "unit": "g",
+              "value": 100
+            }
+          }
+        ],
+        "ingredients": [
+          {
+            "amount": {
+              "unit": "g",
+              "value": 1
+            },
+            "id": "x"
+          }
+        ]
+      },
+      "k": 3
+    },
+    "expected": {
+      "refusals": [],
+      "warnings": []
+    }
+  }
+]
