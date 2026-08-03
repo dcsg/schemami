@@ -10,6 +10,7 @@ bad()  { FAIL=$((FAIL+1)); printf "  ✗ %s\n" "$1"; }
 check(){ local desc="$1"; shift; if "$@" >/dev/null 2>&1; then ok "$desc"; else bad "$desc"; fi; }
 
 echo "── v0.2 standing guards (PLAN-rcp-v02) ──"
+check "AC-PR-003-2  no prose-parked metadata; hat-mapping notes present" python3 tools/rcplint/scripts/prose-parking.py
 check "AC-I18N-001-1 every used taxonomy slug has a pt-PT term" python3 tools/rcplint/scripts/i18n-coverage.py
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
 

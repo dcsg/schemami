@@ -23,6 +23,7 @@ storage:
 provenance:
   confidence: LOW
   status: unverified
+  notes: { en: Difficulty mapped from the book 1-3 hat scale per DS-PR-006. }
   sources:
     - label: Cookbook page
       type: book

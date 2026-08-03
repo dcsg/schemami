@@ -734,6 +734,10 @@
       "type": "object",
       "properties": {
         "confidence": { "enum": ["HIGH", "MEDIUM-HIGH", "MEDIUM", "LOW"] },
+        "notes": {
+          "$ref": "#/$defs/text",
+          "description": "Provenance working notes — where per-ingest judgment calls are recorded (e.g. the DS-PR-006 hat-scale-to-1..5 difficulty mapping, a storage-location reading the book left implicit). ADDITION during PLAN-rcp-v02 Phase 8: DS-PR-006 mandated the record but no field existed."
+        },
         "status": { "enum": ["draft", "unverified", "published", "archived"] },
         "sources": {
           "type": "array",

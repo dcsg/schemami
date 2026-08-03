@@ -37,7 +37,7 @@ phases:
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done | 1/5 | 2026-08-03 |
-| 8     | pending | 0/5 | — |
+| 8     | done | 1/5 | 2026-08-03 |
 | 9     | pending | 0/5 | — |
 
 **IMPORTANT:** Update this table as phases complete. This table is the persistent state that survives context compaction.
@@ -306,6 +306,11 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 8:
+- AC-8.1: PASS — 2026-08-03 (all parked metadata moved to fields; absent data stayed absent — biscuits/chili/feijoada carry no times/storage because their pages stated none; all 5 validate core ∧ profile locally)
+- AC-8.2: PASS — 2026-08-03 (prose-parking heuristic clean, identifiers-only, skip-with-notice)
+- AC-8.3: PASS — 2026-08-03 (DS-PR-006 mapping notes present on both difficulty-asserting docs; provenance.notes field ADDED to core — DS-PR-006 mandated the record but no field existed; adjustment recorded)
 
 Phase 7:
 - AC-7.1: PASS — 2026-08-03 (single-file dist 162 KiB, hash CSP no 'self', charset first, zero external refs)
