@@ -43,6 +43,7 @@ test("components render their method: title-less steps fall back to the primitiv
     canonical: {
       name: { pt: "Teste" },
       ingredients: [{ id: "f", item: "ingredient.flour.wheat.t55", amount: { value: 100, unit: "g" }, roles: ["flour"] }],
+      steps: [{ id: "m1", primitive: { id: "primitive.melt", v: 1 }, uses: ["g"] }],
       components: [{
         id: "g", kind: "component", name: { pt: "Ganache" },
         ingredients: [{ id: "c", item: "ingredient.chocolate.dark.70", amount: { value: 10, unit: "g" } }],
@@ -56,6 +57,9 @@ test("components render their method: title-less steps fall back to the primitiv
     },
   };
   const html = renderDocument(analysis as never, ctx);
+  // Reading order: the component's method appears BEFORE the parent's
+  // steps (its output is a parent ingredient — mise-en-place order).
+  expect(html.indexOf('class="component"')).toBeLessThan(html.indexOf("main-method"));
   expect(html).toContain("Farinha de trigo T55");               // display name, not slug
   expect(html).toContain('title="ingredient.flour.wheat.t55"'); // slug preserved as tooltip
   // Composed instruction: verb — resolved uses, condition chips, duration
@@ -63,6 +67,8 @@ test("components render their method: title-less steps fall back to the primitiv
   expect(html).toContain("<strong>Cozer calda</strong> — Chocolate negro 70%");
   expect(html).toContain('<span class="chip">até 104 C</span>');
   expect(html).toContain('<span class="chip">5m</span>');
+  // uses anchored on a component resolves to the component's NAME
+  expect(html).toContain("<strong>Derreter</strong> — Ganache");
 });
 
 test("injection: script/onerror content in name, notes and taxonomy renders inert", async () => {

@@ -132,6 +132,12 @@ function stepList(doc: Dict, ctx: RenderContext): string {
     if (ing["id"] && ing["item"]) ingName.set(String(ing["id"]), displayName(String(ing["item"]), ctx));
     else if (ing["id"]) ingName.set(String(ing["id"]), String(ing["raw"] ?? ing["id"]));
   }
+  // uses may also anchor on components (produced intermediates) — resolve
+  // them to their names so "Montar — Ganache de cobertura, Calda" reads.
+  for (const raw of asList(doc["components"])) {
+    const c = asDict(raw);
+    if (c["id"]) ingName.set(String(c["id"]), text(c["name"], ctx.lang) || String(c["id"]));
+  }
   const items = steps.map((s) => {
     // Authored title always wins — the author's voice. Otherwise COMPOSE
     // the instruction from the machine layer (renderer-prototype seed,
@@ -184,9 +190,13 @@ export function renderDocument(analysis: DocumentAnalysis, ctx: RenderContext): 
         `${ingredientList(c, ctx)}${stepList(c, ctx)}</section>`,
     )
     .join("");
+  const mainSteps = stepList(doc, ctx);
+  const mainMethod = mainSteps
+    ? (components ? `<section class="main-method"><h3>Preparação principal</h3>${mainSteps}</section>` : mainSteps)
+    : "";
   return (
     `<article class="recipe"><header><h2 lang="pt-PT">${title}</h2>${maturityBadge}</header>` +
-    `${taxonomyLine(doc, ctx)}${ingredientList(doc, ctx)}${stepList(doc, ctx)}${components}</article>`
+    `${taxonomyLine(doc, ctx)}${ingredientList(doc, ctx)}${components}${mainMethod}</article>`
   );
 }
 

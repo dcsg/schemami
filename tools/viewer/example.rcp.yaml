@@ -223,6 +223,9 @@ steps:
     v: 1
   after:
   - s4
+  uses:
+  - ganache-cobertura
+  - calda-cafe
 options:
 - id: sem-calda
   kind: toggle
