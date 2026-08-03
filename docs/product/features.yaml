@@ -359,6 +359,31 @@ features:
     status: deferred
     target: v1 — PRD-003 candidate (Daniel 2026-08-03), with FEAT-CALC-001 (the derivations are Calculus functions; the viewer consumes them through the engine seam)
     trace: ["DECISIONS #3", "research 04:61-80", "CONCLUSIONS §7", "Daniel 2026-08-03 viewer review"]
+
+  - id: FEAT-TOOL-002
+    name: "Media surfaces: asset conventions + rendering"
+    description: >-
+      The media model shipped in v0.1 core and is already referenced by
+      the examples (step media on the alentejano, the negroni's stir
+      video, technique teaches/media) — a deliberately rich shape: role
+      includes failure (kahm yeast vs mould is a photo, not a sentence)
+      and licence is REQUIRED, encoding the two-tier stance (written
+      heritage CC BY 4.0, media all rights reserved). What does not
+      exist yet: the assets themselves (example URIs are placeholders),
+      viewer rendering (media is ignored today), and the conventions —
+      where assets live relative to documents, how the single-file
+      viewer handles them, and the boundary that asset HOSTING is
+      app-side (DECISIONS #19/#21) while the reference shape is
+      protocol. Privacy line recorded: personal photos of one's own
+      cooking are fine in the private collection; a source book's media
+      is never reproduced (the private-use ingestion right does not
+      extend to media). Surfaced by Daniel 2026-08-03: no media visible
+      anywhere in the viewer.
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
+    icp: both
+    status: deferred
+    target: post-v0.2; scope decided at the next PRD interview (viewer rendering is the cheap half; conventions + real assets the substantive half)
+    trace: ["research 04 media_hint findings", "core $defs/media (v0.1)", "Daniel 2026-08-03 viewer review"]
   - id: FEAT-CORE-005
     name: "Dogfood field additions (times, difficulty, storage, source detail)"
     description: >-

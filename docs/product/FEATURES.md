@@ -72,6 +72,13 @@ recipe owns HOW; the schedule is computed. Cross-document stitching needs
 verified reference resolution. *home-cook, production-scaler,
 surface-engineer · both*
 
+**FEAT-TOOL-002 — Media surfaces: asset conventions + rendering** (core $defs/media, v0.1; Daniel 2026-08-03)
+The media model shipped in v0.1 (role incl. failure; licence required,
+two-tier stance) and the examples reference it — but no assets exist, the
+viewer ignores media, and asset conventions are unwritten. Hosting is
+app-side; the reference shape is protocol. Book media is never reproduced.
+*home-cook, personal-collector, surface-engineer · both*
+
 **FEAT-CORE-003 — Decode-compatibility CI fixtures** (#14)
 Bidirectional old-reader/new-doc fixtures in CI — "data outlives code" made
 mechanical. *surface-engineer · ICP-1*
