@@ -19,6 +19,7 @@ import type {
   DocumentAnalysis,
   ParseError,
   RcpEngine,
+  LinkedMethod,
   TimelineEntry,
 } from "../engine.ts";
 import * as calc from "../calc/index.ts";
@@ -27,6 +28,13 @@ export interface SchemaSet {
   core: Record<string, unknown>;
   /** kind -> profile schema (x-rcp-maturity read from each). */
   profiles: Record<string, Record<string, unknown>>;
+  /**
+   * Canonical links the registry declares, plus the documents they
+   * name: {mention -> {label, document}}. Injected like the schemas so
+   * the engine stays pure; absent means the engine does NOT declare the
+   * `links` capability.
+   */
+  links?: Record<string, { label: string; document: unknown }>;
 }
 
 function pointerOf(instanceLocation: string): string {
@@ -44,7 +52,10 @@ export function createJsEngine(schemas: SchemaSet): RcpEngine {
     });
   }
 
-  const capabilities: Capabilities = { l1: true, clamp: true, timeline: true };
+  // `links` is declared only when the corpus needed to resolve them is
+  // injected. Declaring it unconditionally would promise resolution the
+  // engine cannot perform — the capability map is a contract, not a wish.
+  const capabilities: Capabilities = { l1: true, clamp: true, timeline: true, links: !!schemas.links };
 
   return {
     version: 1,
@@ -137,6 +148,37 @@ export function createJsEngine(schemas: SchemaSet): RcpEngine {
         return { accepted: false, reasons: [{ pt: `fator de escala inválido: ${factor}` }] };
       }
       return { accepted: true, reasons: [], scaled };
+    },
+
+    /**
+     * Resolve canonical links declared by the registry against the
+     * mentions this document makes. Returns only links the document
+     * actually mentions — a surface should not offer a method the
+     * recipe never asked for.
+     */
+    async resolveLinks(canonical: unknown): Promise<LinkedMethod[]> {
+      if (!schemas.links) return [];
+      const doc = (canonical ?? {}) as Record<string, unknown>;
+      const mentioned = new Set<string>();
+      for (const raw of (doc["ingredients"] as unknown[]) ?? []) {
+        const ing = (raw ?? {}) as Record<string, unknown>;
+        if (typeof ing["item"] === "string") mentioned.add(ing["item"]);
+      }
+      for (const raw of (doc["steps"] as unknown[]) ?? []) {
+        const s = (raw ?? {}) as Record<string, unknown>;
+        for (const u of (s["uses"] as unknown[]) ?? []) {
+          if (typeof u === "string") mentioned.add(u);
+        }
+        const prim = (s["primitive"] ?? {}) as Record<string, unknown>;
+        if (typeof prim["id"] === "string") mentioned.add(prim["id"]);
+      }
+      const out: LinkedMethod[] = [];
+      for (const [mention, link] of Object.entries(schemas.links)) {
+        if (mentioned.has(mention)) {
+          out.push({ mention, label: link.label, document: link.document });
+        }
+      }
+      return out;
     },
 
     /** Timeline derivation via the TS Recipe Calculus (two-stage schedule). */

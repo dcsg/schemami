@@ -60,3 +60,8 @@ textarea#input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; 
 .sched-range { opacity: .7; font-size: .85rem; }
 .schedule time { font-variant-numeric: tabular-nums; }
 .scale-default { font-size: .85rem; opacity: .8; }
+.linked-method { margin: .5rem 0; border-left: 3px solid color-mix(in srgb, currentColor 25%, transparent); padding-left: .75rem; }
+.linked-method summary { cursor: pointer; font-size: .9rem; }
+.linked-method summary:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; }
+.linked-body { margin-top: .5rem; }
+.link-omission { color: #9a7b1f; font-size: .9rem; margin-top: .5rem; }

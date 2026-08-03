@@ -19,6 +19,7 @@ import type {
   Capabilities,
   Diagnostic,
   DocumentAnalysis,
+  LinkedMethod,
   TimelineEntry,
 } from "./engine.ts";
 
@@ -191,6 +192,18 @@ function stepList(doc: Dict, ctx: RenderContext): string {
   return `<ol class="steps">${items.join("")}</ol>`;
 }
 
+/**
+ * W3C Media Fragments temporal grammar, as an ALLOWLIST. Anything else
+ * is dropped silently rather than passed through — never fall back to
+ * the raw uri as src, which would put an author-supplied string
+ * (possibly absolute, or a javascript:/data: scheme) into a media
+ * element with only the CSP as backstop.
+ */
+export function isTemporalFragment(fragment: string): boolean {
+  if (!fragment) return false;
+  return /^t=(?:npt:)?\d+(?:\.\d+)?(?:,\d+(?:\.\d+)?)?$/.test(fragment);
+}
+
 /** Role labels (pt-PT). Failure is labelled by TEXT — never color/position alone. */
 const MEDIA_ROLE_LABEL: Record<string, string> = {
   technique: "técnica",
@@ -215,8 +228,19 @@ function mediaBlock(list: unknown, ctx: RenderContext): string {
     const caption = m["note"] ? text(m["note"], ctx.lang) : "";
     const alt = caption || roleLabel;
     const uri = String(m["uri"] ?? "");
-    const basename = uri.split("/").pop() ?? uri;
-    const src = ctx.assets[basename];
+    // W3C Media Fragments (#t=start,end): strip the fragment BEFORE
+    // basename matching — otherwise "media/x.mp4#t=10,20" yields the
+    // key "x.mp4#t=10,20", misses the asset store and collapses to the
+    // absent state. The fragment is re-appended to the OBJECT URL, so
+    // two ranges of one asset work for free. It is validated against
+    // the temporal grammar as an ALLOWLIST and dropped otherwise: the
+    // document's uri must never reach a src attribute unchecked.
+    const hash = uri.indexOf("#");
+    const path = hash >= 0 ? uri.slice(0, hash) : uri;
+    const fragment = hash >= 0 ? uri.slice(hash + 1) : "";
+    const basename = (path.split("?")[0] ?? path).split("/").pop() ?? path;
+    const base = ctx.assets[basename];
+    const src = base === undefined ? undefined : base + (isTemporalFragment(fragment) ? "#" + fragment : "");
     const failureClass = role === "failure" ? " media-failure" : "";
     const label =
       `<span class="media-role${failureClass}">${esc(roleLabel)}</span>` +
@@ -371,7 +395,7 @@ export function renderDocumentBlock(
 ): string {
   const control = caps.clamp ? renderScaleControl(index, docYield(d.canonical)) : "";
   return `<div class="doc-block" data-doc="${index}">${renderDocument(d, ctx)}${control}` +
-    `<div class="schedule-slot"></div></div>`;
+    `<div class="links-slot"></div><div class="schedule-slot"></div></div>`;
 }
 
 /** Seconds -> humanized pt-PT ("2 h 30 min", "45 min", "1 d 12 h"). */
@@ -488,6 +512,50 @@ export function renderSchedule(entries: TimelineEntry[], labels: Record<string, 
     })
     .join("");
   return `<section class="schedule"><h3>Plano de execução</h3>${sections}</section>`;
+}
+
+/**
+ * See-the-method (SR-TOOL-001): the linked method rendered in place,
+ * without losing the parent. <details>/<summary> keeps the renderer
+ * pure and gives keyboard and assistive-technology semantics for free.
+ *
+ * Rendered via renderDocument, NEVER renderDocumentBlock: a nested
+ * block would emit a second .doc-block[data-doc=N] and duplicate
+ * scale-input ids, and app.ts's querySelector is first-match-wins — so
+ * scaling would silently target the embedded copy.
+ */
+export function renderLinkedMethod(link: LinkedMethod, index: number, ctx: RenderContext): string {
+  const analysis: DocumentAnalysis = {
+    id: `${index}-${link.mention}`,
+    kind: "",
+    profile: null,
+    maturity: null,
+    valid: true,
+    verdicts: [],
+    canonical: link.document,
+  };
+  return (
+    `<details class="linked-method" data-mention="${esc(link.mention)}">` +
+    `<summary>Ver o método: ${esc(link.label)}</summary>` +
+    `<div class="linked-body">${renderDocument(analysis, ctx)}</div>` +
+    `</details>`
+  );
+}
+
+/**
+ * The omission notice. Today's degradation pattern is silence — a
+ * control simply vanishes — which is right for a CONTROL and dangerous
+ * for a PLAN: an engine with `timeline` but without `links` would emit
+ * a complete-looking kitchen plan that quietly omits a linked 12-hour
+ * ferment. Say so instead.
+ */
+export function renderLinkOmissionNotice(count: number): string {
+  if (count <= 0) return "";
+  const noun = count === 1 ? "prepara\u00e7\u00e3o ligada omitida" : "prepara\u00e7\u00f5es ligadas omitidas";
+  return (
+    `<p class="link-omission" role="status">${count} ${noun} \u2014 ` +
+    `este motor n\u00e3o resolve liga\u00e7\u00f5es can\u00f3nicas, por isso o plano acima est\u00e1 incompleto.</p>`
+  );
 }
 
 export function renderEmptyState(): string {

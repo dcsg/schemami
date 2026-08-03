@@ -70,6 +70,8 @@ assert len(h) < 500*1024, len(h)
 assert 'id=\\\"file-input\\\"' in h and 'type=\\\"file\\\"' in h
 \""
 
+check "DIST-FRESH    the shipped bundle is rebuilt from src (a stale dist passes every other gate)" sh -c "cd tools/viewer && mise exec -- bun run build.ts >/dev/null && cd ../.. && git diff --quiet -- tools/viewer/dist/"
+
 echo "── Verified resolution (SR-PUB-001/002, obligation 3) ──"
 # FROZEN only. Reconcile belongs in make, never here: a gate that can
 # repair what it checks verifies nothing. Asserts the EXIT CODE plus a

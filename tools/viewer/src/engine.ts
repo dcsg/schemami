@@ -26,6 +26,8 @@ export interface Capabilities {
   cue?: boolean;
   clamp?: boolean;
   timeline?: boolean;
+  /** Can resolve a canonical link and render the method it names. */
+  links?: boolean;
 }
 
 export interface Diagnostic {
@@ -91,4 +93,25 @@ export interface RcpEngine {
   scale?(canonical: unknown, factor: number): Promise<ClampResult>;
   /** Reserved: only timeline-capable engines define this. */
   schedule?(canonical: unknown): Promise<TimelineEntry[]>;
+  /**
+   * Reserved: only links-capable engines define this. Returns the
+   * documents a canonical link names, so a surface can show the method
+   * without losing the parent.
+   *
+   * A SEPARATE member rather than a widened schedule() signature: a
+   * future WASM engine written against version 1 would ignore an extra
+   * argument and return a silently wrong plan, with no way for the UI
+   * to detect it.
+   */
+  resolveLinks?(canonical: unknown): Promise<LinkedMethod[]>;
+}
+
+/** One resolved canonical link. */
+export interface LinkedMethod {
+  /** The mention this answers — an ingredient id, technique slug or component id. */
+  mention: string;
+  /** Human label for the affordance. */
+  label: string;
+  /** The linked document, ready to render. */
+  document: unknown;
 }
