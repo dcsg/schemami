@@ -1,4 +1,4 @@
-# PRD-004: RCP v0.4 — teaching + trust: mentions resolve, moments address, links verify
+# PRD-004: RCP v0.4 — identity, trust and teaching: which recipe, which variant, which method
 
 **Status:** draft
 **Rigor:** solo
@@ -25,9 +25,17 @@ Three failures, all hit with real recipes (Daniel, options-interview 2026-08-03)
    video, but "minute 2–3 is the roux" is inexpressible — the media teaches
    nothing at the step where it is needed.
 
-(Identity fog on forks was considered and **not** selected as a driving
-problem — FR-PR-006 is scoped as a modeling decision to settle, prompted by a
-real consumer's `forked_from` column, not by user pain.)
+4. **Ambiguous identity.** Raised by Daniel mid-scoping and it reframed the
+   cut: *"what I think can happen most is selecting a variation of the recipe
+   instead of the original that has slightly different methods/ingredients."*
+   Research 09 traced it to three roots — ids are bare slugs with no defined
+   scope (two systems cannot tell whether they hold the same recipe), lineage
+   pointers carry no version (a fork cannot say what it forked from), and the
+   variant discriminator is prose (nothing can select or explain a choice).
+
+**Identity is upstream of teaching.** Canonical links point at documents, so
+the roux bridge is built on unambiguous references. The requirements below are
+ordered accordingly: identity, then trust, then teaching.
 
 ## Users
 
@@ -46,6 +54,7 @@ real consumer's `forked_from` column, not by user pain.)
 |--------|--------|--------------------------------|
 | Mention→method coverage | Every embedded sub-preparation across all ingested documents (public examples + private collection) resolves to a viewable method | Zero change to any safety refusal or authored reason; frozen calculus vectors byte-identical |
 | Verified-link coverage | 100% of cross-document references in the corpus carry hash-pinned resolution; a broken link is DETECTED, never rendered as current | Decode-compat green both directions; the six examples keep validating unchanged |
+| Unambiguous references | Every reference in the corpus resolves to exactly one document under the stated scope rule; two collections sharing an id merge without collision, rewrite or misbinding | The recipe `id` pattern unchanged (no MODEL bump); v0.1-era reader still decodes; variants stay self-contained offline |
 
 ## Non-Goals
 
@@ -60,6 +69,12 @@ real consumer's `forked_from` column, not by user pain.)
   landing after the teaching features exist to showcase).
 - **Publishing/hosting infrastructure** — app-side per DECISIONS #19/#21;
   this cut ships the resolution *format and verification*, not a service.
+- **Compiled variants** (`derived_from`/`apply`/`materialised_at`, research 06)
+  — rejected for v0.4 on founding-non-goal grounds: a second execution
+  semantics beside the Recipe Calculus, and formulas-in-data. Drift is
+  *detected* instead. Recorded as a decision, not left silent.
+- **The distribution layer itself** — v0.4 ships the pack format that makes a
+  "recipe npm" possible; theservices stay app-side.
 
 ## Requirements
 
@@ -67,11 +82,17 @@ real consumer's `forked_from` column, not by user pain.)
 
 | FR | Component | Requirement (abridged) |
 |---|---|---|
+| FR-PACK-001 | collections and packs | **Reference scope**: ids unique within a COLLECTION; unqualified refs resolve in the referring document's own collection; **merging never flattens** |
+| FR-PACK-002 | collections and packs | **Pack manifest** format — collection identifier (authoritative) + optional publisher/licence/version; documents may self-describe; services stay app-side |
+| FR-PR-007 | protocol-core | **Lineage described and version-pinned** in componentRef's shape; a fork is a new document with a pointer home; `family` is the capability-style grouping |
+| FR-PR-008 | protocol-core | **Variant discriminator machine-readable**: typed axis (closed enum + catch-all) + registry-resolvable value; `variant_label` stays human-only |
+| FR-VAL-003 | validator | **Drift detected, not compiled**: staleness reported naming the variant; componentRef pin check hardened to compare versions; compilation rejected on the record |
+| FR-REG-007 | registry | **Axis kinds seeded from real documents** — no axis ships pointing at an absent registry |
+| FR-PUB-001 | publish-time resolution | Resolved refs carry `resolver_version` + content hash; verification detects changed/missing targets — **never silently current** |
 | FR-REG-005 | registry | Preparation-class and technique entries support an optional **canonical-recipe link** — versioned, curated, never required |
 | FR-REG-006 | registry | The **extraction rule** binds and is linted: method given → inline component; method absent → class reference; anchorless mentions warn |
 | FR-TOOL-004 | developer tooling | Renderers surface **see-the-method** from any linked mention, including its schedule placement before the parent method |
 | FR-PR-005 | protocol-core | **Media temporal fragments** normative: `#t=start,end` blessed in MEDIA.md, passed through to playback; one video, many addressed moments |
-| FR-PUB-001 | publish-time resolution | Resolved references carry `resolver_version` + content hash; verification detects changed/missing targets — **never silently current** |
 | FR-PR-006 | protocol-core | **Stage-forked identity** settled as a recorded decision with lineage-field consequences, demonstrated by validating examples |
 
 ## Acceptance Criteria
@@ -95,6 +116,8 @@ the harness exists, not fabricated at PRD time.
 - `docs/product/features.yaml` — FEAT-REG-006 / FEAT-CORE-006 / FEAT-PUB-001 (full design intent)
 - [W3C Media Fragments URI 1.0](https://www.w3.org/TR/media-frags/) — the existing `#t=` encoding
 - Fornada `padaria.recipes.forked_from` — the identity question, concrete in a real consumer
+- `docs/research/09-variant-identity-and-selection.md` — four verified tracks: prior art, the recipe-domain gap, selection semantics, internal sweep
+- `docs/brainstorms/BRAIN-001-recipe-identity-across-systems.md` — the identity decisions (collections do not flatten)
 
 ## Protections
 
@@ -103,13 +126,17 @@ the harness exists, not fabricated at PRD time.
 - **SP-003** — `calculus/SPEC.md` stays public-normative and self-contained.
 - **SP-004** — DECISIONS #26 vocabulary binding; #27 media boundary + attestation in force — links and fragments never smuggle book media.
 - **SP-005** — Dependency freeze: PUB-001 hashing via stdlib only; new deps need a recorded decision.
+- **SP-006** — The recipe `id` value pattern MUST NOT widen; qualification rides on new optional fields (widening breaks v0.1 readers and forces a MODEL bump).
+- **SP-007** — Pack *services* stay app-side (#19/#21): this cut ships the pack **format** and its resolution semantics, not the distribution layer.
 
 ## Open Questions
 
-- **OQ-1** — Structured start/end fields beside `#t=`, or fragment-only as the
-  sole normative form? Resolve in SPEC-004 with renderer + validation evidence.
-- **OQ-2** — Render-time shadowing (user's own roux over the canonical):
-  surface concern with only resolution order named, or more?
+- **OQ-1** — Structured start/end fields beside `#t=`, or fragment-only?
+- **OQ-2** — The axis enum's initial values and its catch-all name — seeded only from axes the corpus actually exercises.
+- **OQ-3** — How `import`/`provenance` relate to the collection qualifier (don't conflate identity with provenance).
+- **OQ-4** — Is the qualifier mandatory on cross-collection pointers, or does collection-relative resolution make that moot?
+- **OQ-5** — Document versioning is still unspecified (research 09 F9): when must a revision increment, is a published revision immutable, what signals supersession? Close here or name it as the next cut's problem.
+- **OQ-6** — Render-time shadowing: protocol names the resolution order only (CSS's split), or more?
 
 ## Evidence & Discovery
 

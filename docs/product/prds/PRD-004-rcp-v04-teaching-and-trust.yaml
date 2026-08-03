@@ -2,13 +2,110 @@
 schema_version: '1.0'
 type: prd
 id: PRD-004
-title: 'RCP v0.4 — teaching + trust: mentions resolve, moments address, links verify'
-slug: rcp-v04-teaching-and-trust
+title: 'RCP v0.4 — identity, trust and teaching: which recipe, which variant, which method'
+slug: rcp-v04-identity-trust-teaching
 status: draft
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-03T14:55:00Z'
 requirements:
+- id: FR-PACK-001
+  component: collections and packs
+  text: 'Reference SCOPE is normative: an id is unique within a COLLECTION (the document set
+    a consumer loads together); an unqualified reference resolves within the referring document''s
+    own collection; a reference crossing into another collection MUST name it. Merging collections
+    MUST NOT flatten them — colliding ids from different collections both survive and stay
+    resolvable. The protocol never dictates how a system MINTS ids (system concern, DECISIONS
+    #19/#21); it always states how a reference RESOLVES (format fact, DECISIONS #21 boundary
+    test).'
+  trace:
+  - BRAIN-001 decisions 1–2
+  - research 09 F9
+  - 'DECISIONS #21'
+  - research 08 F2 (Mealie slug collapse)
+  status: proposed
+- id: FR-PACK-002
+  component: collections and packs
+  text: 'The pack/collection manifest is a normative document format: it declares the collection''s
+    identifier authoritatively, plus optional publisher, licence and version. Documents MAY
+    carry the collection identifier for lone travellers; the manifest wins on conflict. Manifest
+    identifiers live in the QUALIFIER''s value space — the recipe `id` pattern MUST NOT widen
+    (a widened pattern breaks v0.1-era readers and forces a MODEL bump). Pack SERVICES (hosting,
+    publishing workflow, any registry server) remain out of scope, app-side.'
+  trace:
+  - BRAIN-001 decisions 6–7
+  - architect brief 2026-08-03
+  - 'DECISIONS #19'
+  - 'DECISIONS #14 (decode-compat)'
+  status: proposed
+- id: FR-PR-007
+  component: protocol-core
+  text: The lineage block gains defined semantics and version-pinned pointers. Every lineage
+    field (forked_from, family, variant_of) MUST be described in the schema and MUST support
+    a pinned revision in the same shape componentRef already uses (target-declared version
+    + reference-site pin). A fork is a NEW document with its own id carrying a pointer home
+    — self-contained snapshots stay settled. `family` is the capability-style grouping slug
+    ('these documents fill the same role').
+  trace:
+  - BRAIN-001 decision 3
+  - research 09 F1/F3/F4
+  - schema componentRef :374-393
+  - research 02 D.4
+  status: proposed
+- id: FR-PR-008
+  component: protocol-core
+  text: 'Variant discriminators MUST be machine-readable: a variant declares a typed AXIS
+    from a closed enum carrying a catch-all value from day one (decode-compat), plus a registry-resolvable
+    VALUE naming the distinction. `variant_label` remains the human display string and is
+    never machine-read (decision #4 prose discipline). Absent a resolvable value the document
+    stays valid — the discriminator is optional, never required.'
+  trace:
+  - BRAIN-001 decision 4
+  - research 09 F2 (the blocker)
+  - 'DECISIONS #4'
+  - architect brief (catch-all + absent-registry risk)
+  status: proposed
+- id: FR-VAL-003
+  component: validator
+  text: 'Drift is DETECTED, not compiled away: when a document''s lineage pointer pins revision
+    N and the parent has moved past N, validation reports staleness NAMING the variant and
+    both revisions. The existing componentRef pin check MUST also be hardened to compare the
+    pinned version against the target''s declared version (today it only checks that the target
+    declares one). Compilation of variants from parent + operations is explicitly NOT adopted
+    — it would be a second execution semantics beside the Recipe Calculus and formulas-in-data,
+    both founding non-goals; the rejection is recorded as a decision, not left silent.'
+  trace:
+  - BRAIN-001 decision 5
+  - architect brief 2026-08-03
+  - research 06 §6 (compiled-not-forked)
+  - research 09 F8/F9
+  - lint.go:165-174
+  status: proposed
+- id: FR-REG-007
+  component: registry
+  text: 'The registry gains the entry kinds the variant discriminator resolves against, seeded
+    from real documents only (never speculative vocabulary): the axes actually exercised by
+    the corpus get their kinds and seed entries, and an axis with no registry backing MUST
+    NOT ship as an enum value — shipping a field that points at absent registries is the failure
+    mode.'
+  trace:
+  - BRAIN-001 open question 2
+  - architect brief 2026-08-03
+  - 'DECISIONS #23'
+  - 'DECISIONS #25'
+  status: proposed
+- id: FR-PUB-001
+  component: publish-time resolution
+  text: 'Publish-time reference resolution MUST be verified (engineering obligation 3): a
+    resolved cross-document reference carries resolver_version and a content hash of the resolved
+    target; verification tooling re-checks the pin; a missing or changed target is DETECTED
+    as a verification failure naming the reference — never silently rendered as current. Hashing
+    uses the standard library only (dependency freeze).'
+  trace:
+  - FEAT-PUB-001
+  - 'DECISIONS #21'
+  - 'engineering obligation #3'
+  status: proposed
 - id: FR-REG-005
   component: registry
   text: 'Registry entries for preparation classes (ingredient.preparation.*) and techniques
@@ -58,18 +155,6 @@ requirements:
   - Daniel 2026-08-03 (video technique ranges)
   - W3C Media Fragments URI 1.0
   status: proposed
-- id: FR-PUB-001
-  component: publish-time resolution
-  text: 'Publish-time reference resolution MUST be verified (engineering obligation 3): a
-    resolved cross-document reference carries resolver_version and a content hash of the resolved
-    target; verification tooling re-checks the pin; a missing or changed target is DETECTED
-    as a verification failure naming the reference — never silently rendered as current. Hashing
-    uses the standard library only (dependency freeze).'
-  trace:
-  - FEAT-PUB-001
-  - 'DECISIONS #21'
-  - 'engineering obligation #3'
-  status: proposed
 - id: FR-PR-006
   component: protocol-core
   text: 'The stage-forked identity question MUST be settled as a recorded decision (DECISIONS
@@ -82,6 +167,74 @@ requirements:
   - 'DECISIONS #7'
   status: proposed
 acceptance_criteria:
+- id: AC-PACK-001-1
+  fr: FR-PACK-001
+  given: two collections each containing a document with the id "pao-alentejano", loaded together
+  when: validation and reference resolution run
+  then: both documents survive and stay individually resolvable; no id is rewritten and no
+    pointer rebinds — the collision is not an error
+  status: proposed
+- id: AC-PACK-001-2
+  fr: FR-PACK-001
+  given: a document whose lineage or component reference names an id present in BOTH its own
+    collection and another loaded collection
+  when: the reference resolves
+  then: it resolves to its OWN collection's document; a reference intended for the other collection
+    is only valid when qualified
+  status: proposed
+- id: AC-PACK-002-1
+  fr: FR-PACK-002
+  given: a collection with a manifest declaring its identifier, and a document declaring a
+    different one
+  when: the collection loads
+  then: the manifest identifier wins and the conflict is reported; a lone document with no
+    manifest still self-describes via its own field
+  status: proposed
+- id: AC-PACK-002-2
+  fr: FR-PACK-002
+  given: the v0.1-era frozen reader from the decode-compat gate
+  when: it decodes documents carrying collection qualifiers and pack manifests exist alongside
+  then: decoding succeeds with v0.1 fields intact — the recipe id pattern is unchanged and
+    qualification rode in on new optional fields
+  status: proposed
+- id: AC-PR-007-1
+  fr: FR-PR-007
+  given: a variant document declaring lineage.variant_of pinned to parent revision N
+  when: the schema and linter validate it
+  then: every lineage field carries a description in the schema, the pin validates in componentRef's
+    shape, and the variant remains a complete self-contained document
+  status: proposed
+- id: AC-PR-008-1
+  fr: FR-PR-008
+  given: two sibling variants of one family differing on a declared axis (e.g. axis=diet,
+    values gluten-free vs classic)
+  when: a consumer inspects them without reading prose
+  then: the axis and value are machine-readable and resolve; a document omitting the discriminator
+    stays valid; an unknown axis decodes into the catch-all rather than failing
+  status: proposed
+- id: AC-VAL-003-1
+  fr: FR-VAL-003
+  given: a variant pinned to parent revision 3 and a parent that has since declared revision
+    4
+  when: validation runs
+  then: staleness is reported naming the variant, the pinned revision and the current one
+    — and the same run FAILS a componentRef whose pin no longer matches the target's declared
+    version
+  status: proposed
+- id: AC-VAL-003-2
+  fr: FR-VAL-003
+  given: the rejection of compiled variants
+  when: the decision record is read
+  then: DECISIONS carries the entry naming the founding-non-goal grounds (second execution
+    semantics; formulas-in-data) so the rejection is recorded rather than silent
+  status: proposed
+- id: AC-REG-007-1
+  fr: FR-REG-007
+  given: the axis enum shipped by FR-PR-008
+  when: the registry is validated
+  then: every non-catch-all axis value has its registry kind and at least one seed entry drawn
+    from a real document; no axis ships pointing at an absent registry
+  status: proposed
 - id: AC-REG-005-1
   fr: FR-REG-005
   given: a technique or preparation-class registry entry carrying a canonical-recipe link
@@ -163,6 +316,14 @@ protections:
 - id: SP-005
   text: 'Dependency freeze: PUB-001 hashing and resolution use the standard library only;
     any new dependency requires a recorded decision first.'
+- id: SP-006
+  text: The recipe `id` value pattern MUST NOT widen. Qualification rides on new OPTIONAL
+    fields in the qualifier's value space — widening the pattern breaks v0.1-era readers and
+    forces a MODEL bump, the one outcome this cut must avoid (architect brief 2026-08-03).
+- id: SP-007
+  text: 'Pack SERVICES stay outside the protocol: hosting, publishing workflow and any registry
+    server remain app-side per DECISIONS #19/#21. This cut ships the pack FORMAT and its resolution
+    semantics — the thing that makes a distribution layer possible later, not the layer.'
 solution_references:
 - type: doc
   path_or_url: docs/research/08-implicit-subrecipes.md
@@ -177,6 +338,13 @@ solution_references:
   path_or_url: ../Calculador PAo/api/migrations/0002_recipes.up.sql
   description: Fornada padaria.recipes.forked_from — the identity question made concrete in
     a real consumer
+- type: doc
+  path_or_url: docs/research/09-variant-identity-and-selection.md
+  description: 'Four-track verified research: prior art (STEP/SAP/Gradle/Maven), the recipe
+    domain gap, selection semantics, internal sweep'
+- type: doc
+  path_or_url: docs/brainstorms/BRAIN-001-recipe-identity-across-systems.md
+  description: The brainstorm that produced the identity decisions (collections do not flatten)
 stakeholders: []
 dependencies: []
 nfrs: []
@@ -185,9 +353,19 @@ open_questions:
 - 'OQ-1: Do structured start/end fields join core beside the #t= fragment encoding, or is
   the fragment blessed as the sole normative form? Resolve in SPEC-004 with renderer and validation
   evidence.'
-- 'OQ-2: Render-time shadowing (a user''s own roux shadows the canonical link): confirm it
-  stays a surface concern with only the resolution ORDER named by the protocol, or whether
-  the protocol must say more.'
+- 'OQ-2: The axis enum''s initial values (diet / equipment / region / season / technique /
+  scale?) and the name of its catch-all — settle against the corpus, seeded only from axes
+  real documents exercise.'
+- 'OQ-3: How `import` and `provenance` relate to the collection qualifier — research 02 D.4''s
+  warning stands: don''t conflate identity with provenance.'
+- 'OQ-4: Is the qualifier MANDATORY on cross-collection pointers (the architect''s asymmetry
+  point), or does collection-relative resolution make that moot?'
+- 'OQ-5: Document versioning remains unspecified (research 09 F9): when must a revision increment,
+  is a published revision immutable, what signals that v2 supersedes v1? Decide whether v0.4
+  closes this or names it as the next cut''s problem.'
+- 'OQ-6: Render-time shadowing (a user''s own roux shadows the canonical link): confirm it
+  stays a surface concern with only the resolution ORDER named by the protocol — CSS''s split
+  — or whether the protocol must say more.'
 source_specs: []
 supersedes: null
 superseded_by: null
@@ -196,19 +374,26 @@ deprecated_reason: null
 cancelled_at: null
 cancelled_reason: null
 forcing_questions:
-  problem_behind_problem: 'Three real failures (Daniel, options-interview 2026-08-03): (1)
-    DEAD-END MENTIONS — "faça um roux" / the brownie''s ganache leave the reader at a wall:
-    the protocol renders recipes but cannot teach from inside one; hit twice in real dogfood.
-    (2) UNVERIFIABLE LINKS — cross-document references resolve on hope; nothing pins what
-    was resolved or detects a changed target, so offline consumers cannot trust a link. (3)
-    UN-ADDRESSABLE VIDEO — one full-recipe video holds the technique but "minute 2–3 is the
-    roux" is inexpressible. (Identity fog was offered and NOT selected as a driving problem
-    — FR-PR-006 is scoped as a modeling decision to settle, not user pain.)'
+  problem_behind_problem: 'FOUR failures now (Daniel, options-interview + brainstorm 2026-08-03).
+    The three teaching/trust ones stand: DEAD-END MENTIONS (''faça um roux'' with no path
+    to the method — hit twice in real dogfood), UNVERIFIABLE LINKS (references resolve on
+    hope; nothing pins what was resolved), UN-ADDRESSABLE VIDEO (''minute 2–3 is the roux''
+    is inexpressible). The fourth emerged mid-scoping and reframed the cut: AMBIGUOUS IDENTITY
+    — Daniel''s observation that the frequent real case is landing on a VARIATION rather than
+    the original, which research 09 traced to bare-slug ids with no defined scope, lineage
+    pointers with no version, and a variant discriminator that is prose (so nothing can select
+    or explain a choice). Identity is upstream of teaching: canonical links point at documents,
+    so the bridge is built on it.'
   evidence_or_hypothesis: 'Dogfood + industry research: the brownie/ganache gap and the sauces-bible
     roux page arose from ingesting real recipes (recorded in DECISIONS and research 08); the
     verified research day found every examined food ontology dissolves intermediates (axiom-level
     foodon.owl finding) and ERP systems unanimously name "sub-recipe" — the industry names
-    what the protocol cannot yet express.'
+    what the protocol cannot yet express. Plus research 09 (four verified tracks, 2026-08-03):
+    RCP''s own lineage block is an undesigned port of Fornada''s columns with zero descriptions,
+    zero decision entries and zero uses across all twelve documents; every mature domain (STEP,
+    SAP, Gradle, Maven) separates version/variant/fork onto distinct fields; the recipe domain
+    has solved none of it (microformats'' u-remix-of blocked for want of any publisher or
+    consumer).'
   north_metric_and_counter: 'TWO norths, explicitly: (a) mention→method coverage — every embedded
     sub-preparation across all ingested documents (public examples + private collection) resolves
     to a viewable method; (b) verified-link coverage — 100% of cross-document references in
@@ -219,10 +404,17 @@ forcing_questions:
   must_not_change: 'The full guard set: fail-closed semantics + authored refusals untouched;
     frozen vectors byte-identical; decode-compat both directions (no new required fields);
     calculus/SPEC.md public-normative purity; DECISIONS #26 vocabulary binding and #27 media
-    boundary; dependency freeze (PUB-001 hashing via stdlib; new deps need a recorded decision).'
-  riskiest_assumption: 'CURATION SCALES: authored canonical links (the steward picks the roux
-    the class points at) stay honest and complete enough to be useful — without drifting toward
-    auto-resolution to fill gaps. If curation cannot keep up, dead-ends return wearing links.'
+    boundary; dependency freeze (PUB-001 hashing via stdlib; new deps need a recorded decision).
+    ADDED after the brainstorm: the recipe id value pattern must not widen (SP-006); pack
+    services stay app-side (SP-007); offline self-containment of variants stays settled —
+    detection replaces compilation, which is rejected as a second execution semantics beside
+    the Calculus.'
+  riskiest_assumption: TWO now. (1) CURATION SCALES — authored canonical links stay honest
+    and complete without drifting toward auto-resolution; if curation cannot keep up, dead-ends
+    return wearing links. (2) COLLECTION-SCOPED IDENTITY IS ENOUGH — that scoping ids to a
+    collection, with an optional qualifier, genuinely resolves cross-system ambiguity without
+    a global namespace or content-addressed identity; if it does not, the qualifier becomes
+    mandatory everywhere and the design drifts toward the URI-widening that SP-006 forbids.
 revision_history:
 - at: '2026-08-03T14:55:00Z'
   author: Daniel Gomes
@@ -230,8 +422,23 @@ revision_history:
   note: 'Initial draft — rigor: solo. Scope chosen by Daniel: teaching + trust (REG-006 +
     CORE-006 + PUB-001 + identity decision). Fornada migration explicitly deferred to a more
     stable version (roadmap, post-v1).'
+- at: '2026-08-03T16:30:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Reshaped after BRAIN-001 + research 09: identity graduates into the cut ahead of
+    teaching (canonical links depend on unambiguous references). Six FRs added (PACK-001/002,
+    PR-007/008, VAL-003, REG-007), nine ACs, two protections, five open questions. Daniel''s
+    calls: full pack format in v0.4, one big cut over sequencing, typed-axis+registry-value
+    discriminator, drift by detection.'
+  affected:
+  - FR-PACK-001
+  - FR-PACK-002
+  - FR-PR-007
+  - FR-PR-008
+  - FR-VAL-003
+  - FR-REG-007
 extensions: {}
 _sync:
-  md_hash: 62dd51b99ff2cf6148abd7324e23105e551fc616bb1de99bc1be695d6199ca0d
-  yaml_hash: 44d2a07ef5436b6f0e78787cd5f2969eb19c1a01e1c064739a98473aab1d5af0
-  synced_at: '2026-08-03T15:10:00Z'
+  md_hash: b557b8e06d4011146bd16aa2e6c929e7fab53cd486044a3758ab029c4bbe85e8
+  yaml_hash: 7fb5f07675898273a5d0b78373562465a95067bca3742c5d9c8937cb37131d4e
+  synced_at: '2026-08-03T16:35:00Z'
