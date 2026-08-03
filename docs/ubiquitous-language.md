@@ -1,10 +1,9 @@
 # RCP ubiquitous language — the domain vocabulary
 
-**Status:** working draft v2 (2026-08-03) — terms now ALIGNED WITH
-INDUSTRY USAGE per the terminology survey (track D, web-verified against
-culinary schools, ERPs, recipe publishing and pt-PT professional sources).
-Feeds PRD-004 / FEAT-REG-006 modeling. Becomes binding via a DECISIONS
-entry once the model lands.
+**Status:** BINDING — DECISIONS #26 (2026-08-03). Terms aligned with
+industry usage per the four-track research survey and Daniel's three
+refinement rounds. Governs all project prose, PRDs and specs. Changes
+require a new DECISIONS entry.
 
 The founding confusion this document kills: "is a roux a recipe or a
 technique?" is a **property of the source, not of the roux** (Peterson
@@ -100,5 +99,4 @@ change" always means an RCP specification change and nothing else.
 
 ---
 
-*Working draft — argue with it, then bind it via DECISIONS when PRD-004
-models FEAT-REG-006.*
+*Bound by DECISIONS #26, 2026-08-03.*

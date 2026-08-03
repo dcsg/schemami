@@ -236,6 +236,22 @@ strawman proposal is still a proposal.
     lands. Difficulty facet (same session): integer 1–5, source books'
     1–3 hat scales map in per-ingest with the mapping recorded.
 
+26. **The ubiquitous language is binding** (2026-08-03). The domain
+    vocabulary in `docs/ubiquitous-language.md` governs all project
+    prose, PRDs, specs and identifiers-adjacent naming: the two-axis
+    model (nature × consumption position, never a hard type boundary —
+    the roux lesson, research 08 F4); industry-verified terms —
+    sub-recipe (ERP-unanimous), preparation/prep, method (authored
+    steps only, never a cooking technique), technique, schedule (of a
+    method) as the Calculus derivation distinct from the kitchen's
+    aggregated prep list / production schedule (app-side, like menu
+    item); "Protocol" reserved for RCP itself — "the recipe's
+    protocol" is banned. pt-PT display layer recorded (modo de
+    preparação, confeção, técnica, ficha técnica). Terms bound after
+    a four-track web-verified survey (formats, tradition, ontologies,
+    industry terminology) and three rounds of Daniel's refinement.
+    Changes to the vocabulary require a new decision entry.
+
 ### Reaffirmed (2026-08-02, post-interview)
 
 - **#8 stands: the semantic layer stays CUE-flavoured.** Challenged on the
