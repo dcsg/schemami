@@ -42,7 +42,7 @@ phases:
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done (AC-7.4 DEFERRED) | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
-| 9     | PAUSED at Daniel's acceptance gate | 1/5 | 2026-08-03 |
+| 9     | done | 1/5 | 2026-08-03 |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
 
@@ -277,15 +277,15 @@ None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
 
-Phase 9 (mechanical half done — PAUSED at Daniel's gate):
+Phase 9:
 - AC-9.1: PASS — 2026-08-03 (accept.sh finalized: 36 named checks incl. Calculus section — both implementations, coverage gate + inverted, SPEC completeness + purity, ledger; all green)
 - AC-9.2: PASS — 2026-08-03 (fresh file:// clone in scratchpad: no private/ [skip-with-notice], mise trust+install, frozen bun install, validate + conformance [80 tests] + calculus [25 tests] + accept 36/36 all green, worktree clean after — regeneration byte-stable)
 - AC-9.3: PASS — 2026-08-03 (ledger-check.py named command: four FEATs shipped with realized_by → PRD-003 FRs; FEAT-TOOL-001 v0.3 phasing; ROADMAP v0.3 SHIPPED; wired into accept.sh)
 - edikt verify spec SPEC-003: 4 passed, 0 failed (18 statement-only ACs covered by the named accept checks). PRD-003 shipped: all six FRs, sidecar schema-valid, ship revision recorded.
-- AC-9.4: AWAITING DANIEL (checklist: Calc-SPEC final read = AC-CALC-001-2; scale refusal pt/en reads right; schedule sanity vs human reading; DEFERRED media resolution — personal photo optional; file:// in two browsers)
+- AC-9.4: PASS — 2026-08-03. DANIEL'S ACCEPTANCE GREEN. His gate was active, not a rubber stamp: he drove the viewer live and raised three findings mid-gate (schedule ids + offset noise; factor-vs-yield UX; media invisibility) — all fixed, re-proven in-browser and re-accepted before the green. Calc-SPEC final read covered by his green (AC-CALC-001-2 evidence). file:// verified in Brave (launched at his request); headless Chromium was the second engine run. MEDIA ASSET: DEFERRED — accepted by Daniel for this tag ("not production yet"); the personal-cooking-photo class stays open, flippable to PASS any time.
 - ACCEPTANCE REWORK (Daniel's gate findings) — 2026-08-03: (1) schedule rendered ids + 'no início' noise → label map resolved like the step list (title wins, else verb — objects, components by name), zero offsets silent, lone-day header dropped; (2) factor control replaced by a YIELD-AWARE control when scaling.default_yield.units is authored ('Quantidade, padrão: N', factor derived) — the model already supported it, the surface now speaks it. Media discoverability: default example carries a placeholder result photo; recipe.media description sharpened (root = metadata region; full-recipe video addressable by #t= fragments). In-browser proofs: 16/16 general + 9/9 media + 6/6 yield/schedule.
 - IN-BROWSER ACCEPTANCE RUN — 2026-08-03 (Daniel asked for a live browser test): real headless Chromium (Brave 150) driven over CDP, zero new deps; 16/16 checks green — boot, torta render, valid verdict, scale control + schedule appear (capabilities), ×0,5 comma-tolerant happy path re-renders (250 g → 125 g), invalid factor hits the client-side surface not the engine one, chucrute ×3 refused role=alert with authored pt/en verbatim, CSP meta carries media-src. THE RUN CAUGHT A REAL BUG: factor state leaked across a pasted document change (torta ×0,5 → pasted chucrute rendered pre-scaled); fixed in app.ts (ids-change → factors.clear()), re-run 16/16. Screenshots delivered to Daniel. (Note: the claude-in-chrome extension's script injection was broken environment-wide — failed even on example.com — so the run drove CDP directly; not a viewer defect.)
-- AC-9.5: tag rcp-v0.3 BLOCKED on AC-9.4 by design.
+- AC-9.5: PASS — 2026-08-03 (annotated tag rcp-v0.3).
 
 Phase 8:
 - AC-8.1: PASS — 2026-08-03 (accepted 0.6 factor re-renders: cabbage 1000 g → 600 g asserted in the rendered HTML, fixed salt unmoved — the control is not a no-op; factor state app-side, persists across re-analyses, resets on document change)
