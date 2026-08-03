@@ -532,31 +532,31 @@ phases:
 - phase: 12
   title: Acceptance, ledger, ship
   status: pending
-  attempt: 0
+  attempt: 1
   criteria:
   - id: AC-12.1
     text: '`make accept` green with every new gate named by its AC'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make accept
   - id: AC-12.2
     text: Clean-clone run green, with its reduced coverage stated
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: bash tools/rcplint/scripts/clean-clone-proof.sh
   - id: AC-12.3
     text: Ledger and roadmap truthful
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: python3 tools/rcplint/scripts/ledger-check.py
   - id: AC-12.4
     text: Daniel's acceptance recorded (operational)
