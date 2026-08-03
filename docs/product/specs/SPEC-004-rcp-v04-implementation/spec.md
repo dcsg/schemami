@@ -2,7 +2,7 @@
 type: spec
 id: SPEC-004
 title: RCP v0.4 implementation — identity, trust and teaching
-status: draft
+status: accepted
 author: Daniel Gomes
 implements: PRD-004
 source_prd: PRD-004

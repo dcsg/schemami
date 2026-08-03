@@ -4,7 +4,7 @@ type: spec
 id: SPEC-004
 title: RCP v0.4 implementation — identity, trust and teaching
 slug: rcp-v04-implementation
-status: draft
+status: accepted
 author: Daniel Gomes
 created_at: '2026-08-03T16:50:00Z'
 source_prd: PRD-004
@@ -472,8 +472,12 @@ revision_history:
   - SR-CORE-005
   - SR-VAL-003
   - SR-CORE-006
+- at: '2026-08-03T17:15:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: Accepted by Daniel after the clarification interview closed every open item.
 extensions: {}
 _sync:
-  md_hash: 41157c5e4e2e3a00b7f131b89617ef3829f4ca64d8ae8e54dba436034cedd134
-  yaml_hash: 8690e047a9b117b7793a683e483476c85ca6f33c8740021d239f1a5a6134cafa
-  synced_at: '2026-08-03T17:10:00Z'
+  md_hash: d1e15906be8698f7e33e8d79f44926ca9a5918c0c754ad3a8ed65d0f6c86ffcc
+  yaml_hash: b6794149cf12395c1ba3c82cda8a0bf9346e8a17f3f47bdf07224a55c0e86990
+  synced_at: '2026-08-03T17:15:00Z'
