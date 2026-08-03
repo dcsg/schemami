@@ -1,0 +1,237 @@
+# yaml-language-server: $schema=../../../.edikt/schemas/prd-sidecar.v1.schema.json
+schema_version: '1.0'
+type: prd
+id: PRD-004
+title: 'RCP v0.4 — teaching + trust: mentions resolve, moments address, links verify'
+slug: rcp-v04-teaching-and-trust
+status: draft
+rigor: solo
+author: Daniel Gomes
+created_at: '2026-08-03T14:55:00Z'
+requirements:
+- id: FR-REG-005
+  component: registry
+  text: 'Registry entries for preparation classes (ingredient.preparation.*) and techniques
+    (technique.*) MUST support an optional canonical-recipe link — a versioned reference to
+    the document that teaches the method. Canonical is CURATION, not essence: many roux documents
+    may exist; the steward picks what the class points at, and the link never becomes a required
+    field.'
+  trace:
+  - FEAT-REG-006
+  - research 08 (F1–F8)
+  - 'DECISIONS #7'
+  - 'DECISIONS #11'
+  status: proposed
+- id: FR-REG-006
+  component: registry
+  text: 'The ingestion extraction rule MUST be binding and machine-checked: an embedded sub-preparation
+    is lifted to an inline component when the source gives its method, and referenced as a
+    preparation class when it does not — never invented steps, never silently dropped prose.
+    The semantic linter MUST surface a sub-preparation mention that anchors to nothing (no
+    component, no class reference) as a warning naming the mention.'
+  trace:
+  - research 08
+  - 'DECISIONS #11'
+  - prose-parking rule (v0.2)
+  status: proposed
+- id: FR-TOOL-004
+  component: developer tooling
+  text: 'Renderers MUST surface a see-the-method affordance wherever a linked mention appears:
+    from an ingredient or technique carrying a canonical link, the viewer can load and display
+    the linked method (including its schedule placement before the parent method, per the
+    Calculus) without losing the parent recipe.'
+  trace:
+  - FEAT-REG-006
+  - 'Daniel 2026-08-02 (end goal: load the technique and do the procedure)'
+  - ADR-002 engine seam
+  status: proposed
+- id: FR-PR-005
+  component: protocol-core
+  text: 'Media temporal fragments MUST be normative: schema/MEDIA.md blesses W3C Media Fragments
+    (#t=start,end) on any media uri; renderers pass the fragment through to playback so one
+    full-recipe video is addressable per technique or sub-recipe moment; the same asset may
+    be referenced many times with different ranges. Whether structured start/end fields ALSO
+    enter core is resolved during the spec (open question OQ-1), and the resolution is recorded
+    — fragment-only is the shipped floor either way, never an unresolved placeholder.'
+  trace:
+  - FEAT-CORE-006
+  - Daniel 2026-08-03 (video technique ranges)
+  - W3C Media Fragments URI 1.0
+  status: proposed
+- id: FR-PUB-001
+  component: publish-time resolution
+  text: 'Publish-time reference resolution MUST be verified (engineering obligation 3): a
+    resolved cross-document reference carries resolver_version and a content hash of the resolved
+    target; verification tooling re-checks the pin; a missing or changed target is DETECTED
+    as a verification failure naming the reference — never silently rendered as current. Hashing
+    uses the standard library only (dependency freeze).'
+  trace:
+  - FEAT-PUB-001
+  - 'DECISIONS #21'
+  - 'engineering obligation #3'
+  status: proposed
+- id: FR-PR-006
+  component: protocol-core
+  text: 'The stage-forked identity question MUST be settled as a recorded decision (DECISIONS
+    entry): when a staged or forked recipe keeps the parent''s identity (lineage) versus becoming
+    a new document — with the schema consequence expressed in lineage fields and demonstrated
+    by validating example documents for both sides of the line.'
+  trace:
+  - FEAT-REG-006 (stage-forked identity Q)
+  - Fornada padaria.recipes.forked_from
+  - 'DECISIONS #7'
+  status: proposed
+acceptance_criteria:
+- id: AC-REG-005-1
+  fr: FR-REG-005
+  given: a technique or preparation-class registry entry carrying a canonical-recipe link
+  when: the registry validates
+  then: the link's shape (document id + version) validates and the reference resolves to an
+    existing document; an entry WITHOUT the link stays valid (optional, never required)
+  status: proposed
+- id: AC-REG-006-1
+  fr: FR-REG-006
+  given: a source recipe whose method embeds a sub-preparation WITH its method given (the
+    sauces-bible roux)
+  when: ingested per the extraction rule
+  then: the sub-preparation is an inline component with its own method — no prose parked in
+    notes
+  status: proposed
+- id: AC-REG-006-2
+  fr: FR-REG-006
+  given: a source recipe that names a sub-preparation WITHOUT giving its method
+  when: ingested and linted
+  then: the mention is a preparation-class reference with no invented steps; a mention anchoring
+    to nothing raises a linter warning naming it
+  status: proposed
+- id: AC-TOOL-004-1
+  fr: FR-TOOL-004
+  given: the viewer rendering a document whose ingredient or technique carries a canonical
+    link resolvable within the loaded corpus
+  when: the user activates the see-the-method affordance
+  then: the linked method renders (ingredients + steps) without losing the parent recipe view
+  status: proposed
+- id: AC-TOOL-004-2
+  fr: FR-TOOL-004
+  given: a linked sub-recipe with durations, consumed by a parent step
+  when: the schedule view renders
+  then: 'the linked preparation''s placement appears before the consuming step per the Calculus
+    two-stage schedule (the end goal: ''say when that procedure must be done before you start'')'
+  status: proposed
+- id: AC-PR-005-1
+  fr: FR-PR-005
+  given: 'a media entry whose uri carries #t=120,180 and whose asset is supplied'
+  when: rendered
+  then: playback starts at the fragment start (seek honoured), and a second entry referencing
+    the SAME asset with a different range renders independently
+  status: proposed
+- id: AC-PUB-001-1
+  fr: FR-PUB-001
+  given: a document with cross-document references, resolved at publish time
+  when: verification tooling runs
+  then: every reference carries resolver_version + content hash and verification passes green
+  status: proposed
+- id: AC-PUB-001-2
+  fr: FR-PUB-001
+  given: a resolved reference whose target document has since changed (or vanished)
+  when: verification tooling runs
+  then: verification FAILS naming the reference and the nature of the break — the inverted
+    proof ships with the gate
+  status: proposed
+- id: AC-PR-006-1
+  fr: FR-PR-006
+  given: the recorded identity decision and two example documents — a stage-fork that keeps
+    identity and a fork that becomes a new recipe
+  when: both validate against core
+  then: lineage fields distinguish the two cases exactly as the decision prescribes
+  status: proposed
+protections:
+- id: SP-001
+  text: 'Fail-closed safety semantics and authored refusal reasons are untouched: the frozen
+    calculus vectors stay byte-identical; any vector change outside a calculus/SPEC.md-change
+    commit is a defect.'
+- id: SP-002
+  text: 'Decode-compatibility holds both directions: no new required fields without defaults;
+    the frozen v0.1 reader gate and the current-accepts-old gate stay green.'
+- id: SP-003
+  text: calculus/SPEC.md remains public-normative and self-contained — no project ids, no
+    internal references enter it through this cut.
+- id: SP-004
+  text: 'DECISIONS #26 vocabulary is binding (sub-recipe / preparação / técnica used exactly);
+    DECISIONS #27 media boundary and the attestation stay in force — canonical links and fragments
+    never smuggle book media.'
+- id: SP-005
+  text: 'Dependency freeze: PUB-001 hashing and resolution use the standard library only;
+    any new dependency requires a recorded decision first.'
+solution_references:
+- type: doc
+  path_or_url: docs/research/08-implicit-subrecipes.md
+  description: F1–F8 findings — the roux problem, three layers
+- type: doc
+  path_or_url: docs/product/features.yaml
+  description: FEAT-REG-006, FEAT-CORE-006, FEAT-PUB-001 entries (full design intent)
+- type: url
+  path_or_url: https://www.w3.org/TR/media-frags/
+  description: 'W3C Media Fragments URI 1.0 — the existing uri-level #t= encoding'
+- type: doc
+  path_or_url: ../Calculador PAo/api/migrations/0002_recipes.up.sql
+  description: Fornada padaria.recipes.forked_from — the identity question made concrete in
+    a real consumer
+stakeholders: []
+dependencies: []
+nfrs: []
+risks: []
+open_questions:
+- 'OQ-1: Do structured start/end fields join core beside the #t= fragment encoding, or is
+  the fragment blessed as the sole normative form? Resolve in SPEC-004 with renderer and validation
+  evidence.'
+- 'OQ-2: Render-time shadowing (a user''s own roux shadows the canonical link): confirm it
+  stays a surface concern with only the resolution ORDER named by the protocol, or whether
+  the protocol must say more.'
+source_specs: []
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+forcing_questions:
+  problem_behind_problem: 'Three real failures (Daniel, options-interview 2026-08-03): (1)
+    DEAD-END MENTIONS — "faça um roux" / the brownie''s ganache leave the reader at a wall:
+    the protocol renders recipes but cannot teach from inside one; hit twice in real dogfood.
+    (2) UNVERIFIABLE LINKS — cross-document references resolve on hope; nothing pins what
+    was resolved or detects a changed target, so offline consumers cannot trust a link. (3)
+    UN-ADDRESSABLE VIDEO — one full-recipe video holds the technique but "minute 2–3 is the
+    roux" is inexpressible. (Identity fog was offered and NOT selected as a driving problem
+    — FR-PR-006 is scoped as a modeling decision to settle, not user pain.)'
+  evidence_or_hypothesis: 'Dogfood + industry research: the brownie/ganache gap and the sauces-bible
+    roux page arose from ingesting real recipes (recorded in DECISIONS and research 08); the
+    verified research day found every examined food ontology dissolves intermediates (axiom-level
+    foodon.owl finding) and ERP systems unanimously name "sub-recipe" — the industry names
+    what the protocol cannot yet express.'
+  north_metric_and_counter: 'TWO norths, explicitly: (a) mention→method coverage — every embedded
+    sub-preparation across all ingested documents (public examples + private collection) resolves
+    to a viewable method; (b) verified-link coverage — 100% of cross-document references in
+    the corpus carry hash-pinned resolution, and a broken link is DETECTED, never rendered
+    as current. COUNTER (must not move): zero change to any safety refusal or authored reason;
+    frozen calculus vectors byte-identical; decode-compat green; the six examples keep validating
+    unchanged.'
+  must_not_change: 'The full guard set: fail-closed semantics + authored refusals untouched;
+    frozen vectors byte-identical; decode-compat both directions (no new required fields);
+    calculus/SPEC.md public-normative purity; DECISIONS #26 vocabulary binding and #27 media
+    boundary; dependency freeze (PUB-001 hashing via stdlib; new deps need a recorded decision).'
+  riskiest_assumption: 'CURATION SCALES: authored canonical links (the steward picks the roux
+    the class points at) stay honest and complete enough to be useful — without drifting toward
+    auto-resolution to fill gaps. If curation cannot keep up, dead-ends return wearing links.'
+revision_history:
+- at: '2026-08-03T14:55:00Z'
+  author: Daniel Gomes
+  action: created
+  note: 'Initial draft — rigor: solo. Scope chosen by Daniel: teaching + trust (REG-006 +
+    CORE-006 + PUB-001 + identity decision). Fornada migration explicitly deferred to a more
+    stable version (roadmap, post-v1).'
+extensions: {}
+_sync:
+  md_hash: 62dd51b99ff2cf6148abd7324e23105e551fc616bb1de99bc1be695d6199ca0d
+  yaml_hash: 44d2a07ef5436b6f0e78787cd5f2969eb19c1a01e1c064739a98473aab1d5af0
+  synced_at: '2026-08-03T15:10:00Z'

@@ -483,6 +483,34 @@ features:
       - FEAT-REG-006
       - FEAT-TOOL-002
       - W3C Media Fragments URI 1.0 (#t=)
+  - id: FEAT-TOOL-003
+    name: "Protocol documentation site — spec, schema and the live playground in one place"
+    description: >-
+      A public website that documents the protocol and embeds the working
+      tools: the normative surfaces rendered readably (calculus/SPEC.md,
+      schema/MEDIA.md, the core schema and profiles, VERSIONING), the
+      registry browsable, and the existing single-file viewer/validator
+      embedded as the live playground (paste a document on the docs page,
+      see verdicts, scale it, read the schedule — the jwt.io move
+      completed). The viewer already ships as one self-contained
+      dist/index.html behind a hash CSP, so embedding costs little; the
+      substantive work is information architecture (what a stranger reads
+      first), keeping generated pages in lockstep with the normative
+      sources (the site must never fork the spec — build-time rendering
+      from the repo, no hand-copies), and hosting/publishing choices
+      (static, no server, nothing leaves the page — same posture as the
+      viewer). Proposed by Daniel 2026-08-03 during PRD-004 scoping.
+    personas: [rcp.dev.surface-engineer, rcp.cook.home-cook, rcp.registry.steward]
+    icp: both
+    status: proposed
+    target: >-
+      Decided 2026-08-03: LEADS the next cut after v0.4 ("the protocol
+      goes public") — lands with the bridge, fragments and verified
+      links already there to showcase.
+    trace:
+      - Daniel 2026-08-03 (docs website incl. viewer + validator)
+      - FEAT-TOOL-001 (jwt.io move, phasing)
+      - ADR-002 (engine seam / single-file dist)
   - id: FEAT-CORE-005
     name: "Dogfood field additions (times, difficulty, storage, source detail)"
     description: >-

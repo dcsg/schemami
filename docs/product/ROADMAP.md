@@ -67,6 +67,7 @@ fragments captured for PRD-004.)*
 | FEAT-CORE-006 Media temporal fragments (video `#t=` ranges for techniques/sub-recipes; composes with REG-006) | Daniel 2026-08-03 |
 | FEAT-PUB-001 Verified publish-time resolution | #21, obligation 3 |
 | FEAT-REG-005 Derived search index (edges + facets) | #7, #10 |
+| FEAT-TOOL-003 Protocol documentation site (spec + registry + embedded viewer/validator playground) | Daniel 2026-08-03; leads the post-v0.4 cut |
 
 ## Post-v1 — gated or later
 
