@@ -36,7 +36,7 @@ phases:
 |-------|--------|---------|---------|
 | 1     | done | 1/5 | 2026-08-03 |
 | 2     | done | 1/5 | 2026-08-03 |
-| 3     | pending | 0/5 | — |
+| 3     | done | 1/5 | 2026-08-03 |
 | 4     | pending | 0/5 | — |
 | 5     | pending | 0/5 | — |
 | 6     | pending | 0/5 | — |
@@ -276,6 +276,12 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 3:
+- AC-3.1: PASS — 2026-08-03 (WE-SCHED-1/2, WE-ORDER-1, WE-INTERLEAVE-1 verbatim; the two-stage schedule semantics were CORRECTED against WE-SCHED-2 — forward propagation had let component chains inflate the parent method's t0; the SPEC's own worked example arbitrated. R-SCHED-2's interval-subtraction formula pinned in the SPEC pre-freeze.)
+- AC-3.2: PASS — 2026-08-03 (torta: mise-en-place order + prerequisite placement; until-anchored calda is a point event coinciding with its consumer per R-SCHED-1 — recorded)
+- AC-3.3: PASS — 2026-08-03 (original-authored entremet: L1-valid, negative offsets days before t0, conservative windows, three track lanes)
+- AC-3.4: PASS — 2026-08-03 (SPEC-completeness green — the gate forced parseDurationSeconds unexported; export surface still equals SPEC surface)
 
 Phase 2:
 - AC-2.1: PASS — 2026-08-03 (all 8 pinned clamp cases green through calc — clamp_test.go retained verbatim as the CLI-level parity suite; WE-ENFORCE-1/WE-MINBATCH-1 assert authored pt/en reason strings; slight deviation from the letter: parity lives in the unchanged clamp_test.go + calc WE tests rather than a renamed parity_test.go — stronger evidence, recorded)

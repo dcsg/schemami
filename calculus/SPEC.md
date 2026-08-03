@@ -333,10 +333,12 @@ Seconds internally (window fields are duration windows).
   time (point event) — its window is `{0,0,0}` for propagation.
 - **R-SCHED-2** — Prerequisite placement: a component consumed by step S starts early
   enough that its own schedule completes by S's start — component
-  start_offset = S.start − component total duration (window-wise, same
-  conservative rule). Offsets MAY therefore be negative relative to the
-  parent method's t0; consumers render "the day before" from exactly
-  this.
+  start_offset = S.start − component total duration, computed as
+  conservative interval subtraction: `min = S.start.min − total.max`,
+  `target = S.start.target − total.target`,
+  `max = S.start.max − total.min`. Offsets MAY therefore be negative
+  relative to the parent method's t0; consumers render "the day before"
+  from exactly this.
 - **R-SCHED-3** — Cycles cannot occur (admitted documents are DAG-checked at L2).
 - **R-SCHED-4** — Steps excluded by guard selection do not appear.
 

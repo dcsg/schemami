@@ -1,0 +1,69 @@
+# ORIGINAL-AUTHORED synthetic fixture (AC-3.3; security pre-flight rule:
+# structure exercises multi-day + parallel-track scheduling; every
+# quantity and step invented, transcribed from NO published recipe).
+rcp: 1
+id: fixture-entremet-schedule
+kind: pastry
+name: { en: Multi-day layered dessert (schedule fixture) }
+profile:
+  laminated: false
+ingredients:
+  - id: base-mix
+    amount: { value: 400, unit: g }
+    roles: [binder]
+components:
+  - id: fruit-insert
+    kind: component
+    name: { en: Frozen fruit insert }
+    ingredients:
+      - id: fruit
+        amount: { value: 300, unit: g }
+        roles: [flavour]
+    steps:
+      - id: fi1
+        primitive: { id: primitive.cook-syrup, v: 1 }
+        uses: [fruit]
+        duration: { target: 20m }
+      - id: fi2
+        primitive: { id: primitive.cool, v: 1 }
+        after: [fi1]
+        duration: { min: 1d12h, target: 2d, max: 3d }
+  - id: sponge-layer
+    kind: component
+    name: { en: Sponge layer }
+    ingredients:
+      - id: batter
+        amount: { value: 500, unit: g }
+        roles: [binder]
+    steps:
+      - id: sp1
+        primitive: { id: primitive.bake, v: 1 }
+        uses: [batter]
+        duration: { target: 30m }
+      - id: sp2
+        primitive: { id: primitive.cool, v: 1 }
+        after: [sp1]
+        duration: { min: 8h, target: 12h, max: 1d }
+steps:
+  - id: e1
+    title: { en: Whip the mousse }
+    primitive: { id: primitive.emulsify, v: 1 }
+    uses: [base-mix]
+    duration: { target: 30m }
+  - id: e2
+    title: { en: Assemble in the mould }
+    primitive: { id: primitive.assemble, v: 1 }
+    after: [e1]
+    uses: [fruit-insert, sponge-layer]
+    duration: { target: 30m }
+  - id: e3
+    title: { en: Freeze assembled }
+    primitive: { id: primitive.cool, v: 1 }
+    after: [e2]
+    duration: { min: 8h, target: 12h, max: 1d }
+  - id: e4
+    title: { en: Glaze frozen
+    }
+    primitive: { id: primitive.coat, v: 1 }
+    after: [e3]
+    duration: { target: 20m }
