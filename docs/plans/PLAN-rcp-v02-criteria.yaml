@@ -74,8 +74,8 @@ phases:
     statement: Coverage check green in full-census mode locally (operational) — AC-I18N-001-1
     verify: 'grep -q ''AC-5.1: PASS'' docs/plans/PLAN-rcp-v02.md'
   - id: AC-5.2
-    statement: Accented-slug fixture rejected by the English-base L2 check
-    verify: test -f tools/rcplint/testdata/l2/accented-taxonomy-slug.rcp.yaml && (cd tools/rcplint && go test ./...)
+    statement: 'Accented-slug fixture rejected by the English-base L2 check (ADJUSTED 2026-08-03: fixture lives in l1 — enforcement point is the core slug pattern, pinned by test, not a duplicate L2 check)'
+    verify: test -f tools/rcplint/testdata/l1/accented-taxonomy-slug.rcp.yaml && (cd tools/rcplint && go test -count=1 ./...)
   - id: AC-5.3
     statement: make validate green
     verify: make validate

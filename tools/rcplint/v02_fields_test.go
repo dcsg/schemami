@@ -64,3 +64,20 @@ func TestPastryAdmitsStorage(t *testing.T) {
 		t.Errorf("pastry profile rejected storage: %v", err)
 	}
 }
+
+// Phase 5 (SR-I18N-001): identifiers are never localized — an accented
+// taxonomy slug is rejected. Enforcement point is the core slug pattern
+// (L1); this test pins it so it cannot silently loosen.
+func TestAccentedTaxonomySlugRejected(t *testing.T) {
+	v := coreValidator(t)
+	docs, err := LoadDocuments(filepath.Join("testdata/l1", "accented-taxonomy-slug.rcp.yaml"))
+	if err != nil {
+		t.Fatalf("load: %v", err)
+	}
+	verr := v.Validate(docs[0].Value)
+	if verr == nil {
+		t.Error("accented taxonomy slug PASSED — English-base identifier rule unenforced")
+	} else if !strings.Contains(verr.Error(), "category") {
+		t.Errorf("failed, but not on the taxonomy slug: %v", verr)
+	}
+}

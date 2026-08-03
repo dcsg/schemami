@@ -1,0 +1,49 @@
+# RCP taxonomy translation vocabulary — pt-PT display layer (SR-I18N-001;
+# DS-I18N-001; DECISIONS #23/#24). Identifiers are English-base and NEVER
+# localized; this file maps used taxonomy slugs (category, subcategory) and
+# tags to pt-PT display terms. Registry entries carry their own
+# display_name layer — they are deliberately NOT duplicated here.
+# Coverage is checked mechanically (tools/rcplint/scripts/i18n-coverage.py,
+# wired into make accept): every slug used across examples/ and the private
+# collection must have a term. English fallback is the render-time rule.
+lang: pt-PT
+taxonomy:
+  algarve: Algarve
+  aperitif: Aperitivo
+  base: Base
+  beans: Feijão
+  beef: Carne de vaca
+  biscuit: Biscoito americano
+  bread: Pão
+  breakfast: Pequeno-almoço
+  cake: Bolo
+  chili: Chili
+  chocolate: Chocolate
+  cocktail: Cocktail
+  custard: Creme
+  lacto-fermented: Lactofermentado
+  laminated: Laminado
+  madeleine: Madalena
+  marbled: Marmoreado
+  old-dough: Massa velha
+  pastry: Pastelaria
+  portuguese: Português
+  preserve: Conserva
+  quick-bread: Pão rápido
+  regional: Regional
+  seafood: Marisco
+  small-cake: Bolo pequeno
+  spirit-forward: À base de destilado
+  stew: Guisado
+  stirred: Mexido
+  texan: Texano
+  tray-bake: Bolo de tabuleiro
+  vegetable: Legumes
+  wheat: Trigo
+tags:
+  alentejo: Alentejo
+  classic: Clássico
+  double-fermentation: Dupla fermentação
+  equal-parts: Partes iguais
+  iba: IBA
+  wood-fired-oven: Forno a lenha

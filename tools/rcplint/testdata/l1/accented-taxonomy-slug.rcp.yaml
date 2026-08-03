@@ -1,0 +1,10 @@
+# Negative fixture (AC-I18N-001-1 enforcement half; DS-I18N-001): taxonomy
+# slugs are English-base identifiers — accented/non-ASCII values must be
+# REJECTED. Enforcement point: the core $defs/slug pattern (L1), pinned
+# here so it can never silently loosen.
+rcp: 1
+id: fixture-accented-taxonomy-slug
+kind: component
+name: { en: Accented taxonomy slug fixture }
+taxonomy:
+  category: pão

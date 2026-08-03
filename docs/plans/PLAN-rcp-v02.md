@@ -34,7 +34,7 @@ phases:
 | 2     | done | 1/5 | 2026-08-02 |
 | 3     | done | 1/5 | 2026-08-02 |
 | 4     | done | 1/5 | 2026-08-03 |
-| 5     | pending | 0/5 | — |
+| 5     | done | 1/5 | 2026-08-03 |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
@@ -306,6 +306,12 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 5:
+- AC-5.1: PASS — 2026-08-03 (full census: 38 slugs incl. tags, all covered)
+- AC-5.2: PASS — 2026-08-03 (ADJUSTED: enforcement is the core L1 slug pattern, pinned by fixture+test in l1/)
+- AC-5.3: PASS — 2026-08-03
+- AC-5.4: PASS — 2026-08-03 (absent branch via --collection-path /nonexistent, exit 0 + notice)
 
 Phase 4:
 - AC-4.1: PASS — 2026-08-03 (61/61 entries grounded, all refs web-verified by research agents; audit wired into lint)
