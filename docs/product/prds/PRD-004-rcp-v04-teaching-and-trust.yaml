@@ -4,7 +4,7 @@ type: prd
 id: PRD-004
 title: 'RCP v0.4 — identity, trust and teaching: which recipe, which variant, which method'
 slug: rcp-v04-identity-trust-teaching
-status: draft
+status: accepted
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-03T14:55:00Z'
@@ -437,8 +437,13 @@ revision_history:
   - FR-PR-008
   - FR-VAL-003
   - FR-REG-007
+- at: '2026-08-03T16:40:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: Accepted by Daniel after the BRAIN-001 reshape (identity ahead of teaching; one big
+    cut, size flagged and chosen).
 extensions: {}
 _sync:
-  md_hash: b557b8e06d4011146bd16aa2e6c929e7fab53cd486044a3758ab029c4bbe85e8
-  yaml_hash: 7fb5f07675898273a5d0b78373562465a95067bca3742c5d9c8937cb37131d4e
-  synced_at: '2026-08-03T16:35:00Z'
+  md_hash: fc011dc8aa1ad15417941c9d88c503247dc2049e62b3591b735a0ffdfc7afc65
+  yaml_hash: 543984ab478564ec6f885320ccdca0b5e42b07b3777529fcef80ff8a2312b48e
+  synced_at: '2026-08-03T16:40:00Z'
