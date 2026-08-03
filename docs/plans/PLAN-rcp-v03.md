@@ -283,6 +283,7 @@ Phase 9 (mechanical half done — PAUSED at Daniel's gate):
 - AC-9.3: PASS — 2026-08-03 (ledger-check.py named command: four FEATs shipped with realized_by → PRD-003 FRs; FEAT-TOOL-001 v0.3 phasing; ROADMAP v0.3 SHIPPED; wired into accept.sh)
 - edikt verify spec SPEC-003: 4 passed, 0 failed (18 statement-only ACs covered by the named accept checks). PRD-003 shipped: all six FRs, sidecar schema-valid, ship revision recorded.
 - AC-9.4: AWAITING DANIEL (checklist: Calc-SPEC final read = AC-CALC-001-2; scale refusal pt/en reads right; schedule sanity vs human reading; DEFERRED media resolution — personal photo optional; file:// in two browsers)
+- IN-BROWSER ACCEPTANCE RUN — 2026-08-03 (Daniel asked for a live browser test): real headless Chromium (Brave 150) driven over CDP, zero new deps; 16/16 checks green — boot, torta render, valid verdict, scale control + schedule appear (capabilities), ×0,5 comma-tolerant happy path re-renders (250 g → 125 g), invalid factor hits the client-side surface not the engine one, chucrute ×3 refused role=alert with authored pt/en verbatim, CSP meta carries media-src. THE RUN CAUGHT A REAL BUG: factor state leaked across a pasted document change (torta ×0,5 → pasted chucrute rendered pre-scaled); fixed in app.ts (ids-change → factors.clear()), re-run 16/16. Screenshots delivered to Daniel. (Note: the claude-in-chrome extension's script injection was broken environment-wide — failed even on example.com — so the run drove CDP directly; not a viewer defect.)
 - AC-9.5: tag rcp-v0.3 BLOCKED on AC-9.4 by design.
 
 Phase 8:
