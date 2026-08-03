@@ -84,12 +84,13 @@ requirements:
   implements: FR-PR-008
   text: 'A variant MUST express its distinction as `axis` (closed enum with an `other` catch-all)
     + `value`. Value resolution MUST be defined per axis: `equipment` and `technique` against
-    their existing registry kinds; `diet` against the eleven schema.org RestrictedDiet values
-    (verified 2026-08-03 from schema.org/RestrictedDiet: DiabeticDiet, GlutenFreeDiet, HalalDiet,
-    HinduDiet, KosherDiet, LowCalorieDiet, LowFatDiet, LowLactoseDiet, LowSaltDiet, VeganDiet,
-    VegetarianDiet) so documents map straight onto schema.org/Recipe suitableForDiet; `region`
-    against ISO 3166-1 alpha-2 with optional ISO 3166-2 subdivision; `season` and `scale` against
-    closed enums defined in this spec. No axis may ship resolving against an absent registry.
+    their existing registry kinds; `region` against ISO 3166-1 alpha-2 with optional ISO 3166-2
+    subdivision (the encoding `origin.country` already uses); `season` and `scale` against closed
+    enums defined in this spec. A `diet` axis MUST NOT ship in v0.4 — no authoritative vocabulary
+    exists (schema.org is not a standards body and its maintainers declined the role; the EU''s
+    own Art 36(3)(b) mandate for vegan/vegetarian definitions is 15 years unfulfilled), and diet
+    claims divide into three kinds that behave differently under scaling and substitution. Deferred
+    to its own decision. No axis may ship resolving against an absent or unauthoritative vocabulary.
     `variant_label` MUST remain human-only and MUST NOT be machine-read.'
 - id: SR-CORE-003
   implements: FR-PR-007
@@ -369,11 +370,6 @@ acceptance_criteria:
   when: resolution runs
   then: the pin wins; with the pin removed the own-collection document wins; with both removed
     the canonical link wins; and a genuine tie FAILS naming every candidate
-- id: SAC-REG-002
-  source: spec
-  given: the shipped diet axis values
-  when: they are compared against schema.org RestrictedDiet
-  then: all eleven members are present and no invented value was added
 protections:
 - id: SP-001
   text: 'Fail-closed safety semantics and authored refusal reasons are untouched: the frozen calculus
@@ -476,8 +472,20 @@ revision_history:
   author: Daniel Gomes
   action: edited
   note: Accepted by Daniel after the clarification interview closed every open item.
+- at: '2026-08-03T17:40:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Diet axis REMOVED from v0.4 (Daniel). Verified research: schema.org is self-declaredly
+    not a standards body, RestrictedDiet cites no source, its maintainers closed extension requests
+    in Dec 2025 and widened the range to an open type instead, and Google doesn''t read the property.
+    No authority defines Mediterranean/keto/paleo anywhere; the EU mandated vegan/vegetarian definitions
+    in 2011 and never delivered. Diet also conflates composition-based (recomputable), organism-based
+    (checkable) and certified (asserted-only) claims. Deferred to its own decision; SAC-REG-002
+    dropped.'
+  affected:
+  - SR-CORE-002
 extensions: {}
 _sync:
-  md_hash: d1e15906be8698f7e33e8d79f44926ca9a5918c0c754ad3a8ed65d0f6c86ffcc
-  yaml_hash: b6794149cf12395c1ba3c82cda8a0bf9346e8a17f3f47bdf07224a55c0e86990
-  synced_at: '2026-08-03T17:15:00Z'
+  md_hash: ad8153136840b5e6d20467e6eb58de7d78ef772c6787d5fc6f0ac6d82cb07f1f
+  yaml_hash: 30010191bad91b9cde9bd3639730d88fbf046423e00e942c8187d0bff50f1e98
+  synced_at: '2026-08-03T17:40:00Z'

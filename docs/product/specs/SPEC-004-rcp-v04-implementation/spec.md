@@ -106,11 +106,23 @@ rather than four newly-empty registries:
 |---|---|---|
 | `equipment` | `equipment.*` registry | exists (10 entries) |
 | `technique` | `technique.*` registry | exists (13 entries) |
-| `diet` | the eleven schema.org `RestrictedDiet` members, **verified 2026-08-03 from the primary source**: Diabetic, GlutenFree, Halal, Hindu, Kosher, LowCalorie, LowFat, LowLactose, LowSalt, Vegan, Vegetarian | new enum; documents map straight onto `suitableForDiet` |
 | `region` | ISO 3166-1 alpha-2, optionally with ISO 3166-2 subdivision — the encoding `origin.country` already uses | reuses existing precedent |
 | `season` | closed enum (four seasons) | new enum, naturally closed |
 | `scale` | closed enum (batch context: domestic / professional) — SAP's multiple-BOM "different lot-size ranges" is the verified analogue | new enum |
 | `other` | catch-all; `variant_label` carries the human explanation | always valid |
+
+**No `diet` axis in v0.4** (Daniel, 2026-08-03). Verified research found no
+authoritative vocabulary: schema.org is self-declaredly *not* a standards body,
+`RestrictedDiet` cites no source, and its maintainers closed extension requests
+in December 2025 — widening `suitableForDiet` to an open type rather than own
+the vocabulary. No standards body, health authority or regulator defines
+Mediterranean, keto or paleo; the EU mandated vegan/vegetarian definitions in
+Art 36(3)(b) of Reg 1169/2011 in 2011 and has never delivered them. Diet also
+conflates three claim kinds that behave differently under the Calculus:
+composition-based (recomputable), organism-based (checkable against ingredient
+rows) and certified (halal/kosher — assertable only). Deferred to its own
+decision, with EU 1169/2011's 14 allergens and ISO 23662's four categories as
+the real authorities to build on.
 
 No axis ships pointing at an absent registry: an axis either resolves against a
 registry that exists, an external standard already used by the core, or a
@@ -316,8 +328,6 @@ criteria:
   same document still refuses — Verify: linter fixture pair.
 - **SAC-CORE-002**: Pin beats own-collection beats canonical, and a genuine tie
   FAILS naming every candidate — Verify: resolution-order test matrix.
-- **SAC-REG-002**: All eleven schema.org RestrictedDiet members ship and no
-  invented diet value was added — Verify: enum diff against the recorded list.
 
 ## Testing Strategy
 
@@ -346,8 +356,9 @@ dependencies — hashing is stdlib.
 None outstanding. Both NEEDS CLARIFICATION items and two PRD open questions were
 closed in Daniel's clarification interview (2026-08-03):
 
-- **`diet` value set** → all eleven schema.org `RestrictedDiet` members, verified
-  against the primary source rather than recalled.
+- **`diet` value set** → axis DROPPED from v0.4: verification showed schema.org
+  has no authority here and no authoritative diet-pattern vocabulary exists.
+  Deferred to its own decision.
 - **`family` validation** → validated within a collection, including the
   single-member warning; silent across collections.
 - **PRD OQ-6 (shadowing)** → the protocol names a total resolution order with a
