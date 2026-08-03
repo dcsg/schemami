@@ -1,8 +1,14 @@
 # The Recipe Calculus — normative specification v1
 
-**Status:** NORMATIVE (DECISIONS #13; SPEC-003 SR-CALC-001; engineering
-obligation #1). This document and `calculus/vectors/` ship with the
-protocol. Implementations are informative (Go reference:
+**Status:** NORMATIVE — protocol surface, beside `schema/` and
+`registry/` (placement per SPEC-003 DS-CALC-001: the Calculus ships WITH
+the protocol, engineering obligation #1; project engineering specs stay
+in `docs/product/specs/`, this document is what integrators implement).
+**Trace:** FEAT-CALC-001/002 → FR-CALC-001/002/003 (PRD-003) →
+SR-CALC-001/002/003 (SPEC-003) → this document + `calculus/vectors/`.
+Founding decisions: #13 (the Calculus), #15 (fail-closed), #3 (DAG as
+data), #26 (vocabulary). This document and `calculus/vectors/` ship with
+the protocol. Implementations are informative (Go reference:
 `tools/rcplint/calc`; TypeScript: `tools/viewer/src/calc`) and are proven
 equivalent by replaying the vectors — a disagreement is an implementation
 bug unless this document changes. Vocabulary per DECISIONS #26.
