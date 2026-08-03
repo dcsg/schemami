@@ -31,7 +31,10 @@ sidecars.
   for PRD-002), `CALC` `recipe calculus — the cook-time pure-function
   library and its conformance vectors` (added 2026-08-03 for PRD-003),
   `PUB` `publish-time reference resolution — resolver, content-hash
-  pinning and verification` (added 2026-08-03 for PRD-004).
+  pinning and verification` (added 2026-08-03 for PRD-004), `PACK`
+  `collections and packs — the nameable document set, its manifest and
+  cross-collection reference resolution` (added 2026-08-03 for PRD-004,
+  BRAIN-001).
   New components MUST be added to this guideline (new
   code) before use — never invented ad hoc. FR numbering continues
   across PRDs within a component (PRD-002 protocol-core starts at
