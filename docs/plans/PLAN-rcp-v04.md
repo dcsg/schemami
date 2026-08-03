@@ -51,7 +51,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 9     | done | 1/5 | 2026-08-03 |
 | 10    | done | 1/5 | 2026-08-03 |
 | 11    | done | 1/5 | 2026-08-03 |
-| 12    | awaiting Daniel's gate | 1/5 | 2026-08-03 |
+| 12    | done | 1/5 | 2026-08-04 |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
 
@@ -804,8 +804,9 @@ Phase 12 (mechanical half done — AWAITING DANIEL'S GATE):
 - AC-12.2: PASS — 2026-08-03 (clean-clone proof GREEN: fresh clone, mise install, all four gate targets plus Go tests, worktree CLEAN afterwards so regeneration is byte-stable. The script STATES its reduced coverage rather than implying more than it proves — private/collection is git-ignored, so every private-corpus check degrades to SKIP and a clean clone covers LESS than a local run)
 - AC-12.3: PASS — 2026-08-03 (three FEATs shipped with realized_by → PRD-004 FRs; ROADMAP v0.4 SHIPPED; ledger-check.py extended and wired)
 - PRD-004 and SPEC-004 shipped; edikt verify spec SPEC-004: 3 passed, 0 failed
-- AC-12.4: AWAITING DANIEL (checklist below)
-- AC-12.5: BLOCKED on AC-12.4 by design
+- AC-12.4: PASS — 2026-08-04. DANIEL'S ACCEPTANCE GREEN ("looks good") after driving the viewer in Brave: see-the-method opened the linked roux method in place, the yield control and schedule read right.
+- AC-12.5: PASS — 2026-08-04 (annotated tag rcp-v0.4).
+- LATE FIND, fixed before his run: build.ts projected only display names, so the shipped bundle declared capabilities.links = false and see-the-method was UNREACHABLE in the browser while passing every unit test. DIST-FRESH proves dist matches src; it cannot prove a feature is wired through the build at all. Two tests now assert the bundle carries a non-empty link corpus and that an engine built from it declares the capability. Verified 9/9 in headless Brave before opening it for him — the honest order is to check the feature works before asking someone to look at it.
 
 Phase 11:
 - AC-11.1: PASS — 2026-08-03 (new `links` capability paired with a new `resolveLinks` member — a SEPARATE member, not a widened schedule() signature, because a future WASM engine written against v1 would ignore an extra argument and return a silently wrong plan. Version stays 1. The capability is declared only when the corpus is injected: the capability map is a contract, not a wish)

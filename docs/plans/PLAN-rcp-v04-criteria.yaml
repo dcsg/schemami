@@ -531,7 +531,7 @@ phases:
     verify: make validate && make conformance && make calculus && make accept
 - phase: 12
   title: Acceptance, ledger, ship
-  status: pending
+  status: pass
   attempt: 1
   criteria:
   - id: AC-12.1
@@ -540,7 +540,7 @@ phases:
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: '2026-08-03'
+    last_evaluated: '2026-08-04'
     verify: make accept
   - id: AC-12.2
     text: Clean-clone run green, with its reduced coverage stated
@@ -548,7 +548,7 @@ phases:
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: '2026-08-03'
+    last_evaluated: '2026-08-04'
     verify: bash tools/rcplint/scripts/clean-clone-proof.sh
   - id: AC-12.3
     text: Ledger and roadmap truthful
@@ -556,21 +556,21 @@ phases:
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: '2026-08-03'
+    last_evaluated: '2026-08-04'
     verify: python3 tools/rcplint/scripts/ledger-check.py
   - id: AC-12.4
     text: Daniel's acceptance recorded (operational)
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-04'
     verify: null
   - id: AC-12.5
     text: Tag `rcp-v0.4` exists
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-04'
     verify: test "$(git cat-file -t rcp-v0.4)" = tag
