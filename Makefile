@@ -23,3 +23,4 @@ conformance:
 calculus:
 	cd tools/rcplint && go run . calc-vectors ../.. ../../calculus/vectors
 	cd tools/rcplint && go test -count=1 -run 'TestCalcCoverage|TestCalcVectors|TestWE|TestSpec|TestR_' ./...
+	cd tools/viewer && mise exec -- bun install --frozen-lockfile && mise exec -- bun test conformance/calculus-replay.test.ts

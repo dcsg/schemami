@@ -38,7 +38,7 @@ phases:
 | 2     | done | 1/5 | 2026-08-03 |
 | 3     | done | 1/5 | 2026-08-03 |
 | 4     | done | 1/5 | 2026-08-03 |
-| 5     | pending | 0/5 | — |
+| 5     | done | 1/5 | 2026-08-03 |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
@@ -276,6 +276,11 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 5:
+- AC-5.1: PASS — 2026-08-03 (all 21 frozen vectors replay green in TS on tools/viewer/src/calc — 382 assertions incl. verbatim refusal strings; N-2 tolerance for floats, exact for strings/integers; an inverted proof was run: planting a wrong-direction R-SCHED-2 subtraction fails exactly schedule/entremet-prerequisites, restore is green)
+- AC-5.2: PASS — 2026-08-03 (src/calc/index.ts import-free; structural purity test in the replay suite; %g/%.4f/%.2f message formats match Go via shortest-round-trip identity on identical IEEE products)
+- AC-5.3: PASS — 2026-08-03 (make calculus = Go writer + Go gates + TS replay in one command, green; vectors byte-unchanged after regenerate — freeze held; deps untouched, DEP-FREEZE green; bundle untouched, engine NOT wired per plan)
 
 Phase 4:
 - AC-4.1: PASS — 2026-08-03 (21 vectors / 10 functions; byte-identical across runs, tested; no absolute paths — document inputs referenced by repo-relative source)
