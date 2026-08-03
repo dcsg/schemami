@@ -1,0 +1,193 @@
+/**
+ * Pure render core (SR-TOOL-001 UI half; SSP-004: NO validation logic —
+ * this renders what an engine returned). Every function here is
+ * string-in/string-out so the whole layer is testable without a DOM and
+ * app.ts stays assignment-only glue (frontend pre-flight findings).
+ *
+ * ESCAPING IS LAW: every interpolated text value — including engine error
+ * messages, which echo document content — goes through esc(). Pasted
+ * documents are untrusted input; CSP is the backstop, not the defense.
+ *
+ * Styling: classes only, never style="" attributes (CSP bans them).
+ *
+ * lang is a parameter (default pt-PT, English fallback) so a future
+ * language toggle never changes this signature — v0.2 ships always-pt-PT
+ * by recorded decision.
+ */
+import type { AnalysisResult, Capabilities, Diagnostic, DocumentAnalysis } from "./engine.ts";
+
+export interface I18nVocab {
+  taxonomy: Record<string, string>;
+  tags: Record<string, string>;
+}
+
+export interface RenderContext {
+  i18n: I18nVocab;
+  lang: string; // "pt-PT" in v0.2
+}
+
+export function esc(v: unknown): string {
+  return String(v)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+type Dict = Record<string, unknown>;
+const asDict = (v: unknown): Dict => (v && typeof v === "object" ? (v as Dict) : {});
+const asList = (v: unknown): unknown[] => (Array.isArray(v) ? v : []);
+
+/** Prose values are either bare strings or locale maps ($defs/text). */
+function text(v: unknown, lang: string): string {
+  if (typeof v === "string") return v;
+  const m = asDict(v);
+  const short = lang.split("-")[0]!;
+  return String(m[lang] ?? m[short] ?? m["en"] ?? Object.values(m)[0] ?? "");
+}
+
+function term(slug: string, table: Record<string, string>): string {
+  return table[slug] ?? slug; // English-base slug is its own fallback
+}
+
+/**
+ * Display-time basis resolution for ratio amounts: sum of same-scope
+ * ingredients whose roles intersect the basis `where.roles`, when units
+ * are uniform. Pinned against rcplint facts output for the nata case
+ * (render.test.ts) — divergence from the oracle is a test failure, the
+ * founding-disease guard. Component-inclusive bases render the ratio
+ * without a computed absolute rather than guessing.
+ */
+function basisSum(doc: Dict, basisName: string): { value: number; unit: string } | null {
+  const basis = asDict(asDict(doc["bases"])[basisName]);
+  if (basis["sum"] !== "ingredients" || basis["include_components"] === true) return null;
+  const roles = new Set(asList(asDict(basis["where"])["roles"]).map(String));
+  let total = 0;
+  let unit: string | null = null;
+  for (const raw of asList(doc["ingredients"])) {
+    const ing = asDict(raw);
+    if (!asList(ing["roles"]).some((r) => roles.has(String(r)))) continue;
+    const amount = asDict(ing["amount"]);
+    if (typeof amount["value"] !== "number" || typeof amount["unit"] !== "string") return null;
+    if (unit !== null && unit !== amount["unit"]) return null;
+    unit = amount["unit"];
+    total += amount["value"];
+  }
+  return unit === null ? null : { value: total, unit };
+}
+
+function amountLabel(doc: Dict, ing: Dict): string {
+  const a = asDict(ing["amount"]);
+  if (typeof a["value"] === "number") return `${a["value"]} ${esc(a["unit"] ?? "")}`;
+  if (typeof a["ratio"] === "number" && typeof a["of"] === "string") {
+    const pct = `${+(a["ratio"] * 100).toFixed(2)}%`;
+    const base = basisSum(doc, a["of"]);
+    const resolved = base ? ` (${+(a["ratio"] * base.value).toFixed(1)} ${esc(base.unit)})` : "";
+    return `${pct} · ${esc(a["of"])}${resolved}`;
+  }
+  if (typeof a["to_consistency"] === "string") return esc(a["to_consistency"]);
+  return "";
+}
+
+function ingredientList(doc: Dict, ctx: RenderContext): string {
+  const items = asList(doc["ingredients"])
+    .map(asDict)
+    .map((ing) => {
+      const label = ing["item"]
+        ? esc(String(ing["item"]))
+        : `<em class="unresolved">${esc(ing["raw"] ?? ing["id"] ?? "?")}</em>`;
+      const prep = ing["prep"] ? ` <span class="prep">${esc(text(ing["prep"], ctx.lang))}</span>` : "";
+      return `<li><span class="amount">${amountLabel(doc, ing)}</span> ${label}${prep}</li>`;
+    });
+  return items.length ? `<ul class="ingredients">${items.join("")}</ul>` : "";
+}
+
+function stepList(doc: Dict, ctx: RenderContext): string {
+  const steps = asList(doc["steps"]).map(asDict);
+  if (!steps.length) return "";
+  const items = steps.map((s) => {
+    const prim = asDict(s["primitive"])["id"];
+    const does = s["does"] ? text(s["does"], ctx.lang) : "";
+    const note = s["note"] ? `<p class="note">${esc(text(s["note"], ctx.lang))}</p>` : "";
+    const head = does || (prim ? String(prim) : String(s["id"] ?? ""));
+    return `<li>${esc(head)}${note}</li>`;
+  });
+  return `<ol class="steps">${items.join("")}</ol>`;
+}
+
+function taxonomyLine(doc: Dict, ctx: RenderContext): string {
+  const tax = asDict(doc["taxonomy"]);
+  const parts: string[] = [];
+  if (tax["category"]) parts.push(esc(term(String(tax["category"]), ctx.i18n.taxonomy)));
+  for (const s of asList(tax["subcategory"])) parts.push(esc(term(String(s), ctx.i18n.taxonomy)));
+  if (typeof tax["difficulty"] === "number") parts.push(`${"★".repeat(tax["difficulty"])} (${tax["difficulty"]}/5)`);
+  for (const t of asList(doc["tags"])) parts.push(`<span class="tag">${esc(term(String(t), ctx.i18n.tags))}</span>`);
+  return parts.length ? `<p class="taxonomy">${parts.join(" · ")}</p>` : "";
+}
+
+export function renderDocument(analysis: DocumentAnalysis, ctx: RenderContext): string {
+  const doc = asDict(analysis.canonical);
+  const title = esc(text(doc["name"], ctx.lang));
+  const maturityBadge = analysis.profile
+    ? `<span class="badge">core ∧ ${esc(analysis.profile)} · ${esc(analysis.maturity ?? "?")}</span>`
+    : `<span class="badge badge-warn">core-only</span>`;
+  const components = asList(doc["components"])
+    .map(asDict)
+    .filter((c) => c["ingredients"] || c["steps"])
+    .map(
+      (c) =>
+        `<section class="component"><h3 lang="pt-PT">${esc(text(c["name"], ctx.lang))}</h3>` +
+        `${ingredientList(c, ctx)}${stepList(c, ctx)}</section>`,
+    )
+    .join("");
+  return (
+    `<article class="recipe"><header><h2 lang="pt-PT">${title}</h2>${maturityBadge}</header>` +
+    `${taxonomyLine(doc, ctx)}${ingredientList(doc, ctx)}${stepList(doc, ctx)}${components}</article>`
+  );
+}
+
+/**
+ * CAPABILITIES-DRIVEN verdict rendering (ADR-002 no-rewrite guarantee):
+ * groups whatever layer tags the engine returned — no layer names are
+ * hardcoded into page structure, so an engine advertising more layers
+ * renders them with zero UI changes (mock-engine test pins this).
+ */
+export function renderVerdicts(result: AnalysisResult, _caps: Capabilities): string {
+  if (!result.parse.ok) {
+    const errs = result.parse.errors
+      .map((e) => `<li>${esc(e.message)}${e.line ? ` <span class="loc">(linha ${e.line})</span>` : ""}</li>`)
+      .join("");
+    return `<div class="verdicts parse-error" role="status"><h2>Documento não interpretável</h2><ul>${errs}</ul></div>`;
+  }
+  const byLayer = new Map<string, Diagnostic[]>();
+  for (const d of result.documents) {
+    for (const v of d.verdicts) {
+      byLayer.set(v.layer, [...(byLayer.get(v.layer) ?? []), v]);
+    }
+  }
+  const allValid = result.documents.every((d) => d.valid);
+  const headline = allValid
+    ? `<p class="ok">✓ válido (${result.documents.length} documento(s))</p>`
+    : `<p class="bad">✗ inválido</p>`;
+  const groups = [...byLayer.entries()]
+    .map(([layer, list]) => {
+      const items = list
+        .map(
+          (v) =>
+            `<li class="sev-${v.severity}"><span class="sev">${v.severity === "error" ? "ERRO" : "aviso"}</span> ` +
+            `<code>${esc(v.pointer || "/")}</code> ${esc(v.message)}</li>`,
+        )
+        .join("");
+      return `<section class="layer"><h3>${esc(layer.toUpperCase())}</h3><ul>${items}</ul></section>`;
+    })
+    .join("");
+  return `<div class="verdicts" role="status">${headline}${groups}</div>`;
+}
+
+export function renderEmptyState(): string {
+  return (
+    `<div class="empty"><p>Cole um documento <code>.rcp.yaml</code> na caixa, ou arraste o ficheiro para aqui.</p>` +
+    `<p class="hint">Nada sai desta página: a validação corre inteiramente no seu navegador.</p></div>`
+  );
+}

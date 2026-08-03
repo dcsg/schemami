@@ -36,7 +36,7 @@ phases:
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
-| 7     | pending | 0/5 | — |
+| 7     | done | 1/5 | 2026-08-03 |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
 
@@ -306,6 +306,13 @@ None — all three spec artifacts have phase coverage (model.mmd is reference-on
 ## Verify evidence
 
 <!-- The run appends `AC-N.M: PASS — <date>` lines here as gates pass. -->
+
+Phase 7:
+- AC-7.1: PASS — 2026-08-03 (single-file dist 162 KiB, hash CSP no 'self', charset first, zero external refs)
+- AC-7.2: PASS — 2026-08-03 (26/26 incl. oracle-pinned basis strings: nata salt 2%→10 g, hydration 55%→275 g)
+- AC-7.3: PASS — 2026-08-03
+- AC-7.4: PASS — 2026-08-03 (mock {l1,l2} engine renders the L2 group with zero UI change)
+- AC-7.5: QUEUED for Daniel — browser extension cannot attach to file:// or localhost; CSP hash self-consistency proven mechanically (the page cannot block its own assets on any origin). Daniel: open tools/viewer/dist/index.html from file:// in 2 browsers, paste an example.
 
 Phase 6:
 - AC-6.1: PASS — 2026-08-03
