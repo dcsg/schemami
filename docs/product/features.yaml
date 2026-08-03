@@ -411,6 +411,13 @@ features:
       the reference. Boundary held: showing the loadable method and its
       placement is protocol tooling; guided step-by-step execution with
       check-offs is a SESSION — app-side per DECISIONS #19/#7.
+      OPEN MODELING QUESTION carried into PRD-004 (research 08 F6):
+      stage-forked identity — one preparation whose identity forks on a
+      measured checkpoint (Escoffier's roux blanc/blond/brun differ only
+      by cook time; Portugal's ~12 pontos de açúcar are stages of ONE
+      calda) should be one class with graded, bounded stage outcomes,
+      not N sibling near-duplicates; where stages live (class, recipe
+      endpoints, or both) is the PRD-004 call.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
     status: deferred
