@@ -377,6 +377,33 @@ features:
     target: unscheduled — after FEAT-CALC-001 exists and registry entries carry the data
     trace: ["core $defs/derived compute enum (v0.1)", "PRD-003 non-goals"]
 
+  - id: FEAT-REG-006
+    name: "Implicit preparations resolve from mention to method (the roux problem)"
+    description: >-
+      A recipe's method often embeds a sub-preparation without declaring
+      a component — "faça um roux", "prepare um caramelo" — and the
+      reader deserves a path from the mention to the method. The
+      protocol already expresses the EXPLICIT case (components /
+      componentRef — the brownie referencing the published ganache) and
+      already has mention-level anchors: ingredient.preparation.*
+      classes and technique. entries. The gap is the bridge: registry
+      entries (preparation classes and techniques) gain an optional
+      canonical-recipe link — "the recipe that teaches me" — resolving a
+      mention to a full kind: component document; renderers surface a
+      see-the-method affordance wherever a linked mention appears
+      (viewer: expandable inline or side panel). Extraction rule
+      (documented now, enforced then): an embedded sub-preparation is
+      lifted to an inline component when the source gives its method, or
+      referenced as a preparation class when it only names it — never
+      left dissolved in prose. Cross-document resolution respects the
+      private-vs-published boundary (a private roux recipe resolves
+      locally only). Raised by Daniel 2026-08-03 (sauce→roux case).
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
+    icp: both
+    status: deferred
+    target: PRD-004 candidate — registry schema addition + viewer affordance + extraction rule; pairs naturally with FEAT-PUB-001 (verified resolution)
+    trace: ["DECISIONS #7", "DECISIONS #11", "registry preparation classes (v0.1)", "technique teaches links (v0.2)", "Daniel 2026-08-03"]
+
   - id: FEAT-TOOL-002
     name: "Media surfaces: asset conventions + rendering"
     description: >-

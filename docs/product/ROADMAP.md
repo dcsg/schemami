@@ -49,6 +49,7 @@ Small, additive, demanded by the five ingested recipes — all delivered, tag `r
 | FEAT-CORE-004 Codegen decode types (Swift/TS) | #8 |
 | FEAT-PROF-004 Ferment profile hardened | #18 |
 | FEAT-SUB-001 Global substitution catalog | #9, #17 |
+| FEAT-REG-006 Implicit preparations: mention → method (roux problem; PRD-004 candidate) | #7, #11, Daniel 2026-08-03 |
 | FEAT-PUB-001 Verified publish-time resolution | #21, obligation 3 |
 | FEAT-REG-005 Derived search index (edges + facets) | #7, #10 |
 

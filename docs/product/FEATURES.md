@@ -84,6 +84,14 @@ compute: nutrition and compute: cost have existed in core since v0.1 with
 no derivation behind them; needs per-entry registry data before the math
 means anything. Unscheduled. *home-cook, production-scaler · ICP-2*
 
+**FEAT-REG-006 — Implicit preparations: mention → method (the roux problem)** (Daniel 2026-08-03; PRD-004 candidate)
+Methods embed sub-preparations without declaring components ("faça um
+roux"). Registry preparation/technique entries gain a canonical-recipe
+link; renderers offer see-the-method; extraction lifts embedded
+sub-preparations to components or preparation-class references — never
+prose-dissolved. Private links resolve locally only.
+*home-cook, personal-collector, surface-engineer · both*
+
 **FEAT-CORE-003 — Decode-compatibility CI fixtures** (#14)
 Bidirectional old-reader/new-doc fixtures in CI — "data outlives code" made
 mechanical. *surface-engineer · ICP-1*

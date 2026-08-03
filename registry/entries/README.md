@@ -57,3 +57,19 @@ an authored `title` always taking precedence. Presentation ORDER is
 derived, never stored: component methods precede the steps that consume
 them (see FEAT-CALC-002 for the full derivation roadmap). First learned
 the hard way in the v0.2 viewer — Daniel's review caught all three.
+
+## Extraction contract addendum — embedded sub-preparations (2026-08-03)
+
+A source method that embeds a sub-preparation ("primeiro faça um roux
+com manteiga e farinha") NEVER leaves it dissolved in prose:
+
+- If the source gives its method → lift it to an INLINE COMPONENT (its
+  output consumed by the parent, per the standard components pattern).
+- If the source only names it → reference the preparation class
+  (`ingredient.preparation.*`, minting via the gap ledger if absent) so
+  the mention is machine-read and, once FEAT-REG-006 lands, resolvable
+  to a canonical teaching recipe.
+
+Rationale: the reader must always have a path from mention to method;
+prose-dissolved preparations are the sub-recipe version of prose-parked
+metadata (the v0.2 north metric's sibling failure).
