@@ -48,6 +48,9 @@ echo "── The freeze (FR-PR-001) ──"
 check "AC-PR-001-*   rcp-v0.1 annotated tag exists" sh -c "test \"\$(git cat-file -t rcp-v0.1)\" = tag"
 check "              VERSIONING.md covers \$id / rcp / SchemaVer / decode-compat" sh -c "grep -q 'SchemaVer' schema/VERSIONING.md && grep -qi 'decode' schema/VERSIONING.md"
 
+echo "── Decode-compat gate (SR-PR-004, DS-PR-009) ──"
+check "AC-PR-004-1   both directions green: frozen reader ⇄ current core (incl. inverted breaking fixture + struct-vs-pinned-tag diff)" sh -c "cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./..."
+
 echo
 echo "RESULT: $PASS passed, $FAIL failed"
 [ $FAIL -eq 0 ] && echo "PRD-001 ACCEPTANCE EVIDENCE: GREEN" || exit 1

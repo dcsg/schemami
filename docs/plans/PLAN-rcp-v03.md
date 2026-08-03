@@ -39,7 +39,7 @@ phases:
 | 3     | done | 1/5 | 2026-08-03 |
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
-| 6     | pending | 0/5 | — |
+| 6     | done | 1/5 | 2026-08-03 |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
@@ -276,6 +276,11 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 6:
+- AC-6.1: PASS — 2026-08-03 (frozen v0.1 reader — hand transcription in tools/rcplint/compat/reader_v01.go, commit-SHA pinned — decodes all six current examples with identity fields intact; current loader + CURRENT core schema accept the tag-extracted v0.1 documents in testdata/compat/v01/, so no new required field crept in; three transcription type errors were caught by the fixtures themselves: rcp is const-1 int, profile an object, primitive a versioned ref)
+- AC-6.2: PASS — 2026-08-03 (breaking fixture — `kind` renamed `type` — fails the identity contract; inverted test proves the gate can fail)
+- AC-6.3: PASS — 2026-08-03 (TestDecodeCompatStructSurfaceMatchesPinnedSchema reflects yaml tags vs `git show <pin>` property names for recipe/ingredient/step; planted-drift run — dropped carried_over — failed exactly this test, restored green; wired into accept.sh as AC-PR-004-1, accept now 28/28)
 
 Phase 5:
 - AC-5.1: PASS — 2026-08-03 (all 21 frozen vectors replay green in TS on tools/viewer/src/calc — 382 assertions incl. verbatim refusal strings; N-2 tolerance for floats, exact for strings/integers; an inverted proof was run: planting a wrong-direction R-SCHED-2 subtraction fails exactly schedule/entremet-prerequisites, restore is green)
