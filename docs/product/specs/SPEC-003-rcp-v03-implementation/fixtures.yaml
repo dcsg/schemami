@@ -1,0 +1,130 @@
+# Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+# edikt:artifact type=fixtures spec=SPEC-003 status=draft reviewed_by=qa
+# created_at=2026-08-03T07:27:07Z
+# All records aspirational until behaviour ships (SPEC-001 convention).
+# target_phase names the CMP that builds them. Private collection is never
+# copied into fixtures or vectors; synthetic stand-ins carry CI.
+
+scenarios:
+  - name: "clamp-parity"
+    purpose: "SP-001 — the clamp→Calculus replacement changes nothing observable"
+    entities:
+      - entity: test-migration
+        records:
+          - path: "tools/rcplint/calc/parity_test.go (migrated from clamp_test.go)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test ./..."
+            target_phase: "CMP-CALC-002"
+            target_contract: "every clamp_test case — fixed-salt ×2 refusal, missing-qty refusal, chucrute ×0.6 ratio-invariance acceptance, min_batch floor — passes through the Calculus with identical outcomes AND authored pt/en reason strings (AC-CALC-001-1); clamp.go deleted in the same phase"
+
+  - name: "calculus-vectors"
+    purpose: "AC-CALC-002-1/2 — the oracle writes, the replayer replays, coverage is mechanical"
+    location: calculus/vectors/
+    entities:
+      - entity: vector-set
+        records:
+          - path: "calculus/vectors/*.json — {function, edge_classes[], input, expected}"
+            status: aspirational
+            verified_by: "make calculus"
+            target_phase: "CMP-CALC-002"
+            target_contract: "written only by rcplint calc-vectors; every function covered; TS replay green (SAC-CALC-001)"
+          - path: "edge-class enumeration (machine-readable block in calculus/SPEC.md)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCalcCoverage ./..."
+            target_phase: "CMP-CALC-001"
+            target_contract: "classes: unit boundaries, guard combinations, fixed-quantity refusals, min_batch, ratio invariance, timeline arithmetic — coverage gate fails on any vectorless class, proven by inverted test (SAC-CALC-002)"
+
+  - name: "timeline-derivation"
+    purpose: "AC-CALC-003-1/2 — schedule from DAG + durations, both implementations"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/viewer/example.rcp.yaml (the torta — already in-repo)"
+            status: aspirational
+            verified_by: "make calculus"
+            target_phase: "CMP-CALC-002"
+            target_contract: "readingOrder yields mise-en-place order; schedule yields start offsets (ganache/calda before s5-assemble) — vectored in Go and TS"
+          - path: "tools/rcplint/testdata/calc/entremet.rcp.yaml (synthetic multi-day, parallel tracks)"
+            status: aspirational
+            verified_by: "make calculus"
+            target_phase: "CMP-CALC-002"
+            target_contract: "component start times respect DAG + duration windows across days and tracks (AC-CALC-003-2); window arithmetic matches the worked examples in calculus/SPEC.md"
+
+  - name: "decode-compat"
+    purpose: "AC-PR-004-1/2 — both directions + the gate provably able to fail"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/compat/reader_v01.go (frozen decode structs, tag SHA pinned)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestDecodeCompat ./..."
+            target_phase: "CMP-PR-004"
+            target_contract: "decodes every current document (examples + torta) with v0.1-era fields intact; unknown v0.2/v0.3 fields tolerated"
+          - path: "tools/rcplint/testdata/compat/v01/ (documents extracted from tag rcp-v0.1)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestDecodeCompat ./..."
+            target_phase: "CMP-PR-004"
+            target_contract: "current tooling decodes all of them (new-reader/old-doc direction)"
+          - path: "breaking fixture: reader variant requiring a field absent from old documents"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestDecodeCompat ./..."
+            target_phase: "CMP-PR-004"
+            target_contract: "gate FAILS on it — inverted test asserts the failure (SAC-PR-002); CI stays green"
+
+  - name: "viewer-calc-surfaces"
+    purpose: "AC-TOOL-003-1/2 — capability-gated scale + schedule, zero UI rewrite"
+    entities:
+      - entity: test
+        records:
+          - path: "tools/viewer/src/render.test.ts — scale control presence/absence by capability"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-TOOL-003"
+            target_contract: "control absent without clamp capability; refusal past critical bound renders authored pt/en reason verbatim (AC-TOOL-003-1)"
+          - path: "extended mock-engine test {l1, clamp, timeline}"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-TOOL-003"
+            target_contract: "capability-richer engine renders scale + schedule with zero UI code changes (AC-TOOL-003-2)"
+
+  - name: "media"
+    purpose: "AC-TOOL-002-1/2 — conventions, personal assets, keep-out gate"
+    entities:
+      - entity: file
+        records:
+          - path: "schema/MEDIA.md"
+            status: aspirational
+            verified_by: "test -f schema/MEDIA.md"
+            target_phase: "CMP-TOOL-002"
+            target_contract: "relative-URI convention, private/collection/media/ home, licence requirement, book-media prohibition documented"
+          - path: "private/collection/media/ + ≥1 personal asset (LOCAL ONLY, gitignored)"
+            status: aspirational
+            verified_by: "manual local render check, pass/fail recorded (operational)"
+            target_phase: "CMP-TOOL-002"
+            target_contract: "a private document's personal photo renders in the viewer via drag-in (AC-TOOL-002-1)"
+          - path: "media attestation check in accept.sh"
+            status: aspirational
+            verified_by: "make accept"
+            target_phase: "CMP-TOOL-002"
+            target_contract: "repo contains no binary media outside the allowlist (AC-TOOL-002-2); identifiers-only output"
+          - path: "tools/viewer/src/render.test.ts — media roles"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-TOOL-003"
+            target_contract: "failure-role media visibly labelled; placeholder URIs marked absent, never silently skipped"
+
+  - name: "purity"
+    purpose: "SSP-005 — structural, not promised"
+    entities:
+      - entity: check
+        records:
+          - path: "Go: import allowlist test on tools/rcplint/calc (stdlib math/units only)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCalcPurity ./..."
+            target_phase: "CMP-CALC-002"
+            target_contract: "no IO/time/rand imports in the calc package"
+          - path: "TS: zero-import check on tools/viewer/src/calc"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "CMP-CALC-003"
+            target_contract: "src/calc contains no import statements at all"

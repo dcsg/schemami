@@ -1,0 +1,98 @@
+%% Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+%% edikt:artifact type=domain-model spec=SPEC-003 status=draft reviewed_by=architect
+%% created_at=2026-08-03T07:27:07Z
+%% v0.3 DELTA view — the Calculus, its vectors, timeline, decode-compat, media.
+%% Anchors: SPEC-001 model (document), SPEC-002 model (engine seam).
+classDiagram
+    %% ── The Calculus (SR-CALC-001/002/003; normative at calculus/) ───────
+    class CalculusSpec {
+        <<normative — calculus/SPEC.md»>>
+        +function semantics: domain, units, edges
+        +edge-class enumeration «machine-readable block»
+        +window arithmetic: target scalar, min/max conservative intervals
+    }
+
+    class Calculus {
+        <<pure functions — SSP-005: no IO, no clock, no randomness»>>
+        +scale(doc, factor) ScaleResult  «uniform + pivot»
+        +resolveBases(doc) BasisTable
+        +selectGuardPath(doc, options) StepSet
+        +enforceConstraints(doc, scaled) Refusals  «critical refuses, warn advises»
+        +readingOrder(doc) OrderedSections  «specifies v0.2 mise-en-place»
+        +interleave(doc) TrackedSteps  «honours track»
+        +schedule(doc) ScheduleEntry[]  «offsets from t0, never wall-clock»
+    }
+
+    class ScheduleEntry {
+        <<value object>>
+        +item  «step or component id»
+        +start_offset Window  «min/target/max»
+        +duration Window
+    }
+
+    class GoReference {
+        <<tools/rcplint/calc — stdlib only»>>
+        +writes vectors  «rcplint calc-vectors; the oracle»
+        +replaces clamp.go  «parity first, deletion after (SP-001)»
+    }
+
+    class TsImplementation {
+        <<tools/viewer/src/calc — import-free»>>
+        +replays vectors  «bun test; disagreements fixed HERE»
+    }
+
+    class VectorSet {
+        <<normative data — calculus/vectors/»>>
+        +record: function, edge_classes[], input, expected
+        +coverage gate: every enumerated class has vectors  «AC-CALC-002-2»
+    }
+
+    CalculusSpec <.. GoReference : "implements"
+    CalculusSpec <.. TsImplementation : "implements"
+    GoReference --> VectorSet : "writes"
+    TsImplementation ..> VectorSet : "replays green"
+    Calculus *-- ScheduleEntry : "schedule() 0..*"
+
+    %% ── Seam growth without seam change (SR-TOOL-003; DS-TOOL-004) ───────
+    class RcpEngine {
+        <<interface v1 — UNCHANGED (SP-003)»>>
+        +capabilities: l1, clamp?, timeline?, l2?, cue?
+        +analyze(text)
+        +scale(canonical, factor)  «reserved since v0.2 — now defined under clamp»
+        +schedule(canonical)  «NEW optional — gated by timeline»
+    }
+
+    class ViewerUI {
+        <<gates every control on capabilities»>>
+        +scale control  «only when clamp; refusals show authored pt/en reasons»
+        +schedule view  «only when timeline; start offsets»
+        +media panel  «drag-in object URLs; failure role labelled»
+    }
+    ViewerUI --> RcpEngine : "engine interface ONLY (SSP-004)"
+    TsImplementation ..> RcpEngine : "powers clamp + timeline capabilities"
+
+    %% ── Media (SR-TOOL-002; schema/MEDIA.md) ─────────────────────────────
+    class MediaConventions {
+        <<normative — schema/MEDIA.md»>>
+        +relative URIs from document location
+        +private assets: private/collection/media/ «gitignored»
+        +licence REQUIRED  «two-tier stance»
+        +attestation: no book media, binary allowlist  «SP-004»
+    }
+    ViewerUI ..> MediaConventions : "renders per role; CSP img-src data: blob: only"
+
+    %% ── Decode-compat gate (SR-PR-004; DS-PR-009) ────────────────────────
+    class FrozenReaderV01 {
+        <<tools/rcplint/compat — hand-written decode structs»>>
+        +exact rcp-v0.1 field surface «tag SHA pinned»
+        +unknown fields tolerated  «decoder default — #14 binds DECODERS»
+    }
+    class CompatGate {
+        <<CI — wired into make accept»>>
+        +old reader decodes every current document
+        +current tooling decodes rcp-v0.1-tagged documents
+        +breaking fixture FAILS it  «inverted test — provably able to fail»
+    }
+    CompatGate *-- FrozenReaderV01
+    %% NOT the v0.1 schema: unevaluatedProperties:false tests strictness,
+    %% never tolerance — the spec's structural correction to the PRD.
