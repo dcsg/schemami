@@ -589,30 +589,52 @@ export interface ScheduleEntry {
   duration: Window;
 }
 
-export function schedule(scope: Dict): ScheduleEntry[] {
+export interface ScheduleResult {
+  entries: ScheduleEntry[];
+  refusals: string[];
+}
+
+/**
+ * R-SCHED-5: `resolved` supplies the bodies of documents included BY
+ * REFERENCE, keyed by ref id. Resolution is an INPUT, never a guess —
+ * an unsupplied reference is refused and placed nowhere, because a
+ * zero-window fallback would silently claim a multi-day ferment takes
+ * no time.
+ */
+export function schedule(scope: Dict, resolved: Record<string, Dict> = {}): ScheduleResult {
   const [parentStarts, parentDur] = scopeSchedule(scope);
   const out: ScheduleEntry[] = [];
+  const refusals: string[] = [];
   for (const sv of asList(scope["steps"])) {
     const id = String(asDict(sv)["id"] ?? "");
     out.push({ item: id, start: parentStarts[id] ?? zeroW(), duration: parentDur[id] ?? zeroW() });
   }
   for (const cv of asList(scope["components"])) {
     const cm = asDict(cv);
-    if ("ref" in cm) continue;
     const cid = String(cm["id"] ?? "");
-    const [innerStarts, innerDur] = scopeSchedule(cm);
+    let inner = cm;
+    if ("ref" in cm) {
+      const refID = String(cm["ref"] ?? "");
+      const body = resolved[refID];
+      if (body === undefined) {
+        refusals.push(`referenced preparation ${JSON.stringify(refID)} unresolvable`);
+        continue;
+      }
+      inner = body;
+    }
+    const [innerStarts, innerDur] = scopeSchedule(inner);
     let total = zeroW();
     for (const [id, s] of Object.entries(innerStarts)) total = wMax(total, plus(s, innerDur[id] ?? zeroW()));
     const consumer = earliestConsumer(scope, cid, parentStarts);
     if (consumer === "") continue;
     const placement = minusConservative(parentStarts[consumer] ?? zeroW(), total);
     out.push({ item: cid, start: placement, duration: total });
-    for (const sv of asList(cm["steps"])) {
+    for (const sv of asList(inner["steps"])) {
       const id = String(asDict(sv)["id"] ?? "");
       out.push({ item: id, start: plus(placement, innerStarts[id] ?? zeroW()), duration: innerDur[id] ?? zeroW() });
     }
   }
-  return out;
+  return { entries: out, refusals };
 }
 
 function scopeSchedule(m: Dict): [Record<string, Window>, Record<string, Window>] {

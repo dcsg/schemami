@@ -341,6 +341,43 @@ Seconds internally (window fields are duration windows).
   from exactly this.
 - **R-SCHED-3** — Cycles cannot occur (admitted documents are DAG-checked at L2).
 - **R-SCHED-4** — Steps excluded by guard selection do not appear.
+- **R-SCHED-5** — **Referenced preparations are placed like inline ones.**
+  A component included BY REFERENCE and consumed by step S is placed by
+  R-SCHED-2 exactly as an inline component is: it contributes the
+  referenced document's own total duration window, and its start offset
+  is `S.start − total` by the same conservative interval subtraction.
+  A reader following the plan must be told when to start the referenced
+  preparation, and whether it was written inline or referenced is an
+  authoring choice, not a semantic one.
+  - The referenced document's total is computed from ITS OWN schedule,
+    from its own t0 — the same two-stage derivation used for inline
+    components.
+  - **Resolution is an input, never a guess.** The referenced document
+    is supplied to the function by the caller. When it is NOT supplied,
+    the placement is UNRESOLVABLE: the function refuses with
+    `referenced preparation "<id>" unresolvable` and places nothing.
+    It MUST NOT fall back to a zero-duration point event — that would
+    silently claim a multi-day ferment takes no time, which is the
+    failure mode this rule exists to prevent.
+  - A reference whose target supplies no durations contributes a zero
+    window and is placed AT its consumer. That is not a guess: the
+    target genuinely declares no time.
+
+### Worked example: referenced placement (WE-SCHED-3)
+A parent method whose step `assemble` (start `{0,0,0}`, duration
+`{target: 10m}`) consumes a component included BY REFERENCE. The
+referenced document's own schedule totals `{min: 30m, target: 45m,
+max: 1h}`.
+
+Placement by R-SCHED-5 → R-SCHED-2, conservative interval subtraction
+against `assemble.start = {0, 0, 0}`:
+`min = 0 − 3600s = −3600s`; `target = 0 − 2700s = −2700s`;
+`max = 0 − 1800s = −1800s`.
+
+So the referenced preparation starts between one hour and thirty
+minutes before t0, targeting forty-five minutes before — the negative
+offset a consumer renders as "start this first". Had the reference gone
+unsupplied, the function would refuse rather than place it at 0.
 
 ### Worked example: window-propagation (WE-SCHED-1)
 s1 duration `{min: 10m, target: 12m, max: 15m}`; s2 after s1, duration
@@ -367,6 +404,7 @@ class: fixed-quantity-refusals
 class: min-batch
 class: ratio-invariance
 class: timeline-arithmetic
+class: referenced-placement
 ```
 
 - `unit-boundaries`: mixed/non-gram bases, zero totals, unit

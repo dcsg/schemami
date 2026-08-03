@@ -120,12 +120,18 @@ function replay(v: CalcVector): unknown {
       return calc.readingOrder(inputDoc(input));
     case "interleave":
       return calc.interleave(inputDoc(input)).map((t) => ({ id: t.id, track: t.track }));
-    case "schedule":
-      return calc.schedule(inputDoc(input)).map((e) => ({
-        item: e.item,
-        start: windowJSON(e.start),
-        duration: windowJSON(e.duration),
-      }));
+    case "schedule": {
+      const resolved = (input["resolved"] ?? {}) as Record<string, Record<string, unknown>>;
+      const r = calc.schedule(inputDoc(input), resolved);
+      return {
+        entries: r.entries.map((e) => ({
+          item: e.item,
+          start: windowJSON(e.start),
+          duration: windowJSON(e.duration),
+        })),
+        refusals: r.refusals,
+      };
+    }
     default:
       throw new Error(`unknown vector function ${v.function}`);
   }

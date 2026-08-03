@@ -47,7 +47,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done | 1/5 | 2026-08-03 |
-| 8     | pending | 0/5 | — |
+| 8     | done | 1/5 | 2026-08-03 |
 | 9     | pending | 0/5 | — |
 | 10    | pending | 0/5 | — |
 | 11    | pending | 0/5 | — |
@@ -798,6 +798,13 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
   implementation. Golden-vector tested; a divergence is caught by determinism.
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
+
+Phase 8:
+- AC-8.1: PASS — 2026-08-03 (calculus/SPEC.md gains R-SCHED-5, worked example WE-SCHED-3 and the `referenced-placement` edge class; grep for project ids returns ZERO — the SPEC stays public-normative)
+- AC-8.2: PASS — 2026-08-03 (a referenced preparation is placed at {-3600, -2700, -1800} against a consumer at t0 — exactly WE-SCHED-3's numbers — in BOTH implementations; 23 vectors replay green)
+- AC-8.3: PASS — 2026-08-03 (an unsupplied reference REFUSES with the normative string `referenced preparation "<id>" unresolvable` and is placed NOWHERE. The signature change is the design: Schedule(scope, resolved) makes resolution an INPUT, never a guess. A zero-window fallback would silently claim a multi-day ferment takes no time — the exact failure this rule exists to prevent)
+- AC-8.4: PASS — 2026-08-03 (calculus/SPEC.md and calculus/vectors/schedule.json changed in the SAME commit, as DS-CALC-002 requires — this is the only phase permitted to touch the frozen set)
+- AC-8.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 87, calculus both implementations, coverage gate green on the new edge class)
 
 Phase 7:
 - AC-7.1: PASS — 2026-08-03 (VERSIONING.md gains "## Document revisions (binding, v0.4)" between Change rules and Decode-compat; every pre-existing anchor survives, asserted by test as well as by accept.sh. Closes PRD OQ-5: when version increments, published (collection,id,version) immutable, supersession by successor alone — recorded as a deliberate minimalism rather than an oversight)

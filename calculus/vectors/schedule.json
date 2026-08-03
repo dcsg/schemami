@@ -13,138 +13,141 @@
     "input": {
       "source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"
     },
-    "expected": [
-      {
-        "duration": {
-          "max": 1800,
-          "min": 1800,
-          "target": 1800
+    "expected": {
+      "entries": [
+        {
+          "duration": {
+            "max": 1800,
+            "min": 1800,
+            "target": 1800
+          },
+          "item": "e1",
+          "start": {
+            "max": 0,
+            "min": 0,
+            "target": 0
+          }
         },
-        "item": "e1",
-        "start": {
-          "max": 0,
-          "min": 0,
-          "target": 0
-        }
-      },
-      {
-        "duration": {
-          "max": 1800,
-          "min": 1800,
-          "target": 1800
+        {
+          "duration": {
+            "max": 1800,
+            "min": 1800,
+            "target": 1800
+          },
+          "item": "e2",
+          "start": {
+            "max": 1800,
+            "min": 1800,
+            "target": 1800
+          }
         },
-        "item": "e2",
-        "start": {
-          "max": 1800,
-          "min": 1800,
-          "target": 1800
-        }
-      },
-      {
-        "duration": {
-          "max": 86400,
-          "min": 28800,
-          "target": 43200
+        {
+          "duration": {
+            "max": 86400,
+            "min": 28800,
+            "target": 43200
+          },
+          "item": "e3",
+          "start": {
+            "max": 3600,
+            "min": 3600,
+            "target": 3600
+          }
         },
-        "item": "e3",
-        "start": {
-          "max": 3600,
-          "min": 3600,
-          "target": 3600
-        }
-      },
-      {
-        "duration": {
-          "max": 1200,
-          "min": 1200,
-          "target": 1200
+        {
+          "duration": {
+            "max": 1200,
+            "min": 1200,
+            "target": 1200
+          },
+          "item": "e4",
+          "start": {
+            "max": 90000,
+            "min": 32400,
+            "target": 46800
+          }
         },
-        "item": "e4",
-        "start": {
-          "max": 90000,
-          "min": 32400,
-          "target": 46800
-        }
-      },
-      {
-        "duration": {
-          "max": 260400,
-          "min": 130800,
-          "target": 174000
+        {
+          "duration": {
+            "max": 260400,
+            "min": 130800,
+            "target": 174000
+          },
+          "item": "fruit-insert",
+          "start": {
+            "max": -129000,
+            "min": -258600,
+            "target": -172200
+          }
         },
-        "item": "fruit-insert",
-        "start": {
-          "max": -129000,
-          "min": -258600,
-          "target": -172200
-        }
-      },
-      {
-        "duration": {
-          "max": 1200,
-          "min": 1200,
-          "target": 1200
+        {
+          "duration": {
+            "max": 1200,
+            "min": 1200,
+            "target": 1200
+          },
+          "item": "fi1",
+          "start": {
+            "max": -129000,
+            "min": -258600,
+            "target": -172200
+          }
         },
-        "item": "fi1",
-        "start": {
-          "max": -129000,
-          "min": -258600,
-          "target": -172200
-        }
-      },
-      {
-        "duration": {
-          "max": 259200,
-          "min": 129600,
-          "target": 172800
+        {
+          "duration": {
+            "max": 259200,
+            "min": 129600,
+            "target": 172800
+          },
+          "item": "fi2",
+          "start": {
+            "max": -127800,
+            "min": -257400,
+            "target": -171000
+          }
         },
-        "item": "fi2",
-        "start": {
-          "max": -127800,
-          "min": -257400,
-          "target": -171000
-        }
-      },
-      {
-        "duration": {
-          "max": 88200,
-          "min": 30600,
-          "target": 45000
+        {
+          "duration": {
+            "max": 88200,
+            "min": 30600,
+            "target": 45000
+          },
+          "item": "sponge-layer",
+          "start": {
+            "max": -28800,
+            "min": -86400,
+            "target": -43200
+          }
         },
-        "item": "sponge-layer",
-        "start": {
-          "max": -28800,
-          "min": -86400,
-          "target": -43200
-        }
-      },
-      {
-        "duration": {
-          "max": 1800,
-          "min": 1800,
-          "target": 1800
+        {
+          "duration": {
+            "max": 1800,
+            "min": 1800,
+            "target": 1800
+          },
+          "item": "sp1",
+          "start": {
+            "max": -28800,
+            "min": -86400,
+            "target": -43200
+          }
         },
-        "item": "sp1",
-        "start": {
-          "max": -28800,
-          "min": -86400,
-          "target": -43200
+        {
+          "duration": {
+            "max": 86400,
+            "min": 28800,
+            "target": 43200
+          },
+          "item": "sp2",
+          "start": {
+            "max": -27000,
+            "min": -84600,
+            "target": -41400
+          }
         }
-      },
-      {
-        "duration": {
-          "max": 86400,
-          "min": 28800,
-          "target": 43200
-        },
-        "item": "sp2",
-        "start": {
-          "max": -27000,
-          "min": -84600,
-          "target": -41400
-        }
-      }
-    ]
+      ],
+      "refusals": []
+    }
   },
   {
     "function": "schedule",
@@ -178,33 +181,179 @@
         ]
       }
     },
-    "expected": [
-      {
-        "duration": {
-          "max": 900,
-          "min": 600,
-          "target": 720
+    "expected": {
+      "entries": [
+        {
+          "duration": {
+            "max": 900,
+            "min": 600,
+            "target": 720
+          },
+          "item": "s1",
+          "start": {
+            "max": 0,
+            "min": 0,
+            "target": 0
+          }
         },
-        "item": "s1",
-        "start": {
-          "max": 0,
-          "min": 0,
-          "target": 0
+        {
+          "duration": {
+            "max": 1800,
+            "min": 1800,
+            "target": 1800
+          },
+          "item": "s2",
+          "start": {
+            "max": 900,
+            "min": 600,
+            "target": 720
+          }
         }
+      ],
+      "refusals": []
+    }
+  },
+  {
+    "function": "schedule",
+    "name": "referenced-placement-resolved",
+    "edge_classes": [
+      "referenced-placement",
+      "timeline-arithmetic"
+    ],
+    "rules": [
+      "R-SCHED-5",
+      "R-SCHED-2"
+    ],
+    "input": {
+      "doc": {
+        "components": [
+          {
+            "id": "prep",
+            "ref": "prep-doc"
+          }
+        ],
+        "steps": [
+          {
+            "duration": {
+              "target": "10m"
+            },
+            "id": "assemble",
+            "uses": [
+              "prep"
+            ]
+          }
+        ]
       },
-      {
-        "duration": {
-          "max": 1800,
-          "min": 1800,
-          "target": 1800
-        },
-        "item": "s2",
-        "start": {
-          "max": 900,
-          "min": 600,
-          "target": 720
+      "resolved": {
+        "prep-doc": {
+          "steps": [
+            {
+              "duration": {
+                "max": "1h",
+                "min": "30m",
+                "target": "45m"
+              },
+              "id": "p1"
+            }
+          ]
         }
       }
-    ]
+    },
+    "expected": {
+      "entries": [
+        {
+          "duration": {
+            "max": 600,
+            "min": 600,
+            "target": 600
+          },
+          "item": "assemble",
+          "start": {
+            "max": 0,
+            "min": 0,
+            "target": 0
+          }
+        },
+        {
+          "duration": {
+            "max": 3600,
+            "min": 1800,
+            "target": 2700
+          },
+          "item": "prep",
+          "start": {
+            "max": -1800,
+            "min": -3600,
+            "target": -2700
+          }
+        },
+        {
+          "duration": {
+            "max": 3600,
+            "min": 1800,
+            "target": 2700
+          },
+          "item": "p1",
+          "start": {
+            "max": -1800,
+            "min": -3600,
+            "target": -2700
+          }
+        }
+      ],
+      "refusals": []
+    }
+  },
+  {
+    "function": "schedule",
+    "name": "referenced-placement-unresolvable",
+    "edge_classes": [
+      "referenced-placement"
+    ],
+    "rules": [
+      "R-SCHED-5"
+    ],
+    "input": {
+      "doc": {
+        "components": [
+          {
+            "id": "prep",
+            "ref": "prep-doc"
+          }
+        ],
+        "steps": [
+          {
+            "duration": {
+              "target": "10m"
+            },
+            "id": "assemble",
+            "uses": [
+              "prep"
+            ]
+          }
+        ]
+      },
+      "resolved": {}
+    },
+    "expected": {
+      "entries": [
+        {
+          "duration": {
+            "max": 600,
+            "min": 600,
+            "target": 600
+          },
+          "item": "assemble",
+          "start": {
+            "max": 0,
+            "min": 0,
+            "target": 0
+          }
+        }
+      ],
+      "refusals": [
+        "referenced preparation \"prep-doc\" unresolvable"
+      ]
+    }
   }
 ]

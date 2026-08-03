@@ -142,7 +142,7 @@ export function createJsEngine(schemas: SchemaSet): RcpEngine {
     /** Timeline derivation via the TS Recipe Calculus (two-stage schedule). */
     async schedule(canonical: unknown): Promise<TimelineEntry[]> {
       const doc = (canonical ?? {}) as Record<string, unknown>;
-      return calc.schedule(doc).map((e) => ({
+      return calc.schedule(doc).entries.map((e) => ({
         item: e.item,
         start: { min: e.start.Min, target: e.start.Target, max: e.start.Max },
         duration: { min: e.duration.Min, target: e.duration.Target, max: e.duration.Max },

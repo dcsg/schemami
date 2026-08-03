@@ -5,6 +5,7 @@ package calc
 // t0, never wall-clock; durations compute in float64 seconds (N-4).
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 )
@@ -436,10 +437,17 @@ type ScheduleEntry struct {
 // start − component total, by conservative interval subtraction — which
 // is how offsets go negative ("start the day before"). Guard selection:
 // defaults.
-func Schedule(scope map[string]any) []ScheduleEntry {
+// Schedule derives placements. `resolved` supplies the bodies of
+// documents included BY REFERENCE, keyed by their ref id (R-SCHED-5):
+// resolution is an INPUT to the Calculus, never something it guesses.
+// A reference with no supplied body is refused — returned in the second
+// value — and placed nowhere; falling back to a zero window would
+// silently claim a multi-day ferment takes no time.
+func Schedule(scope map[string]any, resolved map[string]map[string]any) ([]ScheduleEntry, []string) {
 	// Stage 1: the parent method alone, from its own t0.
 	parentStarts, parentDur := scopeSchedule(scope)
 	var out []ScheduleEntry
+	var refusals []string
 	if steps, ok := scope["steps"].([]any); ok {
 		for _, sv := range steps {
 			if sm, ok := sv.(map[string]any); ok {
@@ -457,11 +465,20 @@ func Schedule(scope map[string]any) []ScheduleEntry {
 			if !ok {
 				continue
 			}
-			if _, isRef := cm["ref"]; isRef {
-				continue
-			}
 			cid, _ := cm["id"].(string)
-			innerStarts, innerDur := scopeSchedule(cm)
+			inner := cm
+			if refRaw, isRef := cm["ref"]; isRef {
+				// R-SCHED-5: a referenced preparation is placed exactly
+				// as an inline one, using the SUPPLIED body.
+				refID, _ := refRaw.(string)
+				body, supplied := resolved[refID]
+				if !supplied {
+					refusals = append(refusals, fmt.Sprintf("referenced preparation %q unresolvable", refID))
+					continue
+				}
+				inner = body
+			}
+			innerStarts, innerDur := scopeSchedule(inner)
 			total := Window{}
 			for id, s := range innerStarts {
 				total = windowMax(total, s.plus(innerDur[id]))
@@ -472,7 +489,7 @@ func Schedule(scope map[string]any) []ScheduleEntry {
 			}
 			placement := parentStarts[consumer].minusConservative(total)
 			out = append(out, ScheduleEntry{Item: cid, Start: placement, Duration: total})
-			if ss, ok := cm["steps"].([]any); ok {
+			if ss, ok := inner["steps"].([]any); ok {
 				for _, sv := range ss {
 					if sm, ok := sv.(map[string]any); ok {
 						if id, ok := sm["id"].(string); ok {
@@ -487,7 +504,7 @@ func Schedule(scope map[string]any) []ScheduleEntry {
 			}
 		}
 	}
-	return out
+	return out, refusals
 }
 
 // scopeSchedule propagates start windows over ONE scope's steps (after +

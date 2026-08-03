@@ -30,7 +30,7 @@ func TestTortaTimeline(t *testing.T) {
 	if len(order) < 7 || order[0] != "ganache-cobertura" || order[1] != "calda-cafe" {
 		t.Fatalf("reading order: %v — components must precede the method", order)
 	}
-	sched := calc.Schedule(doc)
+	sched, _ := calc.Schedule(doc, nil)
 	byItem := map[string]calc.ScheduleEntry{}
 	for _, e := range sched {
 		byItem[e.Item] = e
@@ -51,7 +51,7 @@ func TestTortaTimeline(t *testing.T) {
 // AC-3.3 — entremet: multi-day, parallel tracks, negative offsets.
 func TestEntremetTimeline(t *testing.T) {
 	doc := loadOne(t, "testdata/calc/entremet.rcp.yaml")
-	sched := calc.Schedule(doc)
+	sched, _ := calc.Schedule(doc, nil)
 	byItem := map[string]calc.ScheduleEntry{}
 	for _, e := range sched {
 		byItem[e.Item] = e

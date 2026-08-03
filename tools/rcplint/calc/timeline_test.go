@@ -62,7 +62,7 @@ func TestWE_SCHED_1(t *testing.T) {
 		map[string]any{"id": "s1", "duration": map[string]any{"min": "10m", "target": "12m", "max": "15m"}},
 		map[string]any{"id": "s2", "after": []any{"s1"}, "duration": map[string]any{"target": "30m"}},
 	}}
-	sched := Schedule(doc)
+	sched, _ := Schedule(doc, nil)
 	var s2 ScheduleEntry
 	for _, e := range sched {
 		if e.Item == "s2" {
@@ -81,7 +81,7 @@ func TestWE_SCHED_1(t *testing.T) {
 // WE-SCHED-2 — prerequisite placement: calda start = s5.start − 20m;
 // ganache = s5.start − 10m; both per R-SCHED-2 interval subtraction.
 func TestWE_SCHED_2(t *testing.T) {
-	sched := Schedule(torta())
+	sched, _ := Schedule(torta(), nil)
 	byItem := map[string]ScheduleEntry{}
 	for _, e := range sched {
 		byItem[e.Item] = e // component summary entries come last, overwrite none (distinct ids)
@@ -116,7 +116,7 @@ func TestNegativeOffsets(t *testing.T) {
 			map[string]any{"id": "s1", "uses": []any{"insert"}, "duration": map[string]any{"target": "30m"}},
 		},
 	}
-	sched := Schedule(doc)
+	sched, _ := Schedule(doc, nil)
 	for _, e := range sched {
 		if e.Item == "insert" {
 			// consumer s1 starts after insert's terminal (uses edge): start = 2d.
@@ -142,5 +142,49 @@ func TestDurationGrammar(t *testing.T) {
 		if _, ok := parseDurationSeconds(bad); ok {
 			t.Errorf("parseDurationSeconds(%q) accepted", bad)
 		}
+	}
+}
+
+// R-SCHED-5: a referenced preparation with no supplied body is REFUSED,
+// never placed at zero. A zero-window fallback would silently claim a
+// multi-day ferment takes no time — the failure this rule prevents.
+func TestScheduleRefUnresolvable(t *testing.T) {
+	doc := map[string]any{
+		"components": []any{map[string]any{"id": "prep", "ref": "prep-doc"}},
+		"steps": []any{map[string]any{"id": "assemble", "uses": []any{"prep"},
+			"duration": map[string]any{"target": "10m"}}},
+	}
+	entries, refusals := Schedule(doc, nil)
+	if len(refusals) != 1 {
+		t.Fatalf("expected one refusal, got %v", refusals)
+	}
+	if refusals[0] != `referenced preparation "prep-doc" unresolvable` {
+		t.Errorf("refusal string is normative; got %q", refusals[0])
+	}
+	for _, e := range entries {
+		if e.Item == "prep" {
+			t.Error("an unresolvable reference must be placed NOWHERE, not at zero")
+		}
+	}
+
+	// Supplied: placed by R-SCHED-2's conservative subtraction.
+	body := map[string]any{"steps": []any{map[string]any{"id": "p1",
+		"duration": map[string]any{"min": "30m", "target": "45m", "max": "1h"}}}}
+	entries, refusals = Schedule(doc, map[string]map[string]any{"prep-doc": body})
+	if len(refusals) != 0 {
+		t.Fatalf("a supplied reference must not refuse: %v", refusals)
+	}
+	var placed bool
+	for _, e := range entries {
+		if e.Item == "prep" {
+			placed = true
+			// WE-SCHED-3's numbers.
+			if e.Start.Min != -3600 || e.Start.Target != -2700 || e.Start.Max != -1800 {
+				t.Errorf("placement = %+v, want {-3600,-2700,-1800} (WE-SCHED-3)", e.Start)
+			}
+		}
+	}
+	if !placed {
+		t.Error("a supplied reference must be placed like an inline component")
 	}
 }

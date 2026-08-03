@@ -127,16 +127,17 @@ func runCalcVectors(root, outDir string) int {
 		}
 		return map[string]any{"active": ids}
 	}
-	schedOut := func(doc map[string]any) any {
+	schedOut := func(doc map[string]any, resolved map[string]map[string]any) any {
+		entries, refusals := calc.Schedule(doc, resolved)
 		var out []map[string]any
-		for _, e := range calc.Schedule(doc) {
+		for _, e := range entries {
 			out = append(out, map[string]any{
 				"item":     e.Item,
 				"start":    map[string]any{"min": e.Start.Min, "target": e.Start.Target, "max": e.Start.Max},
 				"duration": map[string]any{"min": e.Duration.Min, "target": e.Duration.Target, "max": e.Duration.Max},
 			})
 		}
-		return out
+		return map[string]any{"entries": out, "refusals": emptyIfNil(refusals)}
 	}
 
 	var vectors []calcVector
@@ -210,12 +211,30 @@ func runCalcVectors(root, outDir string) int {
 		add("interleave", "entremet-lanes", []string{"timeline-arithmetic"}, []string{"R-INTERLEAVE-1", "R-INTERLEAVE-3"},
 			map[string]any{"source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"}, lanes)
 		add("schedule", "entremet-prerequisites", []string{"timeline-arithmetic"}, []string{"R-SCHED-1", "R-SCHED-2", "R-SCHED-4"},
-			map[string]any{"source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"}, schedOut(entremet))
+			map[string]any{"source": "tools/rcplint/testdata/calc/entremet.rcp.yaml"}, schedOut(entremet, nil))
 	} else {
 		return 2
 	}
 	add("schedule", "window-propagation", []string{"timeline-arithmetic"}, []string{"R-SCHED-1"},
-		map[string]any{"doc": schedDoc}, schedOut(schedDoc))
+		map[string]any{"doc": schedDoc}, schedOut(schedDoc, nil))
+
+	// R-SCHED-5: a referenced preparation is placed exactly as an inline
+	// one — the numbers of WE-SCHED-3.
+	refParent := map[string]any{
+		"components": []any{map[string]any{"id": "prep", "ref": "prep-doc"}},
+		"steps": []any{map[string]any{"id": "assemble", "uses": []any{"prep"},
+			"duration": map[string]any{"target": "10m"}}},
+	}
+	refBody := map[string]any{"steps": []any{map[string]any{"id": "p1",
+		"duration": map[string]any{"min": "30m", "target": "45m", "max": "1h"}}}}
+	add("schedule", "referenced-placement-resolved", []string{"referenced-placement", "timeline-arithmetic"},
+		[]string{"R-SCHED-5", "R-SCHED-2"},
+		map[string]any{"doc": refParent, "resolved": map[string]any{"prep-doc": refBody}},
+		schedOut(refParent, map[string]map[string]any{"prep-doc": refBody}))
+	add("schedule", "referenced-placement-unresolvable", []string{"referenced-placement"},
+		[]string{"R-SCHED-5"},
+		map[string]any{"doc": refParent, "resolved": map[string]any{}},
+		schedOut(refParent, nil))
 
 	// write per-function files, stable order
 	byFn := map[string][]calcVector{}

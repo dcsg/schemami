@@ -326,51 +326,51 @@ phases:
     verify: make validate && make conformance && make calculus && make accept
 - phase: 8
   title: 'Calculus: referenced preparations become schedulable (opus)'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-8.1
     text: '`calculus/SPEC.md` gains the rule, a worked example and an edge class; no project ids entered
       it'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run 'TestSpecCompleteness|TestCalcCoverage' ./...
   - id: AC-8.2
     text: A referenced preparation is placed before its consuming step, matching the worked example's
       numbers, in BOTH implementations
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make calculus
   - id: AC-8.3
     text: An unresolvable reference REFUSES with the normative uncertainty string rather than placing
       at zero
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestScheduleRefUnresolvable ./calc/
   - id: AC-8.4
     text: Vectors changed ONLY in this commit, alongside the SPEC change
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: git show --stat HEAD | grep -q 'calculus/SPEC.md'
   - id: AC-8.5
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make conformance && make calculus && make accept
 - phase: 9
   title: 'Resolution records: verifiable, and fail-closed on every path (opus)'
