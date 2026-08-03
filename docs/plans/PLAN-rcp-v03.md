@@ -40,7 +40,7 @@ phases:
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
-| 7     | pending | 0/5 | — |
+| 7     | PAUSED at media drop | 1/5 | 2026-08-03 |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
 
@@ -276,6 +276,14 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 None — full coverage (model.mmd reference-only).
 
 CHECKPOINT: CALC SPEC GREEN — 2026-08-03 (Daniel; three review rounds folded in: rule/WE ids, trace lineage then corrected to project-side-only, full public-normative sweep. R-BASIS-2 include_components upgrade APPROVED with the green.)
+
+Phase 7 (build half done — PAUSED at the media drop):
+- AC-7.1: PASS — 2026-08-03 (schema/MEDIA.md with the four mandated anchors; grep check live in accept.sh; adequacy still owed Daniel's Phase 9 read)
+- AC-7.2: PASS — 2026-08-03 (media-attest.py scans the commit-eligible tree — gitignore-honoring, so private/collection is exactly the one unlisted place media may live; explicit checked-in allowlist; permanent --self-test plants binary + data-URI + raw-base64 and must detect all three; live planted binary also failed the gate and was removed; the scanner initially flagged its own self-test fixture string — marker split so it cannot match itself)
+- AC-7.3: PASS — 2026-08-03 (14 media tests: four types as their elements, doc+step level, failure text-labelled, alt caption-then-role, placeholder ≡ unmatched absent state, basename matching, revocation without DOM, magic-byte discrimination incl. YAML-named-.jpg stays a document; full viewer suite 66 green)
+- AC-7.4: PENDING — awaiting Daniel's media drop (see pause note)
+- AC-7.5: PASS — 2026-08-03 (CSP exact-string live in accept.sh — anchored full-string with hash placeholders, img-src AND media-src exactly `data: blob:`; bundle 178 KiB < 500 KB; file input primary ingress; accept 32/32)
+- PAUSE NOTE — 2026-08-03: madeleine page photo exists only in the conversation, not on disk, so the #27 crops also wait on the drop; both items (page photo for local crops + ≥1 personal-cooking photo) requested from Daniel together. Document-level media added to core as OPTIONAL (steps carried media since v0.1); examples revalidate; decode-compat unaffected (post-v0.1 field, frozen reader tolerates it).
 
 Phase 6:
 - AC-6.1: PASS — 2026-08-03 (frozen v0.1 reader — hand transcription in tools/rcplint/compat/reader_v01.go, commit-SHA pinned — decodes all six current examples with identity fields intact; current loader + CURRENT core schema accept the tag-extracted v0.1 documents in testdata/compat/v01/, so no new required field crept in; three transcription type errors were caught by the fixtures themselves: rcp is const-1 int, profile an object, primitive a versioned ref)
