@@ -38,7 +38,7 @@ phases:
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
-| 9     | in_progress (awaiting Daniel's manual checks) | 1/5 | 2026-08-03 |
+| 9     | done | 1/5 | 2026-08-03 |
 
 **IMPORTANT:** Update this table as phases complete. This table is the persistent state that survives context compaction.
 
@@ -311,8 +311,8 @@ Phase 9:
 - AC-9.1: PASS — 2026-08-03 (make accept: 26/26 incl. all new v0.2 checks)
 - AC-9.2: PASS — 2026-08-03 (clean worktree: mise install + frozen bun install + validate + conformance green; private checks skip-with-notice)
 - AC-9.3: PASS — 2026-08-03 (5 features shipped w/ realized_by; FEAT-TOOL-001 lightweight delivered; ROADMAP v0.2 SHIPPED)
-- AC-9.4: AWAITING DANIEL — checklist presented (paste-test, network silence, prose review, file:// x2 browsers)
-- AC-9.5: pending AC-9.4 (tag after Daniel's green)
+- AC-9.4: PASS — 2026-08-03 (Daniel green: file:// + mobile artifact, torta stress doc, four review findings shipped/ledgered)
+- AC-9.5: PASS — 2026-08-03 (tag rcp-v0.2)
 - edikt verify spec SPEC-002: 5 passed, 0 failed (verify-carrying SACs), 19 evidence-tracked
 
 Phase 8:
@@ -325,7 +325,7 @@ Phase 7:
 - AC-7.2: PASS — 2026-08-03 (26/26 incl. oracle-pinned basis strings: nata salt 2%→10 g, hydration 55%→275 g)
 - AC-7.3: PASS — 2026-08-03
 - AC-7.4: PASS — 2026-08-03 (mock {l1,l2} engine renders the L2 group with zero UI change)
-- AC-7.5: QUEUED for Daniel — browser extension cannot attach to file:// or localhost; CSP hash self-consistency proven mechanically (the page cannot block its own assets on any origin). Daniel: open tools/viewer/dist/index.html from file:// in 2 browsers, paste an example.
+- AC-7.5: PASS — 2026-08-03 (Daniel green; was QUEUED for Daniel — browser extension cannot attach to file:// or localhost; CSP hash self-consistency proven mechanically (the page cannot block its own assets on any origin). Daniel: open tools/viewer/dist/index.html from file:// in 2 browsers, paste an example.)
 
 Phase 6:
 - AC-6.1: PASS — 2026-08-03
