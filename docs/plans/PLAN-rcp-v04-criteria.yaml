@@ -234,48 +234,48 @@ phases:
     verify: make validate && make accept
 - phase: 6
   title: Canonical links and the published resolution order (opus)
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-6.1
     text: '`canonical_recipe` validates on a registry entry and its absence keeps the entry valid'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestCanonicalLinkSchema ./...
   - id: AC-6.2
     text: Pin beats own-collection beats canonical, across the full matrix
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestResolutionOrder ./...
   - id: AC-6.3
     text: A genuine tie FAILS naming every candidate
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestResolutionTieFails ./...
   - id: AC-6.4
     text: An explanation carries candidate set, winner and deciding criterion
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestResolutionExplanation ./...
   - id: AC-6.5
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make accept
 - phase: 7
   title: Document revisions, stages, and two recorded decisions

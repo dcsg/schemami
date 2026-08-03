@@ -4,17 +4,41 @@
   "title": "RCP Registry — Technique",
   "description": "A governed technique entry (DECISIONS #25; SR-REG-004): the semantic layer over primitives — the substitution fallback anchor (research 06) and the derived technique facet (DECISIONS #10). Fourth registry kind, same governance as the other three: append-only, kind-prefixed ontology paths (registry-governance rule 6), one file per entry, filename = id, steward-approved mints.",
   "type": "object",
-  "required": ["id", "kind", "display_name", "definition"],
+  "required": [
+    "id",
+    "kind",
+    "display_name",
+    "definition"
+  ],
   "properties": {
-    "id": { "type": "string", "pattern": "^technique\\.[a-z0-9][a-z0-9.-]*$" },
-    "kind": { "const": "technique" },
+    "id": {
+      "type": "string",
+      "pattern": "^technique\\.[a-z0-9][a-z0-9.-]*$"
+    },
+    "kind": {
+      "const": "technique"
+    },
     "display_name": {
       "type": "object",
-      "required": ["en"],
-      "properties": { "pt": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } },
+      "required": [
+        "en"
+      ],
+      "properties": {
+        "pt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
       "additionalProperties": false
     },
-    "definition": { "type": "string", "minLength": 1 },
+    "definition": {
+      "type": "string",
+      "minLength": 1
+    },
     "primitive": {
       "type": "string",
       "pattern": "^primitive\\.[a-z0-9][a-z0-9.-]*$",
@@ -24,13 +48,69 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["label"],
-        "properties": { "label": { "type": "string" }, "url": { "type": "string", "format": "uri" } },
+        "required": [
+          "label"
+        ],
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
         "additionalProperties": false
       }
     },
-    "media": { "type": "array", "items": { "type": "object" } },
-    "status": { "enum": ["active", "deprecated"], "default": "active" }
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "status": {
+      "enum": [
+        "active",
+        "deprecated"
+      ],
+      "default": "active"
+    },
+    "canonical_recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "description": "OPTIONAL link to the document that TEACHES this preparation — the answer to 'faça um roux' when the reader has never made one. CURATION, NOT ESSENCE: many roux documents may exist (a user's own, a published one, variants); the steward picks what this entry points at, and an entry without a link stays valid forever. Distinct from `teaches`, which is prose-and-URL for human reading; this is a resolvable protocol reference. Resolution follows the published order — an explicit pin outranks the consumer's own collection, which outranks this link — so a canonical link is a DEFAULT, never an override of what the reader already has.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "The teaching document's id."
+        },
+        "collection": {
+          "$ref": "#/$defs/collectionId",
+          "description": "REQUIRED when the link crosses collections; omitted means the registry's own corpus."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pinned revision. Unpinned links resolve to whatever the target currently is; pinned ones report drift when it moves."
+        }
+      }
+    }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "collectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\s]+$"
+    }
+  }
 }

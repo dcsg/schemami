@@ -4,60 +4,191 @@
   "title": "RCP Registry — IngredientClass",
   "description": "A governed ingredient-class entry (DECISIONS #16/#23; registry-governance guideline). Recipes reference the class id; the shopping layer resolves class to product. Entries are append-only: never deleted or repurposed — deprecate and add.",
   "type": "object",
-  "required": ["id", "kind", "display_name", "definition", "roles"],
+  "required": [
+    "id",
+    "kind",
+    "display_name",
+    "definition",
+    "roles"
+  ],
   "properties": {
     "id": {
       "type": "string",
       "pattern": "^ingredient\\.[a-z0-9][a-z0-9.-]*$",
       "description": "Kind-prefixed stable slug (DECISIONS #23). Never encodes display names; never changes once merged. Flour types always explicit (T65, T80…)."
     },
-    "kind": { "const": "ingredient-class" },
+    "kind": {
+      "const": "ingredient-class"
+    },
     "display_name": {
       "type": "object",
-      "required": ["pt", "en"],
-      "properties": { "pt": { "type": "string", "minLength": 1 }, "en": { "type": "string", "minLength": 1 } },
+      "required": [
+        "pt",
+        "en"
+      ],
+      "properties": {
+        "pt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
       "additionalProperties": false,
       "description": "Localized display names; pt-PT culinary terms exact (massa velha ≠ isco). The id is never localized."
     },
-    "definition": { "type": "string", "minLength": 1, "description": "Prose definition — human eyes only." },
+    "definition": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Prose definition — human eyes only."
+    },
     "roles": {
       "type": "array",
       "minItems": 1,
-      "items": { "type": "string", "minLength": 1 },
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "description": "Functional roles this class typically supplies (machine-read: substitution, safety, basis). Membership in the core role enum is enforced by the L2 linter against schema/rcp-core-v1.schema.json#/$defs/role — single source, not duplicated here."
     },
     "density": {
       "type": "object",
-      "required": ["g_per_ml"],
-      "properties": { "g_per_ml": { "type": "number", "exclusiveMinimum": 0 }, "note": { "type": "string" } },
+      "required": [
+        "g_per_ml"
+      ],
+      "properties": {
+        "g_per_ml": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "note": {
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "description": "Weight↔volume conversion lives per class in the catalog, never in recipes (research 00:679-684)."
     },
     "allergens": {
       "type": "array",
-      "items": { "enum": ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soybeans", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"] },
+      "items": {
+        "enum": [
+          "gluten",
+          "crustaceans",
+          "eggs",
+          "fish",
+          "peanuts",
+          "soybeans",
+          "milk",
+          "nuts",
+          "celery",
+          "mustard",
+          "sesame",
+          "sulphites",
+          "lupin",
+          "molluscs"
+        ]
+      },
       "description": "EU FIC 14 — a legal list, so a closed enum is correct (research 02:367-374)."
     },
-    "aliases": { "type": "array", "items": { "type": "string" } },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "cross_refs": {
       "type": "array",
       "description": "External ontology grounding (SR-REG-005): FooDON preferred, FDC/OFF accepted. Static data — validation never performs network lookups.",
       "items": {
         "type": "object",
-        "required": ["system", "ref"],
+        "required": [
+          "system",
+          "ref"
+        ],
         "properties": {
-          "system": { "enum": ["foodon", "fdc", "off"] },
-          "ref": { "type": "string", "minLength": 1 },
-          "label": { "type": "string", "description": "The external class label exactly as published — recorded at grounding time for human review." },
-          "url": { "type": "string", "format": "uri" },
-          "match": { "enum": ["exact", "broader"], "default": "exact" }
+          "system": {
+            "enum": [
+              "foodon",
+              "fdc",
+              "off"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "description": "The external class label exactly as published — recorded at grounding time for human review."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "match": {
+            "enum": [
+              "exact",
+              "broader"
+            ],
+            "default": "exact"
+          }
         },
         "additionalProperties": false
       }
     },
-    "grounding": { "const": "no-match", "description": "Explicit, audit-passing declaration that no external class faithfully matches (heritage items); reason goes in grounding_note." },
-    "grounding_note": { "type": "string", "minLength": 1 },
-    "status": { "enum": ["active", "deprecated"], "default": "active", "description": "Append-only lifecycle: deprecated entries stay resolvable forever." }
+    "grounding": {
+      "const": "no-match",
+      "description": "Explicit, audit-passing declaration that no external class faithfully matches (heritage items); reason goes in grounding_note."
+    },
+    "grounding_note": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "active",
+        "deprecated"
+      ],
+      "default": "active",
+      "description": "Append-only lifecycle: deprecated entries stay resolvable forever."
+    },
+    "canonical_recipe": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "description": "OPTIONAL link to the document that TEACHES this preparation — the answer to 'faça um roux' when the reader has never made one. CURATION, NOT ESSENCE: many roux documents may exist (a user's own, a published one, variants); the steward picks what this entry points at, and an entry without a link stays valid forever. Distinct from `teaches`, which is prose-and-URL for human reading; this is a resolvable protocol reference. Resolution follows the published order — an explicit pin outranks the consumer's own collection, which outranks this link — so a canonical link is a DEFAULT, never an override of what the reader already has.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "The teaching document's id."
+        },
+        "collection": {
+          "$ref": "#/$defs/collectionId",
+          "description": "REQUIRED when the link crosses collections; omitted means the registry's own corpus."
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Pinned revision. Unpinned links resolve to whatever the target currently is; pinned ones report drift when it moves."
+        }
+      }
+    }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "$defs": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*$"
+    },
+    "collectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\s]+$"
+    }
+  }
 }

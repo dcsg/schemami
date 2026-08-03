@@ -45,7 +45,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 3     | done | 1/5 | 2026-08-03 |
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
-| 6     | pending | 0/5 | — |
+| 6     | done | 1/5 | 2026-08-03 |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
 | 9     | pending | 0/5 | — |
@@ -859,5 +859,13 @@ Phase 5:
 - AC-5.3: PASS — 2026-08-03 (TestAxisBacking asserts every non-catch-all axis is exercised by a real document. INVERTED PROOF: adding `equipment` — which has a live registry but no document using it — fails the check naming it; removed, green)
 - AC-5.4: PASS — 2026-08-03 (TestNoDietAxis; the failure message carries the research-10 reasoning so a future reader learns why rather than just being blocked)
 - AC-5.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 85, calculus 25, vectors byte-unchanged)
+
+Phase 6:
+- AC-6.1: PASS — 2026-08-03 (canonical_recipe on technique + ingredient-class schemas, in all three shapes: bare id / +version / +collection. Asserted NEVER required — curation, not essence. Test fixtures were corrected against the REAL entry shapes rather than loosening the schemas to fit my fixtures)
+- AC-6.2: PASS — 2026-08-03 (full matrix: pin > own collection > canonical, with candidates fed in deliberately wrong sequence each time — the order is a property of the rule, never of the input, asserted over four permutations)
+- AC-6.3: PASS — 2026-08-03 (a genuine tie FAILS naming every candidate and saying how to fix it; no winner is set. INVERTED PROOF: disabling the tie branch fails TestResolutionTieFails)
+- AC-6.4: PASS — 2026-08-03 (Explain() carries the mention, every candidate INCLUDING losers, the winner and the deciding criterion; a failed resolution explains itself as unresolved. The protocol fixes the CONTENT, never the form — CSS's split)
+- AC-6.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 85, calculus 25, vectors byte-unchanged)
+- DIRECTION PINNED: TestUserOutranksAuthor asserts the consumer's own recipe beats the curated canonical. ld.so shipped this backwards (DT_RPATH above the user's LD_LIBRARY_PATH) and needed a whole second field to correct it without breaking old binaries. INVERTED PROOF: swapping the two tiers fails the test.
 
 ORIGINAL FINDING (now resolved above): the White Sauce family varies by CONSISTENCY (2 vs 3 tablespoons flour), an axis absent from the enum (equipment/technique/region/season/scale/other). It currently needs `other` + variant_label. Real evidence from a real corpus that the axis list may want a consistency or texture axis — to be weighed in Phase 5 rather than silently patched.
