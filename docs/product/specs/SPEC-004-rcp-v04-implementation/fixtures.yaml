@@ -1,0 +1,400 @@
+# Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+# edikt:artifact type=fixtures spec=SPEC-004 status=draft reviewed_by=qa
+# created_at=2026-08-03T17:50:00Z
+# All records aspirational until behaviour ships (SPEC-001 convention).
+# target_phase names the LAYER that builds them (SSP-001: identity → lineage →
+# trust → teaching). Private collection is never copied into fixtures or
+# vectors; synthetic stand-ins carry CI. Registry slugs below are real entries
+# in registry/entries/ — no invented ids.
+
+scenarios:
+  - name: "second-collection"
+    purpose: "SR-PACK-001/002, SR-VAL-002, AC-PACK-001-1/2 — the first time this repo holds two collections"
+    location: tools/rcplint/testdata/collections/
+    entities:
+      - entity: corpus
+        records:
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/pao-alentejano.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCollectionScope ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "id `pao-alentejano` DELIBERATELY collides with examples/alentejano.rcp.yaml; a different recipe body; both documents load, both stay resolvable, neither id is rewritten (AC-PACK-001-1)"
+            _note: "The collision is the whole point. Every scope rule in Layer 1 is unobservable in a single-collection corpus — before this fixture the harness could not distinguish 'resolves correctly' from 'resolves at all'."
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/broa.rcp.yaml — unqualified ref to `ganache-chocolate`"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCollectionScope ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "target exists ONLY in examples/; the unqualified reference FAILS naming the reference (SR-PACK-002) — inverted assertion proves no fallback search into the other loaded collection happened"
+            _note: "The dangerous failure mode is silent success. A permissive resolver would find ganache-chocolate in the other collection and look correct; this fixture is the only thing that distinguishes the two implementations."
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/broa-qualified.rcp.yaml — same ref, qualified"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCollectionScope ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "the qualified form resolves into the examples collection; the sibling `pao-alentejano` mention in the same document still binds LOCALLY (AC-PACK-001-2)"
+            _note: "Proves qualification and local binding coexist in one document — the realistic shape, and where an implementation that switches resolution mode per-document instead of per-reference breaks."
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/self-qualified.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCollectionScope ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "a reference qualified with its OWN collection identifier resolves normally, not treated as cross-collection"
+            _note: "Edge case that a naive `if qualifier != nil { crossCollectionPath() }` implementation gets wrong."
+
+  - name: "pack-manifest"
+    purpose: "SR-PACK-003, AC-PACK-002-1 — manifest is authoritative, conflicts are reported"
+    entities:
+      - entity: manifest
+        records:
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/rcp-pack.yaml (valid)"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "Layer 1 — Identity"
+            target_contract: "validates against schema/rcp-pack-v1.schema.json: collection identifier + optional publisher, licence, version; separate file, NOT a `kind:` value on the recipe core"
+            _note: "The happy path also guards the decode-compat surface: if the manifest ever became a recipe kind, the kind enum and the frozen v0.1 reader would both move."
+          - path: "tools/rcplint/testdata/collections/conflicting/rcp-pack.yaml + a document self-declaring a different identifier"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestPackManifest ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "the MANIFEST identifier wins and the conflict is REPORTED naming both values (AC-PACK-002-1); the document still loads"
+            _note: "Precedence without a report is indistinguishable from precedence with a bug. The report is the assertable half."
+          - path: "tools/rcplint/testdata/collections/lone/solo.rcp.yaml (no manifest)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestPackManifest ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "a lone document with no manifest self-describes via its own field and stays valid — no manifest is ever REQUIRED"
+            _note: "Guards the 'lone travel' case in the spec; a required manifest would break every existing single-file document and the id-pattern freeze story with it."
+          - path: "tools/rcplint/testdata/l1/pack-missing-identifier.rcp-pack.yaml (negative)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL1FixturesRejected ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "a manifest without the collection identifier is REJECTED naming the missing field"
+            _note: "One-rule-per-fixture, matching the existing L1 negative convention."
+
+  - name: "lineage-pins"
+    purpose: "SR-CORE-001, SR-VAL-001, AC-PR-007-1, AC-VAL-003-1 — matching, stale, and the hardening"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/l2/lineage-pin-current.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "variant_of pinned to the parent's CURRENT declared revision → green, no warning; every lineage field carries its schema description"
+            _note: "The green baseline. Without it a staleness rule that warns on everything would still pass its own negative fixture."
+          - path: "tools/rcplint/testdata/l2/lineage-pin-stale.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "variant pinned to revision N, parent declares N+1 → WARNING naming the variant, the pinned revision AND the current one (AC-VAL-003-1); document stays valid"
+            _note: "Staleness is a warning, not a failure — drift detection, not enforcement. The test must assert the document still validates, or the rule silently becomes fail-closed."
+          - path: "tools/rcplint/testdata/l2/lineage-pin-ahead.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "pin names a revision the parent has NEVER declared → FAILS; distinct from staleness, which is only pin-behind-target"
+            _note: "Separates 'lagging' from 'wrong'. A single numeric comparison written the lazy way collapses these two into one verdict."
+          - path: "tools/rcplint/testdata/l2/componentref-pin-mismatch.rcp.yaml (HARDENING)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "target DECLARES version 2, reference pins version 3 → hard FAILURE naming both (SR-VAL-001). Today the linter checks only that the target declares SOME version"
+            _note: "This is a behaviour change, not a new rule. The existing testdata/l2/unversioned-pin.rcp.yaml covers the old presence-only check; this fixture is the regression proof that the permissive path is gone, and the pair must be kept side by side so a future reader sees the tightening."
+
+  - name: "variant-axis"
+    purpose: "SR-CORE-002, SR-REG-003, AC-PR-008-1, SAC-REG-001 — one document per shipped axis, no diet"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/l2/axis-equipment.rcp.yaml — axis: equipment, value: equipment.forno-lenha"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "value resolves against the existing equipment registry kind; a sibling variant using equipment.forno-domestico-com-vapor differs machine-readably without reading variant_label"
+            _note: "The wood-oven vs domestic-steam pair is the real Alentejano variance and both slugs already exist — the axis ships backed by data, not by intent (SAC-REG-001)."
+          - path: "tools/rcplint/testdata/l2/axis-technique.rcp.yaml — axis: technique, value: technique.saute.refogado"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "resolves against the technique registry kind (13 live entries)"
+            _note: "refogado is a real entry and a real pt-PT distinction; using an invented slug here would make the coverage gate assert nothing."
+          - path: "tools/rcplint/testdata/l2/axis-region.rcp.yaml — axis: region, value: PT"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "ISO 3166-1 alpha-2, the encoding origin.country already uses; optional ISO 3166-2 subdivision form accepted"
+            _note: "Reuses an existing precedent instead of minting a region registry — the axis-backing rule in SR-REG-003 made concrete."
+          - path: "tools/rcplint/testdata/l2/axis-season.rcp.yaml — axis: season"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "resolves against the four-season closed enum defined in the spec; a fifth value is rejected"
+            _note: "Naturally closed vocabulary — the negative half matters more than the positive, since a closed enum that accepts anything is prose."
+          - path: "tools/rcplint/testdata/l2/axis-scale.rcp.yaml — axis: scale, value: professional"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "resolves against the domestic/professional closed enum (SAP multiple-BOM lot-size analogue)"
+            _note: "Batch context, not size — the fixture pairs a domestic and a professional variant of one family so the axis carries the distinction the Calculus must not try to compute."
+          - path: "tools/rcplint/testdata/l2/axis-other.rcp.yaml — axis: other + variant_label prose"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "catch-all always valid; variant_label carries the human explanation and is NEVER machine-read"
+            _note: "The escape hatch. If anything ever reads variant_label as data, DECISIONS #4 (enum/registry/prose discipline) has been breached."
+          - path: "tools/rcplint/testdata/l2/axis-unknown.rcp.yaml — axis: seasonality (not a shipped axis)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "an UNKNOWN AXIS decodes into the catch-all rather than failing (AC-PR-008-1, decode-compat posture); distinct from an unknown VALUE on a known axis, which fails"
+            _note: "The two 'unknown' cases have opposite verdicts. Conflating them is the most likely implementation error in this scenario."
+          - path: "tools/rcplint/testdata/l2/axis-absent.rcp.yaml — no discriminator at all"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "a document declaring no variant discriminator stays VALID — the field is optional, forever"
+            _note: "All twelve existing documents are in this state; if this fixture fails, the whole corpus fails."
+          - path: "axis enum negative assertion: `diet` MUST NOT appear in the shipped enum"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestAxisCoverage ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "the enum is asserted NOT to contain `diet` — dropped from v0.4 (no authoritative vocabulary; deferred to its own decision)"
+            _note: "A dropped axis with no test creeps back the first time someone copies an earlier spec revision. The revision history of spec.yaml still describes diet as adopted."
+
+  - name: "family"
+    purpose: "SR-VAL-003 — agreement within a collection, single-member warning, silence across collections"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/l2/family-agreeing.rcp.yaml (two documents, same family slug)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "same-family documents in one collection agree on the slug → green, no warning"
+            _note: "The green baseline for a rule whose only visible output is a warning."
+          - path: "tools/rcplint/testdata/l2/family-single-member.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "a family with exactly ONE member in the collection → WARNING naming it (the usual cause is a typo); document stays valid"
+            _note: "The typo detector. It fires on a legitimate lone member too, which is why it must be a warning and why the cross-collection case below must stay silent."
+          - path: "tools/rcplint/testdata/collections/livro-do-avo/family-sibling.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestFamilyScope ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "a family whose siblings live in the OTHER collection produces NO cross-collection validation — membership is not visible, so nothing is asserted about it"
+            _note: "Tests an absence. Easy to leave untested and easy to break the moment someone 'improves' family checking to look at all loaded documents."
+
+  - name: "resolution-order"
+    purpose: "SR-CORE-006, SAC-CORE-002 — total order, qualified wins within a tier, tie FAILS"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/resolve/three-way/ — one mention answerable by pin + own-collection document + canonical link SIMULTANEOUSLY"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolutionOrder ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "matrix: all three present → PIN wins; pin removed → OWN COLLECTION wins; both removed → CANONICAL link wins. The test asserts WHICH criterion decided, not only which document won"
+            _note: "A total order is only proven by removing tiers one at a time from a single corpus. Three separate corpora would each test one branch and prove nothing about precedence."
+          - path: "tools/rcplint/testdata/resolve/three-way/ — qualified vs unqualified candidate inside one tier"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolutionOrder ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "within a tier the QUALIFIED reference wins"
+            _note: "The intra-tier tiebreak — the only rule that keeps tier 2 from being ambiguous whenever two collections are loaded."
+          - path: "tools/rcplint/testdata/resolve/genuine-tie/"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolutionOrder ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "two candidates in the same tier, both qualified (or both unqualified) → resolution FAILS naming EVERY candidate; the message content is asserted"
+            _note: "The tiebreak cannot silently pick. If this fixture passes by picking one, the protocol has an undocumented ordering — the exact failure mode ld.so had to be corrected for."
+
+  - name: "trust"
+    purpose: "SR-PUB-001/002, SAC-PUB-001, AC-PUB-001-1/2 — reconcile→frozen, and the inverted proof"
+    entities:
+      - entity: corpus
+        records:
+          - path: "tools/rcplint/testdata/resolve/intact/ (two collections + cross-document references)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolveFrozen ./..."
+            target_phase: "Layer 3 — Trust"
+            target_contract: "reconcile writes records carrying target{collection,id,version} + source + content_hash + resolver_version; frozen over the untouched corpus PASSES and rewrites nothing (tree diff asserted empty)"
+            _note: "The npm install / npm ci round-trip. 'Rewrites nothing' is the half that a passing exit code does not prove."
+          - path: "tools/rcplint/testdata/resolve/mutated/ (same corpus, one target changed by one byte)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolveFrozen ./..."
+            target_phase: "Layer 3 — Trust"
+            target_contract: "frozen FAILS naming the reference and the nature of the break (AC-PUB-001-2, SAC-PUB-001)"
+            _note: "The inverted proof ships with the gate. A one-byte change is deliberate — it proves the hash is over content, not over a coarse summary."
+          - path: "tools/rcplint/testdata/resolve/missing/ (target deleted)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolveFrozen ./..."
+            target_phase: "Layer 3 — Trust"
+            target_contract: "frozen FAILS naming the reference; the failure is DISTINCT from a hash mismatch"
+            _note: "Three break kinds, three messages. An operator debugging a red gate needs to know whether the target moved or vanished."
+          - path: "tools/rcplint/testdata/resolve/unknown-resolver/ (record carrying an unrecognised resolver_version)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestResolveFrozen ./..."
+            target_phase: "Layer 3 — Trust"
+            target_contract: "frozen FAILS — an unknown resolver_version is never a silent pass"
+            _note: "This is the field npm lacks and the reason the record shape exists; leaving it unverified would make it decoration."
+          - path: "hash determinism golden: two reconcile runs over tools/rcplint/testdata/resolve/intact/"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestCanonicalJSON ./..."
+            target_phase: "Layer 3 — Trust"
+            target_contract: "byte-identical hashes across runs; canonical JSON key order and number formatting pinned by golden output; stdlib-only import allowlist (SP-005)"
+            _note: "Non-determinism here corrupts every record silently and only surfaces as a mystery red frozen gate weeks later."
+
+  - name: "canonical-links"
+    purpose: "SR-REG-001, AC-REG-005-1 — optional forever, resolves under the scope rule"
+    entities:
+      - entity: registry
+        records:
+          - path: "registry/entries/technique/technique.saute.refogado.yaml + canonical_recipe"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "canonical_recipe {collection?, id, version} validates and resolves to an existing document under the scope rule"
+            _note: "Uses a live registry entry — the link must be exercised on real data or the registry schema change is untested."
+          - path: "any existing entry WITHOUT canonical_recipe (e.g. registry/entries/technique/technique.flambe.yaml)"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "stays valid — the link is optional, never required"
+            _note: "60+ entries are in this state. Optionality is the claim; a required field here would be a decode-compat break disguised as a registry change."
+          - path: "tools/rcplint/testdata/registry/canonical-unloaded-collection.yaml (negative)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestRegistryFixtures ./..."
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "a canonical link into an unloaded collection reports UNRESOLVABLE and never falls back to a same-id document in the loaded collection"
+            _note: "The scope rule applied to registry links — the one place where a fallback would look like a helpful feature."
+
+  - name: "stage-identity"
+    purpose: "SR-CORE-005, SAC-CORE-001, AC-PR-006-1 — measurement wins on contradiction, critical still refuses"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/l2/stage-contradiction.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "a cook-syrup step referencing stage `thread` with a measured endpoint OUTSIDE the class bounds carried by primitive.cook-syrup → WARNING naming both values; the document stays valid and the MEASUREMENT is authoritative"
+            _note: "The calda in examples/other-categories.rcp.yaml already carries `stage: thread` with `target: 108` — this fixture is that shape pushed out of bounds, so the rule is tested against the real pattern rather than an invented one."
+          - path: "tools/rcplint/testdata/l2/stage-contradiction-with-critical.rcp.yaml (THE PAIR)"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./... && make validate"
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "SAME document: the out-of-bounds stage reference WARNS while a severity: critical constraint in that document still REFUSES fail-closed (SAC-CORE-001)"
+            _note: "The most important test in the cut. It is the only place where warn-semantics and refuse-semantics are exercised in one document, and the only way to prove the new 'measurement wins' path did not leak into the safety path the chucrute brine bound depends on."
+          - path: "tools/rcplint/testdata/l2/stage-on-bound.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "a measurement exactly ON a class bound is INSIDE — no warning; the comparison operator is pinned by test"
+            _note: "Inclusive-vs-exclusive is decided once, here, or it is decided differently in every implementation."
+          - path: "examples/ — two documents demonstrating both sides of the identity line (stage-fork keeps identity; fork becomes a new recipe)"
+            status: aspirational
+            verified_by: "make validate"
+            target_phase: "Layer 2 — Lineage"
+            target_contract: "both validate against core; lineage fields distinguish the two cases exactly as the decision prescribes (AC-PR-006-1)"
+            _note: "These live in examples/, not testdata/, because the corpus is the regression suite and this distinction is the one authors will copy."
+
+  - name: "extraction-lint"
+    purpose: "SR-REG-002, AC-REG-006-1/2 — one fixture per rule, matching the L2 suite convention"
+    entities:
+      - entity: fixture
+        records:
+          - path: "tools/rcplint/testdata/l2/mention-unanchored.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "step prose naming a registry-known preparation/technique term that nothing in the document anchors → WARNING naming the term and the step (AC-REG-006-2)"
+            _note: "This warning's COUNT is the proxy metric for whether curation scales — the PRD's riskiest assumption, which nothing can test directly. It has to fire reliably to be worth counting."
+          - path: "tools/rcplint/testdata/l2/mention-anchored-ok.rcp.yaml"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "the same term, properly anchored to a component or class reference → NO warning"
+            _note: "The false-positive guard. A mention rule that warns on anchored terms trains authors to ignore it, which is worse than not shipping it."
+          - path: "tools/rcplint/testdata/l2/pattern-unknown-target.rcp.yaml — prose `faça um X` / `make a X`, X unknown to the registry"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "authored-pattern rule WARNS naming X, from the maintained pt/en pattern list"
+            _note: "Catches the sub-preparation the extraction rule missed — the roux problem in its authored form, in both project languages."
+          - path: "tools/rcplint/testdata/l2/pattern-known-target.rcp.yaml — same pattern, X registry-known"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -run TestL2FixturesOneRuleEach ./..."
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "NO warning — the pattern rule fires on the unknown target, not on the phrasing"
+            _note: "Without this the rule would flag ordinary pt-PT recipe prose, and the pattern list would be deleted within a week."
+
+  - name: "viewer-teaching"
+    purpose: "SR-TOOL-001, SR-CORE-004, AC-TOOL-004-1/2, AC-PR-005-1 — see-the-method, schedule, fragments"
+    entities:
+      - entity: test
+        records:
+          - path: "tools/viewer/src/see-the-method.test.ts — brownie-ganache → ganache-chocolate"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "the linked method renders (ingredients + steps) AND the parent document's rendered output is asserted still present (AC-TOOL-004-1)"
+            _note: "Uses the existing brownie→ganache pair — the same edge that forced the componentRef pin. 'Without losing the parent' is the actual requirement and needs a positive assertion on the parent, not just on the child."
+          - path: "tools/viewer/src/see-the-method.test.ts — capability gating + extended mock engine"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "the affordance exists iff the engine declares the capability; engine seam version stays 1; a capability-richer mock engine renders it with ZERO UI code changes (ADR-002)"
+            _note: "Fourth generation of the no-rewrite proof. If the seam version has to move, ADR-002 is being violated and the cut needs a decision entry, not a code change."
+          - path: "tools/viewer/src/scale-schedule.test.ts — linked preparation placement"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test && make calculus"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "the linked preparation is placed BEFORE its consuming step via the existing two-stage Calculus schedule; offsets come from the Calculus and are never re-derived in the viewer (AC-TOOL-004-2)"
+            _note: "Re-derivation in the viewer would produce a second scheduling semantics with no vectors — exactly what the Calculus exists to prevent."
+          - path: "tools/viewer/src/media.test.ts — uri with #t=120,180"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "playback seeks to the fragment start; the fragment is passed through VERBATIM and never parsed into structured start/end fields"
+            _note: "Structured start/end is a stated non-goal; a viewer that parses the fragment into fields is one refactor away from serialising them."
+          - path: "tools/viewer/src/media.test.ts — two entries, SAME asset, different ranges"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "the second range renders and plays INDEPENDENTLY — no shared player state between entries (AC-PR-005-1)"
+            _note: "The realistic case (one long video, several technique moments) and the one where a naive per-asset object-URL cache breaks."
+          - path: "tools/viewer/src/media.test.ts — #t=120 (start only) and #t=,180 (end only)"
+            status: aspirational
+            verified_by: "cd tools/viewer && bun test"
+            target_phase: "Layer 4 — Teaching"
+            target_contract: "both valid W3C forms pass through unnormalised"
+            _note: "Normalising them would be the first step toward the structured encoding the spec rejected."
+
+  - name: "standing-gates"
+    purpose: "SSP-002, SAC-PR-001, SAC-CALC-001, SAC-TOOL-001, SAC-PACK-001 — every layer ends green"
+    entities:
+      - entity: gate
+        records:
+          - path: "make validate / make conformance / make calculus / make accept over the TWO-collection corpus"
+            status: aspirational
+            verified_by: "make validate && make conformance && make calculus && make accept"
+            target_phase: "every layer"
+            target_contract: "all four green at the end of each layer; each layer independently committable and taggable (SSP-002)"
+            _note: "The cut is ~2x v0.3. Layer-end greenness is the rollback plan, not a nicety."
+          - path: "calculus/vectors/ byte-identical check"
+            status: aspirational
+            verified_by: "make calculus && git diff --stat calculus/vectors/"
+            target_phase: "every layer"
+            target_contract: "zero diff — no v0.4 change may perturb a frozen vector (SAC-CALC-001, SP-001)"
+            _note: "A vector change outside a calculus/SPEC.md-change commit is a defect by definition; the diff check is what makes that enforceable."
+          - path: "decode-compat both directions with qualifiers and manifests present"
+            status: aspirational
+            verified_by: "cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./..."
+            target_phase: "Layer 1 — Identity"
+            target_contract: "the frozen v0.1 reader decodes documents carrying collection qualifiers with v0.1 fields intact; no new REQUIRED field in core (AC-PACK-002-2, SAC-PR-001)"
+            _note: "Qualification rides on new OPTIONAL fields. This gate is the only thing standing between that design and a MODEL bump."
+          - path: "id-pattern freeze diff against the rcp-v0.1 pin"
+            status: aspirational
+            verified_by: "git diff rcp-v0.1 -- schema/rcp-core-v1.schema.json | grep -c 'pattern' # expected 0 for slug/id"
+            target_phase: "Layer 1 — Identity"
+            target_contract: "the slug/id definitions are byte-identical to their v0.1 form (SAC-PACK-001, SP-006)"
+            _note: "Widening the id pattern is the one change that forces a MODEL bump — the outcome this cut exists to avoid. Automate it; do not rely on review."

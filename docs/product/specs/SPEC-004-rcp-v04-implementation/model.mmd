@@ -1,0 +1,184 @@
+%% Design blueprint — implement in your stack's native format. This artifact defines intent, not implementation.
+%% edikt:artifact type=domain-model spec=SPEC-004 status=draft reviewed_by=architect
+%% created_at=2026-08-03T17:50:00Z
+%% v0.4 DELTA view — identity (collections/packs), lineage & variants, trust (resolution records), teaching (canonical links, fragments).
+%% Anchors: SPEC-001 model (document), SPEC-002 model (engine seam), SPEC-003 model (Calculus).
+classDiagram
+    %% ── Anchor: the document itself is SPEC-001's model, NOT re-modelled here ──
+    class RecipeDocument {
+        <<aggregate root — see SPEC-001 model»>>
+        +id  «bare slug; pattern UNCHANGED from v0.1 (SP-006)»
+        +version  «revision counter, target-declared»
+        +collection?  «self-description for lone travel; manifest outranks it»
+        +kind  «enum UNCHANGED — the manifest is NOT a kind (SR-PACK-003)»
+    }
+
+    %% ── Layer 1 · Identity: the collection is the scope (SR-PACK-001/002/003) ──
+    class Collection {
+        <<aggregate root — the document set a consumer loads together»>>
+        +identifier  «opaque string, its own field — never inside id»
+        +ids unique WITHIN the collection only
+        +merge NEVER rewrites an id, NEVER flattens  «AC-PACK-001-1»
+        +two collections MAY carry the same id; both stay resolvable
+    }
+
+    class PackManifest {
+        <<aggregate root — rcp-pack.yaml, own schema»>>
+        +collection identifier  «AUTHORITATIVE»
+        +publisher?  +licence?  +version?
+        +conflict with a document's self-declaration: manifest WINS and is REPORTED
+    }
+
+    class QualifiedRef {
+        <<value object — the one reference shape»>>
+        +collection?  «ABSENT = the referring document's OWN collection, always»
+        +id
+        +version?  «reference-site pin; matched against the target's declared version»
+        +unqualified with no local target FAILS naming the reference (SR-PACK-002)
+        +NEVER falls back to searching other collections
+    }
+
+    Collection "1" *-- "0..*" RecipeDocument : "scopes ids"
+    PackManifest --> Collection : "declares identity authoritatively (SR-PACK-003)"
+    RecipeDocument ..> QualifiedRef : "every pointer takes this shape"
+    QualifiedRef --> Collection : "resolves IN — own collection unless qualified"
+
+    %% ── Layer 2 · Lineage: a fork is a new document with a pointer home (SR-CORE-001, SR-VAL-003) ──
+    class Lineage {
+        <<value object — on the document; every field schema-described»>>
+        +forked_from QualifiedRef  «pinned; componentRef's shape, different semantics»
+        +variant_of QualifiedRef  «pinned; componentRef's shape»
+        +family  «capability-style grouping slug: these fill the same role»
+        +a fork is a NEW document, self-contained — no compiled derivation (non-goal)
+        +stale pin (target declares a later revision) is REPORTED, not silently followed (SR-VAL-001)
+    }
+
+    class Family {
+        <<value object — grouping, not a container»>>
+        +slug agreed by every member WITHIN a collection
+        +exactly one member ⇒ WARNING «the usual cause is a typo»
+        +never validated across collections «membership not visible»
+    }
+
+    RecipeDocument *-- "0..1" Lineage : "declares"
+    Lineage ..> QualifiedRef : "forked_from / variant_of are version-pinned"
+    Lineage ..> Family : "family groups by role"
+    Family --> Collection : "validated within one collection only (SR-VAL-003)"
+
+    %% ── Layer 2 · Variant discriminator — machine-readable distinction (SR-CORE-002) ──
+    class VariantDiscriminator {
+        <<value object — what actually distinguishes two variants»>>
+        +axis  «CLOSED enum: equipment | technique | region | season | scale | other»
+        +value  «resolved PER AXIS, never against an absent vocabulary (SR-REG-003)»
+        +equipment → equipment.* registry ; technique → technique.* registry
+        +region → ISO 3166-1 alpha-2 (+ optional 3166-2)  «origin.country's encoding»
+        +season, scale → closed enums defined in SPEC-004
+        +other → catch-all; unknown axis DECODES rather than fails
+        +NO diet axis in v0.4 — no authoritative vocabulary exists; deferred
+    }
+
+    class VariantLabel {
+        <<value object — HUMAN ONLY»>>
+        +prose; MUST NOT be machine-read  «this is why the discriminator exists»
+    }
+
+    Lineage *-- "0..1" VariantDiscriminator : "a variant declares its axis"
+    Lineage *-- "0..1" VariantLabel : "explains to a person, never to a reader program"
+
+    %% ── Layer 2 · Revision semantics (SR-CORE-003; schema/VERSIONING.md) ──
+    class DocumentRevision {
+        <<value object — the identity triple»>>
+        +(collection, id, version)  «IMMUTABLE once published»
+        +version increments on any change to ingredients, steps, constraints, yields, lineage
+        +a correction is a NEW revision, never an edit in place
+        +supersession is signalled by the successor revision ALONE «no pointer in MODEL 1»
+    }
+    RecipeDocument ..> DocumentRevision : "published identity"
+    QualifiedRef ..> DocumentRevision : "a pin names one triple"
+
+    %% ── Layer 3 · Trust: resolution is a recorded claim (SR-PUB-001/002) ──
+    class ResolutionRecord {
+        <<value object — npm's shape plus the field npm lacks»>>
+        +target DocumentRevision  «which candidate won»
+        +source  «opaque locator: from where»
+        +content_hash  «sha256 over the CANONICAL JSON of the resolved document»
+        +resolver_version  «who resolved it»
+        +the claim is CONTENT-addressing, not input-addressing
+        +hashes identify REVISIONS, never recipes
+    }
+
+    class VerificationMode {
+        <<value object — two modes over one corpus»>>
+        +reconcile  «compute and write records»
+        +frozen  «verify only; nothing is rewritten»
+        +frozen FAILS on missing target, changed hash, or unknown resolver_version
+    }
+
+    QualifiedRef ..> ResolutionRecord : "publish-time resolution produces one"
+    ResolutionRecord --> DocumentRevision : "pins exact bytes of one triple"
+    ResolutionRecord ..> VerificationMode : "checked under"
+
+    %% ── Layer 2/4 · Stage outcomes live on the CLASS; recipes may point at one (SR-CORE-005) ──
+    class PreparationClass {
+        <<aggregate root — registry entry: technique.* / preparation class»>>
+        +graded stages as BOUNDED DATA, not N near-duplicate sibling classes
+    }
+
+    class StageOutcome {
+        <<value object — a named, measured stage of one class»>>
+        +stage id  «roux blanc/blond/brun; pontos de açúcar»
+        +measured checkpoint  «the measurement that DEFINES the name: time, temperature»
+    }
+
+    class RecipeEndpoint {
+        <<value object — on the recipe, SPEC-001 territory»>>
+        +stage_ref?  «MAY reference a StageOutcome by id — name and measurement stay bound»
+        +own measurement
+    }
+
+    PreparationClass "1" *-- "0..*" StageOutcome : "carries graded stages"
+    RecipeEndpoint ..> StageOutcome : "MAY reference by id"
+    %% Contradiction rule: endpoint measurement outside the stage's class bounds ⇒ WARN naming
+    %% both values, the RECIPE'S MEASUREMENT WINS. A labelling disagreement, not a safety bound —
+    %% severity-critical constraints stay fail-closed under the Calculus (SPEC-003 model).
+
+    %% ── Layer 4 · Teaching: canonical links and the TOTAL resolution order (SR-REG-001, SR-CORE-006) ──
+    class CanonicalLink {
+        <<value object — canonical_recipe on a registry entry»>>
+        +QualifiedRef to the document that TEACHES the method
+        +OPTIONAL FOREVER — curation, not essence; an entry without it stays valid
+        +resolves under the same scope rule as every other reference
+    }
+
+    class MentionResolution {
+        <<value object — total order, highest precedence first»>>
+        +1 explicit PINNED reference
+        +2 a match in the consumer's OWN collection  «user above author»
+        +3 the class's CANONICAL link
+        +within a tier the QUALIFIED reference wins
+        +a genuine tie FAILS naming every candidate — the tiebreak cannot silently pick
+        +which candidate won and which criterion decided it MUST be reportable; UI unspecified
+    }
+
+    PreparationClass *-- "0..1" CanonicalLink : "MAY teach via"
+    CanonicalLink ..> QualifiedRef : "is one"
+    MentionResolution ..> QualifiedRef : "tier 1 — the pin"
+    MentionResolution ..> Collection : "tier 2 — own collection"
+    MentionResolution ..> CanonicalLink : "tier 3 — the class's link"
+    %% Never automatic: which roux a mention means stays authored/curated (non-goal: no runtime LLM).
+
+    %% ── Layer 4 · Media fragments — one asset, many references (SR-CORE-004) ──
+    class MediaAsset {
+        <<aggregate root — one file, addressed by uri»>>
+        +uri
+    }
+
+    class MediaFragment {
+        <<value object — W3C Media Fragments, the SOLE normative temporal encoding»>>
+        +temporal range  «#t=start,end appended to the media uri»
+        +renderers pass the fragment through to playback
+        +NO structured start/end fields in core — one fact, one encoding
+    }
+
+    MediaAsset "1" <-- "0..*" MediaFragment : "many independent ranges over one asset"
+    RecipeDocument ..> MediaFragment : "steps/components reference ranges, not copies"
