@@ -4,169 +4,174 @@ type: prd
 id: PRD-003
 title: RCP v0.3 — the protocol computes
 slug: rcp-v03-protocol-computes
-status: accepted
+status: shipped
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-03T06:48:24Z'
 requirements:
 - id: FR-CALC-001
   component: recipe-calculus
-  text: The Recipe Calculus is specified once — a normative spec defining every exported function's domain,
-    unit semantics and edge behaviour (zero, min_batch floors, ratio invariance, fixed-scaling asymmetry)
-    — with a Go reference implementation replacing the throwaway clamp. Every existing refusal case (the
-    v0.2 acceptance sweep's accept/refuse outcomes and authored pt/en reasons) reproduces verbatim through
-    the Calculus; the clamp is then deleted.
+  text: The Recipe Calculus is specified once — a normative spec defining every exported function's
+    domain, unit semantics and edge behaviour (zero, min_batch floors, ratio invariance, fixed-scaling
+    asymmetry) — with a Go reference implementation replacing the throwaway clamp. Every existing
+    refusal case (the v0.2 acceptance sweep's accept/refuse outcomes and authored pt/en reasons)
+    reproduces verbatim through the Calculus; the clamp is then deleted.
   trace:
   - FEAT-CALC-001
   - 'DECISIONS #13'
   - 'DECISIONS #15'
   - 'engineering obligation #1'
-  status: proposed
+  status: shipped
 - id: FR-CALC-002
   component: recipe-calculus
-  text: 'Cross-stack conformance vectors: the reference implementation writes them (the oracle pattern
-    proven by v0.2''s L1 vectors), and a second independent implementation — TypeScript, entering through
-    the ADR-002 engine seam — replays the full set green in CI. Vector coverage is disciplined mechanically:
-    every enumerated edge class (unit boundaries, guard combinations, fixed-quantity refusals, min_batch,
-    ratio invariance, timeline arithmetic) has vectors, checked by tooling, not intention.'
+  text: 'Cross-stack conformance vectors: the reference implementation writes them (the oracle
+    pattern proven by v0.2''s L1 vectors), and a second independent implementation — TypeScript,
+    entering through the ADR-002 engine seam — replays the full set green in CI. Vector coverage
+    is disciplined mechanically: every enumerated edge class (unit boundaries, guard combinations,
+    fixed-quantity refusals, min_batch, ratio invariance, timeline arithmetic) has vectors,
+    checked by tooling, not intention.'
   trace:
   - FEAT-CALC-001
   - v0.2 conformance-vector precedent
   - forcing Q5 risk record
-  status: proposed
+  status: shipped
 - id: FR-CALC-003
   component: recipe-calculus
-  text: 'Ordering and timeline are Calculus functions: topological reading order, parallel-track interleaving,
-    and the time-anchored schedule (DAG + durations → per-component start offsets). The when-vs-how split
-    holds: the referencing recipe owns WHEN (its steps anchor refs), the referenced owns HOW, the schedule
-    is computed. Vector-covered in both implementations.'
+  text: 'Ordering and timeline are Calculus functions: topological reading order, parallel-track
+    interleaving, and the time-anchored schedule (DAG + durations → per-component start offsets).
+    The when-vs-how split holds: the referencing recipe owns WHEN (its steps anchor refs),
+    the referenced owns HOW, the schedule is computed. Vector-covered in both implementations.'
   trace:
   - FEAT-CALC-002
   - 'DECISIONS #3'
   - research 04:61-80
   - Daniel 2026-08-03 viewer review
-  status: proposed
+  status: shipped
 - id: FR-TOOL-002
   component: tool
-  text: 'Media surfaces: asset conventions documented (location, single-file-viewer handling, hosting-is-app-side
-    boundary); real personal assets exist for at least one private document and render in the viewer by
-    role — failure media visibly labelled as failure reference. Source-book media never enters the repo
-    in any form.'
+  text: 'Media surfaces: asset conventions documented (location, single-file-viewer handling,
+    hosting-is-app-side boundary); real personal assets exist for at least one private document
+    and render in the viewer by role — failure media visibly labelled as failure reference.
+    Source-book media never enters the repo in any form.'
   trace:
   - FEAT-TOOL-002
   - core $defs/media (v0.1)
   - research 04 media_hint
   - Daniel 2026-08-03
-  status: proposed
+  status: shipped
 - id: FR-TOOL-003
   component: tool
-  text: 'The viewer consumes the TS Calculus through the unchanged engine seam: a scale control appears
-    only when the engine declares the clamp capability (scaling past a critical bound renders the authored
-    pt/en refusal), and a schedule view renders FR-CALC-003''s derived timeline. Zero changes to the RcpEngine
-    v1 interface — capabilities only.'
+  text: 'The viewer consumes the TS Calculus through the unchanged engine seam: a scale control
+    appears only when the engine declares the clamp capability (scaling past a critical bound
+    renders the authored pt/en refusal), and a schedule view renders FR-CALC-003''s derived
+    timeline. Zero changes to the RcpEngine v1 interface — capabilities only.'
   trace:
   - FEAT-TOOL-001 playground phase (partial)
   - FEAT-CALC-002
   - ADR-002
-  status: proposed
+  status: shipped
 - id: FR-PR-004
   component: protocol-core
-  text: 'Decode-compatibility becomes mechanical: bidirectional CI fixtures — a frozen v0.1-era reader
-    tolerates every v0.3 document (unknown fields per VERSIONING.md), the current reader decodes every
-    v0.1-tagged document — and the gate provably CAN fail (a deliberately breaking fixture fails it).'
+  text: 'Decode-compatibility becomes mechanical: bidirectional CI fixtures — a frozen v0.1-era
+    reader tolerates every v0.3 document (unknown fields per VERSIONING.md), the current reader
+    decodes every v0.1-tagged document — and the gate provably CAN fail (a deliberately breaking
+    fixture fails it).'
   trace:
   - FEAT-CORE-003
   - 'DECISIONS #14'
   - 'engineering obligation #2'
-  status: proposed
+  status: shipped
 acceptance_criteria:
 - id: AC-CALC-001-1
   fr: FR-CALC-001
   given: every v0.2 refusal case in the acceptance sweep
   when: re-run through the Calculus
-  then: accept/refuse outcomes and authored reasons are identical, and the throwaway clamp is deleted
-  status: proposed
+  then: accept/refuse outcomes and authored reasons are identical, and the throwaway clamp
+    is deleted
+  status: shipped
 - id: AC-CALC-001-2
   fr: FR-CALC-001
   given: the Calculus spec
   when: reviewed against the reference implementation
-  then: every exported function has domain, unit and edge semantics defined — no behaviour exists only
-    in code
-  status: proposed
+  then: every exported function has domain, unit and edge semantics defined — no behaviour
+    exists only in code
+  status: shipped
 - id: AC-CALC-002-1
   fr: FR-CALC-002
   given: the full Calculus vector set
   when: both implementations replay it in CI
   then: both are green — equivalence is mechanical, not claimed
-  status: proposed
+  status: shipped
 - id: AC-CALC-002-2
   fr: FR-CALC-002
   given: the enumerated edge classes
   when: coverage is checked mechanically
   then: every class has vectors; a class without vectors fails the check
-  status: proposed
+  status: shipped
 - id: AC-CALC-003-1
   fr: FR-CALC-003
   given: the torta example document
   when: ordering derivation runs
-  then: the mise-en-place order and an interleaved schedule with start offsets emerge — pinned by vectors
-    in both implementations
-  status: proposed
+  then: the mise-en-place order and an interleaved schedule with start offsets emerge — pinned
+    by vectors in both implementations
+  status: shipped
 - id: AC-CALC-003-2
   fr: FR-CALC-003
   given: an entremet-class fixture (multi-day, parallel tracks)
   when: the schedule derives
   then: component start times respect the DAG and duration windows — vectors, both implementations
-  status: proposed
+  status: shipped
 - id: AC-TOOL-002-1
   fr: FR-TOOL-002
   given: the documented asset conventions and a private document referencing a personal photo
   when: the viewer renders locally
   then: the asset displays; example placeholder URIs are resolved or explicitly marked absent
-  status: proposed
+  status: shipped
 - id: AC-TOOL-002-2
   fr: FR-TOOL-002
   given: media entries across roles
   when: rendered
-  then: failure media is visibly labelled; no repo asset originates from a source book (reviewed attestation)
-  status: proposed
+  then: failure media is visibly labelled; no repo asset originates from a source book (reviewed
+    attestation)
+  status: shipped
 - id: AC-TOOL-003-1
   fr: FR-TOOL-003
   given: an engine declaring the clamp capability
   when: the user scales past a critical bound
   then: the authored pt/en refusal renders; without the capability the control does not exist
-  status: proposed
+  status: shipped
 - id: AC-TOOL-003-2
   fr: FR-TOOL-003
   given: the schedule view on the torta
   when: rendered
-  then: derived start offsets show; the mock-engine test proves a capability-richer engine changes zero
-    UI code
-  status: proposed
+  then: derived start offsets show; the mock-engine test proves a capability-richer engine
+    changes zero UI code
+  status: shipped
 - id: AC-PR-004-1
   fr: FR-PR-004
   given: the frozen v0.1-era reader and the current reader
   when: both run over the cross-version corpus in CI
   then: old reader tolerates v0.3 documents; current reader decodes v0.1-tagged documents
-  status: proposed
+  status: shipped
 - id: AC-PR-004-2
   fr: FR-PR-004
   given: a deliberately breaking fixture (new required field without default)
   when: the compat gate runs
   then: it FAILS — the gate is proven able to fail
-  status: proposed
+  status: shipped
 protections:
 - id: SP-001
-  text: 'Fail-closed parity: the clamp-to-Calculus replacement changes no refusal outcome and no authored
-    reason; safety semantics survive verbatim (DECISIONS #15).'
+  text: 'Fail-closed parity: the clamp-to-Calculus replacement changes no refusal outcome
+    and no authored reason; safety semantics survive verbatim (DECISIONS #15).'
 - id: SP-002
-  text: 'ADDITION-only continues: every document valid at rcp-v0.2 remains valid throughout v0.3 per schema/VERSIONING.md.'
+  text: 'ADDITION-only continues: every document valid at rcp-v0.2 remains valid throughout
+    v0.3 per schema/VERSIONING.md.'
 - id: SP-003
-  text: 'Engine-seam stability: RcpEngine version 1 unchanged; new powers arrive only as additive capabilities
-    (ADR-002 no-rewrite guarantee).'
+  text: 'Engine-seam stability: RcpEngine version 1 unchanged; new powers arrive only as additive
+    capabilities (ADR-002 no-rewrite guarantee).'
 - id: SP-004
-  text: 'Media boundary: licence stays required; personal assets only; source-book media never enters
-    the repo in any form.'
+  text: 'Media boundary: licence stays required; personal assets only; source-book media never
+    enters the repo in any form.'
 solution_references:
 - type: doc
   path_or_url: docs/product/ROADMAP.md
@@ -191,14 +196,14 @@ dependencies: []
 nfrs: []
 risks: []
 open_questions:
-- 'OQ-1: TS Calculus packaging — inside tools/viewer vs separate package; interplay with the 2-dep budget.
-  SPEC decides.'
-- 'OQ-2: Timeline vector format — offsets vs absolute anchors; duration-window (min/target/max) propagation
-  granularity. SPEC decides.'
-- 'OQ-3: Media asset conventions — co-located vs collection-level directory; single-file viewer + CSP
-  handling of local assets. SPEC decides.'
-- 'OQ-4: Frozen v0.1-era reader — pinned schema snapshot from the tag vs generated minimal decoder. SPEC
-  decides.'
+- 'OQ-1: TS Calculus packaging — inside tools/viewer vs separate package; interplay with the
+  2-dep budget. SPEC decides.'
+- 'OQ-2: Timeline vector format — offsets vs absolute anchors; duration-window (min/target/max)
+  propagation granularity. SPEC decides.'
+- 'OQ-3: Media asset conventions — co-located vs collection-level directory; single-file viewer
+  + CSP handling of local assets. SPEC decides.'
+- 'OQ-4: Frozen v0.1-era reader — pinned schema snapshot from the tag vs generated minimal
+  decoder. SPEC decides.'
 source_specs:
 - SPEC-003
 supersedes: null
@@ -208,40 +213,44 @@ deprecated_reason: null
 cancelled_at: null
 cancelled_reason: null
 forcing_questions:
-  problem_behind_problem: 'The protocol computes nothing: cook-time math lives in a throwaway clamp, so
-    every consumer must reimplement scaling/basis/guards — the five-divergent-implementations disease
-    waiting at the math layer, where disagreement means a wrong salt quantity, not a rendering glitch.
-    Recipes render but cannot schedule; ADDITION discipline is proven by regression, not contract; media
-    references point at nothing.'
-  evidence_or_hypothesis: 'Direct: the clamp is labelled throwaway by its own AC; the viewer''s JS engine
-    already needed conformance vectors to hold L1 parity — the mechanism''s first consumer, proven in
-    v0.2 (agreement on first replay); Daniel''s 2026-08-03 review demanded ordering/timeline the viewer
-    could not derive; example docs reference media assets that do not exist. Hypothesis-only, honestly
-    labelled: how much media value materializes for a five-document collection.'
-  north_metric_and_counter: 'NORTH — cross-stack equivalence: Calculus conformance vectors green in two
-    independent implementations (Go reference + TS through the engine seam) covering scaling, basis resolution,
-    guards, fail-closed clamps, and timeline derivation. COUNTER — no MODEL bump; corpus + private collection
-    stay green; the viewer remains a fast self-contained single file.'
-  must_not_change: Fail-closed safety survives the clamp-to-Calculus replacement verbatim (same refusals,
-    same authored reasons); the engine-seam contract stays intact (WASM still drops in later); the two-surface
-    split; the media licence two-tier stance — source-book media never reproduced.
-  riskiest_assumption: 'That conformance vectors buy REAL equivalence, not false confidence — vector coverage
-    is the risk: an under-covered edge (unit conversion, guard combination, timeline arithmetic) lets
-    two green implementations disagree in a kitchen. Secondary: timeline derivation specified from one
-    collection''s sparse durations. Mitigation: AC-CALC-002-2 makes edge-class coverage mechanical.'
+  problem_behind_problem: 'The protocol computes nothing: cook-time math lives in a throwaway
+    clamp, so every consumer must reimplement scaling/basis/guards — the five-divergent-implementations
+    disease waiting at the math layer, where disagreement means a wrong salt quantity, not
+    a rendering glitch. Recipes render but cannot schedule; ADDITION discipline is proven
+    by regression, not contract; media references point at nothing.'
+  evidence_or_hypothesis: 'Direct: the clamp is labelled throwaway by its own AC; the viewer''s
+    JS engine already needed conformance vectors to hold L1 parity — the mechanism''s first
+    consumer, proven in v0.2 (agreement on first replay); Daniel''s 2026-08-03 review demanded
+    ordering/timeline the viewer could not derive; example docs reference media assets that
+    do not exist. Hypothesis-only, honestly labelled: how much media value materializes for
+    a five-document collection.'
+  north_metric_and_counter: 'NORTH — cross-stack equivalence: Calculus conformance vectors
+    green in two independent implementations (Go reference + TS through the engine seam) covering
+    scaling, basis resolution, guards, fail-closed clamps, and timeline derivation. COUNTER
+    — no MODEL bump; corpus + private collection stay green; the viewer remains a fast self-contained
+    single file.'
+  must_not_change: Fail-closed safety survives the clamp-to-Calculus replacement verbatim
+    (same refusals, same authored reasons); the engine-seam contract stays intact (WASM still
+    drops in later); the two-surface split; the media licence two-tier stance — source-book
+    media never reproduced.
+  riskiest_assumption: 'That conformance vectors buy REAL equivalence, not false confidence
+    — vector coverage is the risk: an under-covered edge (unit conversion, guard combination,
+    timeline arithmetic) lets two green implementations disagree in a kitchen. Secondary:
+    timeline derivation specified from one collection''s sparse durations. Mitigation: AC-CALC-002-2
+    makes edge-class coverage mechanical.'
 revision_history:
 - at: '2026-08-03T06:48:24Z'
   author: Daniel Gomes
   action: created
-  note: 'Initial draft — rigor: solo. Cut chosen by Daniel (CALC-001/002 + CORE-003 + TOOL-002 media);
-    version named v0.3 (v1.0 stays the protocol-complete milestone). CALC component code declared in the
-    traceability guideline; four features graduate (ledger updated). verify: omitted — added via continuation
-    as deliverables land.'
+  note: 'Initial draft — rigor: solo. Cut chosen by Daniel (CALC-001/002 + CORE-003 + TOOL-002
+    media); version named v0.3 (v1.0 stays the protocol-complete milestone). CALC component
+    code declared in the traceability guideline; four features graduate (ledger updated).
+    verify: omitted — added via continuation as deliverables land.'
 - at: '2026-08-03T07:05:15Z'
   author: Daniel Gomes
   action: edited
-  note: 'Daniel''s review: non-goals lacked deferral ids (traceability rule). Book-media non-goal now
-    cites DECISIONS #11; nutrition/cost minted as FEAT-CALC-003 (deferred) and cited.'
+  note: 'Daniel''s review: non-goals lacked deferral ids (traceability rule). Book-media non-goal
+    now cites DECISIONS #11; nutrition/cost minted as FEAT-CALC-003 (deferred) and cited.'
 - at: '2026-08-03T07:06:49Z'
   author: Daniel Gomes
   action: edited
@@ -253,10 +262,25 @@ revision_history:
 - at: '2026-08-03T08:30:56Z'
   author: Daniel Gomes
   action: edited
-  note: 'Vocabulary sweep after DECISIONS #26: prose already conformant (written post-research); binding
-    glossary cited in solution references.'
+  note: 'Vocabulary sweep after DECISIONS #26: prose already conformant (written post-research);
+    binding glossary cited in solution references.'
+- at: '2026-08-03T12:57:17Z'
+  author: Daniel Gomes
+  action: ship
+  note: All 6 FRs shipped (PLAN-rcp-v03, 9 phases). Calculus SPEC public-normative with 21
+    frozen vectors replayed by two implementations; decode-compat gate both directions with
+    inverted proofs; media conventions + attestation (#27 boundary proven with real content,
+    personal-photo class DEFERRED at ship); viewer scale + schedule via TS Calculus. accept.sh
+    36/36; clean-clone proof green; edikt verify spec 4/4 verify-carrying.
+  affected:
+  - FR-CALC-001
+  - FR-CALC-002
+  - FR-CALC-003
+  - FR-TOOL-002
+  - FR-TOOL-003
+  - FR-PR-004
 extensions: {}
 _sync:
   md_hash: ef4d8ef156baa8f3b067f79abc48053681e5d88b9ed785362a2924318891d12f
-  yaml_hash: ac8e429a51bd95c16efe127ed78918379f2be716c5e423153766ca4f2082a133
-  synced_at: '2026-08-03T08:30:56Z'
+  yaml_hash: 2bfd8880accd9e9ef979be529b174511ecec552b47c12c1c83544e34ca9b17b0
+  synced_at: '2026-08-03T12:57:32Z'
