@@ -402,6 +402,15 @@ features:
       Cross-document resolution respects the private-vs-published boundary.
       Raised by Daniel 2026-08-03 (sauce→roux); sharpened same day: the roux
       is an independent recipe.
+      END GOAL (Daniel 2026-08-03): the bridge is executable, not just
+      readable — the user LOADS the referenced recipe/technique and does
+      its procedure, and the derived schedule PLACES it relative to the
+      main method, including before t0 (make the stock the day before;
+      soak the beans overnight; massa velha from yesterday's bake) —
+      prerequisite placement is FEAT-CALC-002's schedule applied across
+      the reference. Boundary held: showing the loadable method and its
+      placement is protocol tooling; guided step-by-step execution with
+      check-offs is a SESSION — app-side per DECISIONS #19/#7.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
     status: deferred

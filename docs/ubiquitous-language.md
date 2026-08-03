@@ -63,7 +63,7 @@ Reserved meanings, binding in all project prose and identifiers:
 |---|---|---|
 | **The Protocol / RCP** | This project's specification: core schema, profiles, registry, Calculus, vocabularies, versioning rules. The thing integrators implement. | the steps of a recipe |
 | **Method** | The *authored* steps of a recipe document — the step list/DAG exactly as written (title, primitives, uses, until). What Peterson's prose and Escoffier's proportions both describe. | RCP; a derived ordering |
-| **Execution plan / Schedule** | The *derived* projection of a method: reading order, interleaved tracks, time-anchored schedule — Calculus output (FEAT-CALC-002), computed, never stored. | the authored method |
+| **Execution plan / Schedule** | The *derived* projection of a method: reading order, interleaved tracks, time-anchored schedule — Calculus output (FEAT-CALC-002), computed, never stored. Includes **prerequisite placement**: referenced preparations scheduled relative to the main method's t0, including before it (stock the day before; beans overnight). | the authored method |
 | **Session** | A live run of a method: execution state, checked-off steps, actual times, deviations — separate session documents, never inside the recipe (DECISIONS #7). | the recipe or its method |
 | **Document** | One RCP file: a recipe, a component recipe, a registry entry. | the Protocol as a whole |
 
