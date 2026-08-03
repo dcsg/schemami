@@ -40,7 +40,7 @@ phases:
 | 4     | done | 1/5 | 2026-08-03 |
 | 5     | done | 1/5 | 2026-08-03 |
 | 6     | done | 1/5 | 2026-08-03 |
-| 7     | done (AC-7.4 DEFERRED) | 1/5 | 2026-08-03 |
+| 7     | done | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
 | 9     | done | 1/5 | 2026-08-03 |
 
@@ -298,6 +298,7 @@ Phase 7 (build half done — PAUSED at the media drop):
 - AC-7.2: PASS — 2026-08-03 (media-attest.py scans the commit-eligible tree — gitignore-honoring, so private/collection is exactly the one unlisted place media may live; explicit checked-in allowlist; permanent --self-test plants binary + data-URI + raw-base64 and must detect all three; live planted binary also failed the gate and was removed; the scanner initially flagged its own self-test fixture string — marker split so it cannot match itself)
 - AC-7.3: PASS — 2026-08-03 (14 media tests: four types as their elements, doc+step level, failure text-labelled, alt caption-then-role, placeholder ≡ unmatched absent state, basename matching, revocation without DOM, magic-byte discrimination incl. YAML-named-.jpg stays a document; full viewer suite 66 green)
 - AC-7.4: DEFERRED — 2026-08-03. MEDIA ASSET: DEFERRED. (The #27 book-media carve-out is DONE and proven: nine step crops + two page scans in the local private collection, referenced as step media from the private marble-cakes document — Daniel supplied the page photos; local render proof GREEN, all nine figures resolved, zero absent, attestation green with real content behind the boundary. What remains deferred is only the personal-cooking-photo class — the one eligible beyond the local boundary; no synthetic placeholder needed since real local assets exercised the render path. Daniel can drop a photo of his own cooking any time before the Phase 9 gate to flip this to PASS. Render caption field corrected to the schema's `note` during wiring — caught by additionalProperties: false.)
+- AC-7.4 RESOLVED: PASS — 2026-08-03 (post-tag, as designed). MEDIA ASSET: PASS. Daniel supplied a photo of his own baking; EXIF-stripped into the private collection, referenced as document-level result media from a new private bread document (valid core ∧ bread), local render proof GREEN with the figure resolved, attestation green, nothing staged. The personal-media class — the one eligible beyond the local boundary — is now exercised end to end.
 - AC-7.5: PASS — 2026-08-03 (CSP exact-string live in accept.sh — anchored full-string with hash placeholders, img-src AND media-src exactly `data: blob:`; bundle 178 KiB < 500 KB; file input primary ingress; accept 32/32)
 - PAUSE NOTE — 2026-08-03: madeleine page photo exists only in the conversation, not on disk, so the #27 crops also wait on the drop; both items (page photo for local crops + ≥1 personal-cooking photo) requested from Daniel together. Document-level media added to core as OPTIONAL (steps carried media since v0.1); examples revalidate; decode-compat unaffected (post-v0.1 field, frozen reader tolerates it).
 
