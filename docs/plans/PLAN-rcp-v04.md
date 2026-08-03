@@ -48,7 +48,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 6     | done | 1/5 | 2026-08-03 |
 | 7     | done | 1/5 | 2026-08-03 |
 | 8     | done | 1/5 | 2026-08-03 |
-| 9     | pending | 0/5 | — |
+| 9     | done | 1/5 | 2026-08-03 |
 | 10    | pending | 0/5 | — |
 | 11    | pending | 0/5 | — |
 | 12    | pending | 0/5 | — |
@@ -798,6 +798,15 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
   implementation. Golden-vector tested; a divergence is caught by determinism.
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
+
+Phase 9:
+- AC-9.1: PASS — 2026-08-03 (record = target + source + content_hash + resolver_version. RFC 8785 named explicitly and implemented stdlib-only: sorted by UTF-16 code units, minimal escaping, ES number formatting. Hashing the GENERIC MAP is enforced — Canonicalise REFUSES a typed struct, because a struct silently drops exactly the unknown fields decode-compat requires readers to tolerate. Target bound INTO the preimage: identical bodies in different collections hash differently, so a record cannot be transplanted by relabelling a pack)
+- AC-9.2: PASS — 2026-08-03 (frozen mode fails on TWELVE paths, each tested: mutated target, no records, zero verified, empty hash, wrong algorithm prefix, truncated digest, unknown resolver, missing resolver, duplicate records, target gone, uncovered present target, private source. KnownResolvers is a real allowlist — without it "unknown resolver_version fails" degrades to "any non-empty string passes")
+- AC-9.3: PASS — 2026-08-03 (END-TO-END inverted proof on the real corpus: mutating white-sauce butter 2→99 tbsp makes `resolve --frozen` exit 1 printing both hashes; restored, 2 references verify. The two records are genuine — brownie→ganache and scalloped-eggs→white-sauce-i)
+- AC-9.4: PASS — 2026-08-03 (writer refuses empty, absolute, private/ and ../ locators; a record never discloses filesystem structure)
+- AC-9.5: PASS — 2026-08-03 (import allowlist over the whole records package; determinism asserted over 50 runs)
+- LAYER 3 GATE: GREEN — 2026-08-03 (validate, accept 40/40, conformance 87, calculus 27, Go tests four packages, provenance clean). **TAG OPPORTUNITY.**
+- Gate design: FROZEN only in accept.sh, reconcile in `make resolve`. A gate that can repair what it checks verifies nothing. The check asserts EXIT CODE plus a NONZERO verified count, because accept.sh suppresses stdout and a text-grep check would pass vacuously on zero records.
 
 Phase 8:
 - AC-8.1: PASS — 2026-08-03 (calculus/SPEC.md gains R-SCHED-5, worked example WE-SCHED-3 and the `referenced-placement` edge class; grep for project ids returns ZERO — the SPEC stays public-normative)

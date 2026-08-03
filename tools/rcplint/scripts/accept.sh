@@ -70,6 +70,15 @@ assert len(h) < 500*1024, len(h)
 assert 'id=\\\"file-input\\\"' in h and 'type=\\\"file\\\"' in h
 \""
 
+echo "── Verified resolution (SR-PUB-001/002, obligation 3) ──"
+# FROZEN only. Reconcile belongs in make, never here: a gate that can
+# repair what it checks verifies nothing. Asserts the EXIT CODE plus a
+# NONZERO verified count — accept.sh suppresses stdout, so a check that
+# greps text would pass vacuously on zero records.
+check "AC-PUB-001-1  resolved references verify against committed records (frozen, fail-closed)" sh -c "cd tools/rcplint && out=\$(go run . resolve ../.. --frozen) && echo \"\$out\" | grep -qE '[1-9][0-9]* reference\\(s\\) verified'"
+check "AC-PUB-001-2  frozen mode provably FAILS on a mutated target (inverted)" sh -c "cd tools/rcplint && go test -count=1 -run 'TestFrozenFailClosed|TestVacuousRunIsNotOK' ./records/"
+check "SP-005        record hashing is stdlib-only; canonicalisation deterministic" sh -c "cd tools/rcplint && go test -count=1 -run 'TestHashImportAllowlist|TestHashDeterminism|TestHashBindsTarget' ./records/"
+
 echo "── Decode-compat gate (SR-PR-004, DS-PR-009) ──"
 check "AC-PR-004-1   both directions green: frozen reader ⇄ current core (incl. inverted breaking fixture + struct-vs-pinned-tag diff)" sh -c "cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./..."
 

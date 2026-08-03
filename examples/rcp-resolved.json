@@ -1,0 +1,22 @@
+[
+  {
+    "target": {
+      "collection": "boston-1910",
+      "id": "white-sauce-i",
+      "version": 1
+    },
+    "source": "boston-1910/white-sauce.rcp.yaml",
+    "content_hash": "sha256:d373574805efc681ac51a8066afce6550a0f84b49f60cb0d7d87399b982d255a",
+    "resolver_version": "rcplint/1"
+  },
+  {
+    "target": {
+      "collection": "rcp-examples",
+      "id": "ganache-chocolate",
+      "version": 1
+    },
+    "source": "rcp-examples/other-categories.rcp.yaml",
+    "content_hash": "sha256:5bd9af4ceaf705f5815034a965ec027c1790573a2fd51952da897d0276c7ed0a",
+    "resolver_version": "rcplint/1"
+  }
+]

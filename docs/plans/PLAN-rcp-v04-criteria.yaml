@@ -374,58 +374,58 @@ phases:
     verify: make validate && make conformance && make calculus && make accept
 - phase: 9
   title: 'Resolution records: verifiable, and fail-closed on every path (opus)'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-9.1
     text: Records carry target, source, content_hash and resolver_version; hashing is JCS over the generic
       map, covering target ‖ document
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestResolutionRecordShape ./...
   - id: AC-9.2
     text: Frozen mode FAILS on every enumerated path (no records, zero verified, unparseable, empty/absent
       hash, wrong prefix, duplicate, missing target)
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestFrozenFailClosed ./...
   - id: AC-9.3
     text: Inverted proof — a mutated target FAILS, an intact corpus passes
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestFrozenInvertedProof ./...
   - id: AC-9.4
     text: The writer refuses a source locator under `private/` or outside the collection root
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestRecordSourceRefusesPrivate ./...
   - id: AC-9.5
     text: Hashing imports stdlib only; hash output is deterministic across runs
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run 'TestHashDeterminism|TestHashImportAllowlist' ./...
   - id: AC-9.GATE
     text: '** all gates green + frozen wired into accept.sh, tag opportunity'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make conformance && make calculus && make accept
 - phase: 10
   title: Canonical authoring and the extraction linter

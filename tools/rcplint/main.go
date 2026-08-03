@@ -13,7 +13,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: rcplint <validate|lint|facts|clamp> [root]")
+		fmt.Fprintln(os.Stderr, "usage: rcplint <validate|lint|facts|clamp|resolve> [root]")
 		os.Exit(2)
 	}
 	root := "."
@@ -40,6 +40,8 @@ func main() {
 			out = os.Args[3]
 		}
 		os.Exit(runVectors(root, out))
+	case "resolve":
+		os.Exit(runResolve(root, os.Args[3:]))
 	case "facts":
 		os.Exit(runFacts(root, os.Args[3:]))
 	case "clamp":
