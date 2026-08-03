@@ -51,7 +51,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 9     | done | 1/5 | 2026-08-03 |
 | 10    | done | 1/5 | 2026-08-03 |
 | 11    | done | 1/5 | 2026-08-03 |
-| 12    | pending | 0/5 | — |
+| 12    | in-progress | 1/5 | 2026-08-03 |
 
 **IMPORTANT:** update as phases complete — persistent state across compaction.
 

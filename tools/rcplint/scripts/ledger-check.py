@@ -30,6 +30,20 @@ def main() -> int:
             failures.append(f"{fid}: status is {f.get('status')!r}, not shipped")
         if set(f.get("realized_by") or []) != frs:
             failures.append(f"{fid}: realized_by {f.get('realized_by')} != {sorted(frs)}")
+    # v0.4 (PRD-004)
+    for fid, frs in {
+        "FEAT-REG-006": {"FR-REG-005", "FR-REG-006", "FR-TOOL-004"},
+        "FEAT-CORE-006": {"FR-PR-005"},
+        "FEAT-PUB-001": {"FR-PUB-001"},
+    }.items():
+        f = by_id.get(fid)
+        if f is None or f.get("status") != "shipped":
+            failures.append(f"{fid}: not shipped")
+        elif set(f.get("realized_by") or []) != frs:
+            failures.append(f"{fid}: realized_by {f.get('realized_by')} != {sorted(frs)}")
+    if "## v0.4 — SHIPPED" not in open("docs/product/ROADMAP.md", encoding="utf-8").read():
+        failures.append("ROADMAP.md: no v0.4 SHIPPED section")
+
     tool001 = by_id.get("FEAT-TOOL-001", {})
     if "v0.3 SHIPPED THE COMPUTE HALF" not in str(tool001.get("phasing", "")):
         failures.append("FEAT-TOOL-001: v0.3 phasing note missing")

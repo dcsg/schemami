@@ -423,7 +423,8 @@ features:
       endpoints, or both) is the PRD-004 call.
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
-    status: deferred
+    status: shipped
+    realized_by: [FR-REG-005, FR-REG-006, FR-TOOL-004]
     target: PRD-004 candidate — registry schema addition + viewer affordance + extraction rule; pairs naturally with FEAT-PUB-001 (verified resolution)
     trace: ["DECISIONS #7", "DECISIONS #11", "registry preparation classes (v0.1)", "technique teaches links (v0.2)", "Daniel 2026-08-03"]
 
@@ -474,7 +475,8 @@ features:
       into v0.3 (nothing new enters a running cut).
     personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
     icp: both
-    status: proposed
+    status: shipped
+    realized_by: [FR-PR-005]
     target: >-
       PRD-004 candidate, alongside FEAT-REG-006 (the roux bridge) — the
       two compose: the bridge names WHAT, the fragment names WHERE.
@@ -540,7 +542,8 @@ features:
       no repair path.
     personas: [rcp.verifier.editorial, rcp.dev.surface-engineer]
     icp: ICP-1
-    status: deferred
+    status: shipped
+    realized_by: [FR-PUB-001]
     target: v1
     trace: ["DECISIONS #21", "engineering obligation #3"]
     graduates_to: null

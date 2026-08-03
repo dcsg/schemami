@@ -56,6 +56,24 @@ vector — equivalence is tested, not asserted. The viewer now scales
 ("2 dias antes / véspera / no dia"). FEAT-CORE-006 media temporal
 fragments captured for PRD-004.)*
 
+## v0.4 — SHIPPED: "identity, trust and teaching" (PRD-004 → SPEC-004 → PLAN-rcp-v04)
+
+The protocol learned who it is talking about — tag `rcp-v0.4`:
+
+| Feature | What shipped |
+|---|---|
+| **Collections and packs** (new) | ids unique within a collection; unqualified references resolve in their own collection and never fall back; merging never flattens; `rcp-pack.yaml` names a collection authoritatively |
+| **Lineage and variants** (new) | the lineage block gains semantics and componentRef-shaped version pins; drift is DETECTED; the variant discriminator is machine-readable (axis + value), seeded only from evidence |
+| FEAT-REG-006 Implicit preparations: mention → method | canonical links on registry classes, the published resolution order (pin > own collection > canonical, tie fails), the extraction rule enforced by two conservative detectors, see-the-method in the viewer |
+| FEAT-CORE-006 Media temporal fragments | `#t=start,end` normative in MEDIA.md, passed through to playback under a grammar allowlist |
+| FEAT-PUB-001 Verified publish-time resolution | RFC 8785 canonicalisation, target bound into the hash, reconcile/frozen modes, twelve fail-closed paths — engineering obligation 3 closed |
+
+*(Also: a second published collection from Fannie Farmer's 1910 Boston
+Cooking-School Cook Book — public domain — which contains the roux problem
+verbatim; the Calculus gained R-SCHED-5 so referenced preparations are
+schedulable; DECISIONS #28 stage identity and #29 the compiled-variants
+rejection; document revisions specified in VERSIONING.md.)*
+
 ## v1 — the heavyweights (PRD-004+)
 
 | Feature | Trace |
