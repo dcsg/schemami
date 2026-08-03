@@ -14,9 +14,13 @@ taxonomy:
   category: sauce
 lineage:
   family: farmer-white-sauce
-  variant_of: white-sauce-i
+  variant_of: { id: white-sauce-i, version: 1 }
   variant_label:
     en: Thicker — 3 tablespoons flour to 1 cup milk
+  variant:
+    axis: consistency
+    value: thick
+    order: 3
 ingredients:
   - id: manteiga
     item: ingredient.fat.butter

@@ -14,6 +14,10 @@ taxonomy:
   category: sauce
 lineage:
   family: farmer-white-sauce
+  variant:
+    axis: consistency
+    value: medium
+    order: 2
 ingredients:
   - id: manteiga
     item: ingredient.fat.butter

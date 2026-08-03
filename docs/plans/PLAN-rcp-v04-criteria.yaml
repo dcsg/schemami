@@ -187,50 +187,50 @@ phases:
     verify: make validate && make accept
 - phase: 5
   title: 'Variant discriminator: machine-readable at last'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-5.1
     text: Two sibling variants differing on a declared axis are machine-distinguishable without reading
       prose
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestVariantDiscriminator ./...
   - id: AC-5.2
     text: An unknown axis decodes into the catch-all rather than failing; a document without a discriminator
       stays valid
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestAxisCatchAll ./...
   - id: AC-5.3
     text: Every shipped axis value has live backing and ≥1 exercising example
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestAxisBacking ./...
   - id: AC-5.4
     text: '`diet` does not appear in the axis enum'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestNoDietAxis ./...
   - id: AC-5.5
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make accept
 - phase: 6
   title: Canonical links and the published resolution order (opus)

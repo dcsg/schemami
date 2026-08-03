@@ -44,7 +44,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 | 2     | done | 1/5 | 2026-08-03 |
 | 3     | done | 1/5 | 2026-08-03 |
 | 4     | done | 1/5 | 2026-08-03 |
-| 5     | pending | 0/5 | — |
+| 5     | done | 1/5 | 2026-08-03 |
 | 6     | pending | 0/5 | — |
 | 7     | pending | 0/5 | — |
 | 8     | pending | 0/5 | — |
@@ -799,6 +799,23 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
 - **Curation scales** (PRD's riskiest assumption) — untestable. The anchorless
   mention warning count from Phase 10 is the early-warning proxy.
 
+## Phase 5 note — the enum shrank, on evidence
+
+The plan called for six axes (equipment, technique, region, season, scale,
+other). The corpus exercises NONE of them — while the Farmer sauces give a
+four-member family graded purely by consistency. Daniel chose to ship only
+what is evidenced: **consistency + other**. Adding an axis later is an
+ADDITION under decode-compat, never a MODEL bump, so waiting costs nothing
+while shipping a value nothing resolves against costs credibility. The
+architect's warning about empty registries turned out to apply from the other
+direction — the planned list was a wishlist, not a vocabulary.
+
+The stage-vs-variant line is now stated in the schema, at Daniel's call: a
+STAGE is one preparation whose identity forks on a measured checkpoint (same
+ingredients, different endpoint — Escoffier's roux by cook time); a VARIANT is
+a parallel preparation with DIFFERENT INPUTS. The roux is precisely where
+authors would otherwise encode the same thing two ways.
+
 ## Verify evidence
 
 <!-- `AC-N.M: PASS — <date>` appended as gates pass. Layer gates:
@@ -836,4 +853,11 @@ Phase 4:
 - AC-4.4: PASS — 2026-08-03 (same-family agreement silent; single-member family warns naming the family and the likely cause; each collection judges only its own members)
 - AC-4.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 85, calculus 25, Go tests all packages, vectors byte-unchanged; TestHardenedPinLeavesCorpusGreen asserts the shipped brownie→ganache pin did not redden)
 
-FINDING for Phase 5: the White Sauce family varies by CONSISTENCY (2 vs 3 tablespoons flour), an axis absent from the enum (equipment/technique/region/season/scale/other). It currently needs `other` + variant_label. Real evidence from a real corpus that the axis list may want a consistency or texture axis — to be weighed in Phase 5 rather than silently patched.
+Phase 5:
+- AC-5.1: PASS — 2026-08-03 (white-sauce-i and -ii carry axis+value+order; siblings share an axis, differ in value, and a surface can sort the graded family without parsing prose)
+- AC-5.2: PASS — 2026-08-03 (no lineage / lineage without a discriminator / the `other` catch-all all stay valid; an axis outside the enum is rejected at L1 — the catch-all is the sanctioned escape hatch, not an open vocabulary)
+- AC-5.3: PASS — 2026-08-03 (TestAxisBacking asserts every non-catch-all axis is exercised by a real document. INVERTED PROOF: adding `equipment` — which has a live registry but no document using it — fails the check naming it; removed, green)
+- AC-5.4: PASS — 2026-08-03 (TestNoDietAxis; the failure message carries the research-10 reasoning so a future reader learns why rather than just being blocked)
+- AC-5.5: PASS — 2026-08-03 (validate green, accept 37/37, conformance 85, calculus 25, vectors byte-unchanged)
+
+ORIGINAL FINDING (now resolved above): the White Sauce family varies by CONSISTENCY (2 vs 3 tablespoons flour), an axis absent from the enum (equipment/technique/region/season/scale/other). It currently needs `other` + variant_label. Real evidence from a real corpus that the axis list may want a consistency or texture axis — to be weighed in Phase 5 rather than silently patched.

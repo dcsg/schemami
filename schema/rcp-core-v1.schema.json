@@ -348,6 +348,10 @@
             "variant_label": {
               "$ref": "#/$defs/text",
               "description": "Human display string for what makes this the variant it is ('Thicker — 3 tablespoons flour'). PROSE: never machine-read (decision #4). The MACHINE-READABLE discriminator is the axis/value pair — a renderer that filters or groups variants must use that, never this."
+            },
+            "variant": {
+              "$ref": "#/$defs/variantDiscriminator",
+              "description": "The machine-readable discriminator. Pairs with variant_of (which sibling) and variant_label (the human string)."
             }
           }
         },
@@ -1803,6 +1807,36 @@
           }
         }
       ]
+    },
+    "variantAxis": {
+      "type": "string",
+      "enum": [
+        "consistency",
+        "other"
+      ],
+      "description": "WHAT KIND of difference makes this a variant — the machine-readable half of the discriminator (variant_label is the human half and is never machine-read). Seeded ONLY from axes real documents exercise, the same discipline the registry follows: `consistency` comes from the graded white-sauce family (1½ → 2 → 3 tablespoons → ⅓ cup flour, everything else identical); `other` is the catch-all, mandatory from day one so an unlisted axis decodes rather than failing (decode-compat, DECISIONS #14). Adding an axis later is an ADDITION, never a MODEL bump — so waiting for evidence costs nothing, while shipping a value nothing resolves against costs credibility. Candidates awaiting a document that needs them: equipment (the Bimby fork), technique, region, season, scale.\n\nA VARIANT is not a STAGE. A stage is one preparation whose identity forks on a measured checkpoint — same ingredients, different endpoint (Escoffier's roux blanc/blond/brun differ only by cook time; the pontos de açúcar by temperature); stages live on the preparation class and are referenced by a recipe's endpoint. A variant is a parallel preparation with DIFFERENT INPUTS, coexisting as its own document. Encoding one as the other is the mistake this line exists to prevent."
+    },
+    "variantDiscriminator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "axis"
+      ],
+      "description": "The machine-readable answer to 'what makes this the variant it is'. OPTIONAL: a variant without one stays valid — many differences are genuinely only expressible in prose, and forcing a false axis is worse than admitting none.",
+      "properties": {
+        "axis": {
+          "$ref": "#/$defs/variantAxis"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The distinction along that axis. Resolution is PER AXIS: `consistency` takes a graded label ordered within its family; `other` takes any string and leans on variant_label for the human explanation. An axis whose values resolve against a registry (equipment, technique) resolves there when it ships."
+        },
+        "order": {
+          "type": "integer",
+          "description": "Position within a GRADED family, when the axis is ordinal (thin=1 … thick=4). Lets a surface sort the family without parsing prose."
+        }
+      }
     }
   }
 }
