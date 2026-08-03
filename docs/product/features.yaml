@@ -450,6 +450,35 @@ features:
     target: post-v0.2; scope decided at the next PRD interview (viewer rendering is the cheap half; conventions + real assets the substantive half)
     trace: ["research 04 media_hint findings", "core $defs/media (v0.1)", "Daniel 2026-08-03 viewer review"]
     graduates_to: PRD-003
+  - id: FEAT-CORE-006
+    name: "Media temporal fragments: techniques and sub-recipes inside full-recipe video"
+    description: >-
+      A single video of the whole recipe often CONTAINS the techniques
+      and sub-preparations — "from 2:00 to 3:00 is the roux". The media
+      model should let one asset be referenced many times with a time
+      range, so a step, a technique entry, or a canonical sub-recipe
+      link (FEAT-REG-006) can point INTO the video rather than demand
+      per-technique clips. The uri field already carries this today via
+      W3C Media Fragments (video.mp4#t=120,180) — renderers that pass
+      the fragment through to <video> get range-seeking for free — so
+      the open design question is whether v-next ALSO wants structured
+      start/end fields (machine-readable without URI parsing,
+      validatable, usable by schedule surfaces) or blesses the fragment
+      syntax as the normative encoding. The same shape serves audio
+      (crackle cues) and future chaptering. Proposed by Daniel
+      2026-08-03 during the v0.3 media phase; deliberately NOT pulled
+      into v0.3 (nothing new enters a running cut).
+    personas: [rcp.cook.home-cook, rcp.ingester.personal-collector, rcp.dev.surface-engineer]
+    icp: both
+    status: proposed
+    target: >-
+      PRD-004 candidate, alongside FEAT-REG-006 (the roux bridge) — the
+      two compose: the bridge names WHAT, the fragment names WHERE.
+    trace:
+      - Daniel 2026-08-03 (video technique ranges; techniques/sub-recipes)
+      - FEAT-REG-006
+      - FEAT-TOOL-002
+      - W3C Media Fragments URI 1.0 (#t=)
   - id: FEAT-CORE-005
     name: "Dogfood field additions (times, difficulty, storage, source detail)"
     description: >-

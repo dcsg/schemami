@@ -75,7 +75,7 @@ describe("document-level media", () => {
       analysisOf({
         name: "T",
         media: [
-          media({ uri: "media/a.jpg", caption: { pt: "Miolo aberto", en: "Open crumb" } }),
+          media({ uri: "media/a.jpg", note: { pt: "Miolo aberto", en: "Open crumb" } }),
           media({ uri: "media/b.jpg" }),
         ],
       }),

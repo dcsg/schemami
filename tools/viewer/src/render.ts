@@ -192,7 +192,7 @@ function mediaBlock(list: unknown, ctx: RenderContext): string {
   const figures = entries.map((m) => {
     const role = String(m["role"] ?? "");
     const roleLabel = MEDIA_ROLE_LABEL[role] ?? role;
-    const caption = m["caption"] ? text(m["caption"], ctx.lang) : "";
+    const caption = m["note"] ? text(m["note"], ctx.lang) : "";
     const alt = caption || roleLabel;
     const uri = String(m["uri"] ?? "");
     const basename = uri.split("/").pop() ?? uri;
