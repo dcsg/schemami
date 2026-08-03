@@ -274,9 +274,9 @@ An admitted document: its inline components and its method (steps).
 None.
 
 ### Edges
-- **R-ORDER-1** — Mise-en-place projection (DECISIONS #26 glossary; the v0.2 viewer's
-  order, now specified): every inline component's method precedes the
-  parent method that consumes it.
+- **R-ORDER-1** — Mise-en-place projection: every inline component's
+  method precedes the parent method that consumes it (a component's
+  output is an ingredient of the parent).
 - **R-ORDER-2** — Component order among themselves: dependency order when one component
   `uses` another's output; declaration order otherwise (stable).
 - **R-ORDER-3** — Component references (`ref`) contribute a placeholder position (their
