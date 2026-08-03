@@ -1,0 +1,238 @@
+rcp: 1
+id: torta-tres-camadas-teste
+kind: pastry
+lang: pt-PT
+name:
+  pt: Torta de três camadas (documento de teste)
+  en: Three-layer torte (test document)
+description:
+  pt: Documento sintético para testar o visualizador — três camadas, duas delas sub-receitas.
+taxonomy:
+  category: pastry
+  subcategory:
+  - cake
+  - chocolate
+  difficulty: 4
+tags:
+- classic
+times:
+  active:
+    target: 1h10m
+  total:
+    min: 4h
+    target: 5h
+  prep:
+    target: 40m
+  cook:
+    target: 30m
+  chill:
+    min: 2h
+    max: 12h
+storage:
+- where: refrigerator
+  container:
+    pt: Caixa hermética
+  duration:
+    min: 2d
+    max: 3d
+  note:
+    pt: Retirar 30 minutos antes de servir.
+- where: freezer
+  duration:
+    target: 3w
+  note:
+    pt: Congelar sem a cobertura.
+provenance:
+  confidence: LOW
+  status: draft
+  sources:
+  - label: Documento sintético de teste
+    type: blog
+    work: RCP viewer stress test
+    page: n/a
+  notes:
+    pt: Dificuldade assinalada diretamente na escala 1-5 (sem mapeamento de livro).
+scaling:
+  default_yield:
+    servings: 10
+bases:
+  flour:
+    sum: ingredients
+    where:
+      roles:
+      - flour
+ingredients:
+- id: farinha
+  item: ingredient.flour.wheat.t55
+  amount:
+    value: 250
+    unit: g
+  roles:
+  - flour
+- id: acucar
+  item: ingredient.sweetener.sugar.white
+  amount:
+    ratio: 0.8
+    of: flour
+  roles:
+  - sweetener
+- id: manteiga
+  item: ingredient.fat.butter
+  amount:
+    ratio: 0.6
+    of: flour
+  roles:
+  - fat
+  prep:
+    state: softened
+    note:
+      pt: amolecida
+- id: ovos
+  item: ingredient.egg.whole
+  amount:
+    value: 200
+    unit: g
+  roles:
+  - binder
+  - hydration
+- id: fermento
+  item: ingredient.raising.baking-powder
+  amount:
+    ratio: 0.04
+    of: flour
+  roles:
+  - leaven
+components:
+- id: ganache-cobertura
+  kind: component
+  name:
+    pt: Ganache de cobertura
+  ingredients:
+  - id: chocolate
+    item: ingredient.chocolate.dark.70
+    amount:
+      value: 200
+      unit: g
+    roles:
+    - flavour
+    - thickener
+  - id: natas
+    item: ingredient.dairy.cream.35
+    amount:
+      value: 200
+      unit: g
+    roles:
+    - fat
+    - hydration
+  steps:
+  - id: g1
+    primitive:
+      id: primitive.melt
+      v: 1
+    uses:
+    - chocolate
+  - id: g2
+    primitive:
+      id: primitive.emulsify
+      v: 1
+    uses:
+    - natas
+    after:
+    - g1
+- id: calda-cafe
+  kind: component
+  name:
+    pt: Calda para embeber
+  ingredients:
+  - id: agua-calda
+    item: ingredient.water
+    amount:
+      value: 100
+      unit: g
+    roles:
+    - hydration
+  - id: acucar-calda
+    item: ingredient.sweetener.sugar.white
+    amount:
+      value: 80
+      unit: g
+    roles:
+    - sweetener
+  steps:
+  - id: c1
+    primitive:
+      id: primitive.cook-syrup
+      v: 1
+    uses:
+    - agua-calda
+    - acucar-calda
+    until:
+    - kind: core-temperature
+      value: 104
+      unit: C
+steps:
+- id: s1
+  title:
+    pt: Bater a manteiga com o açúcar até ficar clara e fofa.
+  primitive:
+    id: primitive.mix
+    v: 1
+  uses:
+  - manteiga
+  - acucar
+- id: s2
+  title:
+    pt: Incorporar os ovos, depois a farinha com o fermento.
+  primitive:
+    id: primitive.incorporate
+    v: 1
+  uses:
+  - ovos
+  - farinha
+  - fermento
+  after:
+  - s1
+- id: s3
+  title:
+    pt: Cozer em forma untada.
+  primitive:
+    id: primitive.bake
+    v: 1
+  duration:
+    min: 25m
+    target: 30m
+    max: 35m
+  until:
+  - kind: visual
+    expect: palito sai seco
+  after:
+  - s2
+- id: s4
+  title:
+    pt: Arrefecer completamente antes de montar.
+  primitive:
+    id: primitive.cool
+    v: 1
+  after:
+  - s3
+- id: s5
+  title:
+    pt: Montar em camadas, embeber com a calda, cobrir com a ganache.
+  primitive:
+    id: primitive.assemble
+    v: 1
+  after:
+  - s4
+options:
+- id: sem-calda
+  kind: toggle
+  default: false
+  label:
+    pt: Versão sem calda (mais firme)
+substitutions:
+- scope: ingredient
+  replaces: manteiga
+  class: direct
+  with: ingredient.fat.olive-oil
+  note:
+    pt: Versão com azeite — textura mais densa, sabor mais rústico.

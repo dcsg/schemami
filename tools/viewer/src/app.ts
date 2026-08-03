@@ -8,7 +8,7 @@ import { renderDocument, renderEmptyState, renderVerdicts, type RenderContext } 
 
 const MAX_INPUT_BYTES = 2 * 1024 * 1024; // pathological-input guard
 
-export function wireApp(engine: RcpEngine, ctx: RenderContext, doc: Document): void {
+export function wireApp(engine: RcpEngine, ctx: RenderContext, doc: Document, exampleText?: string): void {
   const input = doc.getElementById("input") as HTMLTextAreaElement;
   const verdictsEl = doc.getElementById("verdicts")!;
   const renderEl = doc.getElementById("render")!;
@@ -46,6 +46,14 @@ export function wireApp(engine: RcpEngine, ctx: RenderContext, doc: Document): v
   };
 
   input.addEventListener("input", () => void analyze(input.value));
+
+  const exampleBtn = doc.getElementById("load-example");
+  if (exampleBtn && exampleText) {
+    exampleBtn.addEventListener("click", () => {
+      input.value = exampleText;
+      void analyze(exampleText);
+    });
+  }
 
   // A stray drop must never navigate the page away (frontend pre-flight):
   // guard at BOTH window and drop-zone level.

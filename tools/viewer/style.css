@@ -28,3 +28,6 @@ textarea#input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; 
 .steps li { margin: .35rem 0; overflow-wrap: anywhere; }
 .component { margin-top: 1rem; border-top: 1px dashed color-mix(in srgb, currentColor 25%, transparent); padding-top: .5rem; }
 #busy { font-style: italic; }
+.toolbar { display: flex; justify-content: flex-end; }
+.toolbar button { font: inherit; font-size: .85rem; padding: .35rem .8rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); background: color-mix(in srgb, currentColor 8%, transparent); cursor: pointer; }
+.toolbar button:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; }
