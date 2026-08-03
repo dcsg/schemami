@@ -3,7 +3,9 @@ kind: oven
 display_name:
   pt: Forno doméstico com vapor
   en: Home oven with steam
-definition: Domestic oven with added steam (tray/spray) approximating masonry bake conditions.
+definition: 'Domestic oven with added steam (tray/spray) approximating masonry bake
+  conditions. DEPRECATED (English-base refactor, DECISIONS #24): superseded by equipment.oven.domestic-steam;
+  kept resolvable for documents validated at rcp-v0.1 (governance rule 3).'
 parameters:
   max_temperature:
     value: 250
@@ -11,3 +13,5 @@ parameters:
   thermal_mass: low
   steam: added
   heat: steady
+status: deprecated
+superseded_by: equipment.oven.domestic-steam

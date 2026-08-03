@@ -1,0 +1,17 @@
+id: equipment.oven.domestic-steam
+kind: oven
+display_name:
+  pt: Forno doméstico com vapor
+  en: Home oven with steam
+definition: 'Domestic oven with added steam (tray/spray) approximating masonry bake
+  conditions. English-base successor of equipment.forno-domestico-com-vapor (DECISIONS
+  #24 refactor, 2026-08-02).'
+parameters:
+  max_temperature:
+    value: 250
+    unit: C
+  thermal_mass: low
+  steam: added
+  heat: steady
+aliases:
+- equipment.forno-domestico-com-vapor

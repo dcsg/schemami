@@ -20,6 +20,8 @@
       "description": "Machine-read parameters (max_temperature, thermal_mass, steam, heat profile…) — must be complete for the maths this equipment participates in (registry-governance directive)."
     },
     "conversions": { "type": "object", "description": "Level-1 parameter-shift rules relative to a reference profile." },
+    "aliases": { "type": "array", "items": { "type": "string" }, "description": "Ids and raw names that consolidate into this entry (mirrors ingredient-class aliases)." },
+    "superseded_by": { "type": "string", "pattern": "^equipment\\.[a-z0-9][a-z0-9.-]*$", "description": "On deprecated entries: the successor id (governance rule 3 — deprecate and add, never rename)." },
     "status": { "enum": ["active", "deprecated"], "default": "active" }
   },
   "additionalProperties": false

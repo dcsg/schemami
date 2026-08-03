@@ -3,7 +3,10 @@ kind: oven
 display_name:
   pt: Forno a lenha
   en: Wood-fired oven
-definition: Traditional wood-fired masonry oven; falling heat, high thermal mass, native steam.
+definition: 'Traditional wood-fired masonry oven; falling heat, high thermal mass,
+  native steam. DEPRECATED (English-base refactor, DECISIONS #24): superseded by
+  equipment.oven.wood-fired; kept resolvable for documents validated at rcp-v0.1
+  (governance rule 3).'
 parameters:
   max_temperature:
     value: 350
@@ -11,3 +14,5 @@ parameters:
   thermal_mass: high
   steam: native
   heat: falling
+status: deprecated
+superseded_by: equipment.oven.wood-fired

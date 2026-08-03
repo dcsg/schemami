@@ -226,7 +226,7 @@ steps:
     until:
       - { kind: core-temperature, value: 96, unit: C }
       - { kind: sensory, test: tap, expect: "som oco" }
-    equipment: [equipment.forno-lenha, equipment.forno-domestico-com-vapor]
+    equipment: [equipment.oven.wood-fired, equipment.oven.domestic-steam]
 
   - id: arrefecer
     primitive: { id: primitive.cool, v: 1 }
@@ -251,7 +251,7 @@ substitutions:
         uses: [t65, t110, rijo, agua, mv, mm]
         params: { speed: 1, then_speed: 2 }
         duration: { min: 8m, target: 10m, max: 12m }
-        equipment: [equipment.batedeira-espiral]
+        equipment: [equipment.mixer.spiral]
         title: { pt: Amassar na batedeira, en: Machine knead }
         until: [{ kind: sensory, test: windowpane, expect: "membrana translúcida sem rasgar" }]
     note:

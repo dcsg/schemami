@@ -3,10 +3,14 @@ kind: mixer
 display_name:
   pt: Batedeira espiral
   en: Spiral mixer
-definition: Spiral dough mixer; friction factor higher than hand mixing.
+definition: 'Spiral dough mixer; friction factor higher than hand mixing. DEPRECATED
+  (English-base refactor, DECISIONS #24): superseded by equipment.mixer.spiral;
+  kept resolvable for documents validated at rcp-v0.1 (governance rule 3).'
 parameters:
   speeds: 2
   friction_factor:
     value: 11
     unit: C
     note: approx dough temperature rise vs hand
+status: deprecated
+superseded_by: equipment.mixer.spiral

@@ -1,0 +1,16 @@
+id: equipment.oven.high-temperature
+kind: oven
+display_name:
+  pt: Forno de alta temperatura
+  en: High-temperature oven
+definition: 'Oven capable of nata-grade heat (250-290°C plus). English-base successor
+  of equipment.forno-alta-temperatura (DECISIONS #24 refactor, 2026-08-02).'
+parameters:
+  max_temperature:
+    value: 300
+    unit: C
+  thermal_mass: medium
+  steam: none
+  heat: steady
+aliases:
+- equipment.forno-alta-temperatura

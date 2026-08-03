@@ -3,7 +3,9 @@ kind: oven
 display_name:
   pt: Forno de alta temperatura
   en: High-temperature oven
-definition: Oven capable of nata-grade heat (250-290°C plus).
+definition: 'Oven capable of nata-grade heat (250-290°C plus). DEPRECATED (English-base
+  refactor, DECISIONS #24): superseded by equipment.oven.high-temperature; kept
+  resolvable for documents validated at rcp-v0.1 (governance rule 3).'
 parameters:
   max_temperature:
     value: 300
@@ -11,3 +13,5 @@ parameters:
   thermal_mass: medium
   steam: none
   heat: steady
+status: deprecated
+superseded_by: equipment.oven.high-temperature

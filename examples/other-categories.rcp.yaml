@@ -257,7 +257,7 @@ steps:
     duration: { min: 10m, target: 12m, max: 15m }
     until:
       - { kind: visual, expect: "manchas escuras (leopardo) no creme" }   # localized char, not even browning
-    equipment: [equipment.forno-alta-temperatura]
+    equipment: [equipment.oven.high-temperature]
 
 profile:
   laminated: true
