@@ -4,7 +4,7 @@ type: spec
 id: SPEC-003
 title: RCP v0.3 implementation — the Calculus, its vectors, timeline, decode-compat, media
 slug: rcp-v03-implementation
-status: draft
+status: accepted
 author: Daniel Gomes
 created_at: '2026-08-03T07:09:43Z'
 source_prd: PRD-003
@@ -341,8 +341,12 @@ revision_history:
   note: Initial draft. Resolves all four PRD-003 OQs (DS-CALC-001 packaging, DS-CALC-003 timeline semantics,
     DS-TOOL-003 media conventions, DS-PR-009 frozen reader — decode structs, not the closed schema). FR
     coverage 6/6; 12 PRD ACs passed through + 4 SACs with verify commands.
+- at: '2026-08-03T07:27:07Z'
+  author: Daniel Gomes
+  action: edited
+  note: Accepted by Daniel. Proceeding to artifacts.
 extensions: {}
 _sync:
-  md_hash: 4594e85df4653ad03aa92ff9bb671f6dffd341225b1fa4f1590727aa728c5580
-  yaml_hash: da0907605365d18026a4e4a1d2e8fa2fdefd651c46cc48a16bf2945c11e040e1
-  synced_at: '2026-08-03T07:09:43Z'
+  md_hash: 01b829201cfcaf01b6dfc9c9dd6b3ca5754790831906733edfc965b6d805af33
+  yaml_hash: 5cbbab5c00bebd54c595c8d577ac32c0615e86654832f0656f83599c2f3c17bb
+  synced_at: '2026-08-03T07:27:07Z'

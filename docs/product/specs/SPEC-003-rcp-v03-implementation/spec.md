@@ -2,7 +2,7 @@
 type: spec
 id: SPEC-003
 title: RCP v0.3 implementation — the Calculus, its vectors, timeline, decode-compat, media
-status: draft
+status: accepted
 author: Daniel Gomes
 implements: PRD-003
 source_prd: PRD-003
