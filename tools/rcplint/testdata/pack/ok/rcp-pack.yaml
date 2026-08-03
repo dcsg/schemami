@@ -1,0 +1,11 @@
+rcp: 1
+collection: livro-do-avo
+name:
+  pt: Livro do avô
+description:
+  pt: Colecção pessoal de receitas de família.
+publisher:
+  name: Daniel Gomes
+licence:
+  pt: Todos os direitos reservados
+version: 1

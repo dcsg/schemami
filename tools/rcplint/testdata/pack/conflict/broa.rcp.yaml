@@ -1,0 +1,17 @@
+rcp: 1
+id: broa-de-milho
+collection: outra-coleccao
+kind: bread
+lang: pt-PT
+name:
+  pt: Broa de milho
+bases:
+  flour:
+    sum: ingredients
+    where:
+      roles: [flour]
+ingredients:
+  - id: farinha-milho
+    raw: farinha de milho
+    amount: { value: 500, unit: g }
+    roles: [flour]

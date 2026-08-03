@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://paodeportugal.pt/schema/rcp/1/pack.schema.json",
+  "title": "RCP pack manifest",
+  "description": "Declares a COLLECTION: the document set a consumer loads together, inside which recipe ids are unique. A SEPARATE file format (rcp-pack.yaml beside the documents) and deliberately NOT a `kind:` value on the recipe core — that keeps the kind enum and the whole decode-compatibility surface untouched. The manifest is the AUTHORITATIVE declarer of the collection identifier; a document may carry the same identifier for lone travel, and on conflict the manifest wins and the conflict is reported. Pack SERVICES (hosting, publishing workflow, any registry server) are app concerns, outside the protocol.",
+  "type": "object",
+  "required": ["rcp", "collection"],
+  "additionalProperties": false,
+  "properties": {
+    "rcp": {
+      "const": 1,
+      "description": "Protocol major version, as on a recipe document root. A reader that does not know a manifest's MODEL MUST refuse to interpret it."
+    },
+    "collection": {
+      "$ref": "#/$defs/collectionId"
+    },
+    "name": {
+      "$ref": "#/$defs/text",
+      "description": "Human-readable name of the collection. Prose — never machine-read."
+    },
+    "description": {
+      "$ref": "#/$defs/text"
+    },
+    "publisher": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Who publishes this collection. Identity and accounts are app concerns (DECISIONS #19); this is attribution on the artefact, not a user record.",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "url": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "licence": {
+      "$ref": "#/$defs/text",
+      "description": "Default licence for documents in this collection. A document's own licence always wins where both exist."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Revision of the MANIFEST, not of its documents. Documents carry their own `version`."
+    },
+    "x-": {
+      "type": "object",
+      "description": "Extension bucket. Consumers MUST ignore and MUST preserve unknown x- fields on round-trip."
+    }
+  },
+  "$defs": {
+    "collectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\s]+$",
+      "description": "The collection's identifier — an OPAQUE string in its own value space. Deliberately looser than a recipe `id` slug: a future distribution layer may put a domain, a reverse-DNS name or a URI here, and it must be able to do so WITHOUT widening the recipe id pattern (widening that pattern would break v0.1-era readers and force a MODEL bump). The protocol never dictates how a system MINTS this value — allocation is a system concern; only reference RESOLUTION is a format fact."
+    },
+    "text": {
+      "description": "Prose for human eyes: a bare string, or a map of BCP-47 language tag to string. Never machine-read.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string" }
+        }
+      ]
+    }
+  }
+}

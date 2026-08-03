@@ -4,41 +4,41 @@ last_evaluated: null
 phases:
 - phase: 1
   title: 'Pack manifest: the collection becomes nameable'
-  status: pending
-  attempt: 0
+  status: pass
+  attempt: 1
   criteria:
   - id: AC-1.1
     text: '`schema/rcp-pack-v1.schema.json` exists and validates a manifest declaring only the collection
       identifier'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestPackManifest ./...
   - id: AC-1.2
     text: A manifest/document identifier conflict is reported and the MANIFEST value is the one used
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -run TestPackManifestConflict ./...
   - id: AC-1.3
     text: '`kind` enum is unchanged and no new required field entered core'
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: cd tools/rcplint && go test -count=1 -run TestDecodeCompat ./...
   - id: AC-1.4
     text: Standing gates green
-    status: pending
+    status: pass
     fail_count: 0
     fail_reason: null
     block_reason: null
-    last_evaluated: null
+    last_evaluated: '2026-08-03'
     verify: make validate && make accept
 - phase: 2
   title: 'Collection scope: discovery, and references that cannot misbind (opus)'

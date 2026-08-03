@@ -40,7 +40,7 @@ OPPORTUNITY at each layer boundary (SSP-002). One human gate at the end.
 
 | Phase | Status | Attempt | Updated |
 |-------|--------|---------|---------|
-| 1     | pending | 0/5 | — |
+| 1     | done | 1/5 | 2026-08-03 |
 | 2     | pending | 0/5 | — |
 | 3     | pending | 0/5 | — |
 | 4     | pending | 0/5 | — |
@@ -803,3 +803,10 @@ When complete, output: PHASE 12 COMPLETE V04 SHIPPED TAGGED
 
 <!-- `AC-N.M: PASS — <date>` appended as gates pass. Layer gates:
      `LAYER N GATE: GREEN — <date>`. -->
+
+Phase 1:
+- AC-1.1: PASS — 2026-08-03 (schema/rcp-pack-v1.schema.json; minimal manifest = rcp + collection; collectionId is deliberately looser than the recipe slug so a distribution layer can hold domains/URIs without widening the frozen id pattern)
+- AC-1.2: PASS — 2026-08-03 (manifest wins on conflict, and the conflict is REPORTED naming both values and the manifest path — inverted proof run: letting the document's self-declaration win fails TestPackManifestConflict; restored green)
+- AC-1.3: PASS — 2026-08-03 (kind enum still 8 values; recipe.required still [id, kind, name]; `collection` is optional; core REJECTS a manifest — pack is provably a separate format, not a recipe kind; decode-compat green)
+- AC-1.4: PASS — 2026-08-03 (validate/accept 36-36/conformance 85/calculus 25 all green; calculus vectors byte-unchanged)
+- Fixture discipline: testdata/pack/{ok,bad-no-id,conflict} sit outside every corpus glob, so the must-fail document cannot red make validate (pre-flight qa #3).

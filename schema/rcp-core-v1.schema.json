@@ -359,6 +359,10 @@
             "$ref": "#/$defs/media"
           },
           "description": "Document-level media — descriptive metadata about the dish as a whole, sitting beside taxonomy/tags/provenance at the root: result and plating photos, and general photos or full-recipe videos of the whole preparation. Steps carry their own step-level media for the moment of execution; a full-recipe video declared here can be referenced from steps by time range via W3C Media Fragments in uri (#t=start,end)."
+        },
+        "collection": {
+          "$ref": "#/$defs/collectionId",
+          "description": "OPTIONAL self-declaration of the collection this document belongs to, for a document travelling alone. The pack manifest (rcp-pack.yaml) is authoritative: where both exist and disagree, the manifest wins and the conflict is reported. Ids are unique WITHIN a collection; an unqualified reference resolves inside the referring document's own collection."
         }
       },
       "patternProperties": {
@@ -1756,6 +1760,13 @@
         }
       },
       "additionalProperties": false
+    },
+    "collectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^\\s]+$",
+      "description": "A collection identifier — an opaque string in its own value space, deliberately separate from the recipe `id` slug so a distribution layer can use domains or URIs here without widening the frozen id pattern."
     }
   }
 }
