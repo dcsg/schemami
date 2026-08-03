@@ -15,6 +15,10 @@ const engine = createJsEngine(loadSchemas());
 const ctx = {
   lang: "pt-PT",
   i18n: { taxonomy: { bread: "Pão", pastry: "Pastelaria" }, tags: { classic: "Clássico" } },
+  names: {
+    "ingredient.flour.wheat.t55": { pt: "Farinha de trigo T55", en: "Wheat flour T55" },
+    "primitive.melt": { pt: "Derreter", en: "Melt" },
+  },
 };
 
 test("sections: nata renders name, ingredients with ORACLE-pinned basis strings, steps, maturity badge", async () => {
@@ -29,6 +33,26 @@ test("sections: nata renders name, ingredients with ORACLE-pinned basis strings,
   expect(html).toContain("2% · flour (10 g)");
   expect(html).toContain("55% · flour (275 g)");
   expect(html).toContain('<ol class="steps">');
+});
+
+test("components render their method: title-less steps fall back to the primitive display name; ingredients show display names", () => {
+  const analysis = {
+    id: "x", kind: "pastry", profile: "pastry", maturity: "hardened", valid: true, verdicts: [],
+    canonical: {
+      name: { pt: "Teste" },
+      ingredients: [{ id: "f", item: "ingredient.flour.wheat.t55", amount: { value: 100, unit: "g" }, roles: ["flour"] }],
+      components: [{
+        id: "g", kind: "component", name: { pt: "Ganache" },
+        ingredients: [{ id: "c", item: "ingredient.chocolate.dark.70", amount: { value: 10, unit: "g" } }],
+        steps: [{ id: "g1", primitive: { id: "primitive.melt", v: 1 } }],
+      }],
+    },
+  };
+  const html = renderDocument(analysis as never, ctx);
+  expect(html).toContain("Farinha de trigo T55");           // display name, not slug
+  expect(html).toContain('title="ingredient.flour.wheat.t55"'); // slug preserved as tooltip
+  expect(html).toContain("Derreter");                        // component step via primitive display name
+  expect(html).toContain("ingredient.chocolate.dark.70");    // unknown-to-ctx id falls back to itself, honestly
 });
 
 test("injection: script/onerror content in name, notes and taxonomy renders inert", async () => {

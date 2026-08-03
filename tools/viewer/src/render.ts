@@ -23,6 +23,8 @@ export interface I18nVocab {
 
 export interface RenderContext {
   i18n: I18nVocab;
+  /** Registry display-name layer: entry id -> {pt?, en?}. */
+  names: Record<string, Record<string, string>>;
   lang: string; // "pt-PT" in v0.2
 }
 
@@ -49,6 +51,14 @@ function text(v: unknown, lang: string): string {
 
 function term(slug: string, table: Record<string, string>): string {
   return table[slug] ?? slug; // English-base slug is its own fallback
+}
+
+/** Registry entry id -> localized display name; the id itself is the honest fallback. */
+function displayName(id: string, ctx: RenderContext): string {
+  const dn = ctx.names[id];
+  if (!dn) return id;
+  const short = ctx.lang.split("-")[0]!;
+  return dn[ctx.lang] ?? dn[short] ?? dn["en"] ?? id;
 }
 
 /**
@@ -95,7 +105,7 @@ function ingredientList(doc: Dict, ctx: RenderContext): string {
     .map(asDict)
     .map((ing) => {
       const label = ing["item"]
-        ? esc(String(ing["item"]))
+        ? `<span title="${esc(String(ing["item"]))}">${esc(displayName(String(ing["item"]), ctx))}</span>`
         : `<em class="unresolved">${esc(ing["raw"] ?? ing["id"] ?? "?")}</em>`;
       const prep = ing["prep"] ? ` <span class="prep">${esc(text(ing["prep"], ctx.lang))}</span>` : "";
       return `<li><span class="amount">${amountLabel(doc, ing)}</span> ${label}${prep}</li>`;
@@ -107,11 +117,17 @@ function stepList(doc: Dict, ctx: RenderContext): string {
   const steps = asList(doc["steps"]).map(asDict);
   if (!steps.length) return "";
   const items = steps.map((s) => {
+    // Step text lives in `title`/`body` ($defs/step) — a step without
+    // either still renders meaningfully via its primitive's display name.
     const prim = asDict(s["primitive"])["id"];
-    const does = s["does"] ? text(s["does"], ctx.lang) : "";
+    const title = s["title"] ? text(s["title"], ctx.lang) : "";
+    const body = s["body"] ? `<p class="note">${esc(text(s["body"], ctx.lang))}</p>` : "";
     const note = s["note"] ? `<p class="note">${esc(text(s["note"], ctx.lang))}</p>` : "";
-    const head = does || (prim ? String(prim) : String(s["id"] ?? ""));
-    return `<li>${esc(head)}${note}</li>`;
+    const head = title || (prim ? displayName(String(prim), ctx) : String(s["id"] ?? ""));
+    const dur = asDict(s["duration"]);
+    const durLabel = dur["target"] ?? dur["min"] ?? "";
+    const durHtml = durLabel ? ` <span class="dur">(${esc(durLabel)})</span>` : "";
+    return `<li>${esc(head)}${durHtml}${body}${note}</li>`;
   });
   return `<ol class="steps">${items.join("")}</ol>`;
 }
