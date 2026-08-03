@@ -1,36 +1,31 @@
 # The Recipe Calculus — normative specification v1
 
-**Status:** NORMATIVE — protocol surface, beside `schema/` and
-`registry/` (placement per SPEC-003 DS-CALC-001: the Calculus ships WITH
-the protocol, engineering obligation #1; project engineering specs stay
-in `docs/product/specs/`, this document is what integrators implement).
-**Trace:** FEAT-CALC-001/002 → FR-CALC-001/002/003 (PRD-003) →
-SR-CALC-001/002/003 (SPEC-003) → this document + `calculus/vectors/`.
-Founding decisions: #13 (the Calculus), #15 (fail-closed), #3 (DAG as
-data), #26 (vocabulary). This document and `calculus/vectors/` ship with
-the protocol. Implementations are informative (Go reference:
-`tools/rcplint/calc`; TypeScript: `tools/viewer/src/calc`) and are proven
-equivalent by replaying the vectors — a disagreement is an implementation
-bug unless this document changes. Vocabulary per DECISIONS #26.
+**Status:** NORMATIVE. This document and `calculus/vectors/` are part
+of the RCP protocol surface, beside `schema/` and `registry/` — shape,
+vocabulary, computation. Any implementation, in any language, is
+conformant when it replays the complete vector set within the tolerances
+of the Numeric discipline below; a disagreement between implementations
+is an implementation bug unless this document changes. Reference
+implementations exist in the RCP repository (informative, not part of
+the protocol). Development provenance and traceability for this document
+are maintained project-side, not here.
 
 The Calculus is the one library of cook-time pure functions every surface
-computes with. Purity is law (SSP-005): no IO, no clock, no randomness,
-no locale — every function is a deterministic map from document values to
-values. Wall-clock anchoring, prep aggregation and presentation are
+computes with. Purity is law: no IO, no clock, no randomness, no locale —
+every function is a deterministic map from document values to values. Wall-clock anchoring, prep aggregation and presentation are
 consumer concerns, never Calculus concerns.
 
 Inputs are ADMITTED documents (L1-valid against core ∧ profile). The
 Calculus does not re-validate shape; it MUST however treat any value
 outside its stated domain as *unresolvable* (never as zero, never as a
 guess) — uncertainty flows to `enforceConstraints`, where critical
-severity refuses (DECISIONS #15).
+severity refuses — the fail-closed principle: a safety bound that cannot
+be verified behaves as violated.
 
 ## Identifiers
 
 Every normative rule in this document carries a stable id, cited by
-tests, vectors and commits (the project's anything-implemented-has-an-id
-rule, applied protocol-side — the Calculus's own scheme, like registry
-ids): **R-<FN>-n** for rules (per-function Edges and the shared models),
+conformance vectors and implementation tests: **R-<FN>-n** for rules (per-function Edges and the shared models),
 **N-n** for numeric-discipline rules, **WE-<FN>-n** for worked examples
 (each becomes a verbatim table test citing its id). Ids are append-only:
 a changed rule keeps its id with the change versioned; a removed rule's
@@ -90,7 +85,7 @@ Unit-preserving: scaling never converts units. `{value: 250, unit: g} ×2
 - **R-SCALE-3** — Component references (`ref`) are boundary-crossing: the referenced
   document scales by the SAME factor composed with the reference's own
   quantity relationship (the referencing document owns *how much*; the
-  referenced document owns *how* — when-vs-how, DECISIONS #26 glossary).
+  referenced document owns *how*).
 - **R-SCALE-4** — `k = 1` is the identity for every quantity, fixed or not.
 
 ### Worked example (WE-SCALE-1)
@@ -116,16 +111,12 @@ unresolvable — never a partial sum (refusing beats under-counting).
 ### Edges
 - **R-BASIS-1** — Role filter: an ingredient contributes when its `roles` intersect
   `where.roles`; an empty filter matches all ingredients.
-- **R-BASIS-2** — **`include_components: true` — DEFINED HERE (the throwaway clamp
-  refused these; the Calculus resolves them, which is the point):** the
-  basis additionally includes matching ingredients of every INLINE
-  component in the scope, recursively. Component REFERENCES (`ref`)
-  contribute only when the referenced document is available to the
-  computation with a resolvable same-named basis or matching
-  ingredients; an unavailable reference makes the basis unresolvable.
-  ⚠ CHECKPOINT NOTE (Daniel): this upgrades clamp behaviour — no pinned
-  parity case depends on the old refusal, but it is a semantic change
-  from "always unresolvable" to "resolvable when decomposable".
+- **R-BASIS-2** — **`include_components: true`:** the basis additionally
+  includes matching ingredients of every INLINE component in the scope,
+  recursively. Component REFERENCES (`ref`) contribute only when the
+  referenced document is available to the computation with a resolvable
+  same-named basis or matching ingredients; an unavailable reference
+  makes the basis unresolvable — refusing beats under-counting.
 - **R-BASIS-3** — `scaling: fixed` contributions: a basis total under a scale
   transformation sums TRANSFORMED amounts — fixed contributions do not
   scale, so the basis total is scale-dependent when any contributor is
@@ -137,7 +128,7 @@ unresolvable — never a partial sum (refusing beats under-counting).
 Massa-folhada scope: farinha `{500 g, roles: [flour]}`; basis `flour`
 sums role `flour`, no include_components → **500 g**. Água
 `{ratio: 0.55, of: flour}` resolves to `275 g`; sal `{ratio: 0.02}` to
-`10 g`. (This is the v0.2 render oracle, now specified.)
+`10 g`.
 
 ## fn: selectGuardPath
 
@@ -152,8 +143,8 @@ None — pure step-set computation.
 ### Edges
 - **R-GUARD-1** — A step is active when it has no `when`, or its `when` is satisfied by
   the selection (guard grammar per core `$defs/guard`).
-- **R-GUARD-2** — Every selection MUST yield a connected, terminating DAG — this is
-  L2-lint-guaranteed for authored documents (AC-VAL-002-3); the Calculus
+- **R-GUARD-2** — Every selection MUST yield a connected, terminating DAG — admission
+  (semantic validation) guarantees this for authored documents; the Calculus
   assumes it and MUST NOT re-verify (purity of concern), but an
   unsatisfiable selection (unknown option id, out-of-enum choice) is
   *unresolvable*, never an empty path.
@@ -180,7 +171,7 @@ ratios. Absolute bounds (`min_value`/`max_value`) compare in the
 amount's own unit AFTER transformation.
 
 ### Edges
-- **R-ENFORCE-1** — **Fail-closed (DECISIONS #15):** an unresolvable resolved-value under
+- **R-ENFORCE-1** — **Fail-closed:** an unresolvable resolved-value under
   a critical constraint REFUSES, carrying the kind of uncertainty and
   the authored reason. Warn severity surfaces an advisory instead.
   Uncertainty kinds (normative strings): `missing amount`,
@@ -195,8 +186,8 @@ amount's own unit AFTER transformation.
   TRANSFORMED amount (fixed quantities transform by 1).
 - **R-ENFORCE-4** — **Authored reasons are opaque pt/en strings** — passed through
   verbatim, never generated, never translated by the Calculus.
-- **R-ENFORCE-5** — Severity routing matches v0.2: only `critical` refuses; `warn`
-  advises; absent severity defaults to warn (advisory).
+- **R-ENFORCE-5** — Severity routing: only `critical` refuses; `warn` advises;
+  absent severity defaults to warn (advisory).
 
 ### Worked example (WE-ENFORCE-1)
 Fixed-salt chucrute: cabbage `1000 g` (scalable), salt
@@ -255,8 +246,8 @@ non-numeric passes through). It exists so `scale`, `resolveBases` and
 
 ### Domain
 Step `duration` windows under a scale factor. v1 posture: durations DO
-NOT scale (research 04: time is dominated by geometry/thermodynamics,
-not mass — doubling a cake does not double bake time).
+NOT scale — cook time is dominated by geometry and thermodynamics, not
+mass; doubling a cake does not double its bake time.
 
 ### Units
 Seconds internally; the document's duration grammar externally.
@@ -364,8 +355,8 @@ fixture exercises multi-day negatives across tracks).
 
 ## Edge-class enumeration
 
-The coverage gate (SAC-CALC-002) parses this block; every class MUST
-have conformance vectors.
+Coverage tooling parses this block; every class MUST have conformance
+vectors.
 
 ```rcp-edge-classes
 class: unit-boundaries
@@ -391,6 +382,6 @@ class: timeline-arithmetic
 ---
 
 *Changing ANY semantics in this document requires regenerating
-`calculus/vectors/` in the same commit (DS-CALC-002) and is a versioned
-protocol change per `schema/VERSIONING.md`'s spirit: additive first,
-breaking never silent.*
+`calculus/vectors/` in the same change, and is a versioned protocol
+change per `schema/VERSIONING.md`: additive first, breaking never
+silent.*

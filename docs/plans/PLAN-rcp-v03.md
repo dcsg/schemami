@@ -275,6 +275,17 @@ Strictly serial: 1 → [CHECKPOINT GATE] → 2 → 3 → 4 → 5 → 6 → 7 →
 
 None — full coverage (model.mmd reference-only).
 
+## Checkpoint notes (project-side — kept OUT of the public SPEC per Daniel's ruling)
+
+- R-BASIS-2 (include_components decomposition) upgrades the throwaway
+  clamp's behaviour: the clamp refused such bases as unresolvable; the
+  Calculus resolves inline decomposition. No pinned parity case depends
+  on the old refusal. Flagged for Daniel's checkpoint ruling.
+- calculus/SPEC.md is PUBLIC-NORMATIVE and self-contained: no project
+  ids (FEAT/FR/SR/DS/SSP/DECISIONS), no internal history, no names.
+  Project→protocol traceability lives in SPEC-003 (CMP-CALC-001) and
+  this plan; the protocol document never points back.
+
 ## Verify evidence
 
 <!-- `AC-N.M: PASS — <date>` lines appended as gates pass. Checkpoint entries: `CHECKPOINT: CALC SPEC GREEN — <date>`; media outcome: `MEDIA ASSET: PASS|FAIL|DEFERRED — <date>`. -->
