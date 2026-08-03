@@ -31,3 +31,4 @@ textarea#input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; 
 .toolbar { display: flex; justify-content: flex-end; }
 .toolbar button { font: inherit; font-size: .85rem; padding: .35rem .8rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); background: color-mix(in srgb, currentColor 8%, transparent); cursor: pointer; }
 .toolbar button:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; }
+.steps .chip { font-size: .72rem; padding: .1rem .45rem; border-radius: 999px; background: color-mix(in srgb, currentColor 9%, transparent); border: 1px solid color-mix(in srgb, currentColor 20%, transparent); white-space: nowrap; }

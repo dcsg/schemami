@@ -113,21 +113,48 @@ function ingredientList(doc: Dict, ctx: RenderContext): string {
   return items.length ? `<ul class="ingredients">${items.join("")}</ul>` : "";
 }
 
+/** Endpoint ("until") → a human chip: "até 104 °C", "até: palito sai seco". */
+function untilChip(u: Dict): string {
+  if (u["expect"]) return `até: ${text(u["expect"], "pt-PT")}`;
+  if (typeof u["value"] === "number") return `até ${u["value"]} ${u["unit"] ?? ""}`.trim();
+  if (u["test"]) return `até: ${u["test"]}`;
+  return String(u["kind"] ?? "");
+}
+
 function stepList(doc: Dict, ctx: RenderContext): string {
   const steps = asList(doc["steps"]).map(asDict);
   if (!steps.length) return "";
+  // uses references ingredient ids in the SAME scope — resolve them to
+  // registry display names for composed lines.
+  const ingName = new Map<string, string>();
+  for (const raw of asList(doc["ingredients"])) {
+    const ing = asDict(raw);
+    if (ing["id"] && ing["item"]) ingName.set(String(ing["id"]), displayName(String(ing["item"]), ctx));
+    else if (ing["id"]) ingName.set(String(ing["id"]), String(ing["raw"] ?? ing["id"]));
+  }
   const items = steps.map((s) => {
-    // Step text lives in `title`/`body` ($defs/step) — a step without
-    // either still renders meaningfully via its primitive's display name.
+    // Authored title always wins — the author's voice. Otherwise COMPOSE
+    // the instruction from the machine layer (renderer-prototype seed,
+    // CONCLUSIONS §7): verb = primitive display name, objects = resolved
+    // uses, conditions = until chips + duration. Structured, never fake
+    // prose the author did not write.
     const prim = asDict(s["primitive"])["id"];
     const title = s["title"] ? text(s["title"], ctx.lang) : "";
-    const body = s["body"] ? `<p class="note">${esc(text(s["body"], ctx.lang))}</p>` : "";
-    const note = s["note"] ? `<p class="note">${esc(text(s["note"], ctx.lang))}</p>` : "";
-    const head = title || (prim ? displayName(String(prim), ctx) : String(s["id"] ?? ""));
+    let head: string;
+    if (title) {
+      head = esc(title);
+    } else {
+      const verb = prim ? displayName(String(prim), ctx) : String(s["id"] ?? "");
+      const objects = asList(s["uses"]).map((u) => ingName.get(String(u)) ?? String(u));
+      head = `<strong>${esc(verb)}</strong>${objects.length ? ` — ${esc(objects.join(", "))}` : ""}`;
+    }
+    const chips = asList(s["until"]).map(asDict).map((u) => `<span class="chip">${esc(untilChip(u))}</span>`);
     const dur = asDict(s["duration"]);
     const durLabel = dur["target"] ?? dur["min"] ?? "";
-    const durHtml = durLabel ? ` <span class="dur">(${esc(durLabel)})</span>` : "";
-    return `<li>${esc(head)}${durHtml}${body}${note}</li>`;
+    if (durLabel) chips.push(`<span class="chip">${esc(durLabel)}</span>`);
+    const body = s["body"] ? `<p class="note">${esc(text(s["body"], ctx.lang))}</p>` : "";
+    const note = s["note"] ? `<p class="note">${esc(text(s["note"], ctx.lang))}</p>` : "";
+    return `<li>${head}${chips.length ? " " + chips.join(" ") : ""}${body}${note}</li>`;
   });
   return `<ol class="steps">${items.join("")}</ol>`;
 }

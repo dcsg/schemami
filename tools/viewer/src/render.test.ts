@@ -17,7 +17,9 @@ const ctx = {
   i18n: { taxonomy: { bread: "Pão", pastry: "Pastelaria" }, tags: { classic: "Clássico" } },
   names: {
     "ingredient.flour.wheat.t55": { pt: "Farinha de trigo T55", en: "Wheat flour T55" },
+    "ingredient.chocolate.dark.70": { pt: "Chocolate negro 70%", en: "Dark chocolate 70%" },
     "primitive.melt": { pt: "Derreter", en: "Melt" },
+    "primitive.cook-syrup": { pt: "Cozer calda", en: "Cook syrup" },
   },
 };
 
@@ -44,15 +46,23 @@ test("components render their method: title-less steps fall back to the primitiv
       components: [{
         id: "g", kind: "component", name: { pt: "Ganache" },
         ingredients: [{ id: "c", item: "ingredient.chocolate.dark.70", amount: { value: 10, unit: "g" } }],
-        steps: [{ id: "g1", primitive: { id: "primitive.melt", v: 1 } }],
+        steps: [
+          { id: "g1", primitive: { id: "primitive.melt", v: 1 }, uses: ["c"] },
+          { id: "g2", primitive: { id: "primitive.cook-syrup", v: 1 }, uses: ["c"],
+            until: [{ kind: "core-temperature", value: 104, unit: "C" }],
+            duration: { target: "5m" } },
+        ],
       }],
     },
   };
   const html = renderDocument(analysis as never, ctx);
-  expect(html).toContain("Farinha de trigo T55");           // display name, not slug
+  expect(html).toContain("Farinha de trigo T55");               // display name, not slug
   expect(html).toContain('title="ingredient.flour.wheat.t55"'); // slug preserved as tooltip
-  expect(html).toContain("Derreter");                        // component step via primitive display name
-  expect(html).toContain("ingredient.chocolate.dark.70");    // unknown-to-ctx id falls back to itself, honestly
+  // Composed instruction: verb — resolved uses, condition chips, duration
+  expect(html).toContain("<strong>Derreter</strong> — Chocolate negro 70%");
+  expect(html).toContain("<strong>Cozer calda</strong> — Chocolate negro 70%");
+  expect(html).toContain('<span class="chip">até 104 C</span>');
+  expect(html).toContain('<span class="chip">5m</span>');
 });
 
 test("injection: script/onerror content in name, notes and taxonomy renders inert", async () => {
