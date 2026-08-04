@@ -55,8 +55,9 @@ artefact being legible, not about promotion.
 - **Editing anything through the site.** It renders; it never writes.
 - **New normative content.** The site adds no rules. If it seems to, that is a
   defect (SP-002).
-- **Hosting infrastructure as a product concern** — the *choice* is recorded,
-  the operation is not this protocol's business.
+- **Deployment.** v0.5 builds and verifies the site *locally*. Publishing it
+  is a separate step, after. Hosting is expected to be Cloudflare but is not
+  decided here, and **no requirement may depend on which host is chosen**.
 
 ## Requirements
 
@@ -67,7 +68,7 @@ artefact being legible, not about promotion.
 | FR-DOC-003 | documentation site | **Drift is mechanically impossible to ship** — a gate fails on divergence and on any uncovered normative surface |
 | FR-TOOL-005 | developer tooling | The viewer is **reachable as the live playground** without weakening its guarantees |
 | FR-DOC-004 | documentation site | An **implementer path**: SPEC, downloadable vectors, versioning contract, registry — no cloning required |
-| FR-DOC-005 | documentation site | **Static and egress-free** end to end; the hosting choice is recorded as a decision |
+| FR-DOC-005 | documentation site | **Static and egress-free as a property of the built output**, verifiable locally with the network disabled. v0.5 ships and verifies **locally**; deployment is out of scope |
 | FR-DOC-006 | documentation site | The site works as a **manual**: navigable from any page, with a reading path for a newcomer, legible on a phone. Coverage is necessary but **not sufficient** |
 
 ## Acceptance Criteria
@@ -94,7 +95,10 @@ the repo**.
 - **SP-001** — never fork a normative source; every page renders from the repo at build time.
 - **SP-002** — the site is **informative, never normative**; the repo wins, and the site says so.
 - **SP-003** — `calculus/SPEC.md` stays public-normative in **both** directions.
-- **SP-004** — no egress: static, no server, no analytics, no CDN fonts or scripts.
+- **SP-004** — no egress: static, no server, no analytics, no CDN fonts or
+  scripts — as a property of the **built output**, so it holds regardless of
+  host. A site that is egress-free only because of one host's configuration
+  has not satisfied this.
 - **SP-005** — dependency freeze; new build tooling needs a recorded decision.
 - **SP-006** — the private collection is never reachable, rendered, or referenced.
 - **SP-007** — navigation, typography and layout are **deliverables with an
@@ -103,7 +107,12 @@ the repo**.
 
 ## Open Questions
 
-- **OQ-1** — Hosting: where does a static, egress-free site live? SP-004 requires the choice be *recorded*. (Tooling is settled by ADR-003; hosting is not.)
+- ~~**OQ-1** — Hosting~~ → **RESOLVED as DEFERRED** (2026-08-04). Out of scope
+  for v0.5. Likely Cloudflare; not decided, and nothing here depends on it.
+  Two findings carry forward to deployment day: the zone needs an egress audit
+  (`paodeportugal.pt` currently sends `nel`/`report-to` beacons), and Cloudflare
+  *"reserves the right to attach new headers to static asset responses at any
+  time"* — which composes with the viewer's meta-CSP by intersection.
 - **OQ-2** — Information architecture: what does a stranger read **first**? Neither of us can judge this from inside the project. Decide whether to test it on a real reader before or after shipping.
 - **OQ-3** — Registry: browsable pages, or link to the repo? 109 entries is a lot of generated pages for a first cut.
 - **OQ-4** — Versioned docs: current tag only, or every tag? `VERSIONING.md` binds from a tag, so a reader holding an older document may need older docs.

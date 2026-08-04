@@ -71,13 +71,17 @@ requirements:
   status: proposed
 - id: FR-DOC-005
   component: documentation site
-  text: 'Publication MUST be static and egress-free end to end: no server-side execution,
-    no analytics, no third-party fonts, scripts or styles, and no network request
-    from any page. The hosting choice MUST be recorded as a decision rather than
-    assumed.'
+  text: 'The site MUST be static and egress-free as a property of the BUILT OUTPUT,
+    verifiable locally: no server-side execution, no analytics, no third-party fonts,
+    scripts or styles, and no network request from any page when loaded with the
+    network disabled. v0.5 delivers and verifies the site LOCALLY; deployment is
+    explicitly out of scope. Hosting is expected to be Cloudflare but is NOT decided
+    here — and no requirement in this PRD may depend on which host is chosen.'
   trace:
   - FEAT-TOOL-003
   - Daniel Q4 2026-08-04
+  - 'Daniel 2026-08-04 (scope: "the goal is to have it running locally now for testing
+    and verifying, first deployment is after")'
   - AC-TOOL-001-2 (viewer self-containment)
   status: proposed
 - id: FR-DOC-006
@@ -146,10 +150,11 @@ acceptance_criteria:
   status: proposed
 - id: AC-DOC-005-1
   fr: FR-DOC-005
-  given: every page of the built site
-  when: it is loaded with the network disabled
-  then: it renders completely; no page issues a network request, and the hosting
-    choice is recorded as a decision
+  given: the site built locally and served from a local static server (and from
+    file://)
+  when: every page is loaded with the network disabled
+  then: it renders completely and issues no network request — asserted by the build,
+    with no deployed host involved
   status: proposed
 - id: AC-DOC-006-1
   fr: FR-DOC-006
@@ -186,8 +191,10 @@ protections:
     site''s framing does not leak project vocabulary OUT onto the page.'
 - id: SP-004
   text: 'No egress. Static only: no server-side execution, no analytics, no third-party
-    fonts, scripts or styles. The viewer''s CSP posture extends to the whole site,
-    and its source list is unchanged.'
+    fonts, scripts or styles. The viewer''s CSP posture extends to the whole site
+    and its source list is unchanged. This is a property of the BUILT OUTPUT, so
+    it holds regardless of host — a site that is egress-free only because of a particular
+    host''s configuration has not satisfied this.'
 - id: SP-005
   text: 'Dependency freeze holds: the viewer keeps exactly its two pinned dependencies,
     and any tooling the site build needs is justified by a recorded decision rather
@@ -230,8 +237,14 @@ dependencies: []
 nfrs: []
 risks: []
 open_questions:
-- 'OQ-1: Hosting — where does a static, egress-free site live? SP-004 requires the
-  choice be recorded. (Tooling is now settled by ADR-003; hosting is not.)'
+- 'OQ-1: RESOLVED 2026-08-04 as DEFERRED — hosting is out of scope for v0.5. Daniel:
+  likely Cloudflare, "but that is not important since the goal is to have it running
+  locally now for testing and verifying; first deployment is after". No requirement
+  may depend on the host. Two findings carry forward to whenever deployment happens:
+  the zone must be audited for egress (paodeportugal.pt currently sends nel/report-to
+  beacons to Cloudflare), and Cloudflare reserves the right to attach headers to
+  static asset responses at any time, which composes with the viewer meta-CSP by
+  intersection.'
 - 'OQ-2: Information architecture — what does a stranger read FIRST? Neither Daniel
   nor the assistant can judge this from inside the project (Q5''s second-place risk);
   decide whether to test it on a real reader before or after shipping.'
@@ -320,8 +333,18 @@ revision_history:
     Coverage was necessary but not sufficient and the PRD did not say so. ADR-003
     records the no-framework decision; FR-DOC-006 is what makes rejecting a themed
     framework honest.'
+- at: '2026-08-04T14:00:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Scope narrowed on Daniel''s direction: v0.5 builds and verifies the site
+    LOCALLY; deployment is out of scope and hosting is deferred (likely Cloudflare,
+    not decided). FR-DOC-005 and SP-004 restated so egress-freedom is a property
+    of the BUILT OUTPUT rather than of a host — which is strictly stronger, and
+    testable now with the network disabled. Unblocks the spec: OQ-1 no longer gates
+    it, and the rcp.invalid placeholder is correct for a site that is not being
+    published yet.'
 extensions: {}
 _sync:
-  md_hash: d8cbacab253a93870c3addf8bbfe61a2d601e86f390132b853de9af40e3e1362
-  yaml_hash: 0d5ef4b46223d3859d14861cdfb5d3ec943046d6bf6b7053160dbae0305cafea
-  synced_at: "2026-08-04T12:00:00Z"
+  md_hash: 83a26c9a4465c4217608ef99db977e3b985bdb3929e0b540f936268354792f88
+  yaml_hash: f903340d6c1eb42efed21ad0284485ccd7041c110be62ebcd3acad6f026e96c3
+  synced_at: "2026-08-04T14:00:00Z"
