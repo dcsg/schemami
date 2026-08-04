@@ -13,10 +13,10 @@
 Three failures, and none of them is "we need marketing".
 
 1. **The protocol is unreadable to outsiders.** Four tagged versions, a
-   normative Calculus with 27 conformance vectors, a 109-entry registry — and
+   normative Calculus with 23 conformance vectors, a 109-entry registry — and
    the only way to understand any of it is to clone the repo and read raw JSON
    Schema. A protocol nobody can read is a private format with extra steps.
-2. **The viewer exists but nobody can reach it.** A self-contained 203 KB page
+2. **The viewer exists but nobody can reach it.** A self-contained 204 KiB page
    that answers *"what is this?"* better than any prose could, reachable only
    by cloning and opening a local file.
 3. **No entry point for a second implementer.** The whole point of a protocol
@@ -80,7 +80,7 @@ drift gate naming both, with the inverted proof shipping alongside; and
 
 - `docs/product/features.yaml` — FEAT-TOOL-003, including the build-time-rendering constraint
 - `calculus/SPEC.md` — the public-normative surface to render without altering
-- `tools/viewer/dist/index.html` — the playground to embed (203 KB, byte-exact CSP)
+- `tools/viewer/dist/index.html` — the playground to embed (204 KiB, byte-exact CSP)
 - [jwt.io](https://jwt.io/) — the move being copied: a spec explained beside a live tool
 
 ## Protections
