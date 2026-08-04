@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/ingredient-class.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/registry/ingredient-class.schema.json",
   "title": "RCP Registry — IngredientClass",
   "description": "A governed ingredient-class entry (DECISIONS #16/#23; registry-governance guideline). Recipes reference the class id; the shopping layer resolves class to product. Entries are append-only: never deleted or repurposed — deprecate and add.",
   "type": "object",

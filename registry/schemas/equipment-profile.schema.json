@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/equipment-profile.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/registry/equipment-profile.schema.json",
   "title": "RCP Registry — EquipmentProfile",
   "description": "A governed equipment profile whose parameters participate in the maths (DECISIONS #3): level-1 conversions live here (e.g. convection = conventional −20°C), never hand-encoded in recipes.",
   "type": "object",

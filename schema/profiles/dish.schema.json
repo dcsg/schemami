@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/dish.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/profiles/dish.schema.json",
   "title": "RCP Dish Profile",
   "x-rcp-maturity": "hardened",
   "description": "Hardened dish profile (SR-PROF-004; DS-PROF-002; PRD-002 FR-PROF-004), created 2026-08-02 from exactly two real documents (chili con carne, feijoada de marisco — n=2). Hardened means closed to observed use: neither document carries a profile block, declares bases, or exercises any dish-specific numeric invariant, so the profile block is closed-empty and x-rcp-bounds is deliberately empty. NOTHING here is speculative. When bounds do arrive (third+ real dish), they enter at warn severity only per the recorded riskiest assumption — warn-severity bounds are advisories, never rejections (severity routing in the facts pipeline); promotion to error severity requires more real documents and a decision entry.",

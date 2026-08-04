@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/ferment.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/profiles/ferment.schema.json",
   "title": "RCP Ferment Profile (DRAFT)",
   "x-rcp-maturity": "draft",
   "description": "DRAFT profile (SR-PROF-003; DECISIONS #18 spec-all-7): valid to author against, NOT conformance-guaranteed — the harness labels every pass 'maturity: draft'. ferment_type safety_refs vessel_headspace observed on chucrute; graduates to hardened in v1 (FEAT-PROF-004). Additive alongside core (SSP-002).",

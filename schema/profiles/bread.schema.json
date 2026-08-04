@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/bread.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/profiles/bread.schema.json",
   "title": "RCP Bread Profile",
   "x-rcp-maturity": "hardened",
   "description": "Hardened bread profile (SR-PROF-001; DECISIONS #18). Evaluated ALONGSIDE core (validation = core AND profile[kind], DS-VAL-001): additive — tightens, never removes or redefines core fields (SSP-002). Numeric bounds live ONLY in x-rcp-bounds below (DS-VAL-003 adjusted): the CUE layer reads them; restating a number elsewhere is a defect.",

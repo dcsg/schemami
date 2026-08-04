@@ -10,12 +10,33 @@ Every schema publishes at a versioned URL, one path segment per protocol
 MODEL:
 
 ```
-https://paodeportugal.pt/schema/rcp/{MODEL}/core.schema.json
-https://paodeportugal.pt/schema/rcp/{MODEL}/profiles/{kind}.schema.json
-https://paodeportugal.pt/schema/rcp/{MODEL}/registry/{kind}.schema.json
+https://rcp.invalid/schema/rcp/{MODEL}/core.schema.json
+https://rcp.invalid/schema/rcp/{MODEL}/profiles/{kind}.schema.json
+https://rcp.invalid/schema/rcp/{MODEL}/registry/{kind}.schema.json
 ```
 
 Current MODEL: **1**.
+
+### The host is provisional
+
+`rcp.invalid` is a placeholder, not the published host. `.invalid` is
+reserved by RFC 2606 and is guaranteed never to resolve, so these URLs
+cannot be mistaken for live ones or accidentally fetched.
+
+The protocol has not been named yet, and the host follows the name. Until
+it is chosen, the `$id` host is deliberately non-resolving rather than
+pointing at a domain that belongs to a *consumer* of the protocol — a
+schema whose identity is borrowed from one of its consumers is not
+independent of that consumer. The earlier host was Fornada's domain; that
+was a defect, corrected before publication.
+
+Changing the host is safe **only while nothing is published**. No document
+carries a schema URL (documents carry `rcp: <MODEL>`), every `$ref` is
+local, and the frozen decode-compatibility surface does not reference it —
+so no previously-valid document stops validating, and this is not a MODEL
+bump. Once these URLs resolve and a reader pins or caches them, that stops
+being true: the host then becomes part of the published contract and may
+only change by the ADDITION/deprecation path like anything else.
 
 ## The `rcp` field
 

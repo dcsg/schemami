@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/step-primitive.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/registry/step-primitive.schema.json",
   "title": "RCP Registry — StepPrimitive",
   "description": "A governed, versioned step primitive (SPEC-008 lineage): a new capability is a NEW id, never a repurposed one; params only ever grow optionally within a version.",
   "type": "object",

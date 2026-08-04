@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/pack.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/pack.schema.json",
   "title": "RCP pack manifest",
   "description": "Declares a COLLECTION: the document set a consumer loads together, inside which recipe ids are unique. A SEPARATE file format (rcp-pack.yaml beside the documents) and deliberately NOT a `kind:` value on the recipe core — that keeps the kind enum and the whole decode-compatibility surface untouched. The manifest is the AUTHORITATIVE declarer of the collection identifier; a document may carry the same identifier for lone travel, and on conflict the manifest wins and the conflict is reported. Pack SERVICES (hosting, publishing workflow, any registry server) are app concerns, outside the protocol.",
   "type": "object",

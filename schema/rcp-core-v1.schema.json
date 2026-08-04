@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/core.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/core.schema.json",
   "title": "RCP Core v1",
   "description": "Universal recipe protocol — core layer. Category profiles extend this additively via allOf; a profile may add fields and tighten constraints but may never remove or redefine a core field, so a core-only consumer can always render any RCP document correctly if incompletely.",
   "$ref": "#/$defs/recipe",

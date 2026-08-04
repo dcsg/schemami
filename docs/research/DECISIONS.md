@@ -329,3 +329,59 @@ Daniel released all three held gates from CONCLUSIONS §7 step 1:
 - **The three DECISIONS corrections** — confirmed (Daniel's course
   corrections 1–3 from the ICP review, already captured as decisions
   #11–12 and applied in `docs/personas.md`).
+
+## Decided (2026-08-04, during PRD-005 hosting research)
+
+### #30 — The `$id` host is the protocol's own domain, never a consumer's
+
+**Found:** every schema `$id` from v0.1 through v0.4 published as
+`https://paodeportugal.pt/schema/rcp/{MODEL}/...` — Fornada's domain. That
+is a *consumer* of the protocol lending its identity to the protocol
+itself. Nothing broke, which is why it survived four tagged versions: no
+document carries a schema URL (documents carry `rcp: <MODEL>`), every
+`$ref` is local, and the frozen decode-compat surface never referenced it.
+It was inert until the moment those URLs resolved — which the v0.5
+documentation site was about to make happen.
+
+**Decided:** the `$id` host is a domain belonging to the protocol. Daniel,
+2026-08-04: *"It won't be paodeportugal for sure and it should not be in
+the protocol."*
+
+Shape chosen: **the protocol's own domain**, over a permanent-identifier
+service (w3id.org / purl.org). The trade-off was stated and accepted — an
+own domain means the protocol's identity depends on renewing it forever,
+where a redirect service would let the identity outlive any host. Chosen
+anyway for directness and because it matches what json-schema.org,
+asyncapi.com and spec.commonmark.org all do.
+
+**Interim state:** the protocol is not named yet, and the host follows the
+name. Until then `$id`s use `rcp.invalid` — RFC 2606 reserved, guaranteed
+never to resolve, so it cannot be mistaken for live or fetched by accident.
+A non-resolving placeholder is the honest representation of an unpublished
+identity. `schema/VERSIONING.md` says so in the normative text.
+
+**Not a MODEL bump.** No previously-valid document stops validating; no
+document referenced the host at all. Cheap *only while unpublished* — once
+the URLs resolve and a reader pins them, the host joins the published
+contract and may only change by the ADDITION/deprecation path.
+
+**Enforced:** `accept.sh` ID-HOST — all `$id`s share one host, and that host
+is not on the consumer denylist. Ships with an inverted proof (plant the old
+domain, assert detection). The gate deliberately *accepts* `rcp.invalid`: a
+gate that fails on the known-correct interim state gets muted, and a muted
+gate protects nothing.
+
+**Consequence:** OQ-1 (hosting) is blocked on naming the protocol. The
+earlier analysis that narrowed hosting to Cloudflare-on-the-existing-zone or
+the GitHub Pages user-site trick was built on serving `paodeportugal.pt/schema/*`
+as a subpath, and is withdrawn — on the protocol's own domain a whole-hostname
+binding is what you want, so Netlify, Vercel and a plain bucket all reopen.
+
+### Governance gap found the same day (not a decision — a defect)
+
+Decisions **#24–#29 are cited across the repo** — `accept.sh:60` cites #27,
+`PLAN-rcp-v03.md` cites #27, `ROADMAP.md` cites #27, and #24/#25/#26/#28/#29
+appear in plans and specs — **but none of them are recorded in this file.**
+A gate script enforces a decision that the decisions log does not contain.
+This entry is numbered #30 to preserve those existing references rather than
+renumber them. Back-filling #24–#29 from the v0.3/v0.4 plans is outstanding.

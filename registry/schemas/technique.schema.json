@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/registry/technique.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/registry/technique.schema.json",
   "title": "RCP Registry — Technique",
   "description": "A governed technique entry (DECISIONS #25; SR-REG-004): the semantic layer over primitives — the substitution fallback anchor (research 06) and the derived technique facet (DECISIONS #10). Fourth registry kind, same governance as the other three: append-only, kind-prefixed ontology paths (registry-governance rule 6), one file per entry, filename = id, steward-approved mints.",
   "type": "object",

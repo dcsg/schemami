@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://paodeportugal.pt/schema/rcp/1/profiles/pastry.schema.json",
+  "$id": "https://rcp.invalid/schema/rcp/1/profiles/pastry.schema.json",
   "title": "RCP Pastry Profile",
   "x-rcp-maturity": "hardened",
   "description": "Hardened pastry profile (SR-PROF-002; DECISIONS #18). Additive alongside core (SSP-002). to_consistency quantities, the four temperature shapes and rest/lamination structures are core $defs the pastry domain exercises; this profile tightens the pastry profile block and carries the pastry bounds as data (DS-VAL-003 adjusted).",

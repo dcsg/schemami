@@ -22,6 +22,8 @@ check "AC-I18N-001-1 every used taxonomy slug has a pt-PT term" python3 tools/rc
 check "DEP-FREEZE    dependency surface exact (2 pinned viewer deps; go.mod unchanged)" sh -c "python3 -c \"import json; p=json.load(open('tools/viewer/package.json')); d=p.get('dependencies',{}); assert d=={'yaml':'2.9.0','@cfworker/json-schema':'4.1.1'}, d\" && python3 -c \"t=open('tools/rcplint/go.mod').read(); assert t.count('github.com/santhosh-tekuri/jsonschema/v6')>=1 and t.count('gopkg.in/yaml.v3')>=1; import re; reqs=re.findall(r'^\t[a-z][^ ]+ v', t, re.M); assert len(reqs)==2, reqs\""
 check "AC-3.3       published corpus names no source unique to the private collection" python3 tools/rcplint/scripts/corpus-provenance-check.py .
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
+check "ID-HOST      schema \$ids share one host, never a consumer-app domain" python3 tools/rcplint/scripts/schema-id-host.py .
+check "             id-host self-test: planted consumer domain DETECTED (inverted)" python3 tools/rcplint/scripts/schema-id-host.py --self-test
 
 echo "── Shape + composition (FR-VAL-001, FR-PROF-001/002/003) ──"
 check "AC-VAL-001-1  make validate green: 2 collections, 9 docs, L1+L2+CUE" make validate
