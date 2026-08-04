@@ -1,0 +1,257 @@
+# yaml-language-server: $schema=../../../.edikt/schemas/prd-sidecar.v1.schema.json
+schema_version: "1.0"
+type: prd
+id: "PRD-005"
+title: "RCP v0.5 — the protocol goes public: a documentation site rendered from the repo"
+slug: "rcp-v05-protocol-goes-public"
+status: draft
+rigor: "solo"
+author: "Daniel Gomes"
+created_at: "2026-08-04T09:00:00Z"
+
+requirements:
+  - id: FR-DOC-001
+    component: documentation site
+    text: >-
+      Every NORMATIVE surface MUST have a page rendered from the repo at build
+      time: calculus/SPEC.md, schema/rcp-core-v1.schema.json,
+      schema/rcp-pack-v1.schema.json, schema/profiles/*, schema/MEDIA.md,
+      schema/VERSIONING.md, and the registry entries. A page MUST NOT be a
+      hand-authored copy of a normative source — a build that cannot derive a
+      page from its source fails rather than shipping stale prose.
+    trace: [FEAT-TOOL-003, "DECISIONS #21 (normative vs informative)", "engineering obligation — the protocol is a published language"]
+    status: proposed
+  - id: FR-DOC-002
+    component: documentation site
+    text: >-
+      The site MUST declare itself INFORMATIVE and name the repo as binding, on
+      the site itself. Where a page and the repo disagree the repo wins and the
+      page is the defect. A rendered page reads as more authoritative than the
+      JSON it came from; saying otherwise in prose is the only thing that stops
+      a reader trusting the wrong artefact.
+    trace: [FEAT-TOOL-003, "DECISIONS #21", "SSP-001 (informative tooling)"]
+    status: proposed
+  - id: FR-DOC-003
+    component: documentation site
+    text: >-
+      Drift MUST be mechanically impossible to ship: a gate MUST fail when any
+      published page's content diverges from the source it claims to render,
+      and MUST fail when a normative surface exists in the repo with no page.
+      Coverage is asserted, not reviewed.
+    trace: [FEAT-TOOL-003, "Daniel Q5 2026-08-04 (riskiest assumption)", "PLAN-rcp-v04 DIST-FRESH precedent"]
+    status: proposed
+  - id: FR-TOOL-005
+    component: developer tooling
+    text: >-
+      The existing single-file viewer MUST be reachable from the site as the
+      live playground, WITHOUT weakening its guarantees: no server, no egress,
+      the CSP source list unchanged, the dependency surface unchanged, and the
+      private collection unreachable. A stranger MUST be able to paste a
+      document and see a verdict without installing anything.
+    trace: [FEAT-TOOL-003, FEAT-TOOL-001, "ADR-002 (engine seam)", "the jwt.io move"]
+    status: proposed
+  - id: FR-DOC-004
+    component: documentation site
+    text: >-
+      The site MUST carry an implementer path: what a second implementation
+      needs, reachable without cloning — the Calculus SPEC with its rules and
+      worked examples, the conformance vectors as downloadable data, the
+      versioning and decode-compatibility contract, and the registry. The
+      protocol claims to be implementable by someone else; this is where that
+      claim becomes checkable.
+    trace: [FEAT-TOOL-003, "Daniel Q1 2026-08-04", "calculus/ is public-normative by design"]
+    status: proposed
+  - id: FR-DOC-005
+    component: documentation site
+    text: >-
+      Publication MUST be static and egress-free end to end: no server-side
+      execution, no analytics, no third-party fonts, scripts or styles, and no
+      network request from any page. The hosting choice MUST be recorded as a
+      decision rather than assumed.
+    trace: [FEAT-TOOL-003, "Daniel Q4 2026-08-04", "AC-TOOL-001-2 (viewer self-containment)"]
+    status: proposed
+
+acceptance_criteria:
+  - id: AC-DOC-001-1
+    fr: FR-DOC-001
+    given: "the repo's normative surfaces and a built site"
+    when: "the coverage gate runs"
+    then: "every normative surface has a corresponding page, and a surface added to the repo with no page FAILS the gate"
+    status: proposed
+  - id: AC-DOC-001-2
+    fr: FR-DOC-001
+    given: "a page whose source is calculus/SPEC.md"
+    when: "the source changes and the site is rebuilt"
+    then: "the page changes with it; no manual edit was required and none is possible without failing the drift gate"
+    status: proposed
+  - id: AC-DOC-002-1
+    fr: FR-DOC-002
+    given: "any rendered normative page"
+    when: "a reader looks at it"
+    then: "the page states that the repo is binding and the site is informative, naming the source file it was rendered from"
+    status: proposed
+  - id: AC-DOC-003-1
+    fr: FR-DOC-003
+    given: "a published page hand-edited to differ from its source"
+    when: "the drift gate runs"
+    then: "it FAILS naming the page and its source — the inverted proof ships with the gate"
+    status: proposed
+  - id: AC-TOOL-005-1
+    fr: FR-TOOL-005
+    given: "the site served statically and a recipe document"
+    when: "a visitor pastes it into the embedded playground"
+    then: "verdicts and a rendered recipe appear with no install, and no network request leaves the page"
+    status: proposed
+  - id: AC-TOOL-005-2
+    fr: FR-TOOL-005
+    given: "the embedded playground"
+    when: "the CSP and dependency assertions run"
+    then: "the viewer's CSP source list and the two pinned dependencies are unchanged from v0.4, and the private collection is unreachable"
+    status: proposed
+  - id: AC-DOC-004-1
+    fr: FR-DOC-004
+    given: "a developer who has never cloned the repo"
+    when: "they follow the implementer path"
+    then: "they can read the Calculus rules and worked examples, download the conformance vectors, and read the versioning and decode-compatibility contract"
+    status: proposed
+  - id: AC-DOC-005-1
+    fr: FR-DOC-005
+    given: "every page of the built site"
+    when: "it is loaded with the network disabled"
+    then: "it renders completely; no page issues a network request, and the hosting choice is recorded as a decision"
+    status: proposed
+
+protections:
+  - id: SP-001
+    text: >-
+      The site NEVER forks a normative source. Every page renders from schema/,
+      calculus/SPEC.md, schema/MEDIA.md, schema/VERSIONING.md and registry/ at
+      build time; a hand-authored copy of any of them is a build failure.
+  - id: SP-002
+    text: >-
+      The site is INFORMATIVE, never normative. If a page says something the
+      repo does not, the repo wins and the page is the defect — and the site
+      says so, because a rendered page reads as more authoritative than the
+      JSON it came from.
+  - id: SP-003
+    text: >-
+      calculus/SPEC.md stays public-normative: no project ids leak IN, and the
+      site's framing does not leak project vocabulary OUT onto the page.
+  - id: SP-004
+    text: >-
+      No egress. Static only: no server-side execution, no analytics, no
+      third-party fonts, scripts or styles. The viewer's CSP posture extends to
+      the whole site, and its source list is unchanged.
+  - id: SP-005
+    text: >-
+      Dependency freeze holds: the viewer keeps exactly its two pinned
+      dependencies, and any tooling the site build needs is justified by a
+      recorded decision rather than added silently.
+  - id: SP-006
+    text: >-
+      The private collection is never reachable, never rendered, and never
+      referenced. The existing attestation and provenance checks stay green.
+
+solution_references:
+  - type: doc
+    path_or_url: docs/product/features.yaml
+    description: "FEAT-TOOL-003 — full design intent, including the build-time-rendering constraint"
+  - type: doc
+    path_or_url: calculus/SPEC.md
+    description: "The public-normative surface the site must render without altering"
+  - type: doc
+    path_or_url: tools/viewer/dist/index.html
+    description: "The existing self-contained playground to embed (v0.4: 203 KB, byte-exact CSP)"
+  - type: url
+    path_or_url: https://jwt.io/
+    description: "The move being copied: a spec explained beside a live tool that answers 'what is this?' faster than prose"
+
+stakeholders: []
+dependencies: []
+nfrs: []
+risks: []
+
+open_questions:
+  - "OQ-1: Hosting — where does a static, egress-free site live, and is the choice recorded as a decision (SP-004 requires it be recorded, not assumed)?"
+  - "OQ-2: Information architecture — what does a stranger read FIRST? Neither Daniel nor the assistant can judge this from inside the project (Q5's second-place risk); decide whether to test it on a real reader before or after shipping."
+  - "OQ-3: Does the site render the registry as browsable pages, or link to the repo for it? 109 entries is a lot of generated pages for a first cut."
+  - "OQ-4: Versioned documentation — does the site show only the current tag, or every tagged version? VERSIONING.md binds from a tag, so a reader of an older document may need older docs."
+
+source_specs: []
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+
+forcing_questions:
+  problem_behind_problem: >-
+    Three failures, selected by Daniel 2026-08-04. (1) THE PROTOCOL IS
+    UNREADABLE TO OUTSIDERS — four tagged versions, a normative Calculus with
+    27 conformance vectors and a 109-entry registry, and the only way to
+    understand any of it is to clone the repo and read raw JSON Schema. A
+    protocol nobody can read is a private format with extra steps. (2) THE
+    VIEWER EXISTS BUT NOBODY CAN REACH IT — a self-contained 203 KB page that
+    answers "what is this?" better than any prose, reachable only by cloning
+    and opening a local file. (3) NO ENTRY POINT FOR A SECOND IMPLEMENTER — the
+    whole point of a protocol is that someone else can implement it; the
+    Calculus SPEC is deliberately public-normative and the vectors are
+    shippable, but there is nowhere to send a person who says "I want to write
+    an RCP reader". Daniel explicitly did NOT select "you can't share it": this
+    is about the artefact being legible, not about promotion.
+  evidence_or_hypothesis: >-
+    STRUCTURAL, NOT OBSERVED — stated honestly because nobody has yet tried to
+    read RCP from outside, so there are no reports to cite. The evidence is the
+    gap between what the artefacts CLAIM and what a stranger can reach:
+    calculus/SPEC.md is deliberately public-normative and carries no project
+    ids (verified by a test), the conformance vectors are shipped with the
+    protocol as a cross-stack contract, and VERSIONING.md binds from a tag
+    forward — all of which presume an outside reader who currently has no
+    surface to read.
+  north_metric_and_counter: >-
+    TWO norths, explicitly. (a) SECOND-IMPLEMENTER COMPLETENESS — everything a
+    second implementation needs is reachable without cloning (Calculus SPEC,
+    conformance vectors, core and pack schemas, profiles, registry, versioning
+    and decode-compat contract), measured as coverage and asserted by a gate.
+    (b) TIME-TO-FIRST-VALIDATION — a stranger can paste a recipe and see a
+    verdict within one page-load of arriving, with no install. COUNTER (must
+    not move): ZERO DRIFT — no page may state anything the repo does not, and a
+    hand-edited copy of a normative source is a build failure; plus the
+    viewer's no-egress posture unchanged (CSP source list and the two pinned
+    dependencies exactly as at v0.4).
+  must_not_change: >-
+    The full guard set PLUS no-new-normativity. Never fork a normative source —
+    every page renders from the repo at build time. calculus/SPEC.md stays
+    public-normative in both directions. No egress: static, no server, no
+    analytics, no CDN fonts or scripts. Private collection unreachable.
+    Dependency freeze holds. AND: the site is INFORMATIVE, never normative — if
+    a page says something the repo does not, the repo wins and the page is the
+    defect, stated ON the site, because a nicely-rendered page reads as more
+    authoritative than the JSON it came from.
+  riskiest_assumption: >-
+    RENDERING STAYS IN LOCKSTEP. The bet is that build-time rendering genuinely
+    keeps every page identical in content to its source, forever. The moment
+    one page is easier to hand-edit than to regenerate, the site starts lying —
+    and a lying documentation site is worse than none, because readers trust
+    it. Every drift-prevention gate rests on this assumption, which is why
+    FR-DOC-003 makes drift mechanically impossible to ship rather than a
+    review habit. (Second-place risk, recorded: neither Daniel nor the
+    assistant can judge whether the information architecture works for a
+    stranger — see OQ-2.)
+
+revision_history:
+  - at: "2026-08-04T09:00:00Z"
+    author: "Daniel Gomes"
+    action: "created"
+    note: >-
+      Initial draft — rigor: solo. Scope decided 2026-08-03 during PRD-004
+      planning: FEAT-TOOL-003 leads the cut after v0.4 so it lands with the
+      teaching features already there to showcase.
+
+extensions: {}
+
+_sync:
+  md_hash: bdcc2c5ae64ab2356df33d1390645c52984d371039434e66956ccfe4add43d27
+  yaml_hash: 129598914fbda695a6d74f205da97a478f67451028f8d84fb912d8db22f8c7a1
+  synced_at: "2026-08-04T09:05:00Z"
