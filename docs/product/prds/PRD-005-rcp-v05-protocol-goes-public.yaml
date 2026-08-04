@@ -345,12 +345,13 @@ revision_history:
     published yet.'
 - at: '2026-08-04T15:00:00Z'
   author: Daniel Gomes
-  action: accepted
-  note: 'Accepted by Daniel 2026-08-04. All seven FRs and eleven ACs move to accepted.
-    Blockers cleared in order: tooling settled by ADR-003, the $id host defect fixed
-    under decision #30, and hosting deferred so v0.5 builds and verifies locally.'
+  action: edited
+  note: 'Status -> accepted by Daniel 2026-08-04. All seven FRs and eleven ACs move
+    to accepted. Blockers cleared in order: tooling settled by ADR-003, the $id
+    host defect fixed under decision #30, and hosting deferred so v0.5 builds and
+    verifies locally.'
 extensions: {}
 _sync:
   md_hash: 73381c2fa18872f1f2242e866014dcb92c7bc6f35141b32e3e3b13d7b3dbfe56
-  yaml_hash: 1651812cb7fda16853dc8569fb84374af0e06e22434c7e27e0f6860298ccb656
+  yaml_hash: 95afda8e653fd62c9fc211675726200a3f2706358b21fbb61eee3b91a5d227c4
   synced_at: "2026-08-04T15:00:00Z"
