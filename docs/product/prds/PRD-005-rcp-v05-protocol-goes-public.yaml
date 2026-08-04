@@ -80,6 +80,20 @@ requirements:
   - Daniel Q4 2026-08-04
   - AC-TOOL-001-2 (viewer self-containment)
   status: proposed
+- id: FR-DOC-006
+  component: documentation site
+  text: 'The site MUST work as a MANUAL, not a reference dump. It MUST be navigable
+    (a reader can tell where they are, what else exists, and where to go next from
+    any page), it MUST carry a reading path for someone who arrives knowing nothing,
+    and it MUST be legible on a phone as well as a desktop. Coverage is necessary
+    but NOT sufficient: a site that renders every normative surface and cannot be
+    navigated has failed this requirement.'
+  trace:
+  - FEAT-TOOL-003
+  - 'Daniel 2026-08-04 (MUST-have: "the best to act as a manual of the protocol
+    and easy to understand and navigate")'
+  - ADR-003 (no framework — so navigation is engineering work, not a theme default)
+  status: proposed
 acceptance_criteria:
 - id: AC-DOC-001-1
   fr: FR-DOC-001
@@ -137,6 +151,27 @@ acceptance_criteria:
   then: it renders completely; no page issues a network request, and the hosting
     choice is recorded as a decision
   status: proposed
+- id: AC-DOC-006-1
+  fr: FR-DOC-006
+  given: any page of the site
+  when: a reader looks at it
+  then: they can see where they are in the whole, what the other sections are, and
+    reach any of them without using the back button
+  status: proposed
+- id: AC-DOC-006-2
+  fr: FR-DOC-006
+  given: a reader who arrives knowing nothing about RCP
+  when: they follow the site's own reading path from the entry page
+  then: they reach a working understanding of what a recipe document is and can
+    try one in the playground, without being sent to the repo
+  status: proposed
+- id: AC-DOC-006-3
+  fr: FR-DOC-006
+  given: the built site on a phone-width viewport
+  when: any page is loaded
+  then: it is readable and navigable with no horizontal scrolling of the page body;
+    wide content (tables, schema blocks) scrolls within its own container
+  status: proposed
 protections:
 - id: SP-001
   text: The site NEVER forks a normative source. Every page renders from schema/,
@@ -160,6 +195,11 @@ protections:
 - id: SP-006
   text: The private collection is never reachable, never rendered, and never referenced.
     The existing attestation and provenance checks stay green.
+- id: SP-007
+  text: Navigation, typography and layout are engineering deliverables with an acceptance
+    criterion, not an afterthought. ADR-003 rejected a framework whose main value
+    was exactly these; that rejection is only honest if they are actually delivered.
+    A site that is complete but unnavigable fails the cut.
 solution_references:
 - type: doc
   path_or_url: docs/product/features.yaml
@@ -181,13 +221,17 @@ solution_references:
   description: Tooling research 2026-08-04 — every JS framework fails DEP-FREEZE;
     every off-the-shelf JSON Schema renderer fails on our schema shape; Cooklang
     is the drift anti-pattern observed in our own domain
+- type: doc
+  path_or_url: docs/architecture/decisions/ADR-003-docs-site-no-framework.md
+  description: 'Tooling decision: plain Bun script + marked, no framework — and
+    why that makes FR-DOC-006 load-bearing'
 stakeholders: []
 dependencies: []
 nfrs: []
 risks: []
 open_questions:
-- 'OQ-1: Hosting — where does a static, egress-free site live, and is the choice
-  recorded as a decision (SP-004 requires it be recorded, not assumed)?'
+- 'OQ-1: Hosting — where does a static, egress-free site live? SP-004 requires the
+  choice be recorded. (Tooling is now settled by ADR-003; hosting is not.)'
 - 'OQ-2: Information architecture — what does a stranger read FIRST? Neither Daniel
   nor the assistant can judge this from inside the project (Q5''s second-place risk);
   decide whether to test it on a real reader before or after shipping.'
@@ -267,8 +311,17 @@ revision_history:
   note: Corrected two measured facts (23 calculus vectors, not 27; viewer is 208,901
     bytes = 204.0 KiB, not 203 KB). Added research 11 as a solution reference and
     two constraints it surfaced as OQ-5 and OQ-6.
+- at: '2026-08-04T12:00:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'Added FR-DOC-006 and SP-007 after Daniel reframed the tooling question:
+    he does not care which tool, his MUST-have is that the site works as a MANUAL
+    — easy to understand and navigate, good looking, with a good validator and viewer.
+    Coverage was necessary but not sufficient and the PRD did not say so. ADR-003
+    records the no-framework decision; FR-DOC-006 is what makes rejecting a themed
+    framework honest.'
 extensions: {}
 _sync:
-  md_hash: 0893078f6d433022ac16e34ad1ecc2511c7633a1364b5023b5bb5c586db9161c
-  yaml_hash: 9a6ee8ca928ea5b29fa2f2b5e19df9ab54b4e9d22fb1623e929001aa6af903a2
-  synced_at: "2026-08-04T11:00:00Z"
+  md_hash: d8cbacab253a93870c3addf8bbfe61a2d601e86f390132b853de9af40e3e1362
+  yaml_hash: 0d5ef4b46223d3859d14861cdfb5d3ec943046d6bf6b7053160dbae0305cafea
+  synced_at: "2026-08-04T12:00:00Z"

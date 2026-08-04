@@ -68,16 +68,22 @@ artefact being legible, not about promotion.
 | FR-TOOL-005 | developer tooling | The viewer is **reachable as the live playground** without weakening its guarantees |
 | FR-DOC-004 | documentation site | An **implementer path**: SPEC, downloadable vectors, versioning contract, registry — no cloning required |
 | FR-DOC-005 | documentation site | **Static and egress-free** end to end; the hosting choice is recorded as a decision |
+| FR-DOC-006 | documentation site | The site works as a **manual**: navigable from any page, with a reading path for a newcomer, legible on a phone. Coverage is necessary but **not sufficient** |
 
 ## Acceptance Criteria
 
-Given/When/Then in the sidecar. The two that carry the most weight:
+Given/When/Then in the sidecar. The three that carry the most weight:
 **AC-DOC-003-1** — a page hand-edited to differ from its source **fails** the
-drift gate naming both, with the inverted proof shipping alongside; and
-**AC-DOC-005-1** — every page renders completely **with the network disabled**.
+drift gate naming both, with the inverted proof shipping alongside;
+**AC-DOC-005-1** — every page renders completely **with the network disabled**;
+and **AC-DOC-006-2** — a reader who arrives knowing nothing reaches a working
+understanding and tries a document in the playground **without being sent to
+the repo**.
 
 ## Solution References
 
+- `docs/research/11-documentation-site-tooling.md` — the measurements behind ADR-003
+- `docs/architecture/decisions/ADR-003-docs-site-no-framework.md` — plain Bun script + `marked`, and why that makes FR-DOC-006 load-bearing
 - `docs/product/features.yaml` — FEAT-TOOL-003, including the build-time-rendering constraint
 - `calculus/SPEC.md` — the public-normative surface to render without altering
 - `tools/viewer/dist/index.html` — the playground to embed (204 KiB, byte-exact CSP)
@@ -91,13 +97,18 @@ drift gate naming both, with the inverted proof shipping alongside; and
 - **SP-004** — no egress: static, no server, no analytics, no CDN fonts or scripts.
 - **SP-005** — dependency freeze; new build tooling needs a recorded decision.
 - **SP-006** — the private collection is never reachable, rendered, or referenced.
+- **SP-007** — navigation, typography and layout are **deliverables with an
+  acceptance criterion**, not afterthoughts. ADR-003 rejected a framework whose
+  main value was exactly these; that rejection is only honest if they land.
 
 ## Open Questions
 
-- **OQ-1** — Hosting: where does a static, egress-free site live? SP-004 requires the choice be *recorded*, not assumed.
+- **OQ-1** — Hosting: where does a static, egress-free site live? SP-004 requires the choice be *recorded*. (Tooling is settled by ADR-003; hosting is not.)
 - **OQ-2** — Information architecture: what does a stranger read **first**? Neither of us can judge this from inside the project. Decide whether to test it on a real reader before or after shipping.
 - **OQ-3** — Registry: browsable pages, or link to the repo? 109 entries is a lot of generated pages for a first cut.
 - **OQ-4** — Versioned docs: current tag only, or every tag? `VERSIONING.md` binds from a tag, so a reader holding an older document may need older docs.
+- **OQ-5** — CI installs **Go only** today, so it cannot build the site or run Bun. A mise/Bun setup step is a prerequisite for the drift gate running in CI at all.
+- **OQ-6** — `media-attest.py` scans **built output** and fails on any `data:image/…;base64` URI, so no inlined images or data-URI favicon in generated pages.
 
 ## Evidence & Discovery
 
@@ -107,6 +118,13 @@ between what the artefacts *claim* and what a stranger can reach: a
 public-normative SPEC with no project ids, conformance vectors shipped as a
 cross-stack contract, and a versioning contract binding from a tag — all
 presuming an outside reader with no surface to read.
+
+**The failure mode is not hypothetical.** Cooklang — a recipe markup language,
+our nearest neighbour — syncs its spec page from a sibling clone that CI never
+checks out, invoked with `|| echo "Spec sync failed, continuing..."`. The build
+proceeds from the committed copy. Manual sync on a maintainer's laptop, silently
+tolerated drift in CI. That is this PRD's riskiest assumption observed in the
+wild, in our own domain.
 
 **Riskiest assumption: rendering stays in lockstep.** The bet is that
 build-time rendering keeps every page identical in content to its source,
