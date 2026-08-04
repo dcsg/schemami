@@ -1,0 +1,130 @@
+/* Playground styling. Self-contained and hash-CSP'd, so it cannot import
+   the site stylesheet — the variables are duplicated deliberately. */
+
+:root {
+  --ink: #17150f;
+  --ink-soft: #55503f;
+  --paper: #fbfaf7;
+  --line: #e0dbcd;
+  --accent: #8a4b1e;
+  --ok: #2f6b3a;
+  --bad: #a2371f;
+  --code-bg: #f2efe7;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #ece7dc;
+    --ink-soft: #a9a08c;
+    --paper: #16150f;
+    --line: #33301f;
+    --accent: #e0a06a;
+    --ok: #7fbf8a;
+    --bad: #e08b70;
+    --code-bg: #221f16;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--paper);
+  font-size: 15px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.pg-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.pg-head h1 { margin: 0; font-size: 1.05rem; }
+.pg-head p { margin: 0.15rem 0 0; font-size: 0.82rem; color: var(--ink-soft); }
+.lang-switch {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+.lang-switch:hover { border-color: var(--accent); color: var(--ink); }
+
+.panes { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.pane + .pane { border-left: 1px solid var(--line); }
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+}
+.pane-head label { color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.72rem; }
+.pane-head .tools { margin-left: auto; display: flex; gap: 0.5rem; }
+.pane-head button, .file-label {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--ink-soft);
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+}
+.pane-head button:hover, .file-label:hover { border-color: var(--accent); color: var(--ink); }
+
+#summary { margin-left: auto; font-weight: 600; font-size: 0.82rem; }
+#summary.ok { color: var(--ok); }
+#summary.bad { color: var(--bad); }
+#busy { color: var(--ink-soft); font-size: 0.8rem; }
+
+#input {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  resize: none;
+  padding: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--paper);
+  outline: none;
+  tab-size: 2;
+}
+
+#result { flex: 1; overflow: auto; padding: 0.85rem; font-size: 0.9rem; }
+#result .empty { color: var(--ink-soft); font-style: italic; }
+#result .error { color: var(--bad); font-family: var(--mono); font-size: 0.82rem; }
+#result table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+#result th, #result td { text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--line); }
+#result h2 { font-size: 1rem; margin: 1.2rem 0 0.4rem; }
+#result h3 { font-size: 0.9rem; margin: 1rem 0 0.3rem; }
+#result code { font-family: var(--mono); font-size: 0.85em; background: var(--code-bg); padding: 0.1em 0.3em; border-radius: 3px; }
+#result ol, #result ul { padding-left: 1.3rem; }
+
+/* Stack the panes on a phone — side-by-side is unreadable below ~44rem. */
+@media (max-width: 44rem) {
+  body { height: auto; }
+  .panes { grid-template-columns: 1fr; }
+  .pane + .pane { border-left: 0; border-top: 1px solid var(--line); }
+  #input { min-height: 14rem; }
+  #result { min-height: 14rem; }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "rcp-docsite",
+  "private": true,
+  "description": "PROTOTYPE site generator (PRD-005 FR-TOOL-006). Separate package from tools/viewer so the viewer's DEP-FREEZE surface stays exactly 2.",
+  "dependencies": {
+    "marked": "16.4.1"
+  }
+}

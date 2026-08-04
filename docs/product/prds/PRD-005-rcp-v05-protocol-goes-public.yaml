@@ -46,16 +46,23 @@ requirements:
   status: accepted
 - id: FR-TOOL-005
   component: developer tooling
-  text: 'The existing single-file viewer MUST be reachable from the site as the
-    live playground, WITHOUT weakening its guarantees: no server, no egress, the
-    CSP source list unchanged, the dependency surface unchanged, and the private
-    collection unreachable. A stranger MUST be able to paste a document and see
-    a verdict without installing anything.'
+  text: The site MUST carry a PROPER playground built for it — not the v0.4 proof-of-concept
+    embedded as-is. The PoC's engine and renderer are sound and MUST be reused;
+    its shell is not (67 lines of CSS, one textarea, and chrome written entirely
+    in pt-PT on a site whose purpose is outside implementers). The playground MUST
+    be BILINGUAL — EN and pt-PT chrome with a language switch — while recipe content
+    keeps its own language and pt-PT culinary terms stay exact. A stranger MUST
+    be able to load a document and see a verdict without installing anything. Which
+    of the PoC's structural constraints (single-file, hash CSP, dependency freeze)
+    carry over is DELIBERATELY UNDECIDED here and MUST be settled from prototype
+    evidence.
   trace:
   - FEAT-TOOL-003
   - FEAT-TOOL-001
-  - ADR-002 (engine seam)
-  - the jwt.io move
+  - Daniel 2026-08-04 ("that viewer was just a PoC, we need a proper viewer for
+    the website")
+  - ADR-002 (engine seam — the reuse boundary)
+  - i18n/pt-PT.yaml (vocabulary already loaded by the PoC)
   status: accepted
 - id: FR-DOC-004
   component: documentation site
@@ -98,6 +105,19 @@ requirements:
     and easy to understand and navigate")'
   - ADR-003 (no framework — so navigation is engineering work, not a theme default)
   status: accepted
+- id: FR-TOOL-006
+  component: developer tooling
+  text: 'A PROTOTYPE MUST precede the specification. The site shell, the information
+    architecture and the proper viewer MUST be built as a working spike and reviewed
+    against real use before SPEC-005 is written. The riskiest assumption (FR-DOC-006:
+    does this work as a manual?) cannot be judged from a document by either author,
+    so the prototype is the only honest test of it. The prototype is explicitly
+    throwaway-eligible: nothing in it is load-bearing until the spec adopts it.'
+  trace:
+  - Daniel 2026-08-04 ("we do also need to prototype")
+  - FR-DOC-006 / SP-007 (manual quality is unjudgeable from inside)
+  - ADR-003 reminder (if hand-rolled navigation is worse, revisit rather than defend)
+  status: accepted
 acceptance_criteria:
 - id: AC-DOC-001-1
   fr: FR-DOC-001
@@ -136,10 +156,10 @@ acceptance_criteria:
   status: accepted
 - id: AC-TOOL-005-2
   fr: FR-TOOL-005
-  given: the embedded playground
-  when: the CSP and dependency assertions run
-  then: the viewer's CSP source list and the two pinned dependencies are unchanged
-    from v0.4, and the private collection is unreachable
+  given: the proper viewer and the constraint decision taken from prototype evidence
+  when: the assertions for whichever constraints were adopted run
+  then: they pass, and any PoC constraint deliberately dropped is recorded with
+    its reason rather than lapsing silently
   status: accepted
 - id: AC-DOC-004-1
   fr: FR-DOC-004
@@ -176,6 +196,20 @@ acceptance_criteria:
   when: any page is loaded
   then: it is readable and navigable with no horizontal scrolling of the page body;
     wide content (tables, schema blocks) scrolls within its own container
+  status: accepted
+- id: AC-TOOL-006-1
+  fr: FR-TOOL-006
+  given: the prototype built and running locally
+  when: Daniel reviews it against the three reading paths
+  then: the IA, the viewer shell and the build-time rendering approach are either
+    confirmed or changed BEFORE SPEC-005 is authored
+  status: accepted
+- id: AC-TOOL-005-3
+  fr: FR-TOOL-005
+  given: the proper viewer
+  when: a reader switches the interface language
+  then: all chrome switches between EN and pt-PT while recipe content and pt-PT
+    culinary terms are untouched
   status: accepted
 protections:
 - id: SP-001
@@ -259,6 +293,10 @@ open_questions:
 - 'OQ-6: media-attest.py scans BUILT output and fails on any data:image base64 URI
   — so no inlined images or data-URI favicon in generated pages. Confirm the site
   design accepts this (research 11 §6).'
+- 'OQ-7: Which PoC viewer constraints carry to the proper viewer — single-file bundling,
+  hash-based CSP with no ''self'', file:// operation, and the exact-pinned dependency
+  surface? Deliberately left open: to be settled from prototype evidence and recorded,
+  not assumed in advance. SP-004 (no egress) is NOT in question and binds regardless.'
 source_specs: []
 supersedes: null
 superseded_by: null
@@ -350,8 +388,18 @@ revision_history:
     to accepted. Blockers cleared in order: tooling settled by ADR-003, the $id
     host defect fixed under decision #30, and hosting deferred so v0.5 builds and
     verifies locally.'
+- at: '2026-08-04T16:00:00Z'
+  author: Daniel Gomes
+  action: edited
+  note: 'SPEC-005 paused before authoring. Daniel: the v0.4 viewer "was just a PoC,
+    we need a proper viewer for the website", and "we do also need to prototype".
+    FR-TOOL-005 rewritten — it said embed the EXISTING viewer, which is now wrong;
+    the engine and renderer are reused, the shell is rebuilt, and the UI becomes
+    bilingual rather than pt-PT-only. FR-TOOL-006 added: prototype precedes spec,
+    because FR-DOC-006 (does it work as a manual?) is not judgeable from a document.
+    Constraint carry-over moved to OQ-7 to be decided on evidence.'
 extensions: {}
 _sync:
-  md_hash: 73381c2fa18872f1f2242e866014dcb92c7bc6f35141b32e3e3b13d7b3dbfe56
-  yaml_hash: 95afda8e653fd62c9fc211675726200a3f2706358b21fbb61eee3b91a5d227c4
-  synced_at: "2026-08-04T15:00:00Z"
+  md_hash: ''
+  yaml_hash: ''
+  synced_at: ''
