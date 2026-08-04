@@ -24,6 +24,8 @@ check "AC-3.3       published corpus names no source unique to the private colle
 check "PRIVACY      private/collection ignored and never staged" sh -c "git check-ignore -q private/collection && [ -z \"\$(git ls-files private/)\" ]"
 check "ID-HOST      schema \$ids share one host, never a consumer-app domain" python3 tools/rcplint/scripts/schema-id-host.py .
 check "             id-host self-test: planted consumer domain DETECTED (inverted)" python3 tools/rcplint/scripts/schema-id-host.py --self-test
+check "DEC-RESOLVE  every cited DECISIONS #N resolves to an entry in the log" python3 tools/rcplint/scripts/decisions-resolve.py .
+check "             dec-resolve self-test: planted dangling citation DETECTED (inverted)" python3 tools/rcplint/scripts/decisions-resolve.py --self-test .
 
 echo "── Shape + composition (FR-VAL-001, FR-PROF-001/002/003) ──"
 check "AC-VAL-001-1  make validate green: 2 collections, 9 docs, L1+L2+CUE" make validate

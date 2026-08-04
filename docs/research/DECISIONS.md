@@ -385,3 +385,161 @@ appear in plans and specs — **but none of them are recorded in this file.**
 A gate script enforces a decision that the decisions log does not contain.
 This entry is numbered #30 to preserve those existing references rather than
 renumber them. Back-filling #24–#29 from the v0.3/v0.4 plans is outstanding.
+
+## Back-filled 2026-08-04 — decisions #24–#29
+
+These six were **made** during the v0.2–v0.4 cuts and have been load-bearing
+ever since — cited by schemas, linter code, gate scripts, guidelines and
+plans — but were never written into this file. The gap was found on
+2026-08-04 while recording #30.
+
+They are reconstructed here from the artifacts that cite and implement them,
+not from memory. Each entry names its evidence so the reconstruction is
+checkable. Where the original interview wording is not recoverable, the
+substance is stated from the implementation and the citing prose; nothing is
+invented to fill a gap. **Status is `recorded late`, not `newly decided`** —
+the code has been enforcing these for two cuts.
+
+### #24 — Registry identifiers are English-base; pt-PT is display only
+
+Taxonomy identifiers use English-base slugs on an ontology path
+(`equipment.oven.wood-fired`, not `equipment.forno-lenha`). Localized names
+live in `display_name.{pt,en}`, never in the id. A named-style exception
+exists for dishes/preparations whose name *is* the term
+(`technique.bulhao-pato`).
+
+Executed as a rename refactor 2026-08-02: superseded entries were **kept and
+marked**, not deleted — `equipment.forno-lenha`,
+`equipment.forno-alta-temperatura`, `equipment.forno-domestico-com-vapor`,
+`equipment.batedeira-espiral` all still resolve and point at their
+English-base successors, per the append-only registry rule.
+
+*Evidence:* `registry/entries/equipment/equipment.oven.wood-fired.yaml:7`
+("English-base successor of equipment.forno-lenha, DECISIONS #24 refactor,
+2026-08-02"); `docs/ubiquitous-language.md:27`;
+`docs/product/features.yaml:283,294`; `tools/rcplint/v02_equipment_refactor_test.go`;
+PRD-002 sidecar trace.
+
+### #25 — `technique` is the fourth governed registry kind
+
+The interim `registry/vocab/techniques.yaml` list graduated to full per-entry
+files under `registry/entries/technique/`, with its own schema
+(`registry/schemas/technique.schema.json`). `execution_modes[].technique`
+references full entry ids and the L2 linter validates them against entries;
+the vocab file was **deleted**. Seed batch approved by Daniel 2026-08-02.
+
+The rule this established is the *growth path*, and it is the reusable part:
+a documented vocabulary graduates to a registry kind when it outgrows trivial
+size or needs per-entry metadata — and each graduation takes a new DECISIONS
+entry. Endpoint tests and temperature stages remain vocabularies under that
+same path.
+
+*Evidence:* `registry/entries/README.md:15-23`;
+`docs/guidelines/registry-governance.md:4`; `tools/rcplint/lint.go:82,154`;
+`tools/rcplint/v02_technique_test.go`; PRD-002 FR-REG-003; PLAN-rcp-v02
+Phase 3.
+
+### #26 — `docs/ubiquitous-language.md` is BINDING
+
+The domain vocabulary is binding on all project prose, PRDs and specs;
+changes require a new DECISIONS entry. Terms were aligned with industry usage
+via a four-track research survey plus three refinement rounds with Daniel,
+2026-08-03.
+
+The founding confusion it exists to kill: *"is a roux a recipe or a
+technique?"* — which is a **property of the source, not of the roux**.
+Peterson files it as prose under Liaisons; Escoffier gives it batch
+proportions. Both are right about their own document; the protocol needs one
+answer about the thing.
+
+*Evidence:* `docs/ubiquitous-language.md:3-10,102` (self-declared BINDING,
+dated); `docs/ubiquitous-language.md:27` (cross-references #24).
+
+### #27 — Book-derived media: local-private only, no exceptions
+
+Media derived from source books or other copyrighted publications (page
+photographs, scans, crops of printed step photos) **may exist only in a
+local, git-ignored private collection** for the owner's personal use. Such
+media **never enters commits, dist bundles, artifacts, conformance vectors,
+or any published or shared surface. No exceptions.**
+
+The asymmetry is deliberate and is the reasoning worth preserving: the
+written word can be re-expressed under the ingestion rules; **photography
+cannot** — republishing it is plain copyright infringement, and a "just this
+crop" culture erodes the private-vs-published boundary the protocol treats as
+first-class. Personal media — photos of the owner's *own* cooking — is the
+only class eligible beyond that boundary.
+
+*Evidence:* `schema/MEDIA.md` §"Prohibition: source-book media" (normative,
+mandated anchor); `tools/rcplint/scripts/media-allowlist.txt:4`;
+`accept.sh:60` and the media-attest gate + its inverted self-test;
+PLAN-rcp-v03:28,57,206,212.
+
+### #28 — Stage-forked identity: stages live in BOTH homes
+
+One preparation class with N **graded stages** beats N near-duplicate sibling
+recipes. The preparation/technique CLASS carries graded stage outcomes as
+bounded data (stage id + the measured checkpoint — Escoffier's roux
+blanc/blond/brun by cook time; the pontos de açúcar by temperature). A
+recipe's endpoint MAY reference a stage by id. The class owns what the stage
+*means*; the recipe names which one it wants.
+
+**Contradiction rule:** a measurement outside the referenced stage's class
+bounds **WARNS naming both values, and the MEASUREMENT WINS** — books name
+stages loosely and the author measured deliberately. This is a *labelling*
+disagreement, **not** a safety bound: severity-critical constraints stay
+fail-closed under the Calculus, untouched.
+
+*Evidence:* `tools/rcplint/stages.go:3,116`; `tools/rcplint/stages_test.go`;
+`tools/rcplint/testdata/l2/stage-contradiction.rcp.yaml`;
+`schema/rcp-core-v1.schema.json:990`;
+`registry/schemas/technique.schema.json:104`; PLAN-rcp-v04:477-486, AC-7.2
+PASS 2026-08-03.
+
+### #29 — Compiled variants REJECTED; drift is detected, never compiled away
+
+Compiled variants (`derived_from` / `apply` / `materialised_at`, research 06)
+are rejected on founding-non-goal grounds: they would introduce a **second
+execution semantics beside the Calculus**, and **formulas in data**.
+
+Instead a variant is a self-contained snapshot and drift is *detected*: when a
+target moves past a pinned revision, validation reports staleness naming both
+revisions; when a pin names a revision the target does not declare, that is an
+error. Nothing propagates automatically.
+
+Recorded at the time specifically **so the rejection is explicit rather than
+silent** — which is the part that makes writing it down here overdue rather
+than optional.
+
+*Evidence:* `tools/rcplint/lineage.go:5,110`;
+`tools/rcplint/lineage_test.go:83`;
+`tools/rcplint/testdata/l2/lineage-stale-pin.rcp.yaml:2`;
+`schema/VERSIONING.md:106`; PLAN-rcp-v04:488-491.
+
+### Why this happened, and what stops it recurring
+
+The v0.2–v0.4 cuts recorded decisions **inside the plan that acted on them**
+(`PLAN-rcp-v04.md:477` literally reads "record DECISIONS #28"), and the step
+of writing them back to this file was never a gate. Plans are working
+documents; this file is the record. A decision that lives only in a completed
+plan is discoverable by grep and by nothing else.
+
+`accept.sh` cited #27 to label a gate section while #27 did not exist here —
+a gate enforcing an unwritten decision. That is the concrete failure mode.
+
+**Closed in the same commit:** `accept.sh` DEC-RESOLVE now asserts that every
+`DECISIONS #N` cited anywhere in the tracked tree resolves to an entry in this
+file, with an inverted proof that plants a citation of a decision that cannot
+exist and requires detection. It would have caught this on the first commit
+that cited #24.
+
+The direction is deliberate: it checks **citation → entry**, not the reverse. A
+decision nobody cites is merely unused; a citation that resolves to nothing
+means code claims authority from a record that cannot be read. Both entry
+formats in this file count — the original numbered list and the `### #N`
+headings used from #24 onward.
+
+(An earlier draft of this entry said the gate belonged to a later cut, on the
+grounds that it had never seen a real failure. That reasoning was wrong: the
+repo's own discipline is that gates ship *with* an inverted proof, which is
+exactly what answers it.)
