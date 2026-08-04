@@ -88,13 +88,20 @@ def self_test(root: pathlib.Path) -> int:
         print(f"SELF-TEST FAIL: {planted} already exists", file=sys.stderr)
         return 1
 
+    # Assembled, never written literally: this file is itself scanned, so a
+    # literal citation here would make the gate flag its own source. (It did,
+    # the moment this script became tracked — the same trap media-attest.py
+    # hit with its planted-media marker.)
+    sentinel = "9999"
+    citation = f"DECISIONS{chr(32)}#{sentinel}"
+
     try:
-        planted.write_text("Citing DECISIONS #9999, which cannot exist.\n")
+        planted.write_text(f"Citing {citation}, which cannot exist.\n")
         subprocess.run(
             ["git", "-C", str(root), "add", "--intent-to-add", planted.name],
             check=True, capture_output=True,
         )
-        detected = any("#9999" in p for p in verify(root))
+        detected = any(sentinel in p for p in verify(root))
     finally:
         subprocess.run(
             ["git", "-C", str(root), "rm", "--cached", "--quiet", planted.name],
@@ -103,7 +110,7 @@ def self_test(root: pathlib.Path) -> int:
         planted.unlink(missing_ok=True)
 
     if not detected:
-        print("SELF-TEST FAIL: planted citation of #9999 NOT detected", file=sys.stderr)
+        print(f"SELF-TEST FAIL: planted citation of #{sentinel} NOT detected", file=sys.stderr)
         return 1
     if verify(root):
         print("SELF-TEST FAIL: repo not clean after cleanup", file=sys.stderr)
