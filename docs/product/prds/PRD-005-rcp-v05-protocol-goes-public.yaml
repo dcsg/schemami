@@ -4,7 +4,7 @@ id: PRD-005
 title: 'RCP v0.5 — the protocol goes public: a documentation site rendered from
   the repo'
 slug: rcp-v05-protocol-goes-public
-status: draft
+status: accepted
 rigor: solo
 author: Daniel Gomes
 created_at: '2026-08-04T09:00:00Z'
@@ -20,7 +20,7 @@ requirements:
   - FEAT-TOOL-003
   - 'DECISIONS #21 (normative vs informative)'
   - engineering obligation — the protocol is a published language
-  status: proposed
+  status: accepted
 - id: FR-DOC-002
   component: documentation site
   text: The site MUST declare itself INFORMATIVE and name the repo as binding, on
@@ -32,7 +32,7 @@ requirements:
   - FEAT-TOOL-003
   - 'DECISIONS #21'
   - SSP-001 (informative tooling)
-  status: proposed
+  status: accepted
 - id: FR-DOC-003
   component: documentation site
   text: 'Drift MUST be mechanically impossible to ship: a gate MUST fail when any
@@ -43,7 +43,7 @@ requirements:
   - FEAT-TOOL-003
   - Daniel Q5 2026-08-04 (riskiest assumption)
   - PLAN-rcp-v04 DIST-FRESH precedent
-  status: proposed
+  status: accepted
 - id: FR-TOOL-005
   component: developer tooling
   text: 'The existing single-file viewer MUST be reachable from the site as the
@@ -56,7 +56,7 @@ requirements:
   - FEAT-TOOL-001
   - ADR-002 (engine seam)
   - the jwt.io move
-  status: proposed
+  status: accepted
 - id: FR-DOC-004
   component: documentation site
   text: 'The site MUST carry an implementer path: what a second implementation needs,
@@ -68,7 +68,7 @@ requirements:
   - FEAT-TOOL-003
   - Daniel Q1 2026-08-04
   - calculus/ is public-normative by design
-  status: proposed
+  status: accepted
 - id: FR-DOC-005
   component: documentation site
   text: 'The site MUST be static and egress-free as a property of the BUILT OUTPUT,
@@ -83,7 +83,7 @@ requirements:
   - 'Daniel 2026-08-04 (scope: "the goal is to have it running locally now for testing
     and verifying, first deployment is after")'
   - AC-TOOL-001-2 (viewer self-containment)
-  status: proposed
+  status: accepted
 - id: FR-DOC-006
   component: documentation site
   text: 'The site MUST work as a MANUAL, not a reference dump. It MUST be navigable
@@ -97,7 +97,7 @@ requirements:
   - 'Daniel 2026-08-04 (MUST-have: "the best to act as a manual of the protocol
     and easy to understand and navigate")'
   - ADR-003 (no framework — so navigation is engineering work, not a theme default)
-  status: proposed
+  status: accepted
 acceptance_criteria:
 - id: AC-DOC-001-1
   fr: FR-DOC-001
@@ -105,49 +105,49 @@ acceptance_criteria:
   when: the coverage gate runs
   then: every normative surface has a corresponding page, and a surface added to
     the repo with no page FAILS the gate
-  status: proposed
+  status: accepted
 - id: AC-DOC-001-2
   fr: FR-DOC-001
   given: a page whose source is calculus/SPEC.md
   when: the source changes and the site is rebuilt
   then: the page changes with it; no manual edit was required and none is possible
     without failing the drift gate
-  status: proposed
+  status: accepted
 - id: AC-DOC-002-1
   fr: FR-DOC-002
   given: any rendered normative page
   when: a reader looks at it
   then: the page states that the repo is binding and the site is informative, naming
     the source file it was rendered from
-  status: proposed
+  status: accepted
 - id: AC-DOC-003-1
   fr: FR-DOC-003
   given: a published page hand-edited to differ from its source
   when: the drift gate runs
   then: it FAILS naming the page and its source — the inverted proof ships with
     the gate
-  status: proposed
+  status: accepted
 - id: AC-TOOL-005-1
   fr: FR-TOOL-005
   given: the site served statically and a recipe document
   when: a visitor pastes it into the embedded playground
   then: verdicts and a rendered recipe appear with no install, and no network request
     leaves the page
-  status: proposed
+  status: accepted
 - id: AC-TOOL-005-2
   fr: FR-TOOL-005
   given: the embedded playground
   when: the CSP and dependency assertions run
   then: the viewer's CSP source list and the two pinned dependencies are unchanged
     from v0.4, and the private collection is unreachable
-  status: proposed
+  status: accepted
 - id: AC-DOC-004-1
   fr: FR-DOC-004
   given: a developer who has never cloned the repo
   when: they follow the implementer path
   then: they can read the Calculus rules and worked examples, download the conformance
     vectors, and read the versioning and decode-compatibility contract
-  status: proposed
+  status: accepted
 - id: AC-DOC-005-1
   fr: FR-DOC-005
   given: the site built locally and served from a local static server (and from
@@ -155,28 +155,28 @@ acceptance_criteria:
   when: every page is loaded with the network disabled
   then: it renders completely and issues no network request — asserted by the build,
     with no deployed host involved
-  status: proposed
+  status: accepted
 - id: AC-DOC-006-1
   fr: FR-DOC-006
   given: any page of the site
   when: a reader looks at it
   then: they can see where they are in the whole, what the other sections are, and
     reach any of them without using the back button
-  status: proposed
+  status: accepted
 - id: AC-DOC-006-2
   fr: FR-DOC-006
   given: a reader who arrives knowing nothing about RCP
   when: they follow the site's own reading path from the entry page
   then: they reach a working understanding of what a recipe document is and can
     try one in the playground, without being sent to the repo
-  status: proposed
+  status: accepted
 - id: AC-DOC-006-3
   fr: FR-DOC-006
   given: the built site on a phone-width viewport
   when: any page is loaded
   then: it is readable and navigable with no horizontal scrolling of the page body;
     wide content (tables, schema blocks) scrolls within its own container
-  status: proposed
+  status: accepted
 protections:
 - id: SP-001
   text: The site NEVER forks a normative source. Every page renders from schema/,
@@ -343,8 +343,14 @@ revision_history:
     testable now with the network disabled. Unblocks the spec: OQ-1 no longer gates
     it, and the rcp.invalid placeholder is correct for a site that is not being
     published yet.'
+- at: '2026-08-04T15:00:00Z'
+  author: Daniel Gomes
+  action: accepted
+  note: 'Accepted by Daniel 2026-08-04. All seven FRs and eleven ACs move to accepted.
+    Blockers cleared in order: tooling settled by ADR-003, the $id host defect fixed
+    under decision #30, and hosting deferred so v0.5 builds and verifies locally.'
 extensions: {}
 _sync:
-  md_hash: 83a26c9a4465c4217608ef99db977e3b985bdb3929e0b540f936268354792f88
-  yaml_hash: f903340d6c1eb42efed21ad0284485ccd7041c110be62ebcd3acad6f026e96c3
-  synced_at: "2026-08-04T14:00:00Z"
+  md_hash: 73381c2fa18872f1f2242e866014dcb92c7bc6f35141b32e3e3b13d7b3dbfe56
+  yaml_hash: 1651812cb7fda16853dc8569fb84374af0e06e22434c7e27e0f6860298ccb656
+  synced_at: "2026-08-04T15:00:00Z"

@@ -1,6 +1,6 @@
 # PRD-005: RCP v0.5 — the protocol goes public: a documentation site rendered from the repo
 
-**Status:** draft
+**Status:** accepted
 **Rigor:** solo
 **Author:** Daniel Gomes
 **Created:** 2026-08-04
