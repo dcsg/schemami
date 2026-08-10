@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Schemami Pinch concept</title>
+  <desc id="desc">Ingredient dots and two curved strokes form a lively S-shaped recipe fingerprint.</desc>
+  <rect width="128" height="128" rx="64" fill="#FBF7EF"/>
+  <path d="M94 32c-8-8-19-12-32-12-18 0-31 9-31 23 0 13 11 19 33 23 22 4 31 10 31 22 0 14-14 22-32 22-14 0-27-5-35-14" fill="none" stroke="#235D73" stroke-width="10" stroke-linecap="round"/>
+  <path d="M86 43c-7-5-15-7-24-7-9 0-14 3-14 7 0 5 6 7 20 10" fill="none" stroke="#A94436" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="94" cy="32" r="7" fill="#D09A22"/>
+  <circle cx="28" cy="96" r="7" fill="#D09A22"/>
+  <circle cx="64" cy="66" r="4" fill="#231A20"/>
+</svg>

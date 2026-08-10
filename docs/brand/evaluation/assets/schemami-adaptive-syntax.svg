@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Schemami Adaptive Syntax challenger mark</title>
+  <desc id="desc">Measured input nodes and grid lines transform into a flowing S-shaped output.</desc>
+  <rect width="128" height="128" rx="26" fill="#F5F0E6"/>
+  <path d="M18 24v80M34 24v80M18 36h24M18 55h24M18 74h24M18 93h24" fill="none" stroke="#17231F" stroke-width="2" opacity=".18"/>
+  <path d="M20 34h57c15 0 25 8 25 20 0 13-11 21-27 21H55c-10 0-16 5-16 13 0 9 7 14 18 14h51" fill="none" stroke="#2F6658" stroke-width="10" stroke-linecap="round"/>
+  <path d="M20 54h45c8 0 13 4 13 10s-5 11-13 11H54" fill="none" stroke="#74445F" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="20" cy="34" r="6" fill="#D1A52A"/>
+  <circle cx="20" cy="54" r="5" fill="#D1A52A"/>
+  <circle cx="108" cy="102" r="6" fill="#D1A52A"/>
+</svg>

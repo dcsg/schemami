@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Schemami one-color mark</title>
+  <desc id="desc">The bracket-and-node S rendered in one Ink color.</desc>
+  <path d="M31 20H18v88h13M97 20h13v88H97" fill="none" stroke="#231A20" stroke-width="7" stroke-linecap="round"/>
+  <path d="M43 37h42M43 37v27h42v27H43" fill="none" stroke="#231A20" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="43" cy="37" r="6" fill="#231A20"/>
+  <circle cx="85" cy="64" r="6" fill="#231A20"/>
+  <circle cx="43" cy="91" r="6" fill="#231A20"/>
+</svg>

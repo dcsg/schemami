@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+  <title>Schemami identity concepts</title>
+  <style>
+    :root {
+      --rice: #f6f0e4;
+      --cream: #fffaf1;
+      --nori: #14251f;
+      --shiso: #6e3d62;
+      --miso: #d7a62a;
+      --steel: #5d7672;
+      --rule: #d9cfbc;
+      --shadow: 0 1.5rem 4rem rgb(20 37 31 / 12%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--nori);
+      background: var(--rice);
+    }
+    * { box-sizing: border-box; }
+    .svg-sprite { display: none; }
+    body { margin: 0; background: var(--rice); }
+    body::before { content: ""; display: block; height: .55rem; background: linear-gradient(90deg, var(--miso) 0 18%, var(--shiso) 18% 72%, var(--steel) 72%); }
+    main { display: flex; flex-direction: column; width: min(calc(100% - 2rem), 92rem); margin: 0 auto; padding: clamp(3rem, 8vw, 7rem) 0 8rem; }
+    header.intro { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(18rem, .65fr); gap: 4rem; align-items: end; margin-bottom: 5rem; }
+    header.intro { order: 0; }
+    .eyebrow { margin: 0 0 1rem; color: var(--shiso); font: 750 .73rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 11ch; margin-bottom: 1.5rem; font: 700 clamp(3.5rem, 8vw, 7.8rem)/.86 Georgia, serif; letter-spacing: -.075em; }
+    h2 { margin-bottom: .65rem; font-size: clamp(2.1rem, 4vw, 3.6rem); line-height: 1; letter-spacing: -.055em; }
+    h3 { margin-bottom: .45rem; font-size: 1rem; }
+    p { line-height: 1.65; }
+    .lede { max-width: 47rem; color: #3d4b45; font-size: clamp(1.08rem, 1.7vw, 1.34rem); }
+    .criteria { padding: 1.3rem 1.4rem; border: 1px solid var(--rule); background: rgb(255 250 241 / 72%); }
+    .criteria strong { display: block; margin-bottom: .65rem; color: var(--shiso); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+    .criteria ul { margin: 0; padding-left: 1.2rem; line-height: 1.7; }
+    .concept { position: relative; margin: 0 0 5rem; border: 1px solid var(--rule); background: var(--cream); box-shadow: var(--shadow); overflow: hidden; }
+    .concept::before { content: attr(data-index); position: absolute; top: 1.5rem; right: 1.5rem; color: rgb(20 37 31 / 8%); font: 800 7rem/1 Georgia, serif; }
+    .concept-head { display: grid; grid-template-columns: 8rem minmax(0, 1fr) minmax(15rem, .6fr); gap: 2.2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3.4rem); border-bottom: 1px solid var(--rule); }
+    .mark { display: block; width: 100%; height: auto; }
+    .wordmark { margin: 0 0 .35rem; line-height: .9; color: var(--nori); }
+    .wordmark-a { font: 700 clamp(3.5rem, 7vw, 6.7rem)/.85 Georgia, serif; letter-spacing: -.075em; }
+    .wordmark-b { font: 700 clamp(3.5rem, 7vw, 6.7rem)/.85 Georgia, serif; letter-spacing: -.075em; color: #231a20; }
+    .wordmark-c { font: italic 700 clamp(3.4rem, 7vw, 6.5rem)/.85 Georgia, serif; letter-spacing: -.07em; color: #231a20; }
+    .tagline { margin: .8rem 0 0; color: var(--shiso); font-size: clamp(1rem, 1.6vw, 1.25rem); }
+    .concept-note { position: relative; padding-left: 1.2rem; border-left: .35rem solid var(--miso); }
+    .concept-note p { margin-bottom: 0; color: #495750; font-size: .94rem; }
+    .recommended { display: inline-block; margin-bottom: .7rem; padding: .32rem .48rem; background: var(--miso); color: var(--nori); font: 800 .66rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .09em; text-transform: uppercase; }
+    .applications { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(19rem, .8fr) 12rem; gap: 1rem; padding: 1rem; background: #eee6d8; }
+    .mock { min-width: 0; background: #fff; overflow: hidden; }
+    .mock-label { display: flex; align-items: center; justify-content: space-between; padding: .55rem .75rem; border-bottom: 1px solid #e9e3d8; color: #67716c; font: 650 .62rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; text-transform: uppercase; }
+    .dots { color: #d5cec1; letter-spacing: .12rem; }
+    .hero { min-height: 25rem; padding: 1.1rem 1.25rem 1.4rem; color: var(--nori); background: var(--rice); }
+    .mini-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3.8rem; font-size: .72rem; }
+    .mini-brand { display: flex; align-items: center; gap: .5rem; font-weight: 800; letter-spacing: -.03em; }
+    .mini-brand svg { width: 1.55rem; height: 1.55rem; }
+    .mini-links { display: flex; gap: 1rem; color: #56625c; }
+    .reveal { margin: 0 0 .65rem; color: var(--shiso); font: 700 .58rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .13em; text-transform: uppercase; }
+    .hero h3 { max-width: 10ch; margin: 0 0 1rem; font: 700 clamp(2.4rem, 4vw, 4rem)/.9 Georgia, serif; letter-spacing: -.065em; }
+    .hero p { max-width: 35rem; color: #52605a; font-size: .8rem; }
+    .actions { display: flex; gap: .55rem; margin-top: 1.25rem; }
+    .button { display: inline-block; padding: .62rem .75rem; border: 1px solid var(--nori); font-size: .66rem; font-weight: 750; }
+    .button.primary { background: var(--nori); color: var(--rice); }
+    .docs { display: grid; grid-template-columns: 7.5rem 1fr; min-height: 25rem; color: #17231e; }
+    .sidebar { padding: 1.15rem .8rem; background: #17231e; color: #f6f0e4; }
+    .sidebar .mini-brand { margin-bottom: 1.8rem; }
+    .sidebar ul { margin: 0; padding: 0; list-style: none; color: #aeb9b3; font-size: .63rem; line-height: 2.2; }
+    .sidebar li.active { color: #fff; }
+    .doc-body { padding: 1.35rem 1.1rem; background: #fffaf1; }
+    .doc-body code { color: var(--shiso); font: 700 .62rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .doc-body h3 { margin: .7rem 0 .8rem; font-size: 1.4rem; letter-spacing: -.04em; }
+    .doc-body p { font-size: .7rem; }
+    pre { margin: 1rem 0 0; padding: .8rem; overflow: hidden; background: #14251f; color: #f6f0e4; font: .57rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .avatar-wrap { display: grid; place-items: center; min-height: 25rem; padding: 1rem; background: var(--rice); text-align: center; }
+    .avatar-wrap svg { width: 7rem; height: 7rem; border-radius: 1.5rem; box-shadow: 0 .8rem 2rem rgb(20 37 31 / 18%); }
+    .avatar-wrap p { margin: 1rem 0 0; font: 750 .68rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .concept-b .applications { background: #eadfd7; }
+    .concept-b .hero, .concept-b .avatar-wrap { background: #fbf7ef; }
+    .concept-b .reveal, .concept-b .tagline { color: #a94436; }
+    .concept-b .hero h3 { color: #231a20; font-family: Georgia, serif; font-weight: 700; }
+    .concept-b .button.primary, .concept-b .sidebar, .concept-b pre { background: #235d73; }
+    .concept-b .concept-note { border-left-color: #a94436; }
+    .concept-b { order: 1; }
+    .concept-a { order: 2; }
+    .concept-c { order: 3; }
+    .concept-c .applications { background: #eadfd7; }
+    .concept-c .hero, .concept-c .avatar-wrap { background: #fbf7ef; }
+    .concept-c .reveal, .concept-c .tagline { color: #a94436; }
+    .concept-c .hero h3 { color: #231a20; font-style: italic; }
+    .concept-c .button.primary, .concept-c .sidebar, .concept-c pre { background: #235d73; }
+    .decision { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; order: 4; }
+    .decision > div { padding: 1.5rem; border: 1px solid var(--rule); background: var(--cream); }
+    .decision p { margin-bottom: 0; }
+    @media (max-width: 980px) {
+      header.intro, .concept-head { grid-template-columns: 1fr; }
+      .concept-head .mark { width: 6.5rem; }
+      .applications { grid-template-columns: 1fr 1fr; }
+      .avatar-mock { grid-column: 1 / -1; }
+      .avatar-wrap { min-height: 13rem; }
+    }
+    @media (max-width: 640px) {
+      main { width: min(calc(100% - 1rem), 92rem); padding-top: 3rem; }
+      .applications, .decision { grid-template-columns: 1fr; }
+      .docs { min-height: 22rem; }
+      .concept::before { display: none; }
+    }
+    @media print {
+      main { width: 100%; padding: 1cm; }
+      .concept { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <symbol id="mark-flow" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="30" fill="#14251F"/>
+        <path d="M19 31h56c13 0 21 7 21 17s-8 17-21 17H53c-10 0-16 6-16 15s6 16 16 16h56" fill="none" stroke="#F6F0E4" stroke-width="9" stroke-linecap="round"/>
+        <path d="M19 48h47c8 0 12 4 12 9s-4 8-12 8H55" fill="none" stroke="#6E3D62" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="19" cy="31" r="5" fill="#D7A62A"/><circle cx="19" cy="48" r="4" fill="#D7A62A"/><circle cx="109" cy="96" r="5" fill="#D7A62A"/>
+      </symbol>
+      <symbol id="mark-bound" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="24" fill="#FBF7EF"/>
+        <path d="M31 20H18v88h13M97 20h13v88H97" fill="none" stroke="#231A20" stroke-width="7" stroke-linecap="round"/>
+        <path d="M43 37h42M43 37v27h42v27H43" fill="none" stroke="#235D73" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="43" cy="37" r="6" fill="#D09A22"/><circle cx="85" cy="64" r="6" fill="#A94436"/><circle cx="43" cy="91" r="6" fill="#D09A22"/>
+      </symbol>
+      <symbol id="mark-pinch" viewBox="0 0 128 128">
+        <rect width="128" height="128" rx="64" fill="#FBF7EF"/>
+        <path d="M94 32c-8-8-19-12-32-12-18 0-31 9-31 23 0 13 11 19 33 23 22 4 31 10 31 22 0 14-14 22-32 22-14 0-27-5-35-14" fill="none" stroke="#235D73" stroke-width="10" stroke-linecap="round"/>
+        <path d="M86 43c-7-5-15-7-24-7-9 0-14 3-14 7 0 5 6 7 20 10" fill="none" stroke="#A94436" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="94" cy="32" r="7" fill="#D09A22"/><circle cx="28" cy="96" r="7" fill="#D09A22"/><circle cx="64" cy="66" r="4" fill="#231A20"/>
+      </symbol>
+    </defs>
+  </svg>
+  <main>
+    <header class="intro">
+      <div>
+        <p class="eyebrow">Identity exploration · 10 August 2026</p>
+        <h1>Schema meets umami.</h1>
+        <p class="lede">Three vector-native explorations led to one founder-selected synthesis: option 2’s programmatic bracket symbol, option 1’s warm serif lettering and option 3’s marine–clay–brass palette.</p>
+      </div>
+      <aside class="criteria">
+        <strong>Judge each direction on</strong>
+        <ul>
+          <li>Recognition at 32 pixels</li>
+          <li>Meaning without a literal utensil</li>
+          <li>Developer credibility</li>
+          <li>Warmth without cuteness</li>
+          <li>Fit with the verbal system</li>
+        </ul>
+      </aside>
+    </header>
+
+    <section class="concept concept-a" data-index="01">
+      <div class="concept-head">
+        <svg class="mark" role="img" aria-label="Flow S symbol"><use href="#mark-flow"/></svg>
+        <div>
+          <p class="wordmark wordmark-a">schemami</p>
+          <p class="tagline">Recipes, structured to taste.</p>
+        </div>
+        <div class="concept-note">
+          <h2>Flow S</h2>
+          <p>Recipe inputs travel through a bounded transformation and leave as a dependable output. The nested path adds appetite and personality without drawing food.</p>
+        </div>
+      </div>
+      <div class="applications">
+        <article class="mock">
+          <div class="mock-label"><span>Homepage</span><span class="dots" aria-hidden="true">•••</span></div>
+          <div class="hero">
+            <div class="mini-nav"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-flow"/></svg>schemami</span><span class="mini-links"><span>Docs</span><span>GitHub</span></span></div>
+            <p class="reveal">Schema meets umami.</p>
+            <h3>Recipes, structured to taste.</h3>
+            <p>A flexible protocol for ingredients, methods, calculations, provenance and adaptation.</p>
+            <div class="actions"><span class="button primary">Read the protocol</span><span class="button">Explore a recipe</span></div>
+          </div>
+        </article>
+        <article class="mock">
+          <div class="mock-label"><span>Documentation</span><span>v0.1</span></div>
+          <div class="docs">
+            <aside class="sidebar"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-flow"/></svg>schemami</span><ul><li>Introduction</li><li class="active">Recipe model</li><li>Methods</li><li>Registries</li><li>Conformance</li></ul></aside>
+            <div class="doc-body"><code>RECIPE MODEL</code><h3>Ingredients carry meaning.</h3><p>Stable identifiers let applications resolve labels, units and behavior without hiding unknowns.</p><pre>ingredient:
+  id: ingredient.flour.wheat
+  amount: 500 g</pre></div>
+          </div>
+        </article>
+        <article class="mock avatar-mock">
+          <div class="mock-label"><span>Avatar</span><span>32–512 px</span></div>
+          <div class="avatar-wrap"><div><svg role="img" aria-label="Flow S avatar"><use href="#mark-flow"/></svg><p>@schemami</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="concept concept-b" data-index="02">
+      <div class="concept-head">
+        <svg class="mark" role="img" aria-label="Bounded Savor symbol"><use href="#mark-bound"/></svg>
+        <div>
+          <p class="wordmark wordmark-b">schemami</p>
+          <p class="tagline">Recipes, structured to taste.</p>
+        </div>
+        <div class="concept-note">
+          <span class="recommended">Founder selected</span>
+          <h2>Bounded Savor</h2>
+          <p>The programmatic brackets carry the developer-protocol signal. Inside them, the S is built from structured rows and three colored nodes that make its connections explicit. Option 1’s serif lettering adds warmth; option 3’s colors keep it culinary without turning it into a food-app logo.</p>
+        </div>
+      </div>
+      <div class="applications">
+        <article class="mock">
+          <div class="mock-label"><span>Homepage</span><span class="dots" aria-hidden="true">•••</span></div>
+          <div class="hero">
+            <div class="mini-nav"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-bound"/></svg>schemami</span><span class="mini-links"><span>Docs</span><span>GitHub</span></span></div>
+            <p class="reveal">Schema meets umami.</p>
+            <h3>Recipes, structured to taste.</h3>
+            <p>A flexible protocol for ingredients, methods, calculations, provenance and adaptation.</p>
+            <div class="actions"><span class="button primary">Read the protocol</span><span class="button">Explore a recipe</span></div>
+          </div>
+        </article>
+        <article class="mock">
+          <div class="mock-label"><span>Documentation</span><span>v0.1</span></div>
+          <div class="docs">
+            <aside class="sidebar"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-bound"/></svg>schemami</span><ul><li>Introduction</li><li class="active">Recipe model</li><li>Methods</li><li>Registries</li><li>Conformance</li></ul></aside>
+            <div class="doc-body"><code>RECIPE MODEL</code><h3>Ingredients carry meaning.</h3><p>Stable identifiers let applications resolve labels, units and behavior without hiding unknowns.</p><pre>ingredient:
+  id: ingredient.flour.wheat
+  amount: 500 g</pre></div>
+          </div>
+        </article>
+        <article class="mock avatar-mock">
+          <div class="mock-label"><span>Avatar</span><span>32–512 px</span></div>
+          <div class="avatar-wrap"><div><svg role="img" aria-label="Bounded Savor avatar"><use href="#mark-bound"/></svg><p>@schemami</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="concept concept-c" data-index="03">
+      <div class="concept-head">
+        <svg class="mark" role="img" aria-label="Recipe Fingerprint symbol"><use href="#mark-pinch"/></svg>
+        <div>
+          <p class="wordmark wordmark-c">schemami</p>
+          <p class="tagline">Recipes, structured to taste.</p>
+        </div>
+        <div class="concept-note">
+          <h2>Recipe Fingerprint</h2>
+          <p>A hand-drawn-feeling S suggests a recipe’s identity surviving adaptation. The dots feel like inputs or seasoning. It is the most expressive direction and the least protocol-specific.</p>
+        </div>
+      </div>
+      <div class="applications">
+        <article class="mock">
+          <div class="mock-label"><span>Homepage</span><span class="dots" aria-hidden="true">•••</span></div>
+          <div class="hero">
+            <div class="mini-nav"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-pinch"/></svg>schemami</span><span class="mini-links"><span>Docs</span><span>GitHub</span></span></div>
+            <p class="reveal">Schema meets umami.</p>
+            <h3>Recipes, structured to taste.</h3>
+            <p>A flexible protocol for ingredients, methods, calculations, provenance and adaptation.</p>
+            <div class="actions"><span class="button primary">Read the protocol</span><span class="button">Explore a recipe</span></div>
+          </div>
+        </article>
+        <article class="mock">
+          <div class="mock-label"><span>Documentation</span><span>v0.1</span></div>
+          <div class="docs">
+            <aside class="sidebar"><span class="mini-brand"><svg aria-hidden="true"><use href="#mark-pinch"/></svg>schemami</span><ul><li>Introduction</li><li class="active">Recipe model</li><li>Methods</li><li>Registries</li><li>Conformance</li></ul></aside>
+            <div class="doc-body"><code>RECIPE MODEL</code><h3>Ingredients carry meaning.</h3><p>Stable identifiers let applications resolve labels, units and behavior without hiding unknowns.</p><pre>ingredient:
+  id: ingredient.flour.wheat
+  amount: 500 g</pre></div>
+          </div>
+        </article>
+        <article class="mock avatar-mock">
+          <div class="mock-label"><span>Avatar</span><span>32–512 px</span></div>
+          <div class="avatar-wrap"><div><svg role="img" aria-label="Recipe Fingerprint avatar"><use href="#mark-pinch"/></svg><p>@schemami</p></div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="decision">
+      <div><p class="eyebrow">Selected synthesis</p><h2>Develop Bounded Savor.</h2><p>Keep option 2’s bracketed symbol and all three connection nodes, option 1’s serif wordmark and option 3’s palette. Refine spacing and optical weight after testing the mark at favicon and package-registry sizes.</p></div>
+      <div><p class="eyebrow">Do not decide from novelty</p><h2>Test recognition.</h2><p>Show each symbol without its name, then with the wordmark. Ask what it suggests, which one feels trustworthy in SDK documentation, and which one remains recognizable a day later.</p></div>
+    </section>
+  </main>
+</body>
+</html>

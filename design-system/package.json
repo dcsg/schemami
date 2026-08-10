@@ -1,0 +1,9 @@
+{
+  "name": "@schemami/design-system",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-tokens.mjs && node scripts/build-specimen.mjs",
+    "check": "node scripts/build-tokens.mjs && node scripts/build-specimen.mjs"
+  }
+}

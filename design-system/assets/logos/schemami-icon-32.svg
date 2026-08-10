@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title desc">
+  <title id="title">Schemami 32-pixel optical icon</title>
+  <desc id="desc">An optically adjusted bracketed S with three connection nodes.</desc>
+  <rect width="32" height="32" rx="6" fill="#FBF7EF"/>
+  <path d="M7.75 5H4.5v22h3.25M24.25 5h3.25v22H24.25" fill="none" stroke="#231A20" stroke-width="1.9" stroke-linecap="round"/>
+  <path d="M10.75 9.25h10.5M10.75 9.25v6.75h10.5v6.75H10.75" fill="none" stroke="#235D73" stroke-width="3.35" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="10.75" cy="9.25" r="1.7" fill="#D09A22"/>
+  <circle cx="21.25" cy="16" r="1.7" fill="#A94436"/>
+  <circle cx="10.75" cy="22.75" r="1.7" fill="#D09A22"/>
+</svg>

@@ -8,4 +8,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with: { go-version: "1.26" }
+      - name: Install pinned CUE CLI
+        run: go install cuelang.org/go/cmd/cue@v0.17.1
       - run: make validate
