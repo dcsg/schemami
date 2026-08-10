@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Schemami Flow S concept</title>
+  <desc id="desc">Three structured recipe lines flow through an abstract S-shaped transformation.</desc>
+  <rect width="128" height="128" rx="30" fill="#14251F"/>
+  <path d="M19 31h56c13 0 21 7 21 17s-8 17-21 17H53c-10 0-16 6-16 15s6 16 16 16h56" fill="none" stroke="#F6F0E4" stroke-width="9" stroke-linecap="round"/>
+  <path d="M19 48h47c8 0 12 4 12 9s-4 8-12 8H55" fill="none" stroke="#6E3D62" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="19" cy="31" r="5" fill="#D7A62A"/>
+  <circle cx="19" cy="48" r="4" fill="#D7A62A"/>
+  <circle cx="109" cy="96" r="5" fill="#D7A62A"/>
+</svg>
