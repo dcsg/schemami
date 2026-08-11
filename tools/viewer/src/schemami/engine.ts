@@ -1,19 +1,15 @@
 import { Validator } from "@cfworker/json-schema";
 import { parseAllDocuments } from "yaml";
 import {
-  resolveFormula,
-  scale,
-  schedule,
+  evaluateRequest,
+  validateReachableGraphs,
   validateDurationWindow,
   type Envelope,
-  type Formula,
-  type Recipe,
-  type Step,
 } from "./calculus.ts";
 
 const PROBLEM_BASE = "https://schemami.dev/problems/";
 const knownUnits = new Set([
-  "g", "kg", "mL", "L", "Cel", "[degF]", "[cup_us]", "[tbs_us]",
+  "1", "g", "kg", "mL", "L", "Cel", "[degF]", "[cup_us]", "[tbs_us]",
   "[tsp_us]", "[foz_us]", "[cup_m]",
 ]);
 const MEDIA_FRAGMENTS_SPECIFICATION = "https://www.w3.org/TR/media-frags/";
@@ -39,7 +35,7 @@ export interface SchemamiEngine {
   readonly version: 1;
   analyze(text: string): Promise<AnalysisResult>;
   scale(document: Dict, factor: string): Envelope;
-  resolveFormula(formula: Formula): Envelope;
+  resolveFormula(document: Dict, formulaId: string): Envelope;
   schedule(document: Dict): Envelope;
 }
 
@@ -288,6 +284,94 @@ function semanticProblems(document: Dict): ViewerProblem[] {
   return problems;
 }
 
+type MethodRecord = { kind: string; id: string; value: Dict; pointer: string };
+
+function semanticProblemsV1(document: Dict): ViewerProblem[] {
+  const problems: ViewerProblem[] = [];
+  const add = (code: string, pointer: string, message: string): void => { problems.push(problem(code, pointer, message)); };
+  try { Intl.getCanonicalLocales(String(document.content_language ?? "")); } catch { add("invalid-document", "/content_language", "content_language is not a well-formed BCP 47 tag."); }
+  const origin = object(document.origin);
+  if (origin && typeof origin.country === "string" && typeof origin.subdivision === "string" && !origin.subdivision.startsWith(`${origin.country}-`)) add("invalid-document", "/origin/subdivision", "Subdivision must belong to origin country.");
+
+  const collections = new Map<string, Map<string, Dict>>();
+  for (const name of ["parameters", "ingredients", "components", "preparations", "outputs", "techniques", "equipment", "formulas", "sources", "evidence"]) collections.set(name, named(document[name], `/${name}`, problems));
+
+  const parameters = collections.get("parameters")!;
+  for (const [index, parameter] of list(document.parameters).map(object).entries()) if (parameter) {
+    if (parameter.kind === "choice") {
+      const seen = new Set<string>(); for (const [optionIndex, option] of list(parameter.options).map(object).entries()) if (option) { const id = String(option.id); if (seen.has(id)) add("invalid-document", `/parameters/${index}/options/${optionIndex}/id`, `Duplicate option ${id}.`); seen.add(id); }
+      if (typeof parameter.default === "string" && !seen.has(parameter.default)) add("unresolved-reference", `/parameters/${index}/default`, `Unknown option ${parameter.default}.`);
+    }
+  }
+
+  const method: MethodRecord[] = []; const methodIDs = new Map<string, string>();
+  const stack = [...list(object(document.method)?.sequence).entries()].reverse().map(([index, value]) => ({ value, pointer: `/method/sequence/${index}`, depth: 1 }));
+  while (stack.length) {
+    const current = stack.pop()!; const value = object(current.value); if (!value) continue;
+    if (current.depth > 64) { add("resource-limit", current.pointer, "Method exceeds the minimum recursive-depth floor."); break; }
+    const id = String(value.id); const prior = methodIDs.get(id); if (prior) add("invalid-document", `${current.pointer}/id`, `Duplicate method id ${id}; first declared at ${prior}.`); else methodIDs.set(id, current.pointer);
+    method.push({ kind: String(value.kind), id, value, pointer: current.pointer });
+    if (value.kind === "section") for (const [index, child] of [...list(value.sequence).entries()].reverse()) stack.push({ value: child, pointer: `${current.pointer}/sequence/${index}`, depth: current.depth + 1 });
+  }
+  const steps = new Map(method.filter((entry) => entry.kind === "step").map((entry) => [entry.id, entry]));
+  const resourceCollection = (kind: string): string => kind === "preparation" ? "preparations" : kind === "output" ? "outputs" : kind === "equipment" ? "equipment" : `${kind}s`;
+  const validateReference = (reference: Dict, pointer: string): void => { const collection = resourceCollection(String(reference.kind)); if (!collections.get(collection)?.has(String(reference.id))) add("unresolved-reference", pointer, `Unknown ${String(reference.kind)} ${String(reference.id)}.`); };
+  const validateActivation = (activation: Dict, pointer: string, depth = 1): void => {
+    if (depth > 64) { add("resource-limit", pointer, "Activation exceeds the minimum recursive-depth floor."); return; }
+    const kind = String(activation.kind);
+    if (["choice_is", "toggle_is", "measurement_compare"].includes(kind)) {
+      const parameter = parameters.get(String(activation.parameter)); const expected = kind === "choice_is" ? "choice" : kind === "toggle_is" ? "toggle" : "measurement";
+      if (!parameter) add("unresolved-reference", `${pointer}/parameter`, `Unknown parameter ${String(activation.parameter)}.`);
+      else if (parameter.kind !== expected) add("invalid-document", pointer, `${kind} requires a ${expected} parameter.`);
+      else if (kind === "choice_is" && !list(parameter.options).map(object).some((option) => option?.id === activation.option)) add("unresolved-reference", `${pointer}/option`, `Unknown option ${String(activation.option)}.`);
+    } else if (kind === "all" || kind === "any") list(activation.conditions).map(object).forEach((condition, index) => { if (condition) validateActivation(condition, `${pointer}/conditions/${index}`, depth + 1); });
+    else if (kind === "not") { const condition = object(activation.condition); if (condition) validateActivation(condition, `${pointer}/condition`, depth + 1); }
+  };
+  const validateCompletion = (completion: Dict, pointer: string, depth = 1): void => {
+    if (depth > 64) { add("resource-limit", pointer, "Completion exceeds the minimum recursive-depth floor."); return; }
+    if (completion.kind === "all" || completion.kind === "any") list(completion.conditions).map(object).forEach((condition, index) => { if (condition) validateCompletion(condition, `${pointer}/conditions/${index}`, depth + 1); });
+  };
+  const activationSites: Array<[Dict, string]> = [];
+  for (const collection of ["ingredients", "components", "equipment"]) list(document[collection]).map(object).forEach((value, index) => { const activation = object(value?.activation); if (activation) activationSites.push([activation, `/${collection}/${index}/activation`]); });
+
+  for (const entry of method) {
+    const timing = object(entry.value.relative_timing); if (timing && !steps.has(String(timing.anchor_step))) add("unresolved-reference", `${entry.pointer}/relative_timing/anchor_step`, `Unknown step ${String(timing.anchor_step)}.`);
+    const activation = object(entry.value.activation); if (activation) activationSites.push([activation, `${entry.pointer}/activation`]);
+    const completion = object(entry.value.completion); if (completion) validateCompletion(completion, `${entry.pointer}/completion`);
+    if (entry.kind !== "step") continue;
+    for (const dependency of list(entry.value.after).map(String)) if (dependency === entry.id || !steps.has(dependency)) add("unresolved-reference", `${entry.pointer}/after`, `Invalid step dependency ${dependency}.`);
+    for (const field of ["uses", "produces"] as const) list(entry.value[field]).map(object).forEach((reference, index) => { if (reference) validateReference(reference, `${entry.pointer}/${field}/${index}`); });
+    for (const field of ["techniques", "equipment"] as const) list(entry.value[field]).map(String).forEach((id) => { if (!collections.get(field)?.has(id)) add("unresolved-reference", `${entry.pointer}/${field}`, `Unknown ${field} ${id}.`); });
+    if (validateDurationWindow(entry.value.duration)) add("invalid-document", `${entry.pointer}/duration`, "Duration window is not ordered.");
+    const parentUses = new Set(list(entry.value.uses).map(object).filter(Boolean).map((reference) => `${String(reference!.kind)}\0${String(reference!.id)}`)); const parentProduces = new Set(list(entry.value.produces).map(object).filter(Boolean).map((reference) => `${String(reference!.kind)}\0${String(reference!.id)}`));
+    const actionIDs = new Set<string>(); for (const [actionIndex, action] of list(entry.value.actions).map(object).entries()) if (action) {
+      const actionID = String(action.id); if (actionIDs.has(actionID)) add("invalid-document", `${entry.pointer}/actions/${actionIndex}/id`, `Duplicate action ${actionID}.`); actionIDs.add(actionID);
+      const actionActivation = object(action.activation); if (actionActivation) activationSites.push([actionActivation, `${entry.pointer}/actions/${actionIndex}/activation`]);
+      const actionCompletion = object(action.completion); if (actionCompletion) validateCompletion(actionCompletion, `${entry.pointer}/actions/${actionIndex}/completion`);
+      for (const field of ["uses", "produces"] as const) list(action[field]).map(object).forEach((reference, index) => { if (!reference) return; validateReference(reference, `${entry.pointer}/actions/${actionIndex}/${field}/${index}`); const key = `${String(reference.kind)}\0${String(reference.id)}`; if (!(field === "uses" ? parentUses : parentProduces).has(key)) add("invalid-document", `${entry.pointer}/actions/${actionIndex}/${field}/${index}`, "Action references must be a subset of the containing step."); });
+    }
+  }
+  activationSites.forEach(([activation, pointer]) => validateActivation(activation, pointer));
+
+  const claimed = new Map<string, string>();
+  for (const [formulaIndex, formula] of list(document.formulas).map(object).entries()) if (formula) {
+    const seen = new Set<string>(); const basis = object(formula.basis); const basisKey = basis ? `${String(basis.kind)}\0${String(basis.id)}` : ""; let basisIndex = -1;
+    if (basis) validateReference(basis, `/formulas/${formulaIndex}/basis`);
+    for (const [termIndex, term] of list(formula.terms).map(object).entries()) if (term) { const input = object(term.input)!; validateReference(input, `/formulas/${formulaIndex}/terms/${termIndex}/input`); const key = `${String(input.kind)}\0${String(input.id)}`; if (seen.has(key)) add("invalid-document", `/formulas/${formulaIndex}/terms/${termIndex}/input`, "Formula repeats an input."); seen.add(key); if (claimed.has(key)) add("invalid-document", `/formulas/${formulaIndex}/terms/${termIndex}/input`, "Input has more than one formula authority."); claimed.set(key, String(formula.id)); const collection = collections.get(resourceCollection(String(input.kind))); if (object(collection?.get(String(input.id))?.quantity)) add("invalid-document", `/formulas/${formulaIndex}/terms/${termIndex}/input`, "Formula input also has an explicit quantity."); if (key === basisKey) basisIndex = termIndex; }
+    if (formula.kind === "percentage" && (basisIndex < 0 || object(list(formula.terms)[basisIndex])?.percentage !== "100")) add("invalid-document", `/formulas/${formulaIndex}/basis`, "Percentage basis must occur once at 100 percent.");
+  }
+  for (const [index, component] of list(document.components).map(object).entries()) if (component) { const key = `component\0${String(component.id)}`; if (Object.hasOwn(component, "quantity") === claimed.has(key)) add("invalid-document", `/components/${index}`, "Component must have exactly one quantity authority."); }
+
+  const walk: Array<{ value: unknown; pointer: string }> = [{ value: document, pointer: "" }];
+  while (walk.length) { const current = walk.pop()!; if (Array.isArray(current.value)) current.value.forEach((child, index) => walk.push({ value: child, pointer: `${current.pointer}/${index}` })); else { const record = object(current.value); if (!record) continue; if (["measured", "range", "open"].includes(String(record.kind))) validateQuantity(record, current.pointer, problems); for (const [key, child] of Object.entries(record)) walk.push({ value: child, pointer: `${current.pointer}/${key.replaceAll("~", "~0").replaceAll("/", "~1")}` }); } }
+
+  const sources = collections.get("sources")!;
+  for (const [index, evidence] of list(document.evidence).map(object).entries()) if (evidence) { if (typeof evidence.source === "string" && !sources.has(evidence.source)) add("unresolved-reference", `/evidence/${index}/source`, `Unknown evidence source ${evidence.source}.`); const pointer = String(evidence.pointer ?? ""); if (!resolvePointer(document, pointer)) add("invalid-document", `/evidence/${index}/pointer`, "Evidence pointer does not identify an existing value."); const selector = object(evidence.selector); if (selector) validateSelector(selector, `/evidence/${index}/selector`, problems); }
+  for (const graphProblem of validateReachableGraphs(document)) problems.push({ ...graphProblem, message: "Reachable active graph violates a Schemami invariant." });
+  const unique = new Map<string, ViewerProblem>(); for (const item of problems) unique.set(`${item.pointer ?? ""}\0${item.type}`, item);
+  return [...unique.values()].sort((left, right) => (left.pointer ?? "") < (right.pointer ?? "") ? -1 : (left.pointer ?? "") > (right.pointer ?? "") ? 1 : left.type < right.type ? -1 : left.type > right.type ? 1 : 0);
+}
+
 export function createSchemamiEngine(schema: Record<string, unknown>): SchemamiEngine {
   const validator = new Validator(schema as never, "2020-12", false);
   return {
@@ -314,7 +398,7 @@ export function createSchemamiEngine(schema: Record<string, unknown>): SchemamiE
               problem("invalid-document", pointerOf(error.instanceLocation), error.error)
             );
           }
-          if (problems.length === 0) problems = semanticProblems(value);
+          if (problems.length === 0) problems = semanticProblemsV1(value);
         }
         documents.push({
           id: String(value.id ?? ""),
@@ -325,8 +409,8 @@ export function createSchemamiEngine(schema: Record<string, unknown>): SchemamiE
       }
       return { parse: { ok: true, errors: [] }, documents };
     },
-    scale: (document, factor) => scale(document as unknown as Recipe, factor),
-    resolveFormula: (formula) => resolveFormula(formula, "/formula"),
-    schedule: (document) => schedule(list(document.steps) as Step[]),
+    scale: (document, factor) => evaluateRequest("scale", { recipe: document, arguments: { factor } }),
+    resolveFormula: (document, formulaId) => evaluateRequest("resolve_formula", { recipe: document, arguments: { formula_id: formulaId } }),
+    schedule: (document) => evaluateRequest("schedule", { recipe: document, arguments: {} }),
   };
 }

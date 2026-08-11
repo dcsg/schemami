@@ -3,8 +3,10 @@
 **Date:** 2026-08-10
 **Status:** Accepted
 
-**Schemami v1 note:** ADR-010 supersedes this ADR's provisional readiness
-`endpoint` concept. Schemami v1 has no structured readiness member.
+**Schemami v1 amendment:** ADR-014 supersedes this ADR's claim that a step is
+itself the sole recipe-local action and supersedes ADR-010's readiness deferral.
+The local-entity, exact-decimal, quantity, duration, UCUM, evidence, and
+diagnostic decisions below remain accepted.
 
 ## Context
 
@@ -28,7 +30,7 @@ support deterministic conversion or honest refusal without an explicit wire cont
    case-sensitive; readers reject uppercase rather than normalizing it. A
    lowercase UUID string is valid but receives no special UUID semantics. A
    recipe-local ID MUST contain at most 128 characters.
-2. Each step is itself a recipe-local action. It requires a recipe-local `id`
+2. **Superseded by ADR-014.** Each step is itself a recipe-local action. It requires a recipe-local `id`
    and a source-language `instruction`; it does not require a second action ID,
    primitive reference, primitive version, primitive registry, or primitive
    parameter object. Only explicit structured step fields may supply
@@ -47,8 +49,8 @@ support deterministic conversion or honest refusal without an explicit wire cont
 5. `quantity` is the canonical absolute-amount field; it replaces `amount`. Its
    required `kind` explicitly selects `measured`, `range`, or `open`. A ratio or
    percentage is a grouped formula relationship across ingredients, not a
-   scalar quantity kind. A readiness `endpoint` is a separate method condition
-   that may itself contain a measured quantity; it is not a quantity kind.
+   scalar quantity kind. Completion remains a separate method condition under
+   ADR-014; it is not a quantity kind.
 6. Scalar numeric values are canonical decimal strings with at most sixteen
    digits in total (excluding the decimal point and any permitted minus sign)
    and at most four fractional digits. Trailing fractional zeros, exponent
@@ -89,7 +91,9 @@ equipment:
     name: Cesto de fermentação
 ```
 
-The step is the local action and carries the authored instruction directly:
+The original candidate represented the step as the local action. ADR-014 now
+permits either one direct instruction or ordered structured actions while
+retaining the no-registry boundary:
 
 ```yaml
 steps:

@@ -21,11 +21,11 @@ expected_headers="$(printf '%s\n' \
   '/schema/schemami/1/core.schema.json' \
   '  Content-Type: application/schema+json' \
   '' \
-  '/schema/schemami/1/pack.schema.json' \
+  '/schema/schemami/1/bundle.schema.json' \
   '  Content-Type: application/schema+json')"
 test "$(cat "$proof_root/public/_headers")" = "$expected_headers" || {
   echo "publication tree: Cloudflare schema media-type rules drifted" >&2
   exit 1
 }
-test "$(find "$proof_root/public" -type f | wc -l | tr -d ' ')" = 16
-echo "schemami publication tree: 15 route artifacts and Cloudflare media-type rules assembled byte-for-byte"
+test "$(find "$proof_root/public" -type f | wc -l | tr -d ' ')" = 17
+echo "schemami publication tree: 16 route artifacts and Cloudflare media-type rules assembled byte-for-byte"

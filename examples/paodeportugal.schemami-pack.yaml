@@ -1,7 +1,0 @@
-schemami: "1"
-collection: paodeportugal
-revision: 1
-documents:
-  - id: pao-massa-mae
-    revision: 1
-    sha256: 8ebb90819a6c27a63b7be30350384406ab2b7fba1d9bff04e2faf1338ac7a078

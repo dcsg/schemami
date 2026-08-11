@@ -13,9 +13,11 @@ techniques:
 equipment:
   - id: panela-x
     name: Panela experimental X
-steps:
-  - id: preparar
-    instruction: Prepare a mistura segundo a técnica da casa.
-    uses: [ingrediente-da-casa]
-    techniques: [dobra-da-casa]
-    equipment: [panela-x]
+method:
+  sequence:
+    - kind: step
+      id: preparar
+      instruction: Prepare a mistura segundo a técnica da casa.
+      uses: [{ kind: ingredient, id: ingrediente-da-casa }]
+      techniques: [dobra-da-casa]
+      equipment: [panela-x]

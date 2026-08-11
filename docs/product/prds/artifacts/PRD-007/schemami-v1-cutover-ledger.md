@@ -16,13 +16,13 @@ candidate does not mechanically relabel it as Schemami evidence.
 The release gate treats these paths as current Schemami v1:
 
 - `schema/schemami-v1-core.schema.json`
-- `schema/schemami-v1-pack.schema.json`
+- `schema/schemami-v1-bundle.schema.json`
 - `schema/VERSIONING.md`
 - `conformance/schemami-v1/**`
 - `tools/schemami/**`, excluding the named negative-test occurrences below
 - `tools/viewer/src/schemami/**`, `tools/viewer/build.ts`, package/lock/style,
   and generated `tools/viewer/dist/index.html`
-- `examples/*.schemami.yaml` and `examples/*.schemami-pack.yaml`
+- `examples/*.schemami.yaml` and `examples/*.schemami-bundle.json`
 - `Makefile`, `.mise.toml`, `mise.lock`, active bootstrap/toolchain scripts,
   the active CI DAG, and `.github/workflows/validate.yml`
 - `README.md`, `docs/STATUS.md`, `docs/project-context.md`,
@@ -50,7 +50,7 @@ exist exclusively to refuse it:
 | `tools/schemami/check-candidate-scope.sh` | forbidden historical-path search pattern | prevents historical implementation from entering the candidate scope |
 | `tools/viewer/dist/index.html` | generated copy of the engine refusal | byte-generated negative behavior, not a reader |
 
-No writer, canonicalizer, pack verifier, Calculus operation, or positive fixture
+No writer, canonicalizer, bundle verifier, Calculus operation, or positive fixture
 emits predecessor identity.
 
 ## Retained historical implementation

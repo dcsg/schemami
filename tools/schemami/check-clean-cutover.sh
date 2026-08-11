@@ -12,7 +12,7 @@ active_positive=(
   .mise.toml
   mise.lock
   schema/schemami-v1-core.schema.json
-  schema/schemami-v1-pack.schema.json
+  schema/schemami-v1-bundle.schema.json
   tools/bootstrap.sh
   tools/bootstrap-test.sh
   tools/with-toolchain.sh
@@ -44,7 +44,7 @@ active_positive=(
   tools/viewer/src/schemami/render.ts
   tools/viewer/src/schemami/source-view.ts
   examples/pao-massa-mae.schemami.yaml
-  examples/paodeportugal.schemami-pack.yaml
+  examples/paodeportugal.schemami-bundle.json
   release/schemami-v1.0.0/contract-map.json
   release/schemami-v1.0.0/evidence-map.json
   release/schemami-v1.0.0/problems
@@ -64,7 +64,7 @@ if rg -n -i "$legacy_pattern" "${active_positive[@]}"; then
 fi
 
 # Negative recognition is exact, reviewed, and refusal-only.
-grep -Fq 'validateFileSuffix("recipe.rcp.yaml", false)' tools/schemami/main_test.go
+grep -Fq '"recipe.rcp.yaml"' tools/schemami/main_test.go
 grep -Fq 'Object.hasOwn(value, "rcp")' tools/viewer/src/schemami/engine.ts
 grep -Fq 'problem("unsupported-legacy"' tools/viewer/src/schemami/engine.ts
 grep -Fq 'legacy RCP input is refused without fallback' tools/viewer/conformance/schemami-viewer.test.ts

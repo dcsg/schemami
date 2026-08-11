@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 map="$root/release/schemami-v1.0.0/contract-map.json"
 evidence_map="$root/release/schemami-v1.0.0/evidence-map.json"
-jq -e '.release == "schemami-v1.0.0" and (.artifacts | length == 15)' "$map" >/dev/null
+jq -e '.release == "schemami-v1.0.0" and (.artifacts | length == 16)' "$map" >/dev/null
 jq -e '.release == "schemami-v1.0.0" and (.requirements | length == 9)' "$evidence_map" >/dev/null
 
 duplicate_paths="$(jq -r '[.artifacts[].path] | group_by(.)[] | select(length > 1) | .[0]' "$map")"
@@ -41,6 +41,6 @@ while IFS= read -r type; do
     echo "release contract: vector problem is not published: $type" >&2
     exit 1
   }
-done < <(jq -r '.. | objects | .type? // empty' "$root/conformance/schemami-v1/calculus.json" | sort -u)
+done < <(jq -r '.. | objects | .type? // empty' "$root/conformance/schemami-v1/calculus.json" "$root/conformance/schemami-v1/structured-calculus.json" | sort -u)
 
-echo "schemami release contract map: 15 unique local artifacts and 11 problem types verified"
+echo "schemami release contract map: 16 unique local artifacts and 11 problem types verified"

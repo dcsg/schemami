@@ -5,13 +5,6 @@ export type SourceEntity = {
 };
 
 export type SourceIngredient = SourceEntity & { quantity?: unknown };
-export type SourceStep = {
-  id: string;
-  instruction: string;
-  techniques?: string[];
-  notes?: string[];
-};
-
 export type SourceRecipe = {
   content_language: string;
   title: string;
@@ -20,7 +13,7 @@ export type SourceRecipe = {
   ingredients: SourceIngredient[];
   techniques?: SourceEntity[];
   equipment?: SourceEntity[];
-  steps: SourceStep[];
+  method: { sequence: Array<Record<string, unknown>> };
 };
 
 export type SourceLanguageView = {
@@ -31,7 +24,7 @@ export type SourceLanguageView = {
   ingredients: Array<{ id: string; name: string; notes: string[]; quantity?: unknown }>;
   techniques: Array<{ id: string; name: string; notes: string[] }>;
   equipment: Array<{ id: string; name: string; notes: string[] }>;
-  steps: Array<{ id: string; instruction: string; techniques: string[]; notes: string[] }>;
+  method: { sequence: Array<Record<string, unknown>> };
 };
 
 /**
@@ -61,11 +54,6 @@ export function sourceLanguageView(recipe: SourceRecipe): SourceLanguageView {
       name: item.name,
       notes: [...(item.notes ?? [])],
     })),
-    steps: recipe.steps.map((step) => ({
-      id: step.id,
-      instruction: step.instruction,
-      techniques: [...(step.techniques ?? [])],
-      notes: [...(step.notes ?? [])],
-    })),
+    method: structuredClone(recipe.method),
   };
 }

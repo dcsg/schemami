@@ -1,0 +1,101 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-015-exact-structured-method-wire-and-bundle-closure.md
+signals:
+  - active graph
+  - bundle closure
+  - formula groups
+  - required fields
+  - resource flow
+  - structured method wire
+directives:
+  - text: 'Schemami v1 MUST use the ADR-015 exact structured-method wire, compact minimal-requiredness rule, closed unions, and step-authoritative resource flow; action flow may only be subset attribution and never a second dependency authority. (ref: ADR-015)'
+    source_excerpt:
+      line_start: 21
+      line_end: 41
+      quote: |-
+        1. The complete shapes and nearest invalid neighbours in
+           `docs/product/prds/artifacts/PRD-007/structured-method-wire-proposal.md` are
+           accepted as the Schemami v1 wire design. Root `steps` becomes
+           `method.sequence`; singular `formula` becomes ordered `formulas`; and the
+           lock-only pack becomes one embedded `.schemami-bundle.json`.
+        2. Requiredness follows one rule: require only members needed to identify an
+           object, distinguish its closed kind, make authored content readable, or
+           provide the one authority that object promises. All other members are
+           optional and absent when unknown. Nulls and empty placeholders never encode
+           missing facts. The accepted compact required-field list lives in the Phase
+           7 wire artifact and is summarized by the field register; closed JSON Schema
+           unions reject members from other kinds.
+        3. `method.sequence` recursively contains only sections and steps. A section
+           requires `kind`, `id`, `name`, and non-empty `sequence`. A step requires
+           `kind`, `id`, and exactly one direct `instruction` or non-empty ordered
+           `actions`. An action requires `id` and `instruction`. Only steps own `after`
+           and `duration`.
+        4. Step-level `uses` and `produces` are authoritative for inter-step resource
+           flow. Action-level resource references are optional fine-grained attribution
+           and, when present, must be subsets of their containing step declarations.
+           Resource flow never infers a dependency edge.
+  - text: 'Schemami v1 MUST use closed typed parameters, activation, strict alternatives, completion and guidance; section environment/timing never inherits implicitly, child outputs own yield, and each typed input has exactly one quantity/formula authority. (ref: ADR-015)'
+    source_excerpt:
+      line_start: 42
+      line_end: 67
+      quote: |-
+        5. Root `parameters` is a closed union of `choice`, `toggle`, and
+           `measurement`. `activation` is a closed recursive union of `choice_is`,
+           `toggle_is`, `measurement_compare`, `all`, `any`, and `not`. Only an authored
+           default selects implicitly; bindings are execution context, not canonical
+           recipe mutation.
+        6. An ingredient may declare strict symmetric `alternatives` only when every
+           option shares one exact quantity/formula/scaling position. Anything needing
+           compensation or a method change is an authored branch or a complete derived
+           recipe.
+        7. `completion` is a closed observation/measurement/all/any union. Ordered
+           `guidance` contains human-evaluated `cue` plus `instruction`; it has no ID or
+           executable effect. An environment measurement contains `name` and `target`
+           and has no unused ID. Section `environment` and `relative_timing` describe
+           that section only and never implicitly inherit, merge into, or override
+           descendant steps.
+        8. `preparations` are recipe-local intermediate resources and `outputs` are
+           externally consumable results. A parent `component` pins an exact child
+           recipe and output and declares the amount it needs through exactly one
+           authority: explicit quantity or one formula term. The referenced child
+           output—not the parent component—may declare measured `yield`; scaling that
+           component refuses when yield is absent or incompatible.
+        9. Every formula has local `id`, closed ratio/percentage semantics, and typed
+           ingredient/component inputs. One input may occur in at most one formula and
+           cannot also carry explicit quantity. If one culinary ingredient is allocated
+           to multiple formula groups, each allocation is a separate recipe-local input
+           such as `dough-salt` and `filling-salt`.
+  - text: 'Schemami v1 MUST validate selected-graph producer/action invariants, embed the exact deduplicated all-branch component closure in bundle.schema.json, include extensions in canonical digests without giving them core semantics, and keep application dogfood outside clean-clone conformance. (ref: ADR-015)'
+    source_excerpt:
+      line_start: 68
+      line_end: 89
+      quote: |-
+        10. Phase 8 must define the selected active graph so inactive nodes and their
+            edges disappear before method operations. Every active action-list step must
+            retain at least one active action, and every consumed preparation or output
+            must have exactly one active producer. Missing or multiple active producers
+            refuse; resource relationships never silently repair `after` dependencies.
+        11. A bundle uses `https://schemami.dev/schema/schemami/1/bundle.schema.json`
+            and contains exactly the deduplicated transitive component closure for every
+            declared branch, not merely one current selection. Root is first and the
+            remaining documents use the accepted deterministic tuple order. Duplicate,
+            missing, mismatched, or unrelated extra documents are invalid. Lineage
+            parents, translations, evidence artifacts, and application overlays are not
+            dependency documents.
+        12. Integrator `x-<owner>-*` values never change protocol validation semantics,
+            resolution decisions, or Recipe Calculus. They are nevertheless part of
+            canonical JCS bytes, so changing an extension changes the content digest.
+            Authored `(collection, id, revision)` and exact-byte digest remain distinct.
+        13. `lineage.derived_from` is non-executable exact provenance. A direct
+            self-reference is invalid. Relative timing cannot anchor a node to itself;
+            Phase 8 defines contradiction and cycle diagnostics before implementation.
+        14. Pão de Portugal and Fornada dogfood against the same committed bytes is the
+            first cross-product owner-acceptance milestone before publication. Neither
+            application repository is an automated clean-clone conformance input.
+paths:
+  - schema/**
+  - calculus/**
+  - conformance/**
+  - tools/**
+  - docs/product/**

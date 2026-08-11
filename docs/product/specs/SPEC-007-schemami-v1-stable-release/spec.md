@@ -1,6 +1,6 @@
 # SPEC-007: Schemami v1 stable protocol release
 
-**Status:** accepted
+**Status:** in-progress
 **Source:** PRD-007
 **Structured source of truth:** [spec.yaml](./spec.yaml)
 
@@ -11,6 +11,22 @@ active RCP wire identity in this repository, removes mandatory central
 vocabulary resolution, makes source language and local recipe identities
 explicit, introduces exact tagged quantities and narrow UCUM conversion, and
 publishes one cross-language conformance surface.
+
+ADR-014 reopened the method boundary after two application dogfoods showed that
+the unpublished candidate flattened authored culinary structure. The
+`da8449f` candidate remains verified baseline evidence, but it is superseded
+before publication. ADR-015 accepts the exact public member names, minimal
+requiredness, closed unions, resource authority, formula groups, bundle, and
+digest rules. ADR-016 now closes operation requests, active-graph admission,
+formula filtering/target scaling, component composition, result identity,
+diagnostics, and resource floors. Schema/runtime implementation begins in
+Phase 9 only.
+
+The complete accepted JSON package is
+`docs/product/prds/artifacts/PRD-007/structured-method-wire-proposal.md`.
+It also closes a pre-publication formula correction: ordered root `formulas`
+with local IDs replace singular `formula`, so independent culinary groups do
+not require another breaking release.
 
 This is a clean pre-publication cutover. No released Schemami reader accepts,
 aliases, or migrates an RCP document. Historical RCP material stays historical
@@ -31,24 +47,26 @@ values in its own presentation layer without changing canonical recipe content.
 ## Wire identity and serialisation
 
 The Schemami v1 root marker is the string `schemami: "1"`. Root documents and
-pack manifests use it; nested components omit it. `x-schemami-*` is reserved for
+bundle documents use it. `x-schemami-*` is reserved for
 protocol-defined extensions. Integrator extensions use `x-<owner>-*`; readers
-preserve unknown `x-*` values but they cannot affect validation, identity,
-resolution, or calculation.
+preserve unknown `x-*` values. They cannot change protocol validation
+semantics, resolution decisions, or calculation, but are included in canonical
+JCS bytes and therefore change the exact content digest.
 
 Canonical schema identifiers are rooted below:
 
 ```text
 https://schemami.dev/schema/schemami/1/core.schema.json
-https://schemami.dev/schema/schemami/1/pack.schema.json
+https://schemami.dev/schema/schemami/1/bundle.schema.json
 ```
 
 Schemami v1 has no `kind` or `profile` wire member. It therefore has no
 category-profile schema graph; the old RCP profiles are historical cutover
 material, not renamed Schemami schemas.
 
-JSON is the canonical representation and `.schemami.json` is the canonical file
-suffix. YAML may be accepted as an authoring/import representation with suffix
+JSON is the canonical representation; `.schemami.json` is the canonical recipe
+suffix and `.schemami-bundle.json` is the canonical bundle suffix. YAML may be
+accepted as an authoring/import representation with suffix
 `.schemami.yaml`, but it has no distinct data model: it must parse into an
 I-JSON-compatible value and pass the same schema. Identity and hashes operate on
 RFC 8785 JCS bytes after schema admission. Because recipe scalars are canonical
@@ -73,10 +91,13 @@ extension.
 
 ## Recipe-local identity
 
-An ingredient requires recipe-local `id` and source-language `name`. Its `id` is
-unique within the containing recipe and is the target of recipe-internal
-references. `item`, `proposed_class`, a generic `terms` catalog, and global or
-package vocabulary identifiers are absent.
+An ingredient requires recipe-local `id` and exactly one source-language
+`name` or strict `alternatives` object. Each alternative requires its own local
+`id` and source-language `name`; the ingredient slot retains one shared
+quantity/formula/scaling position. The ingredient `id` is unique within the
+containing recipe and is the target of recipe-internal references. `item`,
+`proposed_class`, a generic `terms` catalog, and global or package vocabulary
+identifiers are absent.
 
 Every recipe-local ID matches `^[a-z0-9][a-z0-9_-]*$`: lowercase ASCII letters
 and digits plus hyphen and underscore, beginning with a letter or digit.
@@ -92,11 +113,12 @@ entities are valid and renderable without a catalog. An integrator may map
 `(document identity, entity collection, local id)` externally; the mapping is
 not canonical recipe data and asserts no global equivalence.
 
-A step refers to zero or more declared techniques through ordered, unique
-`techniques`. Document order is the authored/application sequence inside that
-step. Readers and writers preserve it and never alphabetically sort it. The
-outer `steps` array remains the method sequence. Singular `technique` is not a
-Schemami v1 member.
+A method is an authored recursive `sequence` of section and step nodes. A step
+may refer to ordered, unique local techniques, directly or through its ordered
+actions as fixed by the wire checkpoint. Readers and writers preserve authored
+order and never alphabetically sort references. An adapter emits a technique
+only when the source explicitly authors the culinary technique; an application
+workflow `stepType` is not evidence that the recipe states one.
 
 ## Quantity algebra
 
@@ -147,31 +169,34 @@ quantity is intentionally not resolved to zero or a guessed scalar. It may carry
 a non-binding measured/range `guide`, but logic must report it as unsupported
 when a scalar is required.
 
-Structured readiness endpoints are deferred from v1 by ADR-010. A step's
-source-language `instruction` tells a cook when to advance; Schemami v1 never
-parses that prose into a machine condition.
+Open-quantity qualifiers and guides do not represent method completion.
+Structured completion is defined independently by the method contract and is
+never inferred by parsing an instruction or open-quantity prose.
 
 ## Grouped formulas
 
-A `formula` is a relationship between declared local ingredients. Term order is
-canonical and supplies display order. Ingredient references must resolve in the
-containing recipe/component and may appear only once in a formula. An ingredient
-named by a formula term cannot also carry an explicit `quantity`; the formula is
-its sole quantity authority.
+Root `formulas` is an ordered collection of locally identified ratio or
+percentage relationships. Term order is canonical and supplies display order.
+Typed `input` references select a declared ingredient or component. One input
+may occur in at most one formula across the document and cannot also carry an
+explicit `quantity`; the formula is its sole quantity authority. Multiple
+allocations of the same culinary ingredient use distinct recipe-local inputs,
+such as `dough-salt` and `filling-salt`.
 
 ### Ratio formula
 
 ```yaml
-formula:
-  kind: ratio
-  terms:
-    - { ingredient: starter, parts: "1" }
-    - { ingredient: flour, parts: "2" }
-    - { ingredient: water, parts: "2" }
-  target:
-    kind: measured
-    value: "500"
-    unit: g
+formulas:
+  - id: feed
+    kind: ratio
+    terms:
+      - { input: { kind: ingredient, id: starter }, parts: "1" }
+      - { input: { kind: ingredient, id: flour }, parts: "2" }
+      - { input: { kind: ingredient, id: water }, parts: "2" }
+    target:
+      kind: measured
+      value: "500"
+      unit: g
 ```
 
 Each `parts` value is a positive canonical decimal. Ordered values `1`, `2`,
@@ -186,21 +211,22 @@ requesting absolute weights refuses for a missing target.
 ### Percentage formula
 
 ```yaml
-formula:
-  kind: percentage
-  basis: flour
-  terms:
-    - { ingredient: flour, percentage: "100" }
-    - { ingredient: water, percentage: "75" }
-    - { ingredient: salt, percentage: "2" }
-    - { ingredient: levain, percentage: "20" }
-  basis_quantity:
-    kind: measured
-    value: "1000"
-    unit: g
+formulas:
+  - id: dough
+    kind: percentage
+    basis: { kind: ingredient, id: flour }
+    terms:
+      - { input: { kind: ingredient, id: flour }, percentage: "100" }
+      - { input: { kind: ingredient, id: water }, percentage: "75" }
+      - { input: { kind: ingredient, id: salt }, percentage: "2" }
+      - { input: { kind: component, id: levain }, percentage: "20" }
+    basis_quantity:
+      kind: measured
+      value: "1000"
+      unit: g
 ```
 
-`basis` names one local ingredient. Each positive exact-decimal `percentage`
+`basis` is one typed local input reference. Each positive exact-decimal `percentage`
 stores percentage points directly: `75` means 75%, `1.8` means 1.8%, and
 `0.75` means 0.75%—never 75%. Source `%` characters are presentation/evidence,
 not numeric syntax.
@@ -210,7 +236,7 @@ resolves to 1000 g flour, 750 g water, 20 g salt, and 200 g levain. Without a
 basis quantity, the formula remains valid/renderable but absolute-weight
 operations refuse for a missing basis quantity.
 
-The ingredient named by `basis` occurs exactly once in `terms` with
+The input named by `basis` occurs exactly once in `terms` with
 `percentage: "100"`. A missing basis term or any other percentage for that term
 is invalid and makes direct `resolve_formula` and formula-backed `scale` refuse
 before returning quantities.
@@ -244,9 +270,11 @@ tolerance.
 ## Unit identity and conversion
 
 Schemami v1 pins UCUM 2.2 identities for the supported table. Initial required
-codes are `g`, `kg`, `mL`, `L`, `Cel`, `[degF]`, `[cup_us]`, `[tbs_us]`,
-`[tsp_us]`, `[foz_us]`, and `[cup_m]`. The unit table and exact conversion
-factors ship as normative data replayed by Go and TypeScript.
+codes are unity `1`, `g`, `kg`, `mL`, `L`, `Cel`, `[degF]`, `[cup_us]`,
+`[tbs_us]`, `[tsp_us]`, `[foz_us]`, and `[cup_m]`. Unity expresses a
+dimensionless count such as one loaf and never converts to mass or volume. The
+unit table and exact conversion factors ship as normative data replayed by Go
+and TypeScript.
 
 `convert_quantity` supports explicit same-dimension scalar measured quantities
 and affine Celsius/Fahrenheit conversion. It returns a deterministic canonical
@@ -306,8 +334,10 @@ selector:
 fragment specification. With a video source this reconstructs
 `<source-uri>#t=300,600`. W3C Media Fragment intervals use Normal Play Time and
 are half-open; when start and end are supplied, start is less than end.
-Evidence can target `/steps/0` or an occurrence such as
-`/steps/0/techniques/1`. Selector offsets locate source evidence and never
+Evidence can target any exact section, step, action, completion condition, or
+technique occurrence through its final RFC 6901 path. The replacement examples
+and pointers are fixed with the reopened method wire; baseline `/steps/...`
+pointers are not aliases. Selector offsets locate source evidence and never
 become culinary `duration`, schedule input, or any other structured fact.
 
 ## Operation diagnostics
@@ -325,84 +355,163 @@ human title or detail.
 
 A successful operation carries exactly one operation-specific object named
 `result`. It carries no `problems`. A refusal carries non-empty `problems` and
-no `result`; `not_applicable` carries neither. `convert_quantity` returns its
-measured quantity at `result.quantity`. `schedule.result.steps` contains
-`id`, `start`, `duration`, and `end` in reading order.
+no `result`; `not_applicable` carries neither. Recipe operations use one closed
+request with exactly one `recipe` or `bundle` plus closed `arguments`.
+Standalone `convert_quantity` has only quantity arguments and returns its
+measured quantity at `result.quantity`.
 
-`resolve_formula.result.quantities` follows formula term order. `scale` takes a
-positive canonical-decimal factor and returns effective ingredient quantities
-at `result.quantities` in ingredient declaration order. Formula quantities are
-resolved from the exactly scaled target/basis anchor; explicit measured/range
-quantities scale without unit conversion, fixed measured values remain fixed,
-and open quantities remain open. Neither operation emits a rewritten recipe.
+Every successful recipe/bundle result carries `evaluation`: the exact root
+reference with SHA-256 over admitted RFC 8785 JCS, optional bundle JCS digest,
+and ordered effective selections showing argument/default source. Submitted
+whitespace, key order, and YAML spelling cannot change these identities.
+Formula-evaluating operations may additionally carry ordered
+`formula_evaluations`; method-only operations omit them. No result carries the
+root marker, authored method, or other shape that could look publishable.
+
+The public operations are `resolve_selection`, `resolve_formula`, `scale`,
+`convert_quantity`, `reading_order`, and `schedule`. `resolve_selection`
+returns active identifiers. `resolve_formula` requires one root `formula_id`,
+returns typed quantities in selected term order, and reports authored/selected
+totals. `scale` requires exactly one positive decimal `factor` or compatible
+measured root `formula_target`, returns root quantities in ingredient-then-
+component declaration order, and returns depth-first component instances.
+Inactive formula terms are filtered after full authored evaluation and never
+redistributed. Target scaling derives one unrounded exact rational factor and
+rounds only public totals/lines; it never allocates residual rounding.
+
+`reading_order` and `schedule` entries carry `component_path` plus step `id`.
+Schedule additionally carries `start`, `duration`, and `end`. Explicit used
+component output producers are composed with explicit parent consumers; active
+unconsumed components are reported as unplaced/unscheduled with closed
+`not-consumed` reason rather than silently omitted.
 
 The minimum v1 problem set uses `https://schemami.dev/problems/` with the
 codes `unsupported-legacy`, `invalid-document`, `invalid-decimal`,
 `resource-limit`, `unknown-unit`, `ambiguous-unit`, `dimension-mismatch`,
-`unsupported-quantity-kind`, `unresolved-reference`, `missing-fact`, and
-`invalid-operation-arguments`. SPEC vectors pin their exact URI spellings.
+`unsupported-quantity-kind`, `unresolved-reference`, `missing-fact`,
+`invalid-operation-arguments`, `missing-binding`, `invalid-binding`,
+`inactive-reference`, `missing-producer`, `multiple-producers`,
+`dependency-cycle`, `component-cycle`, and `relative-timing-conflict`. SPEC
+vectors pin their exact URI spellings. Independent problems are cascade-
+suppressed, deduplicated, and sorted by ASCII request pointer then type URI.
 
-## Packs, document identity, and revisions
+## Bundles, document identity, and revisions
 
-A separate `.schemami-pack.json` manifest declares a collection of documents.
-It carries `schemami: "1"`, a local `collection` ID, manifest `revision`, and
-document locks. It does not embed a vocabulary registry, metadata vocabulary,
-or network resolver. Presentation attribution, licence, and display metadata
-belong to the distribution context rather than this v1 protocol manifest.
+A `.schemami-bundle.json` document carries `schemami: "1"`, one exact root
+recipe reference, and embedded recipe documents. It contains exactly the
+deduplicated transitive component dependency closure of every declared branch,
+including currently inactive branches. Root is first; remaining documents use
+the accepted ASCII tuple order. Missing, duplicate, digest-mismatched, or
+unrelated extra documents are invalid. A bundle does not embed translations,
+evidence artifacts, lineage parents, application overlays, a vocabulary
+registry, metadata vocabulary, or network resolver.
 
 Recipe IDs are unique within their collection. Document `id` and `collection`
 use the 1–128-character local-ID grammar; `revision` is a positive base-10
 integer without a leading zero. A published document is identified by
-`(collection, id, revision, JCS SHA-256 digest)`. Package and cross-document
+`(collection, id, revision, JCS SHA-256 digest)`. Bundle and cross-document
 references resolve only within explicit loaded bytes and never search a global
 registry or network. Optional `external_references` are absolute RFC 3986 URIs
 and never resolve or supply calculation facts.
 
-## Method operation boundary
+## Structured method, variation, and composition amendment
 
-Local technique and equipment identity is settled by ADR-008. Each step is
-itself the recipe-local action and requires a recipe-local `id` plus a
-source-language `instruction`. It has no second action identifier, primitive
-reference, primitive version, primitive registry requirement, or primitive
-parameter object. A step remains valid and renderable from its authored
-instruction without any action catalog.
+Requiredness follows one rule: require only members needed to identify an
+object, distinguish its closed kind, make authored content readable, or supply
+the one authority that object promises. Every other registered member is
+optional and absent when unknown. Nulls, empty strings, and placeholder objects
+never encode missing facts. The accepted compact list is normative in the
+Phase 7 field register; closed unions reject wrong-kind members.
 
-The step `instruction` is the smallest portable method unit in v1. Named
-sub-actions, action headings, editorial stage grouping, and application timer
-policy may be retained by an integrator, but they are not separate canonical
-Schemami members. An adapter may combine ordered authored action bodies into one
-instruction only when it preserves their reading order and text; it must not
-invent an action, heading, or grouping.
+ADR-014 replaces the flattened method boundary. The root method and every
+section contain an ordered `sequence` whose only node kinds are section and
+step. Sequence order is authored reading order. Explicit dependencies—not array
+position—govern execution, and a step is the only dependency and scheduling
+unit. A step contains exactly one direct instruction or a non-empty ordered
+action list. Actions may preserve local identity, instruction, techniques,
+completion conditions, uses/produces facts, and evidence, but never independent
+dependencies or scheduling duration. Step resource flow is authoritative for
+inter-step use; action flow, when present, is a subset used only for attribution.
 
-Conditional sensory checkpoints and conditional or alternative duration
-branches are also outside v1. Authored completion guidance remains in the
-source-language instruction. When a duration cannot be represented as one exact
-value or one ordered `minimum`/`target`/`maximum` window without choosing a
-condition or alternative, the adapter omits portable `duration` rather than
-guessing. It may preserve the source wording in application data or evidence.
-Consequently, a valid Schemami v1 document is a normalized culinary and
-computational backbone; it is not required to be a lossless editorial, workflow,
-or UI interchange document.
+Source-authored decisions use typed recipe-local inputs: choices, toggles, and
+UCUM measured inputs. A closed predicate grammar may activate ingredients,
+component references, equipment, sections, steps, or actions. Prose, arbitrary
+expressions, extension-defined operators, and application defaults cannot
+activate canonical content. Missing required input leaves every alternative
+displayable while dependent operations refuse. Only a source-authored default
+may select implicitly. Selecting declared content is execution context and does
+not create a new recipe.
 
-Only explicit structured members may drive deterministic behavior, including
-dependencies, ingredients used or produced, duration, equipment, and technique.
-Readiness remains in the source-language instruction under ADR-010. Step `id`,
-`instruction`, and local entity
-names are never parsed or mapped implicitly into operation semantics. The v1
-operation set is `scale`, `resolve_formula`, `convert_quantity`,
-`reading_order`, and `schedule`. Options, guards, constraints, tracks, and
-interleaving are absent. `reading_order` returns one dependency-respecting
-linear projection and uses declaration order only to break ties; it makes no
-lane or concurrency claim.
+Completion is distinct from duration. It supports an authored observation, a
+typed measurement, or closed `all`/`any` composition. Human observation remains
+human-evaluated. Duration remains a schedule estimate/window. Explicitly
+authored cold or ambient fermentation, location/environment, and target
+temperature remain recipe facts; fermentation models, adjustment heuristics,
+recommendations, live sensor context, timer policy, notifications, and bake
+state remain application concerns.
+
+Section environment and relative timing describe the section itself. They do
+not implicitly inherit, merge into, or override descendant steps. Guidance is
+human cue/instruction content with no local ID or executable effect; environment
+measurements similarly need no unused ID.
+
+A strict substitution replaces exactly one ingredient while preserving exact
+resolved quantity, unit, formula participation, and scaling behavior. It cannot
+recalculate another quantity or alter the method. Any broader change is an
+authored branch or a complete derived recipe with lineage. Lineage is provenance
+to an exact source, not an executable patch chain.
+
+Recipe-local resources connect method work through explicit uses/produces
+relationships. A recipe component may reference an exact required output of
+another document by collection, id, revision, and JCS digest. Cross-recipe
+scaling uses the measured yield declared by the referenced child output, not by
+the parent component. Resolution uses only explicitly loaded bytes, and a
+complete export is one self-contained JSON bundle containing exactly the
+deduplicated closure of every declared branch. Missing bytes, mismatched
+digests, cycles, incompatible yields, or resource exhaustion refuse dependent
+logic without erasing readable source content.
+
+Admission validates all declared content and every distinct reachable active
+graph; inactive content cannot hide an invalid reference, cycle, quantity, or
+method node. Choice/toggle values and the exact boundary points/open regions
+created by measurement thresholds induce finite truth vectors. Implementations
+explore or symbolically analyse them, deduplicate equivalent active semantic
+graphs, and refuse with `resource-limit` rather than skipping excessive
+analysis. Evidence may target each semantic level with RFC 6901.
+
+Selection removes inactive subtrees/nodes and incident dependency edges before
+method operations. Every active action-list step retains an action. Active
+references to inactive content refuse. Every preparation/output has at most one
+active producer and every consumed one exactly one. Resource flow never infers
+or repairs an `after` dependency. Missing bindings refuse only operations whose
+result they can affect; app defaults never select.
 
 `schedule` is the deterministic earliest-start projection of the explicit
-`after` graph. Independent steps start at `PT0S`; each dependent step starts at
+`after` graph. Independent steps start together; each dependent step starts at
 the greatest end offset of its dependencies. Scalar durations supply their
 elapsed value and duration windows require `target`. A missing duration/target
-refuses with `missing-fact`. Schedule output normalizes non-negative elapsed
-offsets by using the largest exact week/day/hour/minute components, omitting
-zeros and using `PT0S` only for zero. It has no wall clock, track, lane,
-readiness, or inferred dependency semantics.
+refuses with `missing-fact`. Composed schedules align a child's explicit
+selected-output producer end with its earliest explicit parent-consumer start,
+recurse through used components, and shift every offset together so the
+earliest step is `PT0S`. `relative_timing` is validated but does not affect this
+mathematical schedule. It has no wall clock, track, lane, completion-condition,
+editorial-phase inference, or inferred resource dependency semantics.
+
+Cross-recipe scale resolves the parent amount, exact loaded child bytes,
+selected output, and positive measured yield. Required amount and yield use
+exact compatible UCUM conversion to derive an unquantized rational child
+factor. Range/open, density, mass-volume, missing/mismatched facts, and cycles
+refuse. The exact contract, result members, ordering, security floors, and
+nearest invalid cases are normative in
+`docs/product/prds/artifacts/PRD-007/active-graph-composition-calculus.md`.
+
+The portable resource floor is 64 recursive levels, 10,000 evaluated semantic
+object/reference occurrences across static admission and distinct reachable
+graphs, 1,024 embedded bundle documents, and 1,024 selected component
+instances. The Phase 8 contract defines each count exactly. Implementations may
+support more; above a floor they may return `resource-limit`, but never silently
+skip a graph, truncate a result, or claim that the document is intrinsically
+invalid merely because a local budget was exceeded.
 
 The runtime audit found that no normative Recipe Calculus function branches on
 the current primitive ID, 21 of 24 primitive ParamSpecs are empty, viewer usage
@@ -417,7 +526,20 @@ Two shared vector corpora are replayed by Go and TypeScript: validation vectors
 for document admission and dogfood regressions, and Calculus vectors for exact
 operations. The release gates cover schema admission/refusal, canonical JSON, local reference scope, evidence
 pointers, exact quantity arithmetic, conversion/refusal, operation diagnostics,
-pack resolution, extension preservation, and unsupported RCP input.
+bundle resolution, extension preservation, and unsupported RCP input.
+
+The replacement corpus also covers recursive section/step sequences, mutually
+exclusive instruction/actions, action ordering, typed input and predicate
+resolution, missing-selection refusal, strict substitutions, completion
+conditions, authored environment facts, uses/produces flow, exact component
+references and yields, self-contained dependency bundles, lineage identity,
+cycle/resource limits, exhaustive inactive-branch validation, and evidence at
+every new semantic level. Phase 8 adds dormant broken branches, exact threshold
+boundaries/regions, equivalent-graph deduplication, nested selections, optional
+formula terms without redistribution, authored/selected/scaled totals, factor
+XOR formula target, exact component instances, composed schedules, unconsumed
+component reporting, deterministic diagnostic aggregation, JCS evaluation
+identity, and the accepted portability floors.
 
 The validation corpus permanently includes the Pão dogfood corrections:
 ordered duration windows, non-recursive open guides, percentage-basis authority,
@@ -438,13 +560,14 @@ A release is proven only from a clean clone of the candidate commit. It requires
 zero active RCP wire identifiers outside historical documents and the explicit
 negative fixture, immutable HTTPS resolution for every normative schema/vector
 URL, identical cross-language results, and a versioned release manifest. Pão de
-Portugal application code is not a release input; it adopts the published
-contract afterwards.
+Portugal and Fornada adapter reports are owner-acceptance evidence before
+publication; neither application checkout or test suite is a clean-clone
+conformance input.
 
 The release contract map fixes the publish locations rather than leaving them
 to a documentation application:
 
-- core and pack schemas use their declared
+- core and bundle schemas use their declared
   `https://schemami.dev/schema/schemami/1/*.schema.json` identifiers;
 - the shared corpora publish at
   `https://schemami.dev/conformance/schemami/1/calculus.json` and
@@ -463,11 +586,13 @@ documentation website may later render these files but is not their authority.
 
 ## Wire closure
 
-The v1 wire choices are closed by ADR-004 through ADR-010. RFC 5545 section
-3.3.6 confirms the day/time/week lexical source; Schemami's fixed elapsed
-`D`/`W` semantics are its explicit strict profile. Structured readiness is
-explicitly deferred, not an unimplemented v1 placeholder. No implementation
-may infer additional semantics from Model 1.
+Identity, language, local vocabulary, quantity, unit, evidence, diagnostic, and
+clean-cutover choices remain closed by ADR-004 through ADR-013. ADR-014 accepts
+the expanded product semantics, ADR-015 closes its exact wire, and ADR-016
+closes active-graph, formula-target, component, schedule, result, diagnostic,
+and resource behavior. Phase 9 implements only these accepted authorities. No
+implementation may infer additional semantics from Model 1, application
+workflow primitives, relative-timing prose, or product policy.
 
 ## References
 
@@ -478,9 +603,13 @@ may infer additional semantics from Model 1.
 - ADR-007 — ingredient-line local identity
 - ADR-008 — local method entities and exact quantity contract
 - ADR-009 — computation and portable-data boundary
-- ADR-010 — defer structured readiness endpoints
+- ADR-010 — readiness deferral, superseded by ADR-014
 - ADR-011 — operation results and earliest-start scheduling
 - ADR-012 — formula authority and effective-quantity scaling
+- ADR-014 — structured method, variation, composition, and lineage
+- ADR-015 — exact structured method wire and bundle closure
+- ADR-016 — active-graph, composition, and target-scaling Calculus
+- Phase 8 active-graph and composition Calculus contract
 - RFC 6901 — JSON Pointer
 - RFC 8259 — JSON
 - RFC 8785 — JSON Canonicalization Scheme

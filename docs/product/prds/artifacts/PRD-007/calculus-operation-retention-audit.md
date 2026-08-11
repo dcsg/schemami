@@ -1,7 +1,7 @@
 ---
 title: "PRD-007 Recipe Calculus operation retention audit"
 date: 2026-08-11
-status: accepted-evidence
+status: accepted-baseline-evidence-amended
 scope: "Model 1 Calculus specification, Go/TypeScript exports, shared vectors, viewer calls, and Schemami v1 accepted model changes"
 ---
 
@@ -34,9 +34,9 @@ The corpus currently contains 23 vectors across the ten functions. Vector count
 is shallow for several operations; retention requires nearest-negative and
 cross-language result/refusal vectors, not only preservation of the old count.
 
-## Accepted Schemami v1 public operation set
+## Baseline operation set and ADR-014 amendment
 
-The accepted set is:
+The accepted baseline set was:
 
 1. `scale`
 2. `resolve_formula` — replaces role-derived `resolveBases` for explicit ratio
@@ -46,8 +46,12 @@ The accepted set is:
    declaration order breaks ties
 5. `schedule`
 
-These are frozen v1 protocol operation tokens. Go/TypeScript language-level
-function names may use their native conventions while emitting the same token.
+These five tokens remain accepted. ADR-016 completes the design checkpoint and
+adds `resolve_selection` as the sixth public token. It pins closed requests,
+instance-scoped selections, reachable active graphs, results, refusals,
+component composition, target scaling, and mandatory shared vectors.
+Go/TypeScript language-level function names may use their native conventions
+while emitting an accepted token.
 
 ## Explicitly non-public
 
@@ -61,11 +65,14 @@ function names may use their native conventions while emitting the same token.
 
 ## Accepted owner decisions
 
-- Options, guards, and constraints are deferred from v1.
+- Typed source-authored choices and conditional activation are required by
+  ADR-014; arbitrary expressions and the old Model 1 guard/constraint wire do
+  not return automatically.
 - `reading_order` is normative; tracks and `interleave` are application-owned.
 - `scale` supports only `linear` and `fixed`; unknown extension-defined scaling
   stays valid as data but refuses when core behavior is requested.
 - Problem type URIs are absolute under `https://schemami.dev/problems/`.
 
-ADR-009 is the normative decision record. No operation is added, removed, or
-renamed beyond that decision.
+ADR-009 governs the retained baseline operations. ADR-014 reopened only the
+variation/composition boundary, and ADR-016 is the accepted Calculus checkpoint
+that closes it.

@@ -1,4 +1,4 @@
-import type { Envelope, Formula } from "./calculus.ts";
+import type { Envelope } from "./calculus.ts";
 import type { AnalysisResult, SchemamiEngine } from "./engine.ts";
 import {
   renderAnalysis,
@@ -40,10 +40,10 @@ export function wireApp(
       return;
     }
     host.innerHTML = current.documents.map((analysis, index) => {
-      const formula = analysis.canonical.formula as Formula | undefined;
-      const formulaResult = formula ? engine.resolveFormula(formula) : undefined;
+      const formulaResults = (Array.isArray(analysis.canonical.formulas) ? analysis.canonical.formulas : [])
+        .map((formula) => engine.resolveFormula(analysis.canonical, String((formula as Record<string, unknown>).id)));
       const schedule = engine.schedule(analysis.canonical);
-      return renderDocument(analysis, context, formulaResult, scaled.get(index), schedule, index);
+      return renderDocument(analysis, context, formulaResults, scaled.get(index), schedule, index);
     }).join("");
   };
 

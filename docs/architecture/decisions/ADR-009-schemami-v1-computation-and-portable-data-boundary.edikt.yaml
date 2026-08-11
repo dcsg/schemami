@@ -2,33 +2,25 @@ schema_version: 1
 topic: protocol-model
 path: docs/architecture/decisions/ADR-009-schemami-v1-computation-and-portable-data-boundary.md
 signals:
-  - recipe calculus
-  - document identity
-  - source evidence
   - diagnostics
+  - document identity
+  - recipe calculus
+  - source evidence
 directives:
-  - text: 'Schemami v1 Recipe Calculus MUST expose only scale, resolve_formula, convert_quantity, reading_order, and schedule; tracks, interleaving, options, guards, and constraints are not v1 operations. (ref: ADR-009)'
+  - text: 'Schemami v1 retains scale, resolve_formula, convert_quantity, reading_order, and schedule; ADR-014 additionally requires deterministic typed-recipe resolution before they consume an active graph. Tracks, lanes, arbitrary expressions, and untyped constraints remain outside v1. (ref: ADR-009)'
     source_excerpt:
-      line_start: 16
-      line_end: 28
+      line_start: 6
+      line_end: 10
       quote: |-
-        1. The only v1 Recipe Calculus operations are `scale`, `resolve_formula`,
-           `convert_quantity`, `reading_order`, and `schedule`. Validation and
-           rendering are protocol behavior but not Recipe Calculus operations.
-        2. `scale` understands only `linear` and `fixed`. An integrator may preserve a
-           custom scaling declaration in an `x-<owner>-*` extension, but Schemami never
-           interprets it; an operation requiring that behavior returns a diagnostic.
-        3. Options, guards, typed constraints, tracks, and interleaving are not v1
-           wire features or operations. A later model may add portable tracks and
-           interleaving after evidence demonstrates the need.
-        4. `reading_order` is normative. It returns one deterministic linear method
-           projection: explicit dependency edges take precedence and declaration order
-           breaks ties. It exposes no lanes or concurrency claim. `schedule` may still
-           expose timing relationships derived from explicit durations and dependencies.
+        **Schemami v1 amendment:** ADR-014 supersedes the closed five-operation claim
+        and the exclusion of typed options/guards. The five existing operations remain;
+        the revised wire must add deterministic recipe resolution before those
+        operations consume an active graph. Tracks, lanes, arbitrary expressions, and
+        untyped constraints remain outside v1.
   - text: 'Schemami v1 document identity MUST be local to an explicit collection and exact published bytes; external references, evidence, prose, and extensions MUST remain separate from calculation semantics. (ref: ADR-009)'
     source_excerpt:
-      line_start: 29
-      line_end: 58
+      line_start: 35
+      line_end: 64
       quote: |-
         5. A document has opaque `collection` and `id` identifiers using the accepted
            lowercase 1–128-character local-ID grammar. `id` is unique within its

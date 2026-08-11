@@ -15,10 +15,12 @@ type Problem struct {
 }
 
 type Envelope struct {
-	Operation string    `json:"operation"`
-	Status    string    `json:"status"`
-	Result    any       `json:"result,omitempty"`
-	Problems  []Problem `json:"problems,omitempty"`
+	Operation          string    `json:"operation"`
+	Status             string    `json:"status"`
+	Evaluation         any       `json:"evaluation,omitempty"`
+	FormulaEvaluations any       `json:"formula_evaluations,omitempty"`
+	Result             any       `json:"result,omitempty"`
+	Problems           []Problem `json:"problems,omitempty"`
 }
 
 type Quantity struct {
@@ -150,6 +152,7 @@ type unitDefinition struct {
 }
 
 var unitTable = map[string]unitDefinition{
+	"1":        {dimension: "unity", factor: integer(1)},
 	"g":        {dimension: "mass", factor: integer(1)},
 	"kg":       {dimension: "mass", factor: integer(1000)},
 	"mL":       {dimension: "volume", factor: integer(1)},
@@ -396,6 +399,22 @@ func KnownUnit(unit string) bool {
 	}
 	_, ok := unitTable[unit]
 	return ok
+}
+
+// UnitsCompatible reports whether exact conversion between two identities is
+// available in the pinned Schemami UCUM 2.2 profile. It does not perform or
+// round a conversion.
+func UnitsCompatible(sourceUnit, targetUnit string) bool {
+	if sourceUnit == targetUnit {
+		return knownUnit(sourceUnit)
+	}
+	if (sourceUnit == "Cel" && targetUnit == "[degF]") ||
+		(sourceUnit == "[degF]" && targetUnit == "Cel") {
+		return true
+	}
+	source, sourceKnown := unitTable[sourceUnit]
+	target, targetKnown := unitTable[targetUnit]
+	return sourceKnown && targetKnown && source.dimension == target.dimension
 }
 
 func knownUnit(unit string) bool { return KnownUnit(unit) }

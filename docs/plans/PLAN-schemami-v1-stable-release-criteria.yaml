@@ -18,7 +18,7 @@ phases:
     completion_promise: PHASE 1 COMPLETE SCHEMAMI SCHEMA GRAPH AND IDENTITY CUTOVER
     criteria:
       - id: AC-1.1
-        statement: "Core and pack schemas use only accepted Schemami identifiers, require schemami string model marker and content_language, reject active RCP markers/locale-map prose, and no legacy category profile is renamed into v1 because the v1 wire has no kind/profile member."
+        statement: "Core and bundle schemas use only accepted Schemami identifiers, require schemami string model marker and content_language, reject active RCP markers/locale-map prose, and no legacy category profile is renamed into v1 because the v1 wire has no kind/profile member."
         verify: "make schemami-schema"
         verify_kind: behavioral
         intent: One Schemami-only schema graph admits the accepted source-language wire.
@@ -61,26 +61,26 @@ phases:
         statement: "Go and TypeScript return the same operation/status/problem type/pointer for every refusal, and no normative path parses human prose."
         verify: "bash tools/schemami/check-diagnostic-parity.sh"
   - id: "4"
-    name: Tools, viewer, packs, and active repository rename
+    name: Tools, viewer, bundles, and active repository rename
     classification: testable
     completion_promise: PHASE 4 COMPLETE SCHEMAMI END TO END RUNTIME VERIFIED
     criteria:
       - id: AC-4.1
-        statement: "CLI/module/package identities, examples, packs, viewer, generated artifacts, CUE, bootstrap, Make/CI, and active project documentation use Schemami v1 and pass the complete local gate."
+        statement: "CLI/module/package identities, examples, bundles, viewer, generated artifacts, CUE, bootstrap, Make/CI, and active project documentation use Schemami v1 and pass the complete local gate."
         verify: "make ci"
       - id: AC-4.2
         statement: "The viewer renders source-language local entities and all quantity kinds without a central registry or evidence parsing, while owner extensions round-trip without affecting results."
         verify: "make conformance && bash tools/schemami/check-viewer-boundary.sh"
       - id: AC-4.3
         statement: "Pack resolution is explicit/offline, keeps collection collisions scoped, and performs no vocabulary embedding, global search, or network fallback."
-        verify: "bash tools/schemami/check-pack-resolution.sh"
+        verify: "bash tools/schemami/check-bundle-resolution.sh"
       - id: AC-4.4
         statement: "Every active RCP occurrence is removed or classified as a historical record or negative unsupported-input fixture in the cutover ledger."
         verify: "bash tools/schemami/check-clean-cutover.sh"
   - id: "5"
-    name: Conformance and stable release proof
+    name: Corrected baseline candidate proof
     classification: testable
-    completion_promise: PHASE 5 COMPLETE SCHEMAMI V1 STABLE RELEASE PROVEN
+    completion_promise: PHASE 5 COMPLETE CORRECTED BASELINE PROVEN NOT PUBLISHED
     criteria:
       - id: AC-5.1
         statement: "The candidate commit passes the full pinned gate from a clean clone without dirty overlay, private input, network dependency during cooking, or Pão checkout."
@@ -100,17 +100,95 @@ phases:
         verify_kind: behavioral
         intent: Real integrator dogfood corrects the unpublished v1 contract before a stable tag.
         falsifying_observation: Any committed Pão fixture retains its defective candidate outcome or media offsets alter culinary timing.
+  - id: "6"
+    name: Structured-method product closure
+    classification: operational
+    completion_promise: PHASE 6 COMPLETE STRUCTURED METHOD PRODUCT CONTRACT ACCEPTED
+    criteria:
+      - id: AC-6.1
+        statement: "ADR-014, PRD-007, SPEC-007, field governance, test strategy, and release plan consistently record structured method, variation, completion, composition, and lineage decisions without authorizing schema/runtime edits."
+      - id: AC-6.2
+        statement: "The documents distinguish explicitly authored environment/technique facts from application workflow primitives, heuristics, timer policy, bake state, and UI behavior, and Daniel accepts the checkpoint."
+  - id: "7"
+    name: Exact wire and field closure
+    classification: operational
+    completion_promise: PHASE 7 COMPLETE METHOD VARIATION COMPOSITION WIRE ACCEPTED
+    criteria:
+      - id: AC-7.1
+        statement: "Complete positive and nearest-invalid JSON examples plus ADR-015 pin every new member, compact minimal-requiredness list, union, predicate, default, standard binding, digest effect, resource authority, all-branch bundle rule, and collision vector; sequence is the recursive ordered collection and no alias/free-form escape is admitted."
+      - id: AC-7.2
+        statement: "The field register and SPEC contain no open public wire decision and Daniel approves the complete shapes before implementation."
+  - id: "8"
+    name: Active-graph and composition Calculus
+    classification: operational
+    completion_promise: PHASE 8 COMPLETE ACTIVE GRAPH AND COMPOSITION CALCULUS ACCEPTED
+    criteria:
+      - id: AC-8.1
+        statement: "ADR-016 and the Phase 8 contract deterministically pin resolve_selection, instance-scoped requests, exhaustive distinct reachable graphs, formula filtering and target scaling, component resolution/yield scaling, composed order/schedule, JCS evaluation identity, operation results, diagnostic aggregation, and resource floors."
+      - id: AC-8.2
+        statement: "Pão, Fornada, and Daniel approve the same final authority; mandatory vectors include dormant broken branches, threshold boundaries, equivalent-graph deduplication, repeating target factors, nested components, unconsumed schedule reporting, and deterministic resource-limit refusal."
+  - id: "9"
+    name: Schema and cross-language implementation
+    classification: testable
+    completion_promise: PHASE 9 COMPLETE STRUCTURED METHOD IMPLEMENTATION VERIFIED
+    criteria:
+      - id: AC-9.1
+        statement: "Schema, Go, TypeScript, viewer, semantic validation, and diagnostics implement only the accepted wire/Calculus and agree byte-for-byte on shared vectors."
+        verify: "make ci"
+        verify_kind: behavioral
+        intent: The expanded protocol remains deterministic across implementations.
+        falsifying_observation: Either implementation accepts a forbidden shape, skips a branch, infers prose/app policy, or returns a different result/problem.
+  - id: "10"
+    name: Corpus and example migration
+    classification: testable
+    completion_promise: PHASE 10 COMPLETE CORPUS AND EXAMPLES MIGRATED
+    criteria:
+      - id: AC-10.1
+        statement: "All accepted positive/adversarial cases are permanent shared conformance vectors and repository examples migrate without invented source facts; generated artifacts are deterministic."
+        verify: "make ci"
+  - id: "11"
+    name: Pão and Fornada dogfood
+    classification: operational
+    completion_promise: PHASE 11 COMPLETE TWO ADAPTER DOGFOOD REVIEWED
+    criteria:
+      - id: AC-11.1
+        statement: "Both adapters pin the same committed protocol bytes, preserve authored method/environment facts, keep app intelligence outside canonical data, agree on shared-vector protocol validity, and classify every application projection refusal as protocol defect or app-domain gap without becoming clean-clone conformance inputs."
+  - id: "12"
+    name: Replacement release proof and publication
+    classification: testable
+    completion_promise: PHASE 12 COMPLETE SCHEMAMI V1 STABLE RELEASE PUBLISHED
+    criteria:
+      - id: AC-12.1
+        statement: "The replacement candidate passes the full pinned clean-clone DAG, immutable HTTPS bytes match its manifest, and commit/push/tag/publication occur only with Daniel's explicit approval."
+        verify: "bash tools/schemami/clean-clone-release-proof.sh"
+        verify_kind: behavioral
+        intent: The published release is reproducible and includes the accepted expanded method boundary.
+        falsifying_observation: Proof depends on dirty/private bytes, published bytes differ, or release mutation occurs without approval.
 dependencies:
   "0":
-    blocks: ["1", "2", "3", "4", "5"]
+    blocks: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   "1":
-    blocks: ["2", "3", "4", "5"]
+    blocks: ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   "2":
-    blocks: ["3", "4", "5"]
+    blocks: ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   "3":
-    blocks: ["4", "5"]
+    blocks: ["4", "5", "6", "7", "8", "9", "10", "11", "12"]
   "4":
-    blocks: ["5"]
+    blocks: ["5", "6", "7", "8", "9", "10", "11", "12"]
+  "5":
+    blocks: ["6", "7", "8", "9", "10", "11", "12"]
+  "6":
+    blocks: ["7", "8", "9", "10", "11", "12"]
+  "7":
+    blocks: ["8", "9", "10", "11", "12"]
+  "8":
+    blocks: ["9", "10", "11", "12"]
+  "9":
+    blocks: ["10", "11", "12"]
+  "10":
+    blocks: ["11", "12"]
+  "11":
+    blocks: ["12"]
 risks:
   - id: R-1
     severity: critical
@@ -130,3 +208,12 @@ risks:
   - id: R-6
     severity: critical
     mitigation_phase: "5"
+  - id: R-7
+    severity: critical
+    mitigation_phase: "7"
+  - id: R-8
+    severity: critical
+    mitigation_phase: "8"
+  - id: R-9
+    severity: high
+    mitigation_phase: "11"

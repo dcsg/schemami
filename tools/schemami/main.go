@@ -22,8 +22,8 @@ import (
 )
 
 func main() {
-	if len(os.Args) < 2 || !knownCommand(os.Args[1]) || (os.Args[1] == "verify-pack" && len(os.Args) != 4) || (os.Args[1] != "verify-pack" && len(os.Args) != 3) {
-		fmt.Fprintln(os.Stderr, "usage: schemami <validate|validate-pack|canonicalize|digest> <document>\n       schemami verify-pack <pack.schemami-pack.{yaml,json}> <document-directory>")
+	if len(os.Args) != 3 || !knownCommand(os.Args[1]) {
+		fmt.Fprintln(os.Stderr, "usage: schemami <validate|validate-bundle|canonicalize|digest> <document>")
 		os.Exit(2)
 	}
 	command, path := os.Args[1], os.Args[2]
@@ -31,8 +31,8 @@ func main() {
 	switch command {
 	case "validate":
 		err = validate(path)
-	case "validate-pack":
-		err = validatePack(path)
+	case "validate-bundle":
+		err = validateBundle(path)
 	case "canonicalize":
 		var canonical string
 		canonical, err = canonicaliseFile(path)
@@ -46,24 +46,22 @@ func main() {
 			digest := sha256.Sum256([]byte(canonical))
 			_, err = fmt.Println(hex.EncodeToString(digest[:]))
 		}
-	case "verify-pack":
-		err = verifyPack(path, os.Args[3])
 	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "schemami:", err)
 		os.Exit(1)
 	}
-	if command == "validate" || command == "validate-pack" || command == "verify-pack" {
+	if command == "validate" || command == "validate-bundle" {
 		fmt.Println("schemami: valid")
 	}
 }
 
 func knownCommand(command string) bool {
-	return command == "validate" || command == "validate-pack" || command == "verify-pack" || command == "canonicalize" || command == "digest"
+	return command == "validate" || command == "validate-bundle" || command == "canonicalize" || command == "digest"
 }
 
 func validate(path string) error {
-	if err := validateFileSuffix(path, false); err != nil {
+	if err := validateFileSuffix(path); err != nil {
 		return err
 	}
 	raw, err := os.ReadFile(path)
@@ -82,7 +80,7 @@ func validate(path string) error {
 }
 
 func canonicaliseFile(path string) (string, error) {
-	if err := validateFileSuffix(path, false); err != nil {
+	if err := validateFileSuffix(path); err != nil {
 		return "", err
 	}
 	raw, err := os.ReadFile(path)
@@ -156,115 +154,6 @@ func validateStructuralDiagnostics(doc map[string]any) error {
 	return nil
 }
 
-func validatePack(path string) error {
-	if err := validateFileSuffix(path, true); err != nil {
-		return err
-	}
-	raw, err := os.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	doc, err := parseDocument(path, raw)
-	if err != nil {
-		return err
-	}
-	if marker, ok := doc["schemami"].(string); !ok || marker != "1" {
-		return fmt.Errorf("unsupported document marker")
-	}
-	schema, err := namedSchemaFor(path, "schemami-v1-pack.schema.json")
-	if err != nil {
-		return err
-	}
-	if err := schema.Validate(doc); err != nil {
-		return err
-	}
-	if _, err := canonicalise(doc); err != nil {
-		return err
-	}
-	return validatePackSemantics(doc)
-}
-
-func verifyPack(packPath, documentDirectory string) error {
-	if err := validatePack(packPath); err != nil {
-		return err
-	}
-	raw, err := os.ReadFile(packPath)
-	if err != nil {
-		return err
-	}
-	pack, err := parseDocument(packPath, raw)
-	if err != nil {
-		return err
-	}
-	collection, _ := pack["collection"].(string)
-
-	entries, err := os.ReadDir(documentDirectory)
-	if err != nil {
-		return err
-	}
-	type loadedDocument struct {
-		revision int64
-		digest   string
-		path     string
-	}
-	loaded := map[string]loadedDocument{}
-	for _, entry := range entries {
-		if entry.IsDir() || strings.Contains(entry.Name(), ".schemami-pack.") || (!strings.HasSuffix(entry.Name(), ".schemami.json") && !strings.HasSuffix(entry.Name(), ".schemami.yaml")) {
-			continue
-		}
-		path := filepath.Join(documentDirectory, entry.Name())
-		if err := validate(path); err != nil {
-			return fmt.Errorf("document %s: %w", entry.Name(), err)
-		}
-		documentRaw, err := os.ReadFile(path)
-		if err != nil {
-			return err
-		}
-		document, err := parseDocument(path, documentRaw)
-		if err != nil {
-			return err
-		}
-		documentCollection, _ := document["collection"].(string)
-		id, _ := document["id"].(string)
-		key := documentCollection + "\x00" + id
-		if previous, duplicate := loaded[key]; duplicate {
-			return fmt.Errorf("duplicate offline document identity (%s, %s) in %s and %s", documentCollection, id, previous.path, path)
-		}
-		canonical, err := canonicalise(document)
-		if err != nil {
-			return err
-		}
-		digest := sha256.Sum256([]byte(canonical))
-		revision, err := positiveInteger(document["revision"])
-		if err != nil {
-			return fmt.Errorf("document %s revision: %w", entry.Name(), err)
-		}
-		loaded[key] = loadedDocument{revision: revision, digest: hex.EncodeToString(digest[:]), path: path}
-	}
-
-	locks, _ := pack["documents"].([]any)
-	for index, value := range locks {
-		lock, _ := value.(map[string]any)
-		id, _ := lock["id"].(string)
-		document, present := loaded[collection+"\x00"+id]
-		if !present {
-			return fmt.Errorf("documents/%d: offline document (%s, %s) is missing", index, collection, id)
-		}
-		lockRevision, err := positiveInteger(lock["revision"])
-		if err != nil {
-			return fmt.Errorf("documents/%d/revision: %w", index, err)
-		}
-		if document.revision != lockRevision {
-			return fmt.Errorf("documents/%d/revision: lock has %d but document has %d", index, lockRevision, document.revision)
-		}
-		lockDigest, _ := lock["sha256"].(string)
-		if document.digest != lockDigest {
-			return fmt.Errorf("documents/%d/sha256: lock digest does not match %s", index, document.path)
-		}
-	}
-	return nil
-}
-
 func positiveInteger(value any) (int64, error) {
 	switch typed := value.(type) {
 	case int:
@@ -283,13 +172,7 @@ func positiveInteger(value any) (int64, error) {
 	return 0, fmt.Errorf("must be a positive integer")
 }
 
-func validateFileSuffix(path string, pack bool) error {
-	if pack {
-		if strings.HasSuffix(path, ".schemami-pack.json") || strings.HasSuffix(path, ".schemami-pack.yaml") {
-			return nil
-		}
-		return fmt.Errorf("pack file must use .schemami-pack.json or .schemami-pack.yaml")
-	}
+func validateFileSuffix(path string) error {
 	if strings.HasSuffix(path, ".schemami.json") || strings.HasSuffix(path, ".schemami.yaml") {
 		return nil
 	}
@@ -352,6 +235,20 @@ func namedSchemaFor(path, schemaName string) (*jsonschema.Schema, error) {
 	c := jsonschema.NewCompiler()
 	c.DefaultDraft(jsonschema.Draft2020)
 	c.AssertFormat()
+	if schemaName == "schemami-v1-bundle.schema.json" {
+		corePath := filepath.Join(root, "schema", "schemami-v1-core.schema.json")
+		coreBytes, err := os.ReadFile(corePath)
+		if err != nil {
+			return nil, err
+		}
+		var core any
+		if err := json.Unmarshal(coreBytes, &core); err != nil {
+			return nil, err
+		}
+		if err := c.AddResource("https://schemami.dev/schema/schemami/1/core.schema.json", core); err != nil {
+			return nil, err
+		}
+	}
 	if err := c.AddResource(schPath, schema); err != nil {
 		return nil, err
 	}
@@ -474,27 +371,7 @@ func jsonValue(value any) (any, error) {
 	}
 }
 
-func validatePackSemantics(doc map[string]any) error {
-	documents, ok := doc["documents"].([]any)
-	if !ok {
-		return fmt.Errorf("documents must be an array")
-	}
-	seen := map[string]struct{}{}
-	for index, value := range documents {
-		document, ok := value.(map[string]any)
-		if !ok {
-			return fmt.Errorf("documents/%d must be an object", index)
-		}
-		id, _ := document["id"].(string)
-		if _, duplicate := seen[id]; duplicate {
-			return fmt.Errorf("duplicate document lock id %q", id)
-		}
-		seen[id] = struct{}{}
-	}
-	return nil
-}
-
-func validateSemantics(doc map[string]any) error {
+func validateFlattenedCandidateSemantics(doc map[string]any) error {
 	contentLanguage, _ := doc["content_language"].(string)
 	if _, err := language.Parse(contentLanguage); err != nil {
 		return fmt.Errorf("content_language is not a well-formed BCP 47 tag: %w", err)

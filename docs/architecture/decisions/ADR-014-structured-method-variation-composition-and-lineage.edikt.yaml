@@ -1,0 +1,100 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-014-structured-method-variation-composition-and-lineage.md
+signals:
+  - action
+  - alternative
+  - component recipe
+  - completion condition
+  - lineage
+  - method section
+  - recipe variation
+  - substitution
+directives:
+  - text: 'Schemami v1 methods MUST use recursive authored sequence trees containing section and step nodes; sequence order is authored order, explicit dependencies control execution, and steps alone are scheduling units. (ref: ADR-014)'
+    source_excerpt:
+      line_start: 25
+      line_end: 37
+      quote: |-
+        1. A recipe method is a recursive authored tree. The root and every section use
+           an ordered collection named `sequence`. Its only member kinds are `section`
+           and `step`. Recursion has no arbitrary schema depth limit; implementations
+           may refuse pathological input with `resource-limit`.
+        2. Sequence order is authored reading order, not an inferred dependency.
+           Explicit step dependencies determine execution order and permit independent
+           preparations to overlap.
+        3. A step is the only dependency and scheduling unit. It carries exactly one of
+           a direct source-language instruction or a non-empty ordered action list. An
+           action is structured execution detail inside its step and may carry local
+           identity, instruction, techniques, completion, and evidence, but no
+           independent dependency or scheduling duration. Work needing independent
+           scheduling is represented as another step.
+  - text: 'Schemami v1 MUST preserve typed source-authored choices, conditional or optional content, structured completion, and strict one-node same-quantity substitutions without parsing prose, inventing defaults, or recalculating unrelated facts. (ref: ADR-014)'
+    source_excerpt:
+      line_start: 38
+      line_end: 63
+      quote: |-
+        4. Recipes may declare typed recipe-local decision inputs: one-of choices,
+           toggles, and UCUM measured values. A closed predicate vocabulary may activate
+           ingredients, referenced components, equipment, sections, steps, and actions.
+           Arbitrary expressions, prose predicates, JavaScript, and integrator-defined
+           operators are forbidden. Exact field names other than the accepted
+           `sequence` name are fixed by the subsequent wire-design checkpoint.
+        5. Missing selections never acquire an implicit first-option or application
+           default. All alternatives remain displayable; an operation needing an
+           unresolved selection refuses with a stable pointer-specific problem. A
+           default is canonical only when the source explicitly authors it.
+        6. Selecting a source-authored option is resolution/execution context and does
+           not change recipe identity. Source-authored optional ingredients, strict
+           substitutions, conditional methods, and alternative schedules remain in the
+           same recipe. A user or application change outside those declared options
+           creates a complete new recipe document with exact lineage; lineage is not a
+           runtime patch chain.
+        7. A strict substitution replaces exactly one ingredient and preserves its
+           resolved quantity, unit, formula participation, and scaling behavior. It
+           cannot alter any other canonical node or trigger ingredient, method,
+           equipment, or timing recalculation. Anything broader is an authored
+           alternative branch or a separate derived recipe.
+        8. Completion is structured separately from planning duration. Completion may
+           be a human-authored observation, a typed measurement, or a closed `all`/`any`
+           composition. Human observations remain human-evaluated; no validator or
+           Calculus function parses them or claims sensor truth. Duration remains the
+           deterministic planning estimate/window consumed by scheduling.
+  - text: 'Schemami v1 MUST support exact offline component-recipe references, complete derived-recipe lineage, one self-contained JSON bundle, exhaustive alternative validation, exact evidence pointers, authored environment facts, and application-owned heuristics/timer/session behavior. (ref: ADR-014)'
+    source_excerpt:
+      line_start: 72
+      line_end: 98
+      quote: |-
+        11. A recipe may reference another exact Schemami recipe as a component by
+            `(collection, id, revision, JCS SHA-256 digest)`. Cross-recipe scaling is
+            supported only when the reference declares a required output and the target
+            recipe declares a compatible measured yield; otherwise dependent operations
+            refuse. Runtime resolution uses exact loaded bytes and never a registry or
+            network search.
+        12. A complete portable export is one self-contained JSON bundle containing the
+            locked recipe documents required for offline resolution. Each document keeps
+            its independent canonical bytes and digest. Missing referenced bytes do not
+            erase display fallback, but disable only dependent logic.
+        13. Validation covers every declared option and every reachable resolved graph.
+            Inactive content cannot hide broken references, dependency cycles, invalid
+            quantities, or malformed method structure. Pathological combination counts
+            may refuse with `resource-limit`; they are never silently skipped.
+        14. Evidence may target any exact section, step, action, completion condition,
+            choice option, conditional ingredient, substitution, lineage reference, or
+            component reference through RFC 6901.
+        15. Timer policy, notification behavior, execution-session state, user
+            reminders, UI grouping preferences, and wall-clock event instances remain
+            application-owned and never affect canonical recipe identity.
+        16. Explicitly authored culinary environment facts remain recipe facts. A
+            source statement such as cold fermentation, refrigerator location, target
+            temperature, or ambient fermentation must be preserved when represented;
+            biological models, adjustment formulas, recommendations, and live measured
+            bake context remain application-owned. An adapter must not promote an
+            application workflow `stepType` to a Schemami technique unless the source
+            explicitly authors that culinary technique.
+paths:
+  - schema/**
+  - calculus/**
+  - conformance/**
+  - tools/**
+  - docs/product/**

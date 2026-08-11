@@ -7,7 +7,7 @@
     {"id":"FR-VOCAB-001","gates":["bash tools/schemami/check-local-entity-boundary.sh"]},
     {"id":"FR-CALC-006","gates":["make calculus","bash tools/schemami/check-conversion-refusals.sh"]},
     {"id":"FR-EVIDENCE-001","gates":["bash tools/schemami/check-evidence-boundary.sh","bash tools/schemami/check-diagnostic-parity.sh"]},
-    {"id":"FR-PORTABLE-001","gates":["make pack"]},
+    {"id":"FR-PORTABLE-001","gates":["make bundle"]},
     {"id":"FR-PAO-001","gates":["bash tools/schemami/check-local-entity-boundary.sh","make cutover"]},
     {"id":"FR-REL-001","gates":["make ci","bash tools/schemami/clean-clone-release-proof.sh","bash tools/schemami/check-published-contract.sh"]}
   ]

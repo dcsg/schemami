@@ -4,7 +4,7 @@ This document is normative for Schemami wire v1.
 
 ## Wire model
 
-Every recipe and pack carries the string marker:
+Every recipe and bundle carries the string marker:
 
 ```yaml
 schemami: "1"
@@ -17,7 +17,7 @@ The v1 schemas have immutable identifiers beneath:
 
 ```text
 https://schemami.dev/schema/schemami/1/core.schema.json
-https://schemami.dev/schema/schemami/1/pack.schema.json
+https://schemami.dev/schema/schemami/1/bundle.schema.json
 ```
 
 Those URLs must resolve to the released bytes before a stable tag is created.
@@ -44,8 +44,8 @@ after Recipe Calculus defines its exact behavior and conformance vectors.
 Within an explicit collection, `(collection, id, revision)` identifies one
 document body. `revision` is a positive integer.
 
-Once a revision is published in a pack, its canonical bytes are immutable. A
-composition or method change creates a new revision. A pack pins the document
+Once a revision is published in a bundle, its canonical bytes are immutable. A
+composition or method change creates a new revision. A bundle embeds and pins the document
 with an RFC 8785 JCS SHA-256 digest; a mismatch is an error and is never
 repaired automatically.
 

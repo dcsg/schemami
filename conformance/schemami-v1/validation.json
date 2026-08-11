@@ -1,122 +1,239 @@
 {
   "suite": "schemami-v1-validation",
-  "version": 1,
+  "version": 2,
   "vectors": [
     {
-      "id": "duration-window-inverted-refuses",
-      "expected_valid": false,
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "duration-inverted", "revision": 1,
-        "content_language": "pt-PT", "title": "Janela invertida",
-        "ingredients": [{"id": "agua", "name": "Água"}],
-        "steps": [{"id": "esperar", "instruction": "Espere.", "duration": {"minimum": "PT2H", "target": "PT1H", "maximum": "PT30M"}}]
-      }
+      "id": "minimal-structured-document-accepts",
+      "expected_valid": true,
+      "document": { "schemami": "1", "collection": "conformance", "id": "minimal", "revision": 1, "content_language": "pt-PT", "title": "Mínima", "ingredients": [], "method": { "sequence": [] } }
     },
     {
-      "id": "recursive-open-guide-refuses-concisely",
-      "expected_valid": false,
-      "expected_diagnostic": {
-        "pointer": "/ingredients/0/quantity/guide",
-        "message": "Open quantity guide must be measured or range."
-      },
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "recursive-guide", "revision": 1,
-        "content_language": "pt-PT", "title": "Guia aberto recursivo",
-        "ingredients": [{"id": "sal", "name": "Sal", "quantity": {"kind": "open", "qualifier": "to_taste", "guide": {"kind": "open", "qualifier": "as_needed"}}}],
-        "steps": []
-      }
-    },
-    {
-      "id": "percentage-basis-at-eighty-refuses",
-      "expected_valid": false,
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "basis-eighty", "revision": 1,
-        "content_language": "pt-PT", "title": "Base a oitenta",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}, {"id": "agua", "name": "Água"}],
-        "steps": [],
-        "formula": {"kind": "percentage", "basis": "farinha", "terms": [{"ingredient": "farinha", "percentage": "80"}, {"ingredient": "agua", "percentage": "75"}]}
-      }
-    },
-    {
-      "id": "percentage-basis-omitted-refuses",
-      "expected_valid": false,
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "basis-omitted", "revision": 1,
-        "content_language": "pt-PT", "title": "Base omitida",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}, {"id": "agua", "name": "Água"}],
-        "steps": [],
-        "formula": {"kind": "percentage", "basis": "farinha", "terms": [{"ingredient": "agua", "percentage": "75"}]}
-      }
-    },
-    {
-      "id": "portable-origin-accepts",
+      "id": "origin-ordered-techniques-video-selector-accepts",
       "expected_valid": true,
       "document": {
-        "schemami": "1", "collection": "conformance", "id": "origin", "revision": 1,
-        "content_language": "pt-PT", "title": "Origem portuguesa",
-        "origin": {"country": "PT", "subdivision": "PT-11", "locality": "Mafra"},
-        "ingredients": [{"id": "agua", "name": "Água"}],
-        "steps": []
+        "schemami": "1", "collection": "conformance", "id": "video", "revision": 1, "content_language": "pt-PT", "title": "Vídeo",
+        "origin": { "country": "PT", "subdivision": "PT-11", "locality": "Mafra" },
+        "ingredients": [{ "id": "flour", "name": "Farinha" }],
+        "techniques": [{ "id": "mixing", "name": "Mistura" }, { "id": "kneading", "name": "Amassadura" }],
+        "method": { "sequence": [{ "kind": "step", "id": "work", "instruction": "Misture e amasse.", "techniques": ["mixing", "kneading"] }] },
+        "sources": [{ "id": "video", "uri": "https://example.org/bread.mp4", "media_type": "video/mp4" }],
+        "evidence": [{ "id": "clip", "source": "video", "pointer": "/method/sequence/0/techniques/1", "selector": { "kind": "fragment", "value": "t=300,600", "conforms_to": "https://www.w3.org/TR/media-frags/" } }]
       }
+    },
+    {
+      "id": "recursive-section-actions-completion-environment-accepts",
+      "expected_valid": true,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "structured", "revision": 1, "content_language": "en-GB", "title": "Structured",
+        "ingredients": [{ "id": "onion", "name": "Onion", "quantity": { "kind": "measured", "value": "1", "unit": "1" } }],
+        "method": { "sequence": [{ "kind": "section", "id": "prepare", "name": "Prepare", "sequence": [{ "kind": "step", "id": "cook", "actions": [{ "id": "toast", "instruction": "Toast the onion.", "uses": [{ "kind": "ingredient", "id": "onion" }] }], "uses": [{ "kind": "ingredient", "id": "onion" }], "duration": { "target": "PT5M" }, "environment": { "location": "Hob", "measurements": [{ "name": "Heat", "target": { "kind": "measured", "value": "180", "unit": "Cel" } }] }, "completion": { "kind": "observation", "cue": "Golden edges" }, "guidance": [{ "cue": "If browning too fast", "instruction": "Reduce heat" }] }] }] }
+      }
+    },
+    {
+      "id": "unknown-recipe-local-concepts-accept",
+      "expected_valid": true,
+      "document": { "schemami": "1", "collection": "integrator", "id": "local", "revision": 1, "content_language": "pt-PT", "title": "Local", "ingredients": [{ "id": "house_mix", "name": "Mistura da casa" }], "techniques": [{ "id": "house-fold", "name": "Dobra da casa" }], "equipment": [{ "id": "pan_x", "name": "Panela X" }], "method": { "sequence": [{ "kind": "step", "id": "prepare", "instruction": "Prepare.", "uses": [{ "kind": "ingredient", "id": "house_mix" }], "techniques": ["house-fold"], "equipment": ["pan_x"] }] } }
+    },
+    {
+      "id": "mutually-exclusive-producers-accept",
+      "expected_valid": true,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "exclusive-producers", "revision": 1, "content_language": "pt-PT", "title": "Produtores alternativos",
+        "parameters": [{ "id": "mode", "kind": "choice", "name": "Modo", "options": [{ "id": "cold", "name": "Frio" }, { "id": "ambient", "name": "Ambiente" }], "default": "cold" }],
+        "ingredients": [], "preparations": [{ "id": "ready", "name": "Pronto" }],
+        "method": { "sequence": [
+          { "kind": "step", "id": "cold", "instruction": "Frio.", "activation": { "kind": "choice_is", "parameter": "mode", "option": "cold" }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "ambient", "instruction": "Ambiente.", "activation": { "kind": "choice_is", "parameter": "mode", "option": "ambient" }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "finish", "instruction": "Termine.", "after": ["cold", "ambient"], "uses": [{ "kind": "preparation", "id": "ready" }] }
+        ] }
+      }
+    },
+    {
+      "id": "flattened-steps-refuse",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "flat", "revision": 1, "content_language": "pt-PT", "title": "Flat", "ingredients": [], "method": { "sequence": [] }, "steps": [] }
+    },
+    {
+      "id": "singular-formula-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "formula", "revision": 1, "content_language": "pt-PT", "title": "Formula", "ingredients": [], "method": { "sequence": [] }, "formula": { "kind": "ratio", "terms": [] } }
+    },
+    {
+      "id": "locale-map-title-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "locale-map", "revision": 1, "content_language": "pt-PT", "title": { "pt-PT": "Receita", "en-GB": "Recipe" }, "ingredients": [], "method": { "sequence": [] } }
+    },
+    {
+      "id": "uppercase-local-id-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "Bad-ID", "revision": 1, "content_language": "pt-PT", "title": "ID", "ingredients": [], "method": { "sequence": [] } }
+    },
+    {
+      "id": "recursive-open-guide-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "guide", "revision": 1, "content_language": "pt-PT", "title": "Guia", "ingredients": [{ "id": "salt", "name": "Sal", "quantity": { "kind": "open", "qualifier": "to_taste", "guide": { "kind": "open", "qualifier": "as_needed" } } }], "method": { "sequence": [] } }
+    },
+    {
+      "id": "percentage-basis-not-one-hundred-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "basis", "revision": 1, "content_language": "pt-PT", "title": "Base", "ingredients": [{ "id": "flour", "name": "Farinha" }], "formulas": [{ "id": "dough", "kind": "percentage", "basis": { "kind": "ingredient", "id": "flour" }, "terms": [{ "input": { "kind": "ingredient", "id": "flour" }, "percentage": "80" }], "basis_quantity": { "kind": "measured", "value": "500", "unit": "g" } }], "method": { "sequence": [] } }
+    },
+    {
+      "id": "duplicate-recursive-method-id-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "duplicate", "revision": 1, "content_language": "pt-PT", "title": "Duplicado", "ingredients": [], "method": { "sequence": [{ "kind": "section", "id": "same", "name": "A", "sequence": [{ "kind": "step", "id": "same", "instruction": "B" }] }] } }
+    },
+    {
+      "id": "action-outside-step-authority-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "action-scope", "revision": 1, "content_language": "pt-PT", "title": "Ações", "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }], "method": { "sequence": [{ "kind": "step", "id": "work", "actions": [{ "id": "sub", "instruction": "Use B", "uses": [{ "kind": "ingredient", "id": "b" }] }], "uses": [{ "kind": "ingredient", "id": "a" }] }] } }
+    },
+    {
+      "id": "dormant-inactive-reference-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "dormant", "revision": 1, "content_language": "pt-PT", "title": "Dormant", "parameters": [{ "id": "include", "kind": "toggle", "name": "Incluir", "default": false }], "ingredients": [{ "id": "optional", "name": "Opcional", "activation": { "kind": "toggle_is", "parameter": "include", "enabled": true } }], "method": { "sequence": [{ "kind": "step", "id": "work", "instruction": "Use.", "uses": [{ "kind": "ingredient", "id": "optional" }] }] } }
     },
     {
       "id": "empty-source-uri-refuses",
       "expected_valid": false,
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "empty-source", "revision": 1,
-        "content_language": "pt-PT", "title": "Fonte vazia",
-        "ingredients": [{"id": "agua", "name": "Água"}],
-        "steps": [],
-        "sources": [{"id": "fonte", "uri": ""}]
-      }
+      "document": { "schemami": "1", "collection": "conformance", "id": "source", "revision": 1, "content_language": "pt-PT", "title": "Fonte", "ingredients": [], "method": { "sequence": [] }, "sources": [{ "id": "source", "uri": "" }] }
     },
     {
-      "id": "ordered-plural-techniques-accept",
-      "expected_valid": true,
-      "expected_techniques": ["misturar", "amassar"],
-      "document": {
-        "schemami": "1", "collection": "conformance", "id": "ordered-techniques", "revision": 1,
-        "content_language": "pt-PT", "title": "Técnicas ordenadas",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}],
-        "techniques": [{"id": "misturar", "name": "Misturar"}, {"id": "amassar", "name": "Amassar"}],
-        "steps": [{"id": "trabalhar", "instruction": "Misture e amasse.", "techniques": ["misturar", "amassar"]}]
-      }
+      "id": "broken-evidence-pointer-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "evidence", "revision": 1, "content_language": "pt-PT", "title": "Evidence", "ingredients": [], "method": { "sequence": [] }, "evidence": [{ "id": "e", "pointer": "/missing" }] }
     },
     {
-      "id": "singular-technique-refuses",
+      "id": "deferred-endpoint-refuses",
+      "expected_valid": false,
+      "document": { "schemami": "1", "collection": "conformance", "id": "endpoint", "revision": 1, "content_language": "pt-PT", "title": "Endpoint", "ingredients": [], "method": { "sequence": [{ "kind": "step", "id": "work", "instruction": "Work.", "endpoint": { "cue": "Done" } }] } }
+    },
+    {
+      "id": "dormant-dependency-cycle-refuses",
       "expected_valid": false,
       "document": {
-        "schemami": "1", "collection": "conformance", "id": "singular-technique", "revision": 1,
-        "content_language": "pt-PT", "title": "Técnica singular",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}],
-        "techniques": [{"id": "misturar", "name": "Misturar"}],
-        "steps": [{"id": "trabalhar", "instruction": "Misture.", "technique": "misturar"}]
+        "schemami": "1", "collection": "conformance", "id": "dormant-cycle", "revision": 1, "content_language": "en-GB", "title": "Dormant cycle",
+        "parameters": [{ "id": "mode", "kind": "choice", "name": "Mode", "options": [{ "id": "cold", "name": "Cold" }, { "id": "ambient", "name": "Ambient" }], "default": "ambient" }],
+        "ingredients": [],
+        "method": { "sequence": [
+          { "kind": "step", "id": "a", "instruction": "A.", "after": ["b"], "activation": { "kind": "choice_is", "parameter": "mode", "option": "cold" } },
+          { "kind": "step", "id": "b", "instruction": "B.", "after": ["a"] }
+        ] }
       }
     },
     {
-      "id": "w3c-video-selector-accepts",
+      "id": "measurement-boundary-exclusive-producers-accept",
       "expected_valid": true,
       "document": {
-        "schemami": "1", "collection": "conformance", "id": "video-selector", "revision": 1,
-        "content_language": "pt-PT", "title": "Seletor de vídeo",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}],
-        "techniques": [{"id": "misturar", "name": "Misturar"}, {"id": "amassar", "name": "Amassar"}],
-        "steps": [{"id": "trabalhar", "instruction": "Misture e amasse.", "duration": "PT15M", "techniques": ["misturar", "amassar"]}],
-        "sources": [{"id": "video", "uri": "https://example.invalid/recipe.mp4", "media_type": "video/mp4"}],
-        "evidence": [{"id": "amassar-video", "source": "video", "pointer": "/steps/0/techniques/1", "selector": {"kind": "fragment", "value": "t=300,600", "conforms_to": "https://www.w3.org/TR/media-frags/"}}]
+        "schemami": "1", "collection": "conformance", "id": "threshold-exclusive", "revision": 1, "content_language": "en-GB", "title": "Exact threshold",
+        "parameters": [{ "id": "temperature", "kind": "measurement", "name": "Temperature", "unit": "Cel", "default": { "kind": "measured", "value": "10", "unit": "Cel" } }],
+        "ingredients": [], "preparations": [{ "id": "ready", "name": "Ready" }],
+        "method": { "sequence": [
+          { "kind": "step", "id": "cool", "instruction": "Cool path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "less_than_or_equal", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "warm", "instruction": "Warm path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "greater_than", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "finish", "instruction": "Finish.", "uses": [{ "kind": "preparation", "id": "ready" }] }
+        ] }
       }
     },
     {
-      "id": "inverted-w3c-video-selector-refuses",
+      "id": "measurement-boundary-overlapping-producers-refuse",
       "expected_valid": false,
       "document": {
-        "schemami": "1", "collection": "conformance", "id": "video-selector-inverted", "revision": 1,
-        "content_language": "pt-PT", "title": "Seletor de vídeo invertido",
-        "ingredients": [{"id": "farinha", "name": "Farinha"}],
-        "techniques": [{"id": "amassar", "name": "Amassar"}],
-        "steps": [{"id": "trabalhar", "instruction": "Amasse.", "duration": "PT15M", "techniques": ["amassar"]}],
-        "sources": [{"id": "video", "uri": "https://example.invalid/recipe.mp4"}],
-        "evidence": [{"id": "amassar-video", "source": "video", "pointer": "/steps/0/techniques/0", "selector": {"kind": "fragment", "value": "t=600,300", "conforms_to": "https://www.w3.org/TR/media-frags/"}}]
+        "schemami": "1", "collection": "conformance", "id": "threshold-overlap", "revision": 1, "content_language": "en-GB", "title": "Overlapping threshold",
+        "parameters": [{ "id": "temperature", "kind": "measurement", "name": "Temperature", "unit": "Cel" }],
+        "ingredients": [], "preparations": [{ "id": "ready", "name": "Ready" }],
+        "method": { "sequence": [
+          { "kind": "step", "id": "cool", "instruction": "Cool path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "less_than_or_equal", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "warm", "instruction": "Warm path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "greater_than_or_equal", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "finish", "instruction": "Finish.", "uses": [{ "kind": "preparation", "id": "ready" }] }
+        ] }
+      }
+    },
+    {
+      "id": "measurement-boundary-producer-gap-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "threshold-gap", "revision": 1, "content_language": "en-GB", "title": "Threshold gap",
+        "parameters": [{ "id": "temperature", "kind": "measurement", "name": "Temperature", "unit": "Cel" }],
+        "ingredients": [], "preparations": [{ "id": "ready", "name": "Ready" }],
+        "method": { "sequence": [
+          { "kind": "step", "id": "cool", "instruction": "Cool path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "less_than", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "warm", "instruction": "Warm path.", "activation": { "kind": "measurement_compare", "parameter": "temperature", "operator": "greater_than", "measurement": { "kind": "measured", "value": "10", "unit": "Cel" } }, "produces": [{ "kind": "preparation", "id": "ready" }] },
+          { "kind": "step", "id": "finish", "instruction": "Finish.", "uses": [{ "kind": "preparation", "id": "ready" }] }
+        ] }
+      }
+    },
+    {
+      "id": "relative-timing-cycle-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "timing-cycle", "revision": 1, "content_language": "en-GB", "title": "Timing cycle", "ingredients": [],
+        "method": { "sequence": [
+          { "kind": "step", "id": "a", "instruction": "A.", "relative_timing": { "anchor_step": "b", "relation": "after", "offset": { "kind": "elapsed", "duration": "PT1M" } } },
+          { "kind": "step", "id": "b", "instruction": "B.", "relative_timing": { "anchor_step": "a", "relation": "after", "offset": { "kind": "elapsed", "duration": "PT1M" } } }
+        ] }
+      }
+    },
+    {
+      "id": "relative-timing-inactive-anchor-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "inactive-timing-anchor", "revision": 1, "content_language": "en-GB", "title": "Inactive timing anchor",
+        "parameters": [{ "id": "include-anchor", "kind": "toggle", "name": "Include anchor", "default": false }], "ingredients": [],
+        "method": { "sequence": [
+          { "kind": "step", "id": "anchor", "instruction": "Anchor.", "activation": { "kind": "toggle_is", "parameter": "include-anchor", "enabled": true } },
+          { "kind": "step", "id": "timed", "instruction": "Timed.", "relative_timing": { "anchor_step": "anchor", "relation": "after", "offset": { "kind": "elapsed", "duration": "PT1M" } } }
+        ] }
+      }
+    },
+    {
+      "id": "active-action-list-with-no-active-action-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "inactive-actions", "revision": 1, "content_language": "en-GB", "title": "Inactive actions",
+        "parameters": [{ "id": "include-action", "kind": "toggle", "name": "Include action", "default": false }], "ingredients": [],
+        "method": { "sequence": [{ "kind": "step", "id": "work", "actions": [{ "id": "only", "instruction": "Work.", "activation": { "kind": "toggle_is", "parameter": "include-action", "enabled": true } }] }] }
+      }
+    },
+    {
+      "id": "equivalent-active-graphs-deduplicate-before-budget",
+      "expected_valid": true,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "deduplicate-graphs", "revision": 1, "content_language": "en-GB", "title": "Equivalent graphs",
+        "parameters": [
+          { "id": "p0", "kind": "toggle", "name": "P0" }, { "id": "p1", "kind": "toggle", "name": "P1" },
+          { "id": "p2", "kind": "toggle", "name": "P2" }, { "id": "p3", "kind": "toggle", "name": "P3" },
+          { "id": "p4", "kind": "toggle", "name": "P4" }, { "id": "p5", "kind": "toggle", "name": "P5" },
+          { "id": "p6", "kind": "toggle", "name": "P6" }, { "id": "p7", "kind": "toggle", "name": "P7" },
+          { "id": "p8", "kind": "toggle", "name": "P8" }, { "id": "p9", "kind": "toggle", "name": "P9" }
+        ],
+        "ingredients": [], "method": { "sequence": [{ "kind": "step", "id": "always", "instruction": "Always." }] }
+      }
+    },
+    {
+      "id": "distinct-active-graphs-over-budget-refuse",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "graph-budget", "revision": 1, "content_language": "en-GB", "title": "Graph budget",
+        "parameters": [
+          { "id": "p0", "kind": "toggle", "name": "P0" }, { "id": "p1", "kind": "toggle", "name": "P1" },
+          { "id": "p2", "kind": "toggle", "name": "P2" }, { "id": "p3", "kind": "toggle", "name": "P3" },
+          { "id": "p4", "kind": "toggle", "name": "P4" }, { "id": "p5", "kind": "toggle", "name": "P5" },
+          { "id": "p6", "kind": "toggle", "name": "P6" }, { "id": "p7", "kind": "toggle", "name": "P7" },
+          { "id": "p8", "kind": "toggle", "name": "P8" }
+        ],
+        "ingredients": [],
+        "method": { "sequence": [
+          { "kind": "step", "id": "s0", "instruction": "S0.", "activation": { "kind": "toggle_is", "parameter": "p0", "enabled": true } },
+          { "kind": "step", "id": "s1", "instruction": "S1.", "activation": { "kind": "toggle_is", "parameter": "p1", "enabled": true } },
+          { "kind": "step", "id": "s2", "instruction": "S2.", "activation": { "kind": "toggle_is", "parameter": "p2", "enabled": true } },
+          { "kind": "step", "id": "s3", "instruction": "S3.", "activation": { "kind": "toggle_is", "parameter": "p3", "enabled": true } },
+          { "kind": "step", "id": "s4", "instruction": "S4.", "activation": { "kind": "toggle_is", "parameter": "p4", "enabled": true } },
+          { "kind": "step", "id": "s5", "instruction": "S5.", "activation": { "kind": "toggle_is", "parameter": "p5", "enabled": true } },
+          { "kind": "step", "id": "s6", "instruction": "S6.", "activation": { "kind": "toggle_is", "parameter": "p6", "enabled": true } },
+          { "kind": "step", "id": "s7", "instruction": "S7.", "activation": { "kind": "toggle_is", "parameter": "p7", "enabled": true } },
+          { "kind": "step", "id": "s8", "instruction": "S8.", "activation": { "kind": "toggle_is", "parameter": "p8", "enabled": true } }
+        ] }
       }
     }
   ]

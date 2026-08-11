@@ -22,11 +22,13 @@ test("unknown local concepts project directly to source-language presentation", 
     ingredients: [{ id: "ingrediente-da-casa", name: "Mistura secreta da casa", notes: [] }],
     techniques: [{ id: "dobra-da-casa", name: "Dobra da casa", notes: [] }],
     equipment: [{ id: "panela-x", name: "Panela experimental X", notes: [] }],
-    steps: [{
+    method: { sequence: [{
+      kind: "step",
       id: "preparar",
       instruction: "Prepare a mistura segundo a técnica da casa.",
+      uses: [{ kind: "ingredient", id: "ingrediente-da-casa" }],
       techniques: ["dobra-da-casa"],
-      notes: [],
-    }],
+      equipment: ["panela-x"],
+    }] },
   });
 });

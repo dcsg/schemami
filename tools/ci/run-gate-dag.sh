@@ -18,7 +18,7 @@ stage toolchain make toolchain-check
 stage go tools/with-toolchain.sh go -C tools/schemami test -count=1 ./...
 stage validate make validate
 stage conformance make conformance
-stage pack make pack
+stage bundle make bundle
 stage viewer make viewer
 stage cutover make cutover
 stage release-contract make release-contract

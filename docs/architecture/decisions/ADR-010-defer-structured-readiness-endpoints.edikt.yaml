@@ -7,26 +7,17 @@ signals:
   - method order
   - readiness condition
 directives:
-  - text: 'Schemami v1 MUST NOT admit canonical endpoint, until, sensory-condition, visual-condition, stage, or readiness-condition fields; completion conditions remain source-language step instructions until a future model defines closed semantics and conformance. (ref: ADR-010)'
+  - text: 'ADR-010 readiness deferral is superseded by ADR-014; Schemami v1 now requires typed human-observed and measured completion conditions with closed semantics, refusal behavior, and conformance while prose remains non-executable. (ref: ADR-010)'
     source_excerpt:
-      line_start: 23
-      line_end: 37
+      line_start: 4
+      line_end: 9
       quote: |-
-        Schemami v1 has no canonical `endpoint`, `until`, sensory-condition, visual
-        condition, stage, or readiness-condition field. Completion conditions remain
-        in the step's required source-language `instruction` and do not participate in
-        Recipe Calculus.
+        **Status:** Superseded by ADR-014
 
-        The v1 operation set remains `scale`, `resolve_formula`,
-        `convert_quantity`, `reading_order`, and `schedule`. A future model may add a
-        structured readiness feature only with all of the following accepted together:
-
-        1. a closed value shape and unambiguous field names;
-        2. its standards/value-vocabulary basis, including treatment of sensory and
-           visual claims;
-        3. at least one deterministic operation that consumes the structured facts;
-        4. refusal behavior for unavailable or non-computable conditions; and
-        5. cross-language conformance vectors.
+        ADR-014 supersedes this pre-dogfood deferral. Schemami v1 will admit typed
+        human-observed and measured completion conditions, composed through a closed
+        grammar and kept separate from planning duration. The historical reasoning
+        below remains useful evidence for why prose must not masquerade as computation.
 paths:
   - schema/**
   - calculus/**

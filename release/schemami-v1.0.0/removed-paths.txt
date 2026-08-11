@@ -1,0 +1,4 @@
+examples/paodeportugal.schemami-pack.yaml
+schema/schemami-v1-pack.schema.json
+tools/schemami/check-pack-resolution.sh
+tools/schemami/testdata/pack.schemami-pack.yaml

@@ -23,16 +23,23 @@ approval and, for a release, all final gates.
 
 | Phase | Status | Checkpoint |
 |---|---|---|
-| 0. Exact-wire closure | completed — ADR-004 through ADR-010 accepted | accepted SPEC-007 with no open wire choices |
-| 1. Identity, schema graph, and clean cutover | completed — core/pack graph, canonical wire, and baseline inventory verified | Schemami-only core/pack schema graph |
+| 0. Initial exact-wire closure | completed historically; method boundary later superseded by ADR-014 | verified unpublished baseline contract |
+| 1. Identity, schema graph, and clean cutover | completed historically — initial core/pack graph later superseded by the accepted embedded bundle | verified unpublished identity baseline |
 | 2. Exact quantities and Recipe Calculus | completed — five-operation Go/TypeScript corpus and refusal gates verified | quantity algebra and UCUM conversion parity |
 | 3. Local entities, evidence, and diagnostics | completed — registry-free rendering, evidence isolation, and diagnostic parity verified | registry-free capture and refusal boundary |
-| 4. Tooling, viewer, packs, and repository rename | completed — full local DAG and isolated bootstrap proof verified | end-to-end Schemami-only runtime |
-| 5. Conformance and release proof | in progress — first candidate superseded by accepted Pão SPEC-013 dogfood corrections; replacement candidate pending | clean-clone stable release evidence |
+| 4. Tooling, viewer, packs, and repository rename | completed historically — initial pack runtime later replaced by the Phase 9 bundle runtime | verified unpublished runtime baseline |
+| 5. Corrected baseline candidate proof | completed — `da8449f` passed repository and clean-clone proof; superseded before publication by ADR-014 | verified baseline, not stable release |
+| 6. Structured-method product closure | completed — ADR-014 and aligned PRD/SPEC/plan boundary accepted | internally coherent requirements with implementation frozen |
+| 7. Exact wire and field closure | completed — ADR-015 and simplified minimal-requiredness contract accepted | accepted JSON shapes, names, unions, standards, and collision vectors |
+| 8. Active-graph and composition Calculus | completed — ADR-016 and exact operation/vector contract accepted | deterministic operations, composition, diagnostics, and resource floors |
+| 9. Schema and cross-language implementation | completed — structured schema, embedded bundle, six operations, admission analysis, Go/TypeScript/viewer parity verified | `PHASE 9 COMPLETE STRUCTURED METHOD IMPLEMENTATION VERIFIED` |
+| 10. Corpus and example migration | completed — canonical examples and permanent positive/adversarial cross-language vectors pass the full repository DAG | `PHASE 10 COMPLETE CORPUS AND EXAMPLES MIGRATED` |
+| 11. Pão and Fornada dogfood | pending | two-adapter evidence against committed bytes |
+| 12. Replacement release proof and publication | pending | clean-clone proof, immutable URLs, approval, tag, and publication |
 
 ## Binding decisions and protected scope
 
-- PRD-007, SPEC-007, ADR-004 through ADR-013, and the accepted field register
+- PRD-007, SPEC-007, ADR-004 through ADR-014, and the accepted portions of the field register
   bind implementation.
 - Schemami v1 is a clean cutover. Do not ship a dual reader, compatibility
   alias, public migration tool, or deprecation window.
@@ -56,27 +63,42 @@ approval and, for a release, all final gates.
 ```text
 Phase 0 accepted wire
         ↓
-Phase 1 Schemami schemas + identity inventory
+Phase 1 initial Schemami schemas + identity inventory
         ↓
 Phase 2 quantity/calculus contract
         ↓
 Phase 3 local entities/evidence/diagnostics
         ↓
-Phase 4 tools/viewer/packs/full active rename
+Phase 4 initial tools/viewer/package runtime/full active rename
         ↓
 Phase 5 shared conformance + clean-clone release proof
+        ↓
+Phase 6 accepted method/variation/composition product contract
+        ↓
+Phase 7 exact wire and field closure
+        ↓
+Phase 8 active-graph/composition Calculus
+        ↓
+Phase 9 schema/runtime implementation
+        ↓
+Phase 10 corpus/example migration
+        ↓
+Phase 11 Pão + Fornada dogfood
+        ↓
+Phase 12 replacement proof + approved publication
 ```
 
 ## Phase 0 — Close the exact wire contract
 
 **Classification:** operational. **Implementation authority:** none.
 
-The recipe-local ID grammar, minimum step/action boundary, elapsed-duration shape, grouped formulas,
+The recipe-local ID grammar, initial flattened step boundary, elapsed-duration shape, grouped formulas,
 16-total-digit/four-fractional-digit public result shape, round-half-to-even, operation boundary,
 evidence boundary, extension rule, and structured-readiness deferral are accepted in ADR-004 through
-ADR-010. The field register is the required implementation inventory. `endpoint` is not a v1 member;
-completion conditions remain source-language step instructions. No permissive/free-form placeholder
-is authorized.
+ADR-010. ADR-014 later superseded only the flattened method/readiness/closed-operation portions after
+dogfood. This phase remains historical evidence for the unaffected wire; it is not current authority
+for method, variation, completion, composition, or lineage. No permissive/free-form placeholder is
+authorized.
 
 Schema and runtime implementation may proceed only from accepted members. No implementation may infer
 readiness semantics from Model 1 prose or fields.
@@ -106,12 +128,15 @@ language, extension, I-JSON, JSON/YAML parity, and JCS vectors.
 **Classification:** testable. **Depends on:** Phase 1.
 
 Implement the accepted `quantity` tagged union and canonical decimal parser.
-Implement exactly the five accepted operations: `scale`, `resolve_formula`,
+Implement the baseline five accepted operations: `scale`, `resolve_formula`,
 `convert_quantity`, `reading_order`, and `schedule`. Do not carry Model 1
 constraints, minimum-batch, basis, clamp, or planning operations into v1 without
 a later accepted Calculus contract. Add `convert_quantity` with the pinned UCUM
 2.2 table, same-dimension/temperature arithmetic, resource bounds, and explicit
 refusal.
+
+This is the historical baseline implementation set. ADR-016 later adds
+`resolve_selection` as the sixth operation for the replacement candidate.
 
 Go and TypeScript replay one normative corpus for every quantity/formula kind, decimal
 edge, scaling case, conversion, and refusal. Existing binary64/tolerance vectors
@@ -200,7 +225,117 @@ If hosting is not ready, the release remains a verified candidate and must not
 be tagged as stable. Present the complete requirement-by-requirement evidence
 ledger and request explicit approval before commit/tag/push/publication.
 
-**Completion:** `PHASE 5 COMPLETE SCHEMAMI V1 STABLE RELEASE PROVEN`
+The committed `da8449f` candidate passed this proof for the corrected flattened
+baseline, but it was never published and ADR-014 now supersedes its method
+boundary. Preserve its evidence as a regression baseline; do not call it the
+stable release.
+
+**Completion:** `PHASE 5 COMPLETE CORRECTED BASELINE PROVEN NOT PUBLISHED`
+
+## Phase 6 — Close structured-method product requirements
+
+**Classification:** operational. **Depends on:** Phase 5 dogfood evidence.
+
+Record ADR-014 and amend PRD-007, SPEC-007, field governance, test strategy,
+and this plan. Distinguish explicitly authored recipe facts from application
+baking intelligence and bake state. Freeze schema/runtime work. End with a
+Daniel checkpoint containing only reviewed documentation changes and
+governance results.
+
+**Completion:** `PHASE 6 COMPLETE STRUCTURED METHOD PRODUCT CONTRACT ACCEPTED`
+
+## Phase 7 — Close exact wire and field names
+
+**Classification:** operational. **Depends on:** Phase 6.
+
+Provide full JSON examples and nearest invalid neighbours for recursive
+`sequence`, section/step/action nodes, typed inputs, closed predicates,
+activation, completion, authored environment, strict substitution,
+uses/produces, component output/yield references, bundles, and lineage. Audit
+every new name against scope, type, standards, default, and collision rules.
+The review artifact is
+`docs/product/prds/artifacts/PRD-007/structured-method-wire-proposal.md` and
+also covers the pre-publication singular-`formula` limitation exposed by
+component composition.
+
+ADR-015 records Daniel's approval of the complete shape and the simplified
+requiredness rule. No compatibility aliases or free-form escape hatches are
+allowed. The schema/runtime remains frozen until Phase 8 closes Calculus.
+
+**Completion:** `PHASE 7 COMPLETE METHOD VARIATION COMPOSITION WIRE ACCEPTED`
+
+## Phase 8 — Define active-graph and composition Calculus
+
+**Classification:** operational plus test design. **Depends on:** Phase 7.
+
+Specify deterministic selection validation, active-graph projection,
+reading-order/schedule interaction, missing-selection diagnostics, strict
+substitution invariants, component resolution/output/yield scaling, cycle and
+resource-limit behavior, and identity/lineage effects. Pin operation tokens,
+arguments, results, problem types, and RFC 6901 pointers before code changes.
+
+ADR-016 and
+`docs/product/prds/artifacts/PRD-007/active-graph-composition-calculus.md`
+complete this phase. They add `resolve_selection`, closed instance-scoped
+requests, exhaustive distinct reachable graphs, non-redistributing optional
+formula terms, factor XOR root formula target, exact component instances,
+composed schedule reporting, JCS evaluation identity, deterministic
+multi-problem behavior, and minimum resource floors. Schema/runtime remains the
+verified baseline until Phase 9.
+
+**Completion:** `PHASE 8 COMPLETE ACTIVE GRAPH AND COMPOSITION CALCULUS ACCEPTED`
+
+## Phase 9 — Implement schema and cross-language behavior
+
+**Classification:** testable. **Depends on:** Phase 8.
+
+Update the core/bundle schema, Go reference implementation, TypeScript/viewer,
+semantic validation, canonicalization, and diagnostics from the accepted wire
+and Calculus only. Preserve exact decimal, UCUM, local identity, evidence,
+offline resolution, and clean-cutover behavior. Checkpoint schema admission,
+each operation, each refusal class, and cross-language byte parity.
+
+**Completion:** `PHASE 9 COMPLETE STRUCTURED METHOD IMPLEMENTATION VERIFIED`
+
+## Phase 10 — Migrate corpora and examples
+
+**Classification:** testable. **Depends on:** Phase 9.
+
+Promote every accepted positive and adversarial case to the normative shared
+corpora, including recursive structure, missing selections, invalid inactive
+branches, strict substitutions, completion/environment facts, exact components,
+cycles, bundles, and lineage. Migrate repository examples without inventing
+facts absent from their sources. Regenerate derived artifacts deterministically.
+
+**Completion:** `PHASE 10 COMPLETE CORPUS AND EXAMPLES MIGRATED`
+
+## Phase 11 — Re-run Pão and Fornada dogfood
+
+**Classification:** external adoption evidence. **Depends on:** Phase 10.
+
+Ask each integrator to pin committed Schemami bytes. Pão replays complete
+methods and formula objects; Fornada replays its adapter while keeping workflow
+primitives, fermentation heuristics, timer policy, and bake state application-
+owned. Verify explicitly authored techniques/environment facts survive and
+valid unfamiliar content remains readable when app projection refuses. Any
+protocol defect returns to Phase 7 or 8; app-domain gaps stay with the app.
+The phase is the first cross-product interoperability success measure: both
+adapters consume the same committed protocol bytes and agree on shared-vector
+validity while retaining materially different application models. It does not
+claim independent-owner adoption or ecosystem scale.
+
+**Completion:** `PHASE 11 COMPLETE TWO ADAPTER DOGFOOD REVIEWED`
+
+## Phase 12 — Prove and publish the replacement stable release
+
+**Classification:** testable and externally mutating. **Depends on:** Phase 11.
+
+Rebuild the candidate manifest, replay all gates from a clean clone, verify
+immutable HTTPS bytes, and publish only after explicit Daniel approval. Commit,
+push, tag, and Cloudflare/GitHub publication are separate authorized actions.
+After stable publication, revise the AI conversion PRD and then documentation.
+
+**Completion:** `PHASE 12 COMPLETE SCHEMAMI V1 STABLE RELEASE PUBLISHED`
 
 ## Risks and stop conditions
 

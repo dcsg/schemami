@@ -79,4 +79,5 @@ would look publishable while violating immutable identity semantics.
 - ADR-008 — local method entities and exact quantity contract
 - ADR-009 — computation and portable-data boundary
 - ADR-011 — operation results and earliest-start scheduling
+- ADR-015 — plural typed formulas partially supersede this wire shape while retaining its one-authority invariant
 - SPEC-007 — Schemami v1 stable protocol release

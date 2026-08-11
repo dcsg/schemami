@@ -11,10 +11,10 @@ signals:
   - recipe-local technique
   - ucum
 directives:
-  - text: 'Schemami v1 steps MUST be recipe-local actions with source-language instructions and no mandatory primitive/action registry; recipe-local IDs MUST use the accepted lowercase ASCII grammar, be at most 128 characters, and accept lowercase UUID strings as ordinary opaque IDs. Local technique and equipment entities likewise MUST NOT require central minting or imply global semantics. (ref: ADR-008)'
+  - text: 'Schemami v1 recipe-local IDs MUST use the accepted lowercase ASCII grammar, be at most 128 characters, and accept lowercase UUID strings as ordinary opaque IDs; local technique and equipment entities MUST NOT require central minting or imply global semantics. ADR-014 supersedes ADR-008 only for the step/action hierarchy. (ref: ADR-008)'
     source_excerpt:
-      line_start: 22
-      line_end: 38
+      line_start: 24
+      line_end: 32
       quote: |-
         1. A recipe MAY declare recipe-local `techniques` and `equipment` collections.
            An entity has an `id` unique in its collection and an authored source-language
@@ -25,18 +25,10 @@ directives:
            case-sensitive; readers reject uppercase rather than normalizing it. A
            lowercase UUID string is valid but receives no special UUID semantics. A
            recipe-local ID MUST contain at most 128 characters.
-        2. Each step is itself a recipe-local action. It requires a recipe-local `id`
-           and a source-language `instruction`; it does not require a second action ID,
-           primitive reference, primitive version, primitive registry, or primitive
-           parameter object. Only explicit structured step fields may supply
-           deterministic scheduling or calculation inputs.
-        3. Local technique/equipment entities do not themselves provide deterministic
-           calculation or scheduling semantics. A protocol-governed operation is added
-           only when Recipe Calculus defines and consumes that operation's behavior.
   - text: 'Schemami v1 elapsed durations MUST use a strict positive unsigned RFC 5545 day/time/week profile with fixed D/W elapsed semantics and full minimum/target/maximum window names; calendar years/months, compact Model 1 durations, and min/max aliases are removed. (ref: ADR-008)'
     source_excerpt:
-      line_start: 39
-      line_end: 46
+      line_start: 41
+      line_end: 48
       quote: |-
         4. Elapsed recipe durations use a strict Schemami profile of RFC 5545 section
            3.3.6: positive unsigned `P` day/time/week values such as `PT8M`,
@@ -48,14 +40,14 @@ directives:
            `min`/`max` fields are removed.
   - text: 'Schemami v1 absolute quantities MUST declare measured, range, or open kind; grouped ratios MUST store ordered parts and grouped percentages MUST store percentage points directly, while measured units use UCUM 2.2. (ref: ADR-008)'
     source_excerpt:
-      line_start: 47
-      line_end: 71
+      line_start: 49
+      line_end: 73
       quote: |-
         5. `quantity` is the canonical absolute-amount field; it replaces `amount`. Its
            required `kind` explicitly selects `measured`, `range`, or `open`. A ratio or
            percentage is a grouped formula relationship across ingredients, not a
-           scalar quantity kind. A readiness `endpoint` is a separate method condition
-           that may itself contain a measured quantity; it is not a quantity kind.
+           scalar quantity kind. Completion remains a separate method condition under
+           ADR-014; it is not a quantity kind.
         6. Scalar numeric values are canonical decimal strings with at most sixteen
            digits in total (excluding the decimal point and any permitted minus sign)
            and at most four fractional digits. Trailing fractional zeros, exponent
@@ -78,8 +70,8 @@ directives:
            while `1.8` means 1.8%. It never stores 75% as `0.75`.
   - text: 'Source evidence MUST target structured values through JSON Pointers and diagnostics MUST use stable problem type URIs and field pointers. (ref: ADR-008)'
     source_excerpt:
-      line_start: 72
-      line_end: 77
+      line_start: 74
+      line_end: 79
       quote: |-
         9. Import spelling, raw text, confidence, and source location are document-level
            evidence records that target structured fields through RFC 6901 JSON Pointers.

@@ -5,6 +5,7 @@ root="$(cd "$(dirname "$0")/../.." && pwd)"
 
 "$root/tools/with-toolchain.sh" bun test \
   "$root/tools/viewer/conformance/schemami-calculus.test.ts" \
+  "$root/tools/viewer/conformance/schemami-phase9.test.ts" \
   "$root/tools/viewer/conformance/schemami-local-entities.test.ts" \
   "$root/tools/viewer/conformance/schemami-viewer.test.ts"
 

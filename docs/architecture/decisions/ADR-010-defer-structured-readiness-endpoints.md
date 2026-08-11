@@ -1,7 +1,12 @@
 # ADR-010: Defer structured readiness endpoints from Schemami v1
 
 **Date:** 2026-08-11
-**Status:** Accepted
+**Status:** Superseded by ADR-014
+
+ADR-014 supersedes this pre-dogfood deferral. Schemami v1 will admit typed
+human-observed and measured completion conditions, composed through a closed
+grammar and kept separate from planning duration. The historical reasoning
+below remains useful evidence for why prose must not masquerade as computation.
 
 ## Context
 

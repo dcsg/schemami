@@ -1,4 +1,4 @@
-import type { Envelope, Formula, Quantity } from "./calculus.ts";
+import type { Envelope, Quantity } from "./calculus.ts";
 import type { AnalysisResult, DocumentAnalysis, ViewerProblem } from "./engine.ts";
 
 type Dict = Record<string, unknown>;
@@ -41,17 +41,18 @@ function effectiveMap(envelope?: Envelope): Map<string, Quantity> {
   const values = object(envelope.result).quantities;
   return new Map(list(values).map((value) => {
     const item = object(value);
-    return [String(item.ingredient), object(item.quantity) as Quantity];
+    const input = object(item.input);
+    return [`${String(input.kind)}\0${String(input.id)}`, object(item.quantity) as Quantity];
   }));
 }
 
-function termMap(formula: Dict): Map<string, string> {
+function termMap(formulas: unknown): Map<string, string> {
   const terms = new Map<string, string>();
-  for (const value of list(formula.terms)) {
-    const term = object(value);
+  for (const formulaValue of list(formulas)) { const formula = object(formulaValue); for (const value of list(formula.terms)) {
+    const term = object(value); const input = object(term.input);
     const label = formula.kind === "ratio" ? `${String(term.parts)} parte(s)` : `${String(term.percentage)}%`;
-    terms.set(String(term.ingredient), label);
-  }
+    terms.set(`${String(input.kind)}\0${String(input.id)}`, label);
+  } }
   return terms;
 }
 
@@ -60,31 +61,30 @@ function notes(values: unknown): string {
   return items ? `<ul class="notes">${items}</ul>` : "";
 }
 
-function ingredients(document: Dict, context: RenderContext, formulaResult?: Envelope, scaled?: Envelope): string {
-  const formula = object(document.formula);
-  const terms = termMap(formula);
-  const resolved = effectiveMap(formulaResult);
+function ingredients(document: Dict, context: RenderContext, formulaResults: Envelope[] = [], scaled?: Envelope): string {
+  const terms = termMap(document.formulas);
+  const resolved = new Map<string, Quantity>(); for (const result of formulaResults) for (const [key, value] of effectiveMap(result)) resolved.set(key, value);
   const effective = effectiveMap(scaled);
   const items = list(document.ingredients).map((value) => {
     const ingredient = object(value);
     const id = String(ingredient.id);
-    const quantity = effective.get(id) ?? resolved.get(id) ?? (object(ingredient.quantity) as Quantity);
-    const amount = quantity?.kind ? quantityLabel(quantity, context) : esc(terms.get(id) ?? "quantidade não resolvida");
-    return `<li><span class="amount">${amount}</span> ${esc(ingredient.name)}${notes(ingredient.notes)}</li>`;
+    const key = `ingredient\0${id}`; const quantity = effective.get(key) ?? resolved.get(key) ?? (object(ingredient.quantity) as Quantity);
+    const amount = quantity?.kind ? quantityLabel(quantity, context) : esc(terms.get(key) ?? "quantidade não resolvida");
+    return `<li><span class="amount">${amount}</span> ${esc(ingredient.name ?? ingredient.id)}${notes(ingredient.notes)}</li>`;
   }).join("");
   return `<section><h2>Ingredientes</h2><ul class="ingredients">${items}</ul></section>`;
 }
 
 function formulaSection(document: Dict): string {
-  const formula = object(document.formula);
-  if (!formula.kind) return "";
-  const values = list(formula.terms).map((value) => {
+  const formulas = list(document.formulas); if (!formulas.length) return "";
+  const items = formulas.map((formulaValue) => { const formula = object(formulaValue); const values = list(formula.terms).map((value) => {
     const term = object(value);
     return formula.kind === "ratio" ? String(term.parts) : `${String(term.percentage)}%`;
   });
   const relationship = formula.kind === "ratio" ? values.join(":") : values.join(" · ");
-  const basis = formula.kind === "percentage" ? ` — base: ${esc(formula.basis)}` : "";
-  return `<section class="formula"><h2>Fórmula</h2><p><strong>${esc(relationship)}</strong>${basis}</p></section>`;
+  const basisRef = object(formula.basis); const basis = formula.kind === "percentage" ? ` — base: ${esc(basisRef.id)}` : "";
+  return `<li><code>${esc(formula.id)}</code>: <strong>${esc(relationship)}</strong>${basis}</li>`; }).join("");
+  return `<section class="formula"><h2>Fórmulas</h2><ul>${items}</ul></section>`;
 }
 
 function duration(value: unknown): string {
@@ -94,10 +94,8 @@ function duration(value: unknown): string {
 }
 
 function steps(document: Dict): string {
-  const ingredientsById = new Map(list(document.ingredients).map((value) => {
-    const ingredient = object(value);
-    return [String(ingredient.id), String(ingredient.name)];
-  }));
+  const resources = new Map<string, string>();
+  for (const [kind, field] of [["ingredient", "ingredients"], ["component", "components"], ["preparation", "preparations"], ["output", "outputs"]] as const) for (const value of list(document[field])) { const item = object(value); resources.set(`${kind}\0${String(item.id)}`, String(item.name ?? item.id)); }
   const techniques = new Map(list(document.techniques).map((value) => {
     const item = object(value);
     return [String(item.id), String(item.name)];
@@ -106,17 +104,21 @@ function steps(document: Dict): string {
     const item = object(value);
     return [String(item.id), String(item.name)];
   }));
-  const items = list(document.steps).map((value) => {
-    const step = object(value);
+  const renderStep = (step: Dict): string => {
     const metadata = [
       step.duration ? `duração ${duration(step.duration)}` : "",
       ...list(step.techniques).map((id) => `técnica ${techniques.get(String(id)) ?? id}`),
       ...list(step.equipment).map((id) => `equipamento ${equipment.get(String(id)) ?? id}`),
-      list(step.uses).length ? `usa ${list(step.uses).map((id) => ingredientsById.get(String(id)) ?? id).join(", ")}` : "",
+      list(step.uses).length ? `usa ${list(step.uses).map((value) => { const reference = object(value); return resources.get(`${String(reference.kind)}\0${String(reference.id)}`) ?? reference.id; }).join(", ")}` : "",
     ].filter(Boolean).map((item) => `<span class="meta">${esc(item)}</span>`).join(" ");
-    return `<li><p>${esc(step.instruction)}</p>${metadata}${notes(step.notes)}</li>`;
-  }).join("");
-  return `<section><h2>Método</h2><ol class="steps">${items}</ol></section>`;
+    const actions = list(step.actions).map((value) => `<li>${esc(object(value).instruction)}</li>`).join("");
+    const prose = step.instruction ? `<p>${esc(step.instruction)}</p>` : `<ol class="actions">${actions}</ol>`;
+    const guidance = list(step.guidance).map((value) => `<p class="guidance"><strong>${esc(object(value).cue)}</strong> — ${esc(object(value).instruction)}</p>`).join("");
+    return `<li><p><code>${esc(step.id)}</code></p>${prose}${metadata}${guidance}${notes(step.notes)}</li>`;
+  };
+  const renderSequence = (value: unknown): string => `<ol class="steps">${list(value).map((nodeValue) => { const node = object(nodeValue); if (node.kind === "section") return `<li class="method-section"><h3>${esc(node.name ?? node.id)}</h3>${renderSequence(node.sequence)}</li>`; return renderStep(node); }).join("")}</ol>`;
+  const items = renderSequence(object(document.method).sequence);
+  return `<section><h2>Método</h2>${items}</section>`;
 }
 
 function origin(document: Dict): string {
@@ -163,7 +165,7 @@ export function renderAnalysis(result: AnalysisResult): string {
 export function renderDocument(
   analysis: DocumentAnalysis,
   context: RenderContext,
-  formulaResult?: Envelope,
+  formulaResults: Envelope[] = [],
   scaled?: Envelope,
   scheduleResult?: Envelope,
   index = 0,
@@ -186,7 +188,7 @@ export function renderDocument(
     <form class="scale-control" data-doc="${index}"><label for="scale-${index}">Fator de escala</label> <input id="scale-${index}" name="factor" inputmode="decimal" value="1"> <button type="submit">Aplicar</button></form>
     ${scaleProblems}
     ${formulaSection(document)}
-    ${ingredients(document, context, formulaResult, scaled)}
+    ${ingredients(document, context, formulaResults, scaled)}
     ${localEntities(document)}
     ${steps(document)}
     ${evidenceSelectors(document)}

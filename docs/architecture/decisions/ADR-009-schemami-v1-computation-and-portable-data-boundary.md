@@ -3,6 +3,12 @@
 **Date:** 2026-08-11
 **Status:** Accepted
 
+**Schemami v1 amendment:** ADR-014 supersedes the closed five-operation claim
+and the exclusion of typed options/guards. The five existing operations remain;
+the revised wire must add deterministic recipe resolution before those
+operations consume an active graph. Tracks, lanes, arbitrary expressions, and
+untyped constraints remain outside v1.
+
 ## Context
 
 Schemami v1 needs a small, interoperable calculation surface without turning
@@ -13,13 +19,13 @@ Schemami to host content.
 
 ## Decision
 
-1. The only v1 Recipe Calculus operations are `scale`, `resolve_formula`,
+1. **Partially superseded by ADR-014.** The original candidate operations are `scale`, `resolve_formula`,
    `convert_quantity`, `reading_order`, and `schedule`. Validation and
    rendering are protocol behavior but not Recipe Calculus operations.
 2. `scale` understands only `linear` and `fixed`. An integrator may preserve a
    custom scaling declaration in an `x-<owner>-*` extension, but Schemami never
    interprets it; an operation requiring that behavior returns a diagnostic.
-3. Options, guards, typed constraints, tracks, and interleaving are not v1
+3. **Superseded by ADR-014 for typed variation.** Options, guards, typed constraints, tracks, and interleaving are not v1
    wire features or operations. A later model may add portable tracks and
    interleaving after evidence demonstrates the need.
 4. `reading_order` is normative. It returns one deterministic linear method
@@ -59,9 +65,10 @@ Schemami to host content.
 
 ## Consequences
 
-The v1 operation surface is deliberately small. An application can retain
-custom scaling, branching, constraints, or lanes in extensions, but another
-application will never mistake those fields for portable behavior.
+The operation surface remains deliberately bounded. ADR-014 promotes only
+source-authored typed variation and deterministic resolution; arbitrary
+branching expressions, custom scaling, constraints, and lanes remain
+extensions and cannot masquerade as portable behavior.
 
 Method order is portable without freezing a visual workflow model:
 

@@ -1,6 +1,6 @@
 TOOLCHAIN := ./tools/with-toolchain.sh
 
-.PHONY: bootstrap toolchain-check validate conformance calculus viewer pack cutover release-contract ci
+.PHONY: bootstrap toolchain-check validate conformance calculus viewer bundle cutover release-contract ci
 
 bootstrap:
 	bash tools/bootstrap.sh
@@ -10,7 +10,7 @@ toolchain-check:
 
 validate: schemami-schema schemami-canonical
 	$(TOOLCHAIN) go -C tools/schemami run . validate ../../examples/pao-massa-mae.schemami.yaml
-	$(TOOLCHAIN) go -C tools/schemami run . validate-pack ../../examples/paodeportugal.schemami-pack.yaml
+	$(TOOLCHAIN) go -C tools/schemami run . validate-bundle ../../examples/paodeportugal.schemami-bundle.json
 
 conformance: schemami-calculus
 	bash tools/schemami/check-quantity-vectors.sh
@@ -26,9 +26,9 @@ viewer:
 	$(TOOLCHAIN) bun run tools/viewer/build.ts
 	bash tools/ci/dist-fresh-check.sh --build
 
-pack:
-	bash tools/schemami/check-pack-resolution.sh
-	$(TOOLCHAIN) go -C tools/schemami run . verify-pack ../../examples/paodeportugal.schemami-pack.yaml ../../examples
+bundle:
+	bash tools/schemami/check-bundle-resolution.sh
+	$(TOOLCHAIN) go -C tools/schemami run . validate-bundle ../../examples/paodeportugal.schemami-bundle.json
 
 cutover:
 	bash tools/schemami/check-clean-cutover.sh

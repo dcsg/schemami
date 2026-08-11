@@ -4,9 +4,9 @@
   "stages": [
     {"id": "toolchain", "command": "make toolchain-check", "owns": ["Go/Bun pins and locks"]},
     {"id": "go", "command": "tools/with-toolchain.sh go -C tools/schemami test -count=1 ./...", "owns": ["CLI, semantics, canonicalization, Calculus"]},
-    {"id": "validate", "command": "make validate", "owns": ["core and pack schema admission"]},
+    {"id": "validate", "command": "make validate", "owns": ["core and bundle schema admission"]},
     {"id": "conformance", "command": "make conformance", "owns": ["shared Go/TypeScript operation and refusal corpus"]},
-    {"id": "pack", "command": "make pack", "owns": ["explicit offline package resolution"]},
+    {"id": "bundle", "command": "make bundle", "owns": ["self-contained offline bundle closure"]},
     {"id": "viewer", "command": "make viewer", "owns": ["Schemami-only viewer and generated bundle"]},
     {"id": "cutover", "command": "make cutover", "owns": ["active legacy-surface classification"]},
     {"id": "release-contract", "command": "make release-contract", "owns": ["local normative URL map and problem-type artifacts"]}
