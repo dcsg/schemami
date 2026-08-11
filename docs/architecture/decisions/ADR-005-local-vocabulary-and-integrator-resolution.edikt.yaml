@@ -1,0 +1,51 @@
+schema_version: 1
+topic: protocol-boundaries
+path: docs/architecture/decisions/ADR-005-local-vocabulary-and-integrator-resolution.md
+signals:
+  - integrator resolution
+  - local vocabulary
+  - offline portability
+  - refusal semantics
+  - registry optional
+directives:
+  - text: 'RCP MUST NOT require a central or RCP-maintained registry entry for a domain term to be captured, represented, displayed, or structurally validated. (ref: ADR-005)'
+    source_excerpt:
+      line_start: 23
+      line_end: 25
+      quote: |-
+        1. RCP SHALL NOT require a central or RCP-maintained registry entry for an
+        ingredient, technique, equipment item, or other domain term to be captured,
+        represented, displayed, or structurally validated.
+  - text: 'An integrator MAY map a recipe-local or package-local term to a private identifier, but the mapping MUST remain application resolution context and MUST NOT modify source identity or make a global equivalence claim. (ref: ADR-005)'
+    source_excerpt:
+      line_start: 33
+      line_end: 36
+      quote: |-
+        4. An integrator MAY map a recipe-local or package-local term to its own
+        private identifier. That mapping is an application resolution context, not
+        a modification of the source recipe, a new canonical identity, or a global
+        claim about equivalence.
+  - text: 'An unknown or unresolved term MUST disable only operations requiring missing facts; it MUST NOT invalidate the entire recipe or infer domain properties. (ref: ADR-005)'
+    source_excerpt:
+      line_start: 41
+      line_end: 44
+      quote: |-
+        6. An unknown or unresolved term MUST disable only operations that require
+        missing facts. It MUST NOT invalidate the entire recipe or cause inferred
+        ingredient properties, technique semantics, densities, allergens,
+        substitutions, or conversions.
+  - text: 'RCP-governed identifiers MUST be reserved for protocol semantics RCP promises to evaluate deterministically, not a global food or technique catalog. (ref: ADR-005)'
+    source_excerpt:
+      line_start: 45
+      line_end: 48
+      quote: |-
+        7. RCP-governed identifiers are reserved for the small set of protocol
+        semantics that RCP itself promises to evaluate deterministically, such as
+        quantity shapes, unit identities, dependency semantics, and machine reason
+        codes. They are not a global food or technique catalog.
+paths:
+  - schema/**
+  - registry/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

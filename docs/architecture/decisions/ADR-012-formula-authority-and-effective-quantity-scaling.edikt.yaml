@@ -1,0 +1,44 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-012-formula-authority-and-effective-quantity-scaling.md
+signals:
+  - formula
+  - quantity authority
+  - resolve formula
+  - scale
+directives:
+  - text: 'An ingredient named by formula terms MUST NOT also carry an explicit quantity; resolve_formula and scale derive that ingredient only from the formula anchor, refusing missing anchors rather than choosing between conflicting authorities. (ref: ADR-012)'
+    source_excerpt:
+      line_start: 17
+      line_end: 30
+      quote: |-
+        1. An ingredient that appears in `formula.terms` MUST NOT carry an explicit
+           `quantity`. Its absolute quantity, when resolvable, comes only from the
+           formula. An ingredient outside the formula MAY carry an explicit quantity.
+        2. `resolve_formula.result.quantities` is an ordered array following formula
+           term order. Each entry has `ingredient` and measured `quantity`.
+        3. A ratio formula requires measured `target` to resolve absolute quantities.
+           A percentage formula requires measured `basis_quantity`. Missing anchors
+           preserve a valid/renderable formula but `resolve_formula` and formula-based
+           `scale` refuse with `missing-fact` at the missing anchor pointer.
+        4. `scale` takes one positive canonical-decimal factor and returns
+           `result.quantities`, ordered by the recipe's ingredient declaration. Each
+           entry has `ingredient` and the effective scaled `quantity`; it does not
+           return or mutate a canonical recipe document.
+  - text: 'Schemami v1 scale MUST use exact arithmetic, preserve units, leave fixed measured quantities and open quantities unchanged, scale ranges and linear measured quantities, and refuse ingredients with no quantity authority. (ref: ADR-012)'
+    source_excerpt:
+      line_start: 31
+      line_end: 38
+      quote: |-
+        5. Formula quantities are resolved from the exactly scaled anchor. Explicit
+           measured and range quantities scale exactly. `scaling: fixed` measured
+           quantities and fixed formula anchors remain unchanged. Open quantities
+           remain open and are returned without inventing a scalar.
+        6. An ingredient with neither formula authority nor an explicit quantity makes
+           `scale` refuse with `missing-fact`. Scaling never converts units or reads
+           prose/evidence.
+paths:
+  - schema/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "rcp-viewer",
+      "name": "@schemami/viewer",
       "dependencies": {
         "@cfworker/json-schema": "4.1.1",
         "yaml": "2.9.0",

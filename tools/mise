@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Project-local mise entry point. It never writes to global mise state and
+# refuses a host binary other than the bootstrap trust anchor.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+EXPECTED_MISE="2026.3.17"
+MISE_BIN="${MISE_BIN:-mise}"
+
+if ! command -v "$MISE_BIN" >/dev/null 2>&1; then
+  echo "toolchain: mise ${EXPECTED_MISE} is required but was not found" >&2
+  exit 1
+fi
+actual="$($MISE_BIN --version | awk '{print $1}')"
+if [ "$actual" != "$EXPECTED_MISE" ]; then
+  echo "toolchain: mise ${EXPECTED_MISE} is required; found ${actual}" >&2
+  exit 1
+fi
+
+export MISE_CONFIG_DIR="$ROOT/.toolchain/mise-config"
+export MISE_STATE_DIR="$ROOT/.toolchain/mise-state"
+export MISE_DATA_DIR="$ROOT/.toolchain/mise-data"
+export MISE_CACHE_DIR="$ROOT/.toolchain/mise-cache"
+
+exec "$MISE_BIN" "$@"

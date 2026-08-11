@@ -1,13 +1,24 @@
-# Dormant until a remote exists — activates on first push to GitHub.
 name: validate
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with: { go-version: "1.26" }
-      - name: Install pinned CUE CLI
-        run: go install cuelang.org/go/cmd/cue@v0.17.1
-      - run: make validate
+      - name: Check out the tested revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Install exact mise bootstrap trust anchor
+        run: bash tools/ci/install-mise-ci.sh >> "$GITHUB_ENV"
+      - name: Bootstrap the checksum-locked toolchain
+        run: bash tools/bootstrap.sh
+      - name: Run the local-equivalent gate DAG
+        run: make ci

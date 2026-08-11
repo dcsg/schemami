@@ -1,36 +1,73 @@
-# Schemami — Recipe Protocol
+# Schemami
 
-Every recipe app models one domain well and the rest badly: fixed ingredient
-fields fit bread but not an entremet, a bare duration lies in every kitchen
-but the author's, and baker's percentage, brine salinity and brew ratio are
-the same idea implemented three incompatible ways. **Schemami** is the answer built
-from that research: **one machine-readable recipe protocol** — a small core
-plus per-category profiles — able to encode bread, pastry, fermentation,
-preserves, drinks, coffee and savoury cooking, renderable by a single
-frontend that can rescale, substitute, and guide execution.
+Schemami is a deterministic, machine-readable recipe protocol and compilation
+target. It represents source-language recipes, exact quantities, local recipe
+concepts, source evidence, dependencies, and portable pack identity without
+requiring a global registry, recipe host, translation service, or runtime AI.
 
-The public brand is Schemami. Existing `rcp` schema IDs, paths and technical
-names remain until a dedicated compatibility migration is approved; the brand
-decision does not authorize a blind namespace replacement.
+Schemami v1 is currently a **verified release candidate**, not a published
+stable release. The implementation phases are complete through the end-to-end
+runtime; clean-clone and immutable-URL publication proof remain before a tag.
 
-## Status
+## Quick start
 
-Research complete (2026-08-02): six research tracks, an executable core
-schema with validated examples, five deep-dives, five expert reviews, and
-15 confirmed decisions. v1 shape: **core schema + bread profile + ingestion
-pipeline (book photo → LLM extraction → review-and-correct → private
-recipe) + private collection.** Implementation has not started.
+Prerequisite: `mise 2026.3.17`.
 
-## Repo map
+```sh
+make bootstrap
+make ci
+```
 
-| Path | What it is |
+Validate a recipe or pack:
+
+```sh
+tools/with-toolchain.sh go -C tools/schemami run . validate ../../examples/pao-massa-mae.schemami.yaml
+tools/with-toolchain.sh go -C tools/schemami run . validate-pack ../../examples/paodeportugal.schemami-pack.yaml
+tools/with-toolchain.sh go -C tools/schemami run . verify-pack ../../examples/paodeportugal.schemami-pack.yaml ../../examples
+```
+
+Build the local single-file viewer:
+
+```sh
+make viewer
+```
+
+Then open `tools/viewer/dist/index.html` in a browser. The viewer validates and
+renders local documents in their source language and computes with the same
+normative conformance corpus as the Go implementation.
+
+## Active v1 surface
+
+| Path | Purpose |
 |---|---|
-| `schema/rcp-core-v1.schema.json` | Executable core schema (JSON Schema 2020-12) |
-| `examples/` | Example recipes validating against the schema — the regression suite |
-| `docs/research/` | The founding research: tracks, proposal, findings, decisions, conclusions, expert reviews |
-| `docs/personas.md` | Canonical RCP personas |
-| `docs/brand/` | Canonical Schemami strategy, identity and voice standards |
-| `design-system/` | Production logo assets, fonts, tokens, CSS and Swift outputs |
-| `CLAUDE.md` | Working conventions + settled design decisions |
+| `schema/schemami-v1-core.schema.json` | Core JSON Schema 2020-12 contract |
+| `schema/schemami-v1-pack.schema.json` | Offline pack manifest contract |
+| `schema/VERSIONING.md` | Wire and document versioning rules |
+| `conformance/schemami-v1/` | Shared exact-operation and refusal vectors |
+| `tools/schemami/` | Go validator, canonicalizer, pack verifier, and Calculus |
+| `tools/viewer/src/schemami/` | TypeScript validator, renderer, and Calculus consumer |
+| `examples/*.schemami.*` | Active recipe and pack examples |
+| `docs/product/prds/PRD-007-*` | Accepted product requirements for v1 |
+| `docs/product/specs/SPEC-007-*` | Normative v1 implementation specification |
 
-Start with `docs/research/CONCLUSIONS.md`, then `docs/research/DECISIONS.md`.
+Earlier protocol experiments and release records remain in the repository as
+historical evidence. They are not imported by the Schemami v1 runtime; the
+classification is recorded in the PRD-007 cutover ledger.
+
+## Product boundary
+
+- One document has one required BCP 47 `content_language` and source-language
+  prose. Presentation translations belong to integrators.
+- Ingredients, techniques, and equipment use recipe-local IDs and names.
+  Integrators may map them to their own catalogs; validation never requires a
+  Schemami registry.
+- Ratios store ordered parts such as `1:2:2`; percentages store percentage
+  points such as `75`; absolute quantities use tagged measured/range/open
+  shapes.
+- Measured units use the pinned UCUM 2.2 subset for deterministic conversion.
+  Ambiguous regional units and mass/volume conversion refuse explicitly.
+- AI/OCR/scrapers may produce candidate documents, but they are external
+  ingestion adapters. Protocol logic never parses prose or evidence as facts.
+
+See [current status](docs/STATUS.md), [roadmap](docs/product/ROADMAP.md), and
+[Schemami v1 plan](docs/plans/PLAN-schemami-v1-stable-release.md).

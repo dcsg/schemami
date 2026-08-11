@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../../../../templates/schemas/gov-sidecar.v1.schema.json
+# Governance sidecar — co-located with an ADR / invariant / guideline .md.
+# Hand-authored after the sidecar extractor failed to emit its bootstrap file;
+# directives below are source-linked to ADR-004 and checked by edikt.
+
+schema_version: 1
+topic: "protocol-boundaries"
+path: "docs/architecture/decisions/ADR-004-presentation-owned-translations.md"
+
+signals:
+  - "translation companion"
+  - "presentation localization"
+  - "recipe storage"
+  - "integrator-owned rendering"
+  - "bcp-47"
+
+paths:
+  - "schema/**"
+  - "registry/**"
+  - "calculus/**"
+  - "tools/**"
+  - "docs/product/**"
+
+directives:
+  - text: "RCP MUST NOT define, require, store, host, distribute, or manage recipe translation companions, locale bundles, or a translation registry. (ref: ADR-004)"
+    source_excerpt:
+      line_start: 23
+      line_end: 24
+      quote: "RCP SHALL NOT define, require, store, host, distribute, or manage recipe\ntranslation companions, locale bundles, or a translation registry."
+  - text: "RCP MUST NOT operate a recipe-content store; this does not constrain an integrator's own local, hosted, or imported recipe storage. (ref: ADR-004)"
+    source_excerpt:
+      line_start: 25
+      line_end: 26
+      quote: "RCP SHALL NOT operate a recipe-content store. This does not constrain an\nintegrator's own local, hosted, or imported recipe storage."
+  - text: "Authored recipe prose MUST remain source-language content identified with a BCP 47 language tag; an integrator owns any presentation translation, which is outside RCP validation, identity, canonical hashing, conformance, and calculation. (ref: ADR-004)"
+    source_excerpt:
+      line_start: 27
+      line_end: 32
+      quote: "3. Authored recipe prose remains source-language content. Its BCP 47 language\ntag identifies the content language; it is not an instruction to translate.\n4. An integrator owns presentation translation of arbitrary recipe prose. It\nmay use JSON files, a CMS, a database, a translation service, or no\ntranslation at all. Those resources are outside RCP validation, identity,\ncanonical hashing, conformance, and calculation."
+  - text: "Existing Model 1 inline localized data MUST remain supported as existing input; it MUST NOT be removed, migrated, or reinterpreted by the rejection of a new companion architecture. (ref: ADR-004)"
+    source_excerpt:
+      line_start: 36
+      line_end: 38
+      quote: "Existing Model 1 inline localized data remains supported as existing input.\nThis decision does not remove, migrate, or reinterpret it. It only rejects\na new companion-based architecture."
+
+prohibitions: []
+
+manual_directives: []
+
+suppressed_directives: []
+
+reminders: []
+
+verification: []

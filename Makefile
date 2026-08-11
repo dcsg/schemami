@@ -1,31 +1,52 @@
-# RCP v0.1 — single validation entry point (SR-VAL-001/DS-VAL-005).
-# L1 (shape) → L2 (semantic lint) → CUE (declarative bounds, DS-VAL-003).
+TOOLCHAIN := ./tools/with-toolchain.sh
 
-CUE ?= $(shell command -v cue 2>/dev/null || echo $(HOME)/go/bin/cue)
-FACTS_TEMP := $(shell mktemp -t rcp-facts.XXXXXX)
-FACTS := $(FACTS_TEMP).json
+.PHONY: bootstrap toolchain-check validate conformance calculus viewer pack cutover release-contract ci
 
-.PHONY: validate
-validate:
-	cd tools/rcplint && go run . validate ../..
-	cd tools/rcplint && go run . lint ../..
-	cd tools/rcplint && go run . facts ../.. > $(FACTS) && ( $(CUE) vet ../../schema/constraints/bounds.cue $(FACTS) && echo "CUE VET GREEN" && python3 scripts/explain-bounds.py --advisories $(FACTS) && rm -f $(FACTS) $(FACTS_TEMP) || ( python3 scripts/explain-bounds.py $(FACTS); rm -f $(FACTS) $(FACTS_TEMP); exit 1 ) )
+bootstrap:
+	bash tools/bootstrap.sh
 
-.PHONY: accept
-accept:
-	bash tools/rcplint/scripts/accept.sh
+toolchain-check:
+	bash tools/schemami/check-toolchain.sh
 
-.PHONY: conformance
-conformance:
-	cd tools/rcplint && go run . vectors ../.. ../viewer/conformance/vectors
-	cd tools/viewer && mise exec -- bun install --frozen-lockfile && mise exec -- bun test
+validate: schemami-schema schemami-canonical
+	$(TOOLCHAIN) go -C tools/schemami run . validate ../../examples/pao-massa-mae.schemami.yaml
+	$(TOOLCHAIN) go -C tools/schemami run . validate-pack ../../examples/paodeportugal.schemami-pack.yaml
 
-.PHONY: calculus
-calculus:
-	cd tools/rcplint && go run . calc-vectors ../.. ../../calculus/vectors
-	cd tools/rcplint && go test -count=1 -run 'TestCalcCoverage|TestCalcVectors|TestWE|TestSpec|TestR_' ./...
-	cd tools/viewer && mise exec -- bun install --frozen-lockfile && mise exec -- bun test conformance/calculus-replay.test.ts
+conformance: schemami-calculus
+	bash tools/schemami/check-quantity-vectors.sh
+	bash tools/schemami/check-conversion-refusals.sh
+	bash tools/schemami/check-local-entity-boundary.sh
+	bash tools/schemami/check-evidence-boundary.sh
+	bash tools/schemami/check-diagnostic-parity.sh
 
-.PHONY: resolve
-resolve:
-	cd tools/rcplint && go run . resolve ../.. --reconcile
+calculus: schemami-calculus
+
+viewer:
+	bash tools/schemami/check-viewer-boundary.sh
+	$(TOOLCHAIN) bun run tools/viewer/build.ts
+	bash tools/ci/dist-fresh-check.sh --build
+
+pack:
+	bash tools/schemami/check-pack-resolution.sh
+	$(TOOLCHAIN) go -C tools/schemami run . verify-pack ../../examples/paodeportugal.schemami-pack.yaml ../../examples
+
+cutover:
+	bash tools/schemami/check-clean-cutover.sh
+
+release-contract:
+	bash tools/schemami/check-release-contract-map.sh
+	bash tools/schemami/check-candidate-scope.sh
+	bash tools/schemami/check-publication-tree.sh
+
+ci:
+	bash tools/ci/run-gate-dag.sh
+
+.PHONY: schemami-schema schemami-canonical schemami-calculus
+schemami-schema:
+	bash tools/schemami/check-schema-identity.sh
+
+schemami-canonical:
+	bash tools/schemami/check-canonical-wire.sh
+
+schemami-calculus:
+	bash tools/schemami/check-calculus.sh

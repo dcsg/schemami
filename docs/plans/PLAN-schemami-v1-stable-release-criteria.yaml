@@ -1,0 +1,126 @@
+schema_version: 1
+plan: PLAN-schemami-v1-stable-release
+target_release: schemami-v1.0.0
+created: "2026-08-10"
+phases:
+  - id: "0"
+    name: Exact-wire closure
+    classification: operational
+    completion_promise: PHASE 0 COMPLETE SCHEMAMI V1 WIRE ACCEPTED
+    criteria:
+      - id: AC-0.1
+        statement: "Daniel has explicitly accepted grouped ratio/percentage formula semantics, 16-total-digit/four-fractional-digit canonical decimal results plus tie rule, the 128-character recipe-local ID bound, and the minimum step action/protocol-operation shape with worked JSON/YAML examples."
+      - id: AC-0.2
+        statement: "SPEC-007 and the field register contain no open wire decisions or unregistered public field/API members, and their PRD/ADR/Edikt sidecars compile without drift."
+  - id: "1"
+    name: Identity, schema graph, and clean cutover
+    classification: testable
+    completion_promise: PHASE 1 COMPLETE SCHEMAMI SCHEMA GRAPH AND IDENTITY CUTOVER
+    criteria:
+      - id: AC-1.1
+        statement: "Core and pack schemas use only accepted Schemami identifiers, require schemami string model marker and content_language, reject active RCP markers/locale-map prose, and no legacy category profile is renamed into v1 because the v1 wire has no kind/profile member."
+        verify: "make schemami-schema"
+        verify_kind: behavioral
+        intent: One Schemami-only schema graph admits the accepted source-language wire.
+        falsifying_observation: A new canonical artifact needs rcp.invalid, rcp marker, or a locale map.
+      - id: AC-1.2
+        statement: "Equivalent admitted JSON and YAML parse to identical I-JSON data and RFC 8785 JCS bytes; invalid YAML keys, duplicate JSON members, invalid Unicode, and unsupported numeric values fail."
+        verify: "bash tools/schemami/check-canonical-wire.sh"
+  - id: "2"
+    name: Exact quantities and Recipe Calculus
+    classification: testable
+    completion_promise: PHASE 2 COMPLETE EXACT QUANTITIES AND UCUM CALCULUS VERIFIED
+    criteria:
+      - id: AC-2.1
+        statement: "Every accepted quantity kind and nearest malformed/ambiguous shape has a shared positive or refusal vector using canonical decimal strings."
+        verify: "bash tools/schemami/check-quantity-vectors.sh"
+      - id: AC-2.2
+        statement: "Go and TypeScript return byte-identical canonical decimal results with at most 16 total digits and four fractional digits for retained Calculus and UCUM 2.2 vectors, using round-half-to-even and without floating tolerance or rational output."
+        verify: "make schemami-calculus"
+        verify_kind: behavioral
+        intent: The recipe calculation contract is deterministic and implementation-independent at the accepted precision.
+        falsifying_observation: A result requires tolerance, differs by language, exceeds 16 total or four fractional digits, or embeds integrator-dependent display rounding.
+      - id: AC-2.3
+        statement: "Bare regional units, unknown units, formula relationships, open quantities, unsupported range conversion, cross-dimension, mass-volume, invalid decimals, and excessive input refuse with pinned problem types."
+        verify: "bash tools/schemami/check-conversion-refusals.sh"
+  - id: "3"
+    name: Local entities, evidence, and diagnostics
+    classification: testable
+    completion_promise: PHASE 3 COMPLETE LOCAL ENTITIES EVIDENCE AND REFUSALS VERIFIED
+    criteria:
+      - id: AC-3.1
+        statement: "Unknown recipe-local ingredient, technique, equipment, and accepted action concepts validate/render without a registry; only operations requiring absent facts refuse."
+        verify: "bash tools/schemami/check-local-entity-boundary.sh"
+        verify_kind: behavioral
+        intent: Catalog curation is never an admission prerequisite.
+        falsifying_observation: Unknown local identity invalidates or becomes globally resolved without explicit app context.
+      - id: AC-3.2
+        statement: "Evidence uses valid declared sources and RFC 6901 targets; raw/confidence changes cannot alter a calculation or satisfy a missing structured value."
+        verify: "bash tools/schemami/check-evidence-boundary.sh"
+      - id: AC-3.3
+        statement: "Go and TypeScript return the same operation/status/problem type/pointer for every refusal, and no normative path parses human prose."
+        verify: "bash tools/schemami/check-diagnostic-parity.sh"
+  - id: "4"
+    name: Tools, viewer, packs, and active repository rename
+    classification: testable
+    completion_promise: PHASE 4 COMPLETE SCHEMAMI END TO END RUNTIME VERIFIED
+    criteria:
+      - id: AC-4.1
+        statement: "CLI/module/package identities, examples, packs, viewer, generated artifacts, CUE, bootstrap, Make/CI, and active project documentation use Schemami v1 and pass the complete local gate."
+        verify: "make ci"
+      - id: AC-4.2
+        statement: "The viewer renders source-language local entities and all quantity kinds without a central registry or evidence parsing, while owner extensions round-trip without affecting results."
+        verify: "make conformance && bash tools/schemami/check-viewer-boundary.sh"
+      - id: AC-4.3
+        statement: "Pack resolution is explicit/offline, keeps collection collisions scoped, and performs no vocabulary embedding, global search, or network fallback."
+        verify: "bash tools/schemami/check-pack-resolution.sh"
+      - id: AC-4.4
+        statement: "Every active RCP occurrence is removed or classified as a historical record or negative unsupported-input fixture in the cutover ledger."
+        verify: "bash tools/schemami/check-clean-cutover.sh"
+  - id: "5"
+    name: Conformance and stable release proof
+    classification: testable
+    completion_promise: PHASE 5 COMPLETE SCHEMAMI V1 STABLE RELEASE PROVEN
+    criteria:
+      - id: AC-5.1
+        statement: "The candidate commit passes the full pinned gate from a clean clone without dirty overlay, private input, network dependency during cooking, or Pão checkout."
+        verify: "bash tools/schemami/clean-clone-release-proof.sh"
+        verify_kind: behavioral
+        intent: Release evidence is reproducible from the candidate, not the current dirty workspace.
+        falsifying_observation: The proof consumes an uncommitted file, Pão path, mutable remote fact, or host credential.
+      - id: AC-5.2
+        statement: "Every normative schema, vector, and problem-type URL in the versioned release manifest resolves immutably over HTTPS with bytes matching the candidate."
+        verify: "bash tools/schemami/check-published-contract.sh"
+      - id: AC-5.3
+        statement: "The requirement evidence ledger proves every PRD-007/SPEC-007/plan criterion and no commit, tag, push, or publication occurs without Daniel's explicit approval."
+        verify: "bash tools/schemami/check-release-evidence.sh"
+dependencies:
+  "0":
+    blocks: ["1", "2", "3", "4", "5"]
+  "1":
+    blocks: ["2", "3", "4", "5"]
+  "2":
+    blocks: ["3", "4", "5"]
+  "3":
+    blocks: ["4", "5"]
+  "4":
+    blocks: ["5"]
+risks:
+  - id: R-1
+    severity: critical
+    mitigation_phase: "0"
+  - id: R-2
+    severity: critical
+    mitigation_phase: "1"
+  - id: R-3
+    severity: critical
+    mitigation_phase: "2"
+  - id: R-4
+    severity: high
+    mitigation_phase: "3"
+  - id: R-5
+    severity: high
+    mitigation_phase: "4"
+  - id: R-6
+    severity: critical
+    mitigation_phase: "5"

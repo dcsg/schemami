@@ -1,55 +1,53 @@
-# RCP — Recipe Protocol — Project Context
+# Schemami project context
 
-## What This Is
+## Purpose
 
-RCP is a universal, machine-readable recipe protocol: one small core schema
-plus per-category profiles able to encode bread, pastry, fermentation,
-preserves, drinks, coffee and savoury cooking. A single renderer can rescale
-quantities, substitute ingredients, and guide execution from it.
+Schemami is a deterministic recipe intermediate representation. Source-first
+adapters may ingest typed text, web pages, photographs, documents, voice, or
+application data into candidate Schemami, but those adapters are not normative
+and the protocol has no runtime AI dependency.
 
-Status: research complete (6 tracks, 5 expert reviews), 22 decisions locked
-in `docs/research/DECISIONS.md`, pre-implementation. v0.1 scope is decision
-#22: frozen core + registry formats/seed + bread & pastry profiles +
-validation harness + minimal fail-closed safety clamp. The protocol
-(normative) is strictly separated from any implementation (informative) —
-decision #21; users/favorites/packs/apps are out of scope — decision #19.
+The protocol distinguishes captured evidence from structured facts. A recipe
+may remain readable when facts are missing; only operations requiring those
+facts refuse. Human prose, evidence, confidence, and translations are never
+calculation inputs.
 
-## Stack
+## Current architecture
 
-JSON Schema 2020-12 (`schema/rcp-core-v1.schema.json`) + YAML-authored
-example recipes (`examples/*.rcp.yaml`, six documents — the regression
-suite) + Markdown research corpus. No build/test tooling yet: the validation
-harness (ajv Layer 1 + semantic linter Layer 2, CUE-flavoured per decision
-#8) is a v0.1 deliverable; its implementation language is chosen at SPEC
-time.
+- JSON Schema 2020-12 defines recipes and offline pack manifests.
+- JSON is canonical; YAML is a parse-equivalent authoring/import form.
+- RFC 8785 JCS plus SHA-256 pins published document bytes.
+- BCP 47 identifies the one source content language.
+- RFC 6901 pointers target source evidence and diagnostics.
+- UCUM 2.2 identifiers drive the supported deterministic unit conversions.
+- Go is the reference CLI/Calculus implementation; TypeScript replays the
+  shared corpus and powers the local viewer.
 
-## Architecture
+Recipe-local IDs identify ingredients, techniques, equipment, and steps within
+one document. Integrators may map those IDs into their own contexts. Schemami
+does not require or govern a global vocabulary registry.
 
-Documents are the system of record. One core + additive per-category
-profiles (`kind` selects the profile; profiles extend via allOf, never
-remove core fields). Registry (ingredient classes, step primitives,
-equipment profiles) is a formal bounded context from day one; Execution is
-separate (targets in the recipe, readings in session documents). Safety-
-critical quantities are bounded data enforced fail-closed. Reference
-architecture (DDD context map) is informative only — see decision #21.
+## Normative v1 surface
 
-## Users
+- `schema/schemami-v1-core.schema.json`
+- `schema/schemami-v1-pack.schema.json`
+- `schema/VERSIONING.md`
+- `conformance/schemami-v1/`
+- `docs/product/specs/SPEC-007-schemami-v1-stable-release/`
+- accepted ADR-004 through ADR-012 where referenced by SPEC-007
 
-Canonical personas in `docs/personas.md` (RCP-scoped). Primary v1:
-`rcp.ingester.personal-collector` — Daniel as product owner and n=1
-dogfooder ingests recipes from his own cookbooks (photo → vision-LLM
-extraction → review/correct → private recipe). No founder persona exists.
-Imported book recipes are private/personal-use only; private-vs-published
-is a first-class boundary.
+The CLI, viewer, examples, Make/CI scripts, and product reports are reference
+implementations or evidence. Earlier schemas, registries, profiles, examples,
+tools, and dated product records are retained historical material, not part of
+the active Schemami v1 contract.
 
----
+## Product boundary
 
-*Initialized by edikt: 2026-08-02*
+Schemami does not host recipes, users, translations, catalogs, AI inference,
+editorial workflow, execution sessions, or application presentation. It owns
+portable structured recipe data, deterministic operation semantics, explicit
+refusal, and conformance.
 
-
-## Normative surface (updated 2026-08-03, SPEC-003)
-
-Normative: `schema/` (core + profiles + VERSIONING.md + constraints),
-`registry/`, `i18n/`, `calculus/` (SPEC.md + vectors — the Recipe
-Calculus, engineering obligation #1). Informative: `tools/`, `Makefile`,
-docs. The two-surface split is DS-PR-001; calculus/ joined in v0.3.
+The next sequence is: prove and publish stable Schemami v1; let Pão de Portugal
+adopt it through an app-owned adapter; then revise the AI conversion PRD and
+resume the documentation/manual work.

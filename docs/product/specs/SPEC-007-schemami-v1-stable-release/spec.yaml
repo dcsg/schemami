@@ -1,0 +1,310 @@
+# yaml-language-server: $schema=../../../../.edikt/schemas/spec-sidecar.v1.schema.json
+schema_version: "1.0"
+type: spec
+id: SPEC-007
+title: "Schemami v1 stable protocol release"
+slug: schemami-v1-stable-release
+status: accepted
+author: Daniel Gomes
+created_at: "2026-08-10T23:30:00Z"
+source_prd: PRD-007
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-007
+  covered:
+    - fr: FR-NAME-001
+      by: [SR-ID-001, SR-SERIAL-001]
+    - fr: FR-MODEL-001
+      by: [SR-LANG-001, SR-QTY-001, SR-FIELD-001]
+    - fr: FR-CUTOVER-001
+      by: [SR-CUTOVER-001]
+    - fr: FR-VOCAB-001
+      by: [SR-LOCAL-001, SR-METHOD-001]
+    - fr: FR-CALC-006
+      by: [SR-QTY-001, SR-UNIT-001, SR-CONVERT-001]
+    - fr: FR-EVIDENCE-001
+      by: [SR-EVIDENCE-001, SR-DIAG-001]
+    - fr: FR-PAO-001
+      by: [SR-LOCAL-001, SR-RELEASE-001]
+    - fr: FR-REL-001
+      by: [SR-CONFORMANCE-001, SR-RELEASE-001]
+  deferred: []
+  uncovered: []
+requirements:
+  - id: SR-ID-001
+    implements: FR-NAME-001
+    text: "Every Schemami root document and pack manifest MUST carry schemami: \"1\". Active schema, package, vector, command, module, extension, file, media, and release identifiers MUST use Schemami naming and immutable https://schemami.dev URLs. x-schemami-* is protocol-reserved; unknown integrator x-<owner>-* values are preserved but MUST NOT affect protocol logic."
+    verify_kind: behavioral
+    intent: The public contract has one unambiguous Schemami identity.
+    falsifying_observation: A canonical Schemami artifact emits or requires an active RCP identifier, or an unknown extension changes a result.
+  - id: SR-SERIAL-001
+    implements: FR-NAME-001
+    text: "JSON MUST be the canonical wire representation with .schemami.json suffix. YAML MAY be accepted as .schemami.yaml authoring input only when it parses into the identical admitted I-JSON data model. Canonical bytes and hashes MUST use RFC 8785 JCS. application/json remains the media type until a Schemami-specific +json media type is registered under RFC 6838."
+    verify_kind: behavioral
+    intent: File and hash interoperability do not depend on YAML emitter or an unregistered media-type claim.
+    falsifying_observation: Equivalent admitted JSON and YAML produce different canonical values or identities, or the release claims an unregistered media type as registered.
+  - id: SR-LANG-001
+    implements: FR-MODEL-001
+    text: "Every root document MUST carry required content_language as a well-formed BCP 47 source-content tag with no default. Authored prose MUST be a string in that language. Locale maps and presentation-language preferences MUST NOT be canonical recipe data; origin country remains a distinct ISO 3166-1 alpha-2 value."
+    verify_kind: structural
+    intent: Source language, translation, locale, and origin cannot be conflated.
+    falsifying_observation: A document validates without content_language, accepts locale-map prose, or treats pt-PT as a country/origin value.
+  - id: SR-LOCAL-001
+    implements: FR-VOCAB-001
+    text: "Every ingredient MUST have a recipe-local id and source-language name and MUST remain valid/renderable without item, proposed_class, terms, package vocabulary, or central/global registry resolution. Every recipe-local id MUST match ^[a-z0-9][a-z0-9_-]*$, contain at most 128 characters, compare exactly and case-sensitively, and MUST NOT be normalized by a reader. A lowercase UUID-shaped string MUST be accepted as an ordinary local id without special UUID semantics. Integrator mapping of document identity plus local id MUST remain outside canonical Schemami data."
+    verify_kind: behavioral
+    intent: A catalog cannot become an admission blocker.
+    falsifying_observation: An unknown ingredient cannot validate/render, an uppercase/dotted/spaced or overlong id is normalized or accepted, a lowercase UUID is rejected or gains special behavior, or app catalog identity changes canonical recipe semantics.
+  - id: SR-METHOD-001
+    implements: FR-VOCAB-001
+    text: "A recipe MAY declare local techniques and equipment with collection-local id and source-language name. Each step MUST itself be the recipe-local action with required local id and source-language instruction. It MUST remain valid/renderable without a primitive or action registry, version, or parameter object. Only explicit structured step fields MAY supply deterministic inputs; id, instruction, technique, and equipment names MUST NOT activate behavior. A protocol operation MAY be added only when Recipe Calculus defines and consumes it."
+    verify_kind: behavioral
+    intent: Integrators can express recipe-local method concepts without global taxonomy pressure or unearned operation semantics.
+    falsifying_observation: A step requires primitive/action minting, primitive params survive, authored text activates calculation, or an unconsumed speculative operation field is added.
+  - id: SR-QTY-001
+    implements: FR-CALC-006
+    text: "quantity MUST replace amount for absolute amounts and MUST be a closed union selected by required kind: measured, range, or open. A grouped formula MUST represent either an ordered ratio whose terms store positive exact-decimal parts, or percentages whose terms store percentage points directly against one named ingredient basis. Ratio 1:2:2 MUST remain 1:2:2; percentage 75 MUST mean 75%, never a 0.75 multiplier. An ingredient named by formula terms MUST NOT also carry explicit quantity. Schemami v1 MUST NOT admit a canonical endpoint or readiness-condition field; completion conditions remain source-language step instructions."
+    verify_kind: behavioral
+    intent: Absolute amounts, colon ratios, and percentages have separate explicit meanings while readiness prose does not masquerade as computation.
+    falsifying_observation: Logic infers a quantity or endpoint from prose, stores 75% as a 0.75 ratio multiplier, normalizes 1:2:2 into percentages, admits binary floating values as canonical scalars, or validates a canonical endpoint field.
+  - id: SR-UNIT-001
+    implements: FR-CALC-006
+    text: "Measured quantity.unit MUST contain a pinned UCUM 2.2 identity. The normative minimum table MUST include g, kg, mL, L, Cel, [degF], [cup_us], [tbs_us], [tsp_us], [foz_us], and [cup_m], with [cup_m] defined as UCUM's 240 mL. Bare regional names and source/display spellings MUST NOT be accepted as convertible identities."
+    verify_kind: structural
+    intent: Unit identity is standard-backed, regional ambiguity is explicit, and presentation is separate.
+    falsifying_observation: cup converts without a region, [cup_m] becomes 250 mL, or g is treated as mL.
+  - id: SR-CONVERT-001
+    implements: FR-CALC-006
+    text: "convert_quantity MUST use implementation-independent decimal/rational arithmetic for explicit scalar measured same-dimension and Celsius/Fahrenheit conversions and MUST return the same canonical decimal-string shape as authored values, with at most 16 total digits (excluding decimal point and permitted minus sign) and four fractional digits. Exact results beyond four fractional digits MUST use round-half-to-even; for example, 1.23445 becomes 1.2344 and 1.23455 becomes 1.2346. It MUST refuse ambiguous/unknown units, formula relationships, open, unsupported range, cross-dimension, mass-volume, invalid decimal, and resource-limit inputs with stable problem types. Presentation MAY round further but MUST NOT alter the canonical operation result."
+    verify_kind: behavioral
+    intent: Go and TypeScript agree on practical recipe precision without physical or regional inference.
+    falsifying_observation: Implementations differ, accept g-to-mL, use floating tolerance, accept or emit more than 16 total or four fractional digits, or expose a rational object.
+  - id: SR-DURATION-001
+    implements: FR-CALC-006
+    text: "Elapsed recipe durations MUST use Schemami's strict positive unsigned RFC 5545 section 3.3.6 day/time/week profile, including PT8M, PT1H10M, P2D, and P1W. Schemami treats D and W as fixed 86400- and 604800-second elapsed values. Duration windows MUST use minimum, target, and maximum. Calendar years/months, signed/zero durations, Model 1 compact duration strings, and abbreviated min/max members MUST reject."
+    verify_kind: behavioral
+    intent: Scheduling uses portable fixed elapsed time rather than a custom parser or calendar-dependent period.
+    falsifying_observation: 1h10m validates, a signed/zero/year/month duration validates, or Go and TypeScript compute different elapsed offsets.
+  - id: SR-OPS-001
+    implements: FR-CALC-006
+    text: "The complete v1 Recipe Calculus operation set is scale, resolve_formula, convert_quantity, reading_order, and schedule. scale MUST interpret only linear and fixed scaling; unknown x-owner extension-defined scaling behavior MUST refuse. Options, guards, constraints, tracks, and interleaving MUST NOT be canonical v1 fields or operations. reading_order MUST return one dependency-respecting linear projection and use declaration order only to break ties."
+    verify_kind: behavioral
+    intent: Method order is portable without freezing an unproven lane or branching model.
+    falsifying_observation: A v1 operation is inferred from prose, a track or guard validates canonically, unknown custom scaling gains core behavior, or Go and TypeScript disagree on reading order.
+  - id: SR-EVIDENCE-001
+    implements: FR-EVIDENCE-001
+    text: "Document-level sources MUST identify acquisition artifacts by local id and URI/URI-reference with optional immutable digest. Document-level evidence MUST target an existing structured value with RFC 6901 JSON Pointer and MAY retain source id, raw_text, and canonical-decimal confidence. Evidence MUST NOT satisfy a missing structured prerequisite or be parsed by validation/Calculus logic."
+    verify_kind: behavioral
+    intent: Partial capture is auditable without masquerading as computation.
+    falsifying_observation: Raw text supplies a quantity, a broken pointer validates, or changing confidence changes a calculation.
+  - id: SR-DIAG-001
+    implements: FR-EVIDENCE-001
+    text: "Every public operation result MUST contain operation and status, where status is ok, refused, or not_applicable. Success MUST carry exactly one closed operation-specific result object and no problems; refusal MUST carry one or more problems with stable absolute type URI and, for document data, RFC 6901 pointer, and no result; not_applicable carries neither. The envelope MAY be influenced by RFC 9457 but MUST NOT claim to be an HTTP Problem Details object or use human text as machine semantics."
+    verify_kind: behavioral
+    intent: Refusals are stable, localizable, and precise without misusing an HTTP standard.
+    falsifying_observation: A renderer must parse prose, two implementations return different problem identity/pointer, or status is confused with an HTTP code.
+  - id: SR-PORTABLE-001
+    implements: FR-PORTABLE-001
+    text: "Document id and collection MUST use the 1-to-128-character local-ID grammar; revision MUST be a positive base-10 integer without a leading zero. Published packs MUST pin JCS SHA-256 document bytes. external_references MAY contain absolute RFC 3986 URIs but MUST NOT resolve or supply facts. Canonical authored prose is title, name, instruction, and notes only. x-owner extension names use lowercase DNS-label-style tokens, round-trip unchanged, and MUST NOT affect core logic."
+    verify_kind: behavioral
+    intent: Portability does not imply global ownership, network resolution, or vocabulary admission.
+    falsifying_observation: A document needs a global lookup, an external URI changes a result, an alias prose field validates canonically, or an unknown extension changes logic.
+  - id: SR-FIELD-001
+    implements: FR-MODEL-001
+    text: "Before schema implementation, the field register MUST enumerate every public document, pack, Calculus input/result, validator, and record member with path, scope, type, requiredness/default, canonicalization, standard/value vocabulary, content ownership, cutover disposition, and collision vectors. Repeated names in distinct typed scopes MAY remain; same-scope ambiguity and aliases MUST NOT."
+    verify_kind: structural
+    intent: Schemami v1 does not accumulate avoidable naming ambiguity before publication.
+    falsifying_observation: A public field has no registered meaning or two meanings in the same scope, or a rename exists only for style.
+  - id: SR-CUTOVER-001
+    implements: FR-CUTOVER-001
+    text: "The released reader/writer/schema/calculus/viewer surface MUST recognize and emit Schemami v1 only. An RCP-marked input MUST return the stable unsupported-legacy problem and MUST NOT invoke a dual reader, alias, or migration tool. Historical records remain explicitly historical."
+    verify_kind: behavioral
+    intent: The pre-publication rename does not create permanent compatibility debt.
+    falsifying_observation: A released path accepts/emits RCP or silently rewrites legacy input.
+  - id: SR-CONFORMANCE-001
+    implements: FR-REL-001
+    text: "Go and TypeScript MUST replay one shared normative corpus covering schema admission, JCS canonicalization, local identities, evidence pointers, every quantity/formula kind, deterministic conversion/refusal, diagnostics, pack resolution, extension preservation, and unsupported RCP input. Canonical decimal fields MUST compare byte-for-byte exactly after the pinned 16-total-digit/four-fractional-digit/tie rule; no floating tolerance is permitted."
+    verify_kind: behavioral
+    intent: Language-independent behavior, not implementation preference, defines conformance.
+    falsifying_observation: Either implementation skips a vector class or produces a different admitted value/result.
+  - id: SR-RELEASE-001
+    implements: FR-REL-001
+    text: "A stable release MUST be proven from a clean clone of the candidate commit, publish its byte-identical versioned manifest at https://schemami.dev/releases/schemami-v1.0.0.json, contain a clean-cutover inventory, publish the core/pack schema IDs, https://schemami.dev/conformance/schemami/1/calculus.json, and human-readable HTML for each https://schemami.dev/problems/<code> identity with manifest-pinned media type and SHA-256 bytes; any redirect MUST remain on the canonical host. It MUST contain no active RCP identity outside historical/negative fixtures and pass all local/cross-language gates. Pão de Portugal code MUST NOT be a release prerequisite."
+    verify_kind: behavioral
+    intent: The release is reproducible and independently adoptable before AI/docs work.
+    falsifying_observation: Evidence depends on the dirty worktree, a mutable/missing normative URL, active RCP surface, or Pão application checkout.
+acceptance_criteria:
+  - id: AC-WIRE-001
+    source: spec
+    fr: FR-NAME-001
+    given: canonical JSON and equivalent YAML source for one Schemami recipe
+    when: both are parsed, admitted, and canonicalized
+    then: they produce the same data model and RFC 8785 bytes; only the JSON form is canonical wire output
+  - id: AC-LOCAL-001
+    source: prd
+    fr: FR-VOCAB-001
+    given: unknown local ingredient, technique, and equipment entries with source-language names
+    when: schema validation and rendering run without a catalog
+    then: the recipe remains valid and readable; a fact-dependent operation alone refuses with a stable pointer
+  - id: AC-LOCAL-ID-001
+    source: prd
+    fr: FR-VOCAB-001
+    given: lowercase kebab, snake, UUID-shaped, and 128-character local IDs plus nearest invalid spellings and a 129-character ID
+    when: both implementations validate and resolve recipe-local references
+    then: only lowercase ASCII letters, digits, hyphen, and underscore in 1 to 128 characters are admitted and exact matching occurs without normalization or UUID-specific behavior
+  - id: AC-METHOD-001
+    source: prd
+    fr: FR-VOCAB-001
+    given: a step with local id, source-language instruction, and explicit structured fields but no primitive/action reference
+    when: schema validation, rendering, and scheduling run
+    then: the step is valid and readable and only its explicit structured fields affect deterministic behavior
+  - id: AC-DURATION-001
+    source: prd
+    fr: FR-CALC-006
+    given: positive elapsed duration examples and nearest negative, calendar, and Model 1 compact forms
+    when: schema validation and scheduling run in Go and TypeScript
+    then: admitted values produce identical elapsed offsets and unsupported forms reject before scheduling
+  - id: AC-QTY-001
+    source: spec
+    fr: FR-CALC-006
+    given: each tagged quantity and grouped ratio/percentage formula shape plus its nearest ambiguous malformed shape
+    when: validation and relevant Calculus operations run
+    then: the valid shape retains its explicit semantics and the malformed/unsupported shape refuses without inference
+  - id: AC-CONVERT-001
+    source: prd
+    fr: FR-CALC-006
+    given: the shared UCUM conversion and refusal corpus
+    when: Go and TypeScript replay it
+    then: both return identical canonical decimal results and problem identities without tolerance, density, regional inference, rational output, or integrator-dependent rounding
+  - id: AC-EVIDENCE-001
+    source: prd
+    fr: FR-EVIDENCE-001
+    given: evidence targeting a structured quantity plus raw conflicting text
+    when: validation and conversion run
+    then: the pointer/source binding validates but only the structured quantity affects the deterministic result
+  - id: AC-CUTOVER-001
+    source: prd
+    fr: FR-CUTOVER-001
+    given: one Schemami input and one RCP-marked input
+    when: the stable reader evaluates them
+    then: it admits the Schemami input and returns unsupported-legacy for RCP without fallback or mutation
+  - id: AC-RELEASE-001
+    source: prd
+    fr: FR-REL-001
+    given: the candidate commit and release manifest
+    when: the clean-clone release DAG runs
+    then: every required local, cross-language, identity, HTTPS publication, and cutover gate passes without a Pão checkout
+protections:
+  - id: SP-001
+    source: prd
+    text: "Schemami MUST NOT host recipes, translations, an inference runtime, or a mandatory/global catalog."
+  - id: SP-002
+    source: prd
+    text: "Unknown local concepts remain readable; missing structured facts disable only dependent operations and never invalidate unrelated captured content."
+  - id: SP-003
+    source: prd
+    text: "No conversion may infer region, density, ingredient state, or g/mL equivalence. Protocol quantization uses only the accepted 16-total-digit/four-fractional-digit/tie rule; presentation rounding cannot alter canonical results."
+  - id: SP-004
+    source: prd
+    text: "No active Schemami release path may accept, alias, emit, or migrate RCP."
+  - id: SP-005
+    source: prd
+    text: "Chosen wire semantics MUST NOT be widened accidentally from Model 1; any new operation or canonical field requires a new accepted decision and conformance vectors."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-007-schemami-stable-protocol-release.yaml
+    description: Source product requirements and release gates.
+    source: prd
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-008-local-method-entities-and-exact-quantity-contract.md
+    description: Accepted local method, quantity, evidence, and diagnostic boundaries.
+    source: prd
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-010-defer-structured-readiness-endpoints.md
+    description: Accepted deferral of structured readiness conditions from v1.
+    source: prd
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-011-operation-results-and-earliest-start-scheduling.md
+    description: Accepted operation envelope and deterministic earliest-start schedule semantics.
+    source: prd
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-012-formula-authority-and-effective-quantity-scaling.md
+    description: Accepted sole formula authority, formula resolution, and effective-quantity scaling semantics.
+    source: prd
+  - type: evidence
+    path_or_url: prototypes/discovery-002/units/
+    description: Cross-language exact UCUM conversion evidence.
+    source: prd
+  - type: doc
+    path_or_url: docs/product/prds/artifacts/PRD-007/field-name-audit.md
+    description: Field ambiguity evidence and accepted register entries.
+    source: prd
+  - type: evidence
+    path_or_url: docs/product/prds/artifacts/PRD-007/step-action-runtime-audit.md
+    description: Measured primitive/ParamSpec/Calculus/viewer behavior and accepted minimum step boundary.
+    source: prd
+  - type: evidence
+    path_or_url: docs/product/prds/artifacts/PRD-007/calculus-operation-retention-audit.md
+    description: Current operation call paths/vectors and proposed public, internal, replaced, or removed classification.
+    source: prd
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+revision_history:
+  - at: "2026-08-11T12:00:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted formula terms as the sole quantity authority for their ingredients; resolve_formula and scale return ordered effective quantities, scale exact anchors and explicit linear quantities, preserve fixed/open quantities, and refuse missing authority."
+  - at: "2026-08-11T11:30:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted closed operation result envelopes and deterministic earliest-start scheduling from explicit after dependencies and target durations."
+  - at: "2026-08-11T00:45:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted the minimal v1 Calculus surface with deterministic reading_order; deferred lanes, tracks, interleaving, options, guards, and constraints; accepted local pack identity, optional unresolved URI references, source evidence, canonical prose, extension grammar, and problem URI registry."
+  - at: "2026-08-11T00:35:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted a 16-total-digit maximum (excluding decimal point and permitted minus sign) for canonical decimal inputs and public results."
+  - at: "2026-08-11T00:30:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted a 128-character maximum for recipe-local IDs."
+  - at: "2026-08-11T00:25:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted recipe-local IDs as lowercase ASCII alphanumeric tokens with hyphen/underscore, exact case-sensitive matching, and ordinary lowercase UUID-shaped values."
+  - at: "2026-08-11T00:15:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted positive standard-shaped elapsed durations and full minimum/target/maximum window names, excluding calendar years/months and Model 1 compact syntax; primary-source grammar verification remains a gate."
+  - at: "2026-08-11T00:05:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted the step itself as the recipe-local action, removed mandatory primitive/action identity and params, and deferred protocol operations until Calculus defines and consumes them."
+  - at: "2026-08-10T23:59:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted round-half-to-even for exact public results beyond four fractional digits, with exact boundary examples."
+  - at: "2026-08-10T23:55:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Replaced public rational results with canonical decimal strings capped at four fractional digits; tie handling remained pending at this revision."
+  - at: "2026-08-10T23:45:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted ratios as ordered grouped parts (1:2:2, 1:15) and percentages as direct percentage points against a named basis. Removed ratio and parts from scalar quantity kinds."
+  - at: "2026-08-10T23:30:00Z"
+    author: Daniel Gomes
+    action: created
+    note: "Drafted accepted Schemami v1 boundaries and explicitly retained ratio, exact-result, and step-action wire questions for founder decision."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

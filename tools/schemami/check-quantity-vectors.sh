@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "$0")/../.." && pwd)"
+
+GOSUMDB=off GOPROXY=off "$root/tools/with-toolchain.sh" go -C "$root/tools/schemami" test -mod=readonly ./... -run 'TestSchemaRejectsMalformedQuantityShapes|TestSharedCalculusVectors'
+"$root/tools/with-toolchain.sh" bun test "$root/tools/viewer/conformance/schemami-calculus.test.ts"
+
+echo "schemami quantity vectors: valid"

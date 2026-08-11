@@ -1,0 +1,25 @@
+schema_version: 1
+topic: protocol-release
+path: docs/architecture/decisions/ADR-006-schemami-v1-clean-cutover.md
+signals:
+  - schemami cutover
+  - rcp compatibility
+  - legacy migration
+  - pao adoption
+directives:
+  - text: "Schemami v1 MUST be a clean wire cutover: it MUST NOT ship a dual RCP/Schemami reader, a public RCP migration tool, a legacy deprecation window, or RCP writer aliases. (ref: ADR-006)"
+    source_excerpt:
+      line_start: 22
+      line_end: 24
+      quote: "1. Schemami v1 is a clean cutover. Its reader accepts Schemami wire v1\n   only; an `rcp` marker is an explicit unsupported-legacy input, not a fallback\n   or compatibility path."
+  - text: "Pão de Portugal adaptation is outside Schemami v1 release scope; Schemami MUST prove its registry-optional boundary with repository-owned conformance vectors rather than mutate or gate on the Pão repository. (ref: ADR-006)"
+    source_excerpt:
+      line_start: 34
+      line_end: 36
+      quote: "5. Pão de Portugal adoption is not a Schemami v1 release dependency. Pão may\n   adapt on its own schedule using the published contract; Schemami does not\n   mutate, test-gate, or require a target Pão branch for this release."
+paths:
+  - schema/**
+  - registry/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

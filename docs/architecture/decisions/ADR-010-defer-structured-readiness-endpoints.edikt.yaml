@@ -1,0 +1,34 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-010-defer-structured-readiness-endpoints.md
+signals:
+  - recipe calculus
+  - source-language instruction
+  - method order
+  - readiness condition
+directives:
+  - text: 'Schemami v1 MUST NOT admit canonical endpoint, until, sensory-condition, visual-condition, stage, or readiness-condition fields; completion conditions remain source-language step instructions until a future model defines closed semantics and conformance. (ref: ADR-010)'
+    source_excerpt:
+      line_start: 23
+      line_end: 37
+      quote: |-
+        Schemami v1 has no canonical `endpoint`, `until`, sensory-condition, visual
+        condition, stage, or readiness-condition field. Completion conditions remain
+        in the step's required source-language `instruction` and do not participate in
+        Recipe Calculus.
+
+        The v1 operation set remains `scale`, `resolve_formula`,
+        `convert_quantity`, `reading_order`, and `schedule`. A future model may add a
+        structured readiness feature only with all of the following accepted together:
+
+        1. a closed value shape and unambiguous field names;
+        2. its standards/value-vocabulary basis, including treatment of sensory and
+           visual claims;
+        3. at least one deterministic operation that consumes the structured facts;
+        4. refusal behavior for unavailable or non-computable conditions; and
+        5. cross-language conformance vectors.
+paths:
+  - schema/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

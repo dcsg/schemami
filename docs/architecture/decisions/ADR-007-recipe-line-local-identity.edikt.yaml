@@ -1,0 +1,25 @@
+schema_version: 1
+topic: protocol-vocabulary
+path: docs/architecture/decisions/ADR-007-recipe-line-local-identity.md
+signals:
+  - recipe-local identity
+  - ingredient item
+  - local vocabulary
+  - integrator mapping
+directives:
+  - text: "In Schemami v1, an ingredient line's required recipe-local id is the sole protocol identity for that ingredient; a central registry or secondary term/item identifier MUST NOT be required. (ref: ADR-007)"
+    source_excerpt:
+      line_start: 20
+      line_end: 23
+      quote: "1. Each ingredient line has one required recipe-local `id`. It is the sole\n   Schemami identity for that ingredient in its document and is the target of\n   recipe-internal references. No central registry ID, package ID, `item`, or\n   secondary generic `term` ID is required or emitted in Schemami v1."
+  - text: "An integrator MAY map the pair of Schemami document identity and ingredient-line id to its internal catalog, but that mapping MUST remain outside the Schemami document. (ref: ADR-007)"
+    source_excerpt:
+      line_start: 26
+      line_end: 29
+      quote: "3. An integrator may map the pair `(Schemami document identity, ingredient-line\n   id)` to an internal catalog record. That mapping remains application context:\n   it is not serialized in the Schemami document and makes no global equivalence\n   claim."
+paths:
+  - schema/**
+  - registry/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

@@ -1,0 +1,14 @@
+{
+  "release": "schemami-v1.0.0",
+  "requirements": [
+    {"id":"FR-NAME-001","gates":["make validate","make cutover"]},
+    {"id":"FR-MODEL-001","gates":["make validate","make conformance"]},
+    {"id":"FR-CUTOVER-001","gates":["make cutover"]},
+    {"id":"FR-VOCAB-001","gates":["bash tools/schemami/check-local-entity-boundary.sh"]},
+    {"id":"FR-CALC-006","gates":["make calculus","bash tools/schemami/check-conversion-refusals.sh"]},
+    {"id":"FR-EVIDENCE-001","gates":["bash tools/schemami/check-evidence-boundary.sh","bash tools/schemami/check-diagnostic-parity.sh"]},
+    {"id":"FR-PORTABLE-001","gates":["make pack"]},
+    {"id":"FR-PAO-001","gates":["bash tools/schemami/check-local-entity-boundary.sh","make cutover"]},
+    {"id":"FR-REL-001","gates":["make ci","bash tools/schemami/clean-clone-release-proof.sh","bash tools/schemami/check-published-contract.sh"]}
+  ]
+}
