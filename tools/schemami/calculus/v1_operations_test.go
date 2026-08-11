@@ -16,12 +16,13 @@ func TestStructuredSharedEnvelopeByteParity(t *testing.T) {
 	}
 	var corpus struct {
 		Vectors []struct {
-			ID        string         `json:"id"`
-			Fixture   string         `json:"fixture"`
-			Recipe    map[string]any `json:"recipe"`
-			Operation string         `json:"operation"`
-			Arguments map[string]any `json:"arguments"`
-			Digest    string         `json:"expected_jcs_sha256"`
+			ID            string         `json:"id"`
+			Fixture       string         `json:"fixture"`
+			RecipeFixture string         `json:"recipe_fixture"`
+			Recipe        map[string]any `json:"recipe"`
+			Operation     string         `json:"operation"`
+			Arguments     map[string]any `json:"arguments"`
+			Digest        string         `json:"expected_jcs_sha256"`
 		} `json:"vectors"`
 	}
 	if err := json.Unmarshal(raw, &corpus); err != nil {
@@ -40,6 +41,16 @@ func TestStructuredSharedEnvelopeByteParity(t *testing.T) {
 					t.Fatal(err)
 				}
 				request["bundle"] = bundle
+			} else if vector.RecipeFixture != "" {
+				fixture, err := os.ReadFile(filepath.Join("..", "testdata", vector.RecipeFixture))
+				if err != nil {
+					t.Fatal(err)
+				}
+				var recipe map[string]any
+				if err := json.Unmarshal(fixture, &recipe); err != nil {
+					t.Fatal(err)
+				}
+				request["recipe"] = recipe
 			} else {
 				request["recipe"] = vector.Recipe
 			}

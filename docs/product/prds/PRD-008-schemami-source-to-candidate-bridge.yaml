@@ -1,0 +1,153 @@
+schema_version: "1.0"
+type: prd
+id: PRD-008
+title: "Schemami source-to-candidate bridge"
+slug: schemami-source-to-candidate-bridge
+status: accepted
+rigor: platform
+author: Daniel Gomes
+created_at: "2026-08-11T18:21:47Z"
+requirements:
+  - id: FR-AI-001
+    text: "Publish a small immutable provider-neutral acquisition instruction and output contract for one complete or partial untrusted Schemami v1 recipe candidate; components and bundles are linked only after deterministic child admission supplies exact canonical digests, and adapter output MUST NOT claim deterministic admission."
+    status: accepted
+  - id: FR-AI-002
+    text: "Preserve source language, authored ordering, source references, selectors/raw evidence when available, and explicit omissions; acquisition metadata MUST NOT be a Recipe Calculus input."
+    status: accepted
+  - id: FR-AI-003
+    text: "Adapters MUST create valid recipe-local IDs and source-language names for unfamiliar local concepts and MUST NOT invent global vocabulary equivalence or require a Schemami registry."
+    status: accepted
+  - id: FR-AI-004
+    text: "Unsupported, ambiguous, or missing structured facts MUST remain visible in the acquisition report and MUST NOT be guessed to make validation or an operation pass."
+    status: accepted
+  - id: FR-AI-005
+    text: "Return the candidate separately from a non-normative acquisition report covering source coverage, unresolved items, proposed assumptions, and adapter identity/release provenance; report bytes MUST NOT affect recipe identity or calculation."
+    status: accepted
+  - id: FR-AI-006
+    text: "Candidates MUST be admitted by a deterministic Schemami SDK or CLI and repaired using stable problem identities and RFC 6901 pointers, with complete re-admission after every repair."
+    status: accepted
+  - id: FR-AI-007
+    text: "Source content MUST be treated as untrusted data and MUST NOT change the acquisition contract, suppress evidence, execute code, fetch undeclared resources, or override validation."
+    status: accepted
+  - id: FR-AI-008
+    text: "An approved multimodal corpus MUST measure coverage, admission, invention, unresolved facts, repair attempts, and reviewer effort; capability claims MUST be dated and evidence-based."
+    status: accepted
+  - id: FR-AI-009
+    text: "Telemetry and provider support status MAY be a later rollout increment but MUST be content-free, disableable, retention-bounded, and non-blocking; no documentation page or badge blocks the bridge."
+    status: accepted
+acceptance_criteria:
+  - id: AC-AI-001-1
+    fr: FR-AI-001
+    given: the same acquisition contract version and source fixture
+    when: an adapter emits a candidate
+    then: the output identifies the contract version and contains no assertion that substitutes for Schemami admission
+    status: proposed
+  - id: AC-AI-002-1
+    fr: FR-AI-002
+    given: source content with ordered structured culinary facts
+    when: those facts are captured
+    then: represented facts are traceable to the source and authored order is preserved
+    status: proposed
+  - id: AC-AI-003-1
+    fr: FR-AI-003
+    given: an unfamiliar but valid local concept
+    when: no application catalog mapping exists
+    then: capture emits a recipe-local ID and source-language name rather than failing or inventing a global ID
+    status: proposed
+  - id: AC-AI-004-1
+    fr: FR-AI-004
+    given: an ambiguous quantity or missing structured relationship
+    when: capture completes
+    then: the candidate stays readable where possible and dependent operations refuse instead of consuming a guessed value
+    status: proposed
+  - id: AC-AI-005-1
+    fr: FR-AI-005
+    given: candidate JSON and an acquisition report
+    when: report-only data changes
+    then: recipe bytes, revision, digest, and Calculus results remain unchanged
+    status: proposed
+  - id: AC-AI-006-1
+    fr: FR-AI-006
+    given: a schema or semantic problem
+    when: a repair cycle is requested
+    then: stable problem identities and RFC 6901 pointers are returned and the replacement candidate is fully re-admitted
+    status: proposed
+  - id: AC-AI-007-1
+    fr: FR-AI-007
+    given: hostile source instructions
+    when: the source is processed
+    then: those instructions cannot alter validation behavior, fabricate authority, hide omissions, or execute content
+    status: proposed
+  - id: AC-AI-008-1
+    fr: FR-AI-008
+    given: the approved evaluation corpus
+    when: the harness runs
+    then: results include denominators and failures and do not equate parseable JSON with fidelity or validity
+    status: proposed
+  - id: AC-AI-009-1
+    fr: FR-AI-009
+    given: no website or telemetry service
+    when: an integrator runs the bridge locally
+    then: candidate generation, admission, repair, and report inspection remain possible
+    status: proposed
+protections:
+  - id: SP-001
+    text: "Acquisition output remains untrusted until deterministic Schemami admission succeeds."
+  - id: SP-002
+    text: "Source prose, evidence, confidence, and acquisition-report content never become Recipe Calculus inputs."
+  - id: SP-003
+    text: "Capture never depends on a Schemami-owned central vocabulary registry."
+  - id: SP-004
+    text: "Evaluation inputs are approved and repository-safe; optional telemetry contains no recipe or source content."
+  - id: SP-005
+    text: "Adapters prefer visible omission or unresolved reporting over unsupported structured invention."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-007-schemami-stable-protocol-release.md
+    description: Stable Schemami v1 product boundary and local-identity decisions.
+  - type: doc
+    path_or_url: docs/project-context.md
+    description: Current compilation-target and deterministic-authority boundary.
+stakeholders:
+  - name: Daniel Gomes
+    role: owner
+    required: true
+    signed_off_at: "2026-08-11T20:00:00Z"
+dependencies: [PRD-007]
+nfrs:
+  - category: security
+    requirement: "Source material is untrusted and cannot execute or alter the acquisition contract."
+  - category: privacy
+    requirement: "Local validation is available and optional telemetry is content-free and non-blocking."
+  - category: other
+    requirement: "Contracts, reports, fixtures, validators, and evaluation results identify exact versions."
+risks:
+  - id: R-AI-1
+    description: "A plausible candidate invents culinary facts that are absent from the source."
+    likelihood: high
+    impact: high
+    mitigation: "Evidence coverage, hostile fixtures, reviewer report, and deterministic admission."
+open_questions: []
+source_specs: [SPEC-008]
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+forcing_questions:
+  problem_behind_problem: "Integrators need reliable source acquisition without moving probabilistic inference into the protocol trust boundary."
+  evidence_or_hypothesis: "Schemami v1 can be a useful compilation target if provider-neutral adapters preserve evidence and deterministic tooling exposes every unsupported fact."
+  north_metric_and_counter: "North: source-faithful admitted candidates with measured reviewer effort. Counter: zero invented authority and zero recipe/source content in optional telemetry."
+  must_not_change: "No runtime model in Schemami, no registry gate, no prose calculation, no website dependency, and no hidden source invention."
+  riskiest_assumption: "External adapters can produce candidates that are sufficiently faithful and repairable across real source modalities."
+revision_history:
+  - at: "2026-08-11T18:21:47Z"
+    author: Daniel Gomes
+    action: created
+    note: "Drafted as independent Track A after Schemami v1 and local-identity decisions superseded the pre-v1 AI proposal."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

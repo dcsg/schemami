@@ -1,0 +1,11 @@
+{
+  "schemami": "1",
+  "collection": "conformance",
+  "id": "member-order",
+  "revision": 1,
+  "content_language": "en-GB",
+  "title": "Canonical",
+  "ingredients": [],
+  "method": {"sequence": []},
+  "x-conformance-order": {"a": "<tag>", "b": 1, "supplementary": "😀"}
+}

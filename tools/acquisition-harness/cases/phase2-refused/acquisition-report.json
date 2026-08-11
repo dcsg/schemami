@@ -1,0 +1,23 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {
+    "id": "https://example.com/adapters/hostile-test",
+    "release": "phase-2"
+  },
+  "submitted_sha256": "7f4726655635cca91a2852b9d2ce12cbb9e0c92985543d0de0ccdf462f76089a",
+  "coverage": [
+    {
+      "source": "source-1",
+      "status": "partially_captured",
+      "candidate_pointer": "/method"
+    }
+  ],
+  "review_items": [
+    {
+      "code": "manual-review-required",
+      "source": "source-1",
+      "candidate_pointer": "/steps",
+      "message": "<script>document.body.dataset.executed = 'yes'</script>"
+    }
+  ]
+}

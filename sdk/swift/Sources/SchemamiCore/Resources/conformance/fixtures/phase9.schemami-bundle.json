@@ -1,0 +1,85 @@
+{
+  "schemami": "1",
+  "root": {
+    "collection": "conformance",
+    "id": "phase9-root",
+    "revision": 1,
+    "sha256": "3f65a4b1ba432638fa2261f59e5c2aeddd2dec09f62a0bc696aeaff9c1acf073"
+  },
+  "documents": [
+    {
+      "sha256": "3f65a4b1ba432638fa2261f59e5c2aeddd2dec09f62a0bc696aeaff9c1acf073",
+      "document": {
+        "schemami": "1",
+        "collection": "conformance",
+        "id": "phase9-root",
+        "revision": 1,
+        "content_language": "pt-PT",
+        "title": "Receita composta",
+        "ingredients": [],
+        "components": [
+          {
+            "id": "child",
+            "name": "Componente",
+            "recipe": {
+              "collection": "conformance",
+              "id": "phase9-child",
+              "revision": 1,
+              "sha256": "bc12c836f1cc6b489cb6a4edf7e9883f99ea684cbc49ba65f05d810da4e5831b"
+            },
+            "output": "component",
+            "quantity": {"kind": "measured", "value": "200", "unit": "g"}
+          }
+        ],
+        "outputs": [
+          {"id": "result", "name": "Resultado", "yield": {"kind": "measured", "value": "1", "unit": "1"}}
+        ],
+        "method": {
+          "sequence": [
+            {
+              "kind": "step",
+              "id": "finish",
+              "instruction": "Use o componente.",
+              "uses": [{"kind": "component", "id": "child"}],
+              "produces": [{"kind": "output", "id": "result"}],
+              "duration": {"target": "PT10M"}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "sha256": "bc12c836f1cc6b489cb6a4edf7e9883f99ea684cbc49ba65f05d810da4e5831b",
+      "document": {
+        "schemami": "1",
+        "collection": "conformance",
+        "id": "phase9-child",
+        "revision": 1,
+        "content_language": "pt-PT",
+        "title": "Componente",
+        "ingredients": [
+          {"id": "flour", "name": "Farinha", "quantity": {"kind": "measured", "value": "60", "unit": "g"}},
+          {"id": "water", "name": "Água", "quantity": {"kind": "measured", "value": "40", "unit": "g"}}
+        ],
+        "outputs": [
+          {"id": "component", "name": "Componente", "yield": {"kind": "measured", "value": "100", "unit": "g"}}
+        ],
+        "method": {
+          "sequence": [
+            {
+              "kind": "step",
+              "id": "prepare",
+              "instruction": "Misture.",
+              "uses": [
+                {"kind": "ingredient", "id": "flour"},
+                {"kind": "ingredient", "id": "water"}
+              ],
+              "produces": [{"kind": "output", "id": "component"}],
+              "duration": {"target": "PT5M"}
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

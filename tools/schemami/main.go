@@ -23,7 +23,7 @@ import (
 
 func main() {
 	if len(os.Args) != 3 || !knownCommand(os.Args[1]) {
-		fmt.Fprintln(os.Stderr, "usage: schemami <validate|validate-bundle|canonicalize|digest> <document>")
+		fmt.Fprintln(os.Stderr, "usage: schemami <validate|validate-bundle|admit|canonicalize|digest> <document>")
 		os.Exit(2)
 	}
 	command, path := os.Args[1], os.Args[2]
@@ -33,6 +33,14 @@ func main() {
 		err = validate(path)
 	case "validate-bundle":
 		err = validateBundle(path)
+	case "admit":
+		var result admissionArtifact
+		result, err = admitFile(path)
+		if err == nil {
+			encoder := json.NewEncoder(os.Stdout)
+			encoder.SetEscapeHTML(false)
+			err = encoder.Encode(result)
+		}
 	case "canonicalize":
 		var canonical string
 		canonical, err = canonicaliseFile(path)
@@ -57,7 +65,7 @@ func main() {
 }
 
 func knownCommand(command string) bool {
-	return command == "validate" || command == "validate-bundle" || command == "canonicalize" || command == "digest"
+	return command == "validate" || command == "validate-bundle" || command == "admit" || command == "canonicalize" || command == "digest"
 }
 
 func validate(path string) error {

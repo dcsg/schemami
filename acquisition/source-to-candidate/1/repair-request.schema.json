@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemami.dev/contracts/source-to-candidate/1/repair-request.schema.json",
+  "title": "Schemami source-to-candidate repair request 1",
+  "type": "object",
+  "required": ["contract", "manifest_sha256", "submitted_sha256", "attempt", "problems"],
+  "additionalProperties": false,
+  "properties": {
+    "contract": {"const": "https://schemami.dev/contracts/source-to-candidate/1"},
+    "manifest_sha256": {"$ref": "#/$defs/sha256"},
+    "submitted_sha256": {"$ref": "#/$defs/sha256"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "problems": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/problem"}
+    },
+    "authorized_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/local_id"},
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "local_id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "pointer": {"type": "string", "pattern": "^(?:$|/(?:[^~/]|~[01])*)+$"},
+    "problem": {
+      "type": "object",
+      "required": ["type", "pointer"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {"type": "string", "format": "uri", "pattern": "^https://schemami\\.dev/problems/[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "pointer": {"$ref": "#/$defs/pointer"}
+      }
+    }
+  }
+}

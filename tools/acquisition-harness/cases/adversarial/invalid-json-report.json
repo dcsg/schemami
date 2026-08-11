@@ -1,0 +1,21 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {
+    "id": "https://example.com/adapters/adversarial-fixture",
+    "release": "phase-3"
+  },
+  "submitted_sha256": "d66e1a3a311718be8c1df9b3d0765b30441dabdc116b4c68a37b7fc87f8b6a4e",
+  "coverage": [
+    {
+      "source": "source-1",
+      "status": "partially_captured"
+    }
+  ],
+  "review_items": [
+    {
+      "code": "manual-review-required",
+      "source": "source-1",
+      "message": "The candidate is untrusted adapter output and must pass deterministic parsing before use."
+    }
+  ]
+}

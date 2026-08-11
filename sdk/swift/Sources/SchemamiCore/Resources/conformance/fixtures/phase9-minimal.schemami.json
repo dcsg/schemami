@@ -1,0 +1,12 @@
+{
+  "schemami": "1",
+  "collection": "conformance",
+  "id": "phase9-minimal",
+  "revision": 1,
+  "content_language": "pt-PT",
+  "title": "Receita mínima Phase 9",
+  "ingredients": [],
+  "method": {
+    "sequence": []
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "document": {
+    "kind": "recipe",
+    "collection": "personal",
+    "id": "pao-de-centeio",
+    "revision": 1,
+    "content_language": "pt-PT"
+  },
+  "sources": [
+    {
+      "id": "source-1",
+      "kind": "document",
+      "media_type": "application/pdf",
+      "uri": "file:receita.pdf",
+      "sha256": "b1c5fdcb8409119d6900219c0248979974a21d1a6b8f33bb57bc57381bb5f642"
+    }
+  ]
+}
