@@ -94,6 +94,12 @@ phases:
       - id: AC-5.3
         statement: "The requirement evidence ledger proves every PRD-007/SPEC-007/plan criterion and no commit, tag, push, or publication occurs without Daniel's explicit approval."
         verify: "bash tools/schemami/check-release-evidence.sh"
+      - id: AC-5.4
+        statement: "Pão SPEC-013 adversarial findings are inverted in the replacement v1 candidate: duration windows are ordered, open guides are non-recursive, percentage basis occurs once at 100, origin is encodable, step techniques are ordered/plural, supplied source URIs are non-empty, and evidence selectors locate standard source fragments without affecting Calculus."
+        verify: "make schemami-schema && make schemami-calculus"
+        verify_kind: behavioral
+        intent: Real integrator dogfood corrects the unpublished v1 contract before a stable tag.
+        falsifying_observation: Any committed Pão fixture retains its defective candidate outcome or media offsets alter culinary timing.
 dependencies:
   "0":
     blocks: ["1", "2", "3", "4", "5"]

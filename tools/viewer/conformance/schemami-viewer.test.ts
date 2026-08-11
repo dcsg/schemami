@@ -12,11 +12,42 @@ const schema = JSON.parse(
 );
 const engine = createSchemamiEngine(schema);
 const context = { unitLabels: { g: "g", mL: "mL", "[cup_us]": "chávena US" } };
+const validationCorpus = JSON.parse(readFileSync(
+  join(REPO_ROOT, "conformance", "schemami-v1", "validation.json"),
+  "utf8",
+)) as {
+  vectors: Array<{
+    id: string;
+    expected_valid: boolean;
+    expected_techniques?: string[];
+    expected_diagnostic?: { pointer: string; message: string };
+    document: Record<string, unknown>;
+  }>;
+};
 
 const source = (name: string) => readFileSync(
   join(REPO_ROOT, "tools", "schemami", "testdata", name),
   "utf8",
 );
+
+test("shared Schemami v1 validation vectors", async () => {
+  for (const vector of validationCorpus.vectors) {
+    const result = await engine.analyze(JSON.stringify(vector.document));
+    const analysis = result.documents[0]!;
+    expect(analysis.valid, vector.id).toBe(vector.expected_valid);
+    if (vector.expected_diagnostic) {
+      expect(analysis.problems, vector.id).toEqual([{
+        type: "https://schemami.dev/problems/invalid-document",
+        pointer: vector.expected_diagnostic.pointer,
+        message: vector.expected_diagnostic.message,
+      }]);
+    }
+    if (vector.expected_techniques) {
+      const steps = analysis.canonical.steps as Array<{ techniques?: string[] }>;
+      expect(steps[0]?.techniques, vector.id).toEqual(vector.expected_techniques);
+    }
+  }
+});
 
 test("viewer admits and renders the Schemami example without evidence prose", async () => {
   const result = await engine.analyze(readFileSync(
@@ -36,6 +67,9 @@ test("viewer admits and renders the Schemami example without evidence prose", as
   expect(html).toContain("375 g");
   expect(html).toContain("Ativa, no pico de fermentação.");
   expect(html).toContain("PT8M");
+  expect(html).toContain("Mafra");
+  expect(html).toContain("técnica Mistura");
+  expect(html).toContain("pao-massa-mae.mp4#t=300,600");
   expect(html).not.toContain("500 g de farinha");
   expect(html).not.toContain("confidence");
 });
@@ -67,6 +101,47 @@ test("unknown local concepts validate and render from their own names", async ()
   expect(html).toContain("Mistura secreta da casa");
   expect(html).toContain("Dobra da casa");
   expect(html).toContain("Panela experimental X");
+});
+
+test("origin, ordered techniques, and a W3C video selector validate together", async () => {
+  const document = {
+    schemami: "1", collection: "test", id: "video", revision: 1,
+    content_language: "pt-PT", title: "Vídeo",
+    origin: { country: "PT", subdivision: "PT-11", locality: "Mafra" },
+    ingredients: [{ id: "flour", name: "Farinha" }],
+    techniques: [{ id: "mixing", name: "Mistura" }, { id: "kneading", name: "Amassadura" }],
+    steps: [{ id: "work", instruction: "Misture e amasse.", techniques: ["mixing", "kneading"] }],
+    sources: [{ id: "video", uri: "https://example.org/bread.mp4", media_type: "video/mp4" }],
+    evidence: [{
+      id: "kneading-clip", source: "video", pointer: "/steps/0/techniques/1",
+      selector: { kind: "fragment", value: "t=300,600", conforms_to: "https://www.w3.org/TR/media-frags/" },
+    }],
+  };
+  const result = await engine.analyze(JSON.stringify(document));
+  expect(result.documents[0]!.problems).toEqual([]);
+  expect(result.documents[0]!.canonical.steps).toEqual(document.steps);
+});
+
+test("dogfood-invalid wire and semantic shapes refuse in the TypeScript reader", async () => {
+  const base = () => ({
+    schemami: "1", collection: "test", id: "invalid", revision: 1,
+    content_language: "pt-PT", title: "Inválida",
+    ingredients: [{ id: "flour", name: "Farinha" }],
+    steps: [{ id: "work", instruction: "Trabalhe." }],
+  });
+  const cases: Array<{ name: string; document: Record<string, unknown> }> = [
+    { name: "recursive open guide", document: { ...base(), ingredients: [{ id: "flour", name: "Farinha", quantity: { kind: "open", qualifier: "as_needed", guide: { kind: "open", qualifier: "to_taste" } } }] } },
+    { name: "empty source URI", document: { ...base(), sources: [{ id: "source", uri: "" }] } },
+    { name: "singular technique", document: { ...base(), techniques: [{ id: "mixing", name: "Mistura" }], steps: [{ id: "work", instruction: "Misture.", technique: "mixing" }] } },
+    { name: "inverted duration", document: { ...base(), steps: [{ id: "work", instruction: "Espere.", duration: { minimum: "PT2H", target: "PT1H", maximum: "PT30M" } }] } },
+    { name: "non-100 basis", document: { ...base(), formula: { kind: "percentage", basis: "flour", terms: [{ ingredient: "flour", percentage: "80" }] } } },
+    { name: "wrong-country subdivision", document: { ...base(), origin: { country: "PT", subdivision: "ES-MD" } } },
+    { name: "inverted video selector", document: { ...base(), sources: [{ id: "video", uri: "video.mp4" }], evidence: [{ id: "clip", source: "video", pointer: "/steps/0", selector: { kind: "fragment", value: "t=600,300", conforms_to: "https://www.w3.org/TR/media-frags/" } }] } },
+  ];
+  for (const testCase of cases) {
+    const result = await engine.analyze(JSON.stringify(testCase.document));
+    expect(result.documents[0]!.valid, testCase.name).toBe(false);
+  }
 });
 
 test("range, open, ratio, and integrator unit labels render explicitly", async () => {

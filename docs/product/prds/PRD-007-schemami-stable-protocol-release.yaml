@@ -14,7 +14,7 @@ requirements:
     status: accepted
   - id: FR-MODEL-001
     component: semantic-field-contract
-    text: "Audit every field and public API across documents, packages, schemas, registry, Calculus, validator, viewer, vectors, and cutover inventory. Publish an accepted field-name register before new schemas are written: name, type, scope, semantic definition, and authoritative standard/value vocabulary where one exists. Reuse of a familiar name is allowed when containing type and scope make meaning unambiguous; rename only for a demonstrated semantic collision, not repetition alone. Required content_language contains a BCP 47 source-content tag; UI locale/translation is outside the protocol; country/region, unit identity, display formatting, source evidence, local identity, external reference, and app resolution context are all distinct concepts."
+    text: "Audit every field and public API across documents, packages, schemas, registry, Calculus, validator, viewer, vectors, and cutover inventory. Publish an accepted field-name register before new schemas are written: name, type, scope, semantic definition, and authoritative standard/value vocabulary where one exists. Reuse of a familiar name is allowed when containing type and scope make meaning unambiguous; rename only for a demonstrated semantic collision, not repetition alone. Required content_language contains a BCP 47 source-content tag; UI locale/translation is outside the protocol. Optional origin uses ISO 3166-1 country, matching ISO 3166-2 subdivision, and source-language locality; country/region, unit identity, display formatting, source evidence, local identity, external reference, and app resolution context are all distinct concepts."
     status: accepted
   - id: FR-CUTOVER-001
     component: clean-cutover
@@ -22,15 +22,15 @@ requirements:
     status: accepted
   - id: FR-VOCAB-001
     component: vocabulary-resolution
-    text: "Ingredient lines require recipe-local id and source-language name; recipes MAY also declare local technique and equipment entities with their own local IDs and source-language names. Every recipe-local ID matches ^[a-z0-9][a-z0-9_-]*$ and contains at most 128 characters; matching is exact and case-sensitive, and readers never normalize uppercase. Lowercase UUID strings are permitted without acquiring UUID semantics. A step is itself the recipe-local action and requires id plus source-language instruction; it has no mandatory primitive/action reference, registry, version, or parameter object. These entities remain structurally valid and readable without a central registry. An optional integrator maps (document identity, local id) as application resolution context only. Do not introduce item, generic terms, package-owned vocabulary, federation, or global registries in v1. Local labels do not assert deterministic facts; only explicit structured step fields may drive defined behavior, and operations needing absent facts return structured diagnostics."
+    text: "Ingredient lines require recipe-local id and source-language name; recipes MAY also declare local technique and equipment entities with their own local IDs and source-language names. Every recipe-local ID matches ^[a-z0-9][a-z0-9_-]*$ and contains at most 128 characters; matching is exact and case-sensitive, and readers never normalize uppercase. Lowercase UUID strings are permitted without acquiring UUID semantics. A step is itself the recipe-local action and requires id plus source-language instruction; the instruction is the smallest portable method unit in v1. Named sub-actions, editorial grouping, app timer policy, conditional checkpoints, and conditional/alternative schedules remain integrator-owned; an adapter omits duration rather than guessing. A valid v1 document is a normalized culinary/computational backbone, not necessarily a lossless editorial, workflow, or UI interchange document. The step has no mandatory primitive/action reference, registry, version, or parameter object. Ordered unique steps[].techniques references express authored/application order inside one step and MUST be preserved without sorting. These entities remain structurally valid and readable without a central registry. An optional integrator maps (document identity, local id) as application resolution context only. Do not introduce item, generic terms, package-owned vocabulary, federation, or global registries in v1. Local labels do not assert deterministic facts; only explicit structured step fields may drive defined behavior, and operations needing absent facts return structured diagnostics."
     status: accepted
   - id: FR-CALC-006
     component: recipe-calculus
-    text: "Define tagged absolute quantity shapes for measured, range, and open. Define grouped formula shapes separately: ordered ratio terms store decimal parts and render colon ratios such as 1:2:2; percentage terms store percentage points directly against a named basis (75 means 75%, not 0.75). Canonical numeric values have at most 16 total digits and four fractional digits; public results use the same shape, not rational objects. Exact results beyond four fractional digits use round-half-to-even. The only v1 operations are scale, resolve_formula, convert_quantity, reading_order, and schedule; core scaling is linear or fixed, while unknown extension-defined behavior refuses. Options, guards, constraints, tracks, and interleaving are absent. reading_order is one dependency-respecting linear projection with declaration-order tie breaking. Elapsed durations use the accepted standard-shaped form; measured units use pinned UCUM 2.2; unsupported, ambiguous, and physical requests refuse."
+    text: "Define tagged absolute quantity shapes for measured, range, and open; an open guide is measured or range only. Define grouped formula shapes separately: ordered ratio terms store decimal parts and render colon ratios such as 1:2:2; percentage terms store percentage points directly against a named basis (75 means 75%, not 0.75), and the basis occurs exactly once at 100. Canonical numeric values have at most 16 total digits and four fractional digits; public results use the same shape, not rational objects. Exact results beyond four fractional digits use round-half-to-even. The only v1 operations are scale, resolve_formula, convert_quantity, reading_order, and schedule; core scaling is linear or fixed, while unknown extension-defined behavior refuses. Options, guards, constraints, tracks, and interleaving are absent. reading_order is one dependency-respecting linear projection with declaration-order tie breaking. Elapsed durations use the accepted standard-shaped form and every supplied duration-window pair is ordered; measured units use pinned UCUM 2.2; unsupported, ambiguous, and physical requests refuse."
     status: accepted
   - id: FR-EVIDENCE-001
     component: source-evidence-and-diagnostics
-    text: "Preserve imported values through document-level sources and RFC 6901-targeted evidence. A source has local ID, URI or URI-reference, optional registered media type, and optional SHA-256 digest; evidence may carry raw text and 0-to-1 canonical-decimal confidence. Calculus and validation never parse source evidence. Operation results use accepted operation tokens, status, stable https://schemami.dev/problems/ type URIs, and RFC 6901 pointers; human rendering and localization remain integrator-owned."
+    text: "Preserve imported values through optional document-level sources and RFC 6901-targeted evidence. A supplied source has local ID, non-empty URI or URI-reference, optional registered media type, and optional SHA-256 digest. Evidence may carry raw text, 0-to-1 canonical-decimal confidence, and a standard-backed fragment selector locating part of its source. Selector offsets are source locators, never culinary duration or Calculus input. Calculus and validation never parse evidence into structured recipe facts. Operation results use accepted operation tokens, status, stable https://schemami.dev/problems/ type URIs, and RFC 6901 pointers; human rendering and localization remain integrator-owned."
     status: accepted
   - id: FR-PORTABLE-001
     component: portable-data-boundary
@@ -99,6 +99,12 @@ acceptance_criteria:
     when: local identity validation and reference resolution run
     then: lowercase letters, digits, hyphen, and underscore at no more than 128 characters resolve exactly and every unsupported spelling or overlong value rejects without normalization
     status: accepted
+  - id: AC-VOCAB-001-5
+    fr: FR-VOCAB-001
+    given: one step references multiple declared techniques
+    when: validation, canonicalization, and round-trip rendering run
+    then: ordered unique techniques is preserved byte-significantly; singular technique, duplicates, undeclared IDs, and reader sorting reject or fail conformance
+    status: accepted
   - id: AC-CALC-006-1
     fr: FR-CALC-006
     given: explicit UCUM 2.2 same-dimension or Celsius/Fahrenheit input
@@ -115,13 +121,19 @@ acceptance_criteria:
     fr: FR-CALC-006
     given: positive elapsed durations and a duration window
     when: schema validation and Go and TypeScript scheduling run
-    then: PT8M, PT1H10M, P2D, and P1W use identical elapsed semantics; minimum, target, and maximum are preserved; compact Model 1, negative, year, and month forms reject
+    then: PT8M, PT1H10M, P2D, and P1W use identical elapsed semantics; minimum, target, and maximum are preserved and every supplied pair is ordered; inverted windows, compact Model 1, negative, year, and month forms reject
     status: accepted
   - id: AC-CALC-006-4
     fr: FR-CALC-006
     given: a recipe with dependency edges and unrelated declared steps
     when: Go and TypeScript run reading_order
     then: they return the same dependency-respecting linear projection, using declaration order only to break ties, with no track or lane field required
+    status: accepted
+  - id: AC-CALC-006-5
+    fr: FR-CALC-006
+    given: an open guide plus percentage formulas whose named basis is correct, non-100, or absent
+    when: schema, semantic validation, resolve_formula, and scale run
+    then: guides admit measured or range only; a percentage basis appears exactly once at 100; recursive open guides and invalid basis authority reject identically
     status: accepted
   - id: AC-EVIDENCE-001-1
     fr: FR-EVIDENCE-001
@@ -134,6 +146,12 @@ acceptance_criteria:
     given: a refused operation
     when: its result is rendered by two integrations
     then: its stable problem type and pointer are identical; each integration may render its own localized wording
+    status: accepted
+  - id: AC-EVIDENCE-001-3
+    fr: FR-EVIDENCE-001
+    given: one video source and evidence for a step plus two ordered technique occurrences
+    when: evidence validation and URI-fragment reconstruction run
+    then: each pointer resolves, W3C temporal intervals are ordered, one source is reused, and selector offsets never alter schedule or culinary duration
     status: accepted
   - id: AC-PORTABLE-001-1
     fr: FR-PORTABLE-001

@@ -64,9 +64,12 @@ registration is a release-manifest concern, not a fabricated unregistered claim.
 Every root document requires `content_language`, a well-formed BCP 47 tag from
 the IANA Language Subtag Registry. `pt-PT` is Portuguese as used in Portugal.
 Every authored prose field in a document is a string in that source language;
-locale maps are invalid. Recipe origin remains independent and, when supplied,
-uses `origin.country` as ISO 3166-1 alpha-2 plus an optional standard-backed
-subdivision field.
+locale maps are invalid. Recipe origin remains independent. Optional `origin`
+may contain ISO 3166-1 alpha-2 `country`, an ISO 3166-2 `subdivision` whose
+prefix matches the supplied country, and source-language `locality`. At least
+one is required when `origin` exists. Locality is descriptive source content,
+not a globally resolved identity; versioned national codes belong in an owner
+extension.
 
 ## Recipe-local identity
 
@@ -88,6 +91,12 @@ A recipe may declare local `techniques` and `equipment`. Each entry requires an
 entities are valid and renderable without a catalog. An integrator may map
 `(document identity, entity collection, local id)` externally; the mapping is
 not canonical recipe data and asserts no global equivalence.
+
+A step refers to zero or more declared techniques through ordered, unique
+`techniques`. Document order is the authored/application sequence inside that
+step. Readers and writers preserve it and never alphabetically sort it. The
+outer `steps` array remains the method sequence. Singular `technique` is not a
+Schemami v1 member.
 
 ## Quantity algebra
 
@@ -201,6 +210,11 @@ resolves to 1000 g flour, 750 g water, 20 g salt, and 200 g levain. Without a
 basis quantity, the formula remains valid/renderable but absolute-weight
 operations refuse for a missing basis quantity.
 
+The ingredient named by `basis` occurs exactly once in `terms` with
+`percentage: "100"`. A missing basis term or any other percentage for that term
+is invalid and makes direct `resolve_formula` and formula-backed `scale` refuse
+before returning quantities.
+
 ## Canonical decimal precision
 
 Canonical decimals use ordinary base-10 notation with at most 16 total digits
@@ -253,7 +267,8 @@ compact strings such as `8m` or `1h10m` are not Schemami v1 input.
 Scheduling treats the admitted units as elapsed offsets, never calendar dates.
 
 A duration window uses full names and may supply `minimum`, `target`, and
-`maximum` subject to the window invariant. For example:
+`maximum`. Every supplied pair is ordered: `minimum <= target`,
+`target <= maximum`, and `minimum <= maximum`. For example:
 
 ```yaml
 duration:
@@ -262,24 +277,38 @@ duration:
   maximum: PT35M
 ```
 
-The owner accepted this shape on 2026-08-11. The standards-first gate still
-requires the precise admitted grammar to be checked against the primary
-RFC/ISO source before schema implementation; live source access was denied
-during the decision session, so this specification does not claim that check
-has passed.
+The owner accepted this shape on 2026-08-11. Document validation and direct
+`schedule` calls enforce the same invariant.
 
 ## Source artifacts and field evidence
 
-Document-level `sources` identify acquisition artifacts. Each has recipe-local
-`id`, a URI or URI-reference, and optional immutable SHA-256 digest metadata.
-Fragments retain media-type-defined locator semantics instead of Schemami
-inventing a universal page/span syntax.
+Document-level `sources` are optional and identify acquisition artifacts. Each
+supplied source has recipe-local `id`, a non-empty URI or URI-reference, and
+optional immutable SHA-256 digest metadata. Absence is represented by omitting
+`sources`, never by `null`, an empty source record, or an empty URI.
 
 Document-level `evidence` records target an existing structured field with an
 RFC 6901 JSON Pointer and may reference a declared source, retain `raw_text`,
 and carry exact decimal `confidence` from zero through one. A failed pointer,
 unknown source ID, non-canonical confidence, or duplicate evidence ID is invalid.
 Evidence never supplies a missing structured value to validation or Calculus.
+
+Evidence may carry one standard-backed `selector`:
+
+```yaml
+selector:
+  kind: fragment
+  value: t=300,600
+  conforms_to: https://www.w3.org/TR/media-frags/
+```
+
+`value` is the fragment without `#`; `conforms_to` is the absolute URI of the
+fragment specification. With a video source this reconstructs
+`<source-uri>#t=300,600`. W3C Media Fragment intervals use Normal Play Time and
+are half-open; when start and end are supplied, start is less than end.
+Evidence can target `/steps/0` or an occurrence such as
+`/steps/0/techniques/1`. Selector offsets locate source evidence and never
+become culinary `duration`, schedule input, or any other structured fact.
 
 ## Operation diagnostics
 
@@ -338,6 +367,23 @@ reference, primitive version, primitive registry requirement, or primitive
 parameter object. A step remains valid and renderable from its authored
 instruction without any action catalog.
 
+The step `instruction` is the smallest portable method unit in v1. Named
+sub-actions, action headings, editorial stage grouping, and application timer
+policy may be retained by an integrator, but they are not separate canonical
+Schemami members. An adapter may combine ordered authored action bodies into one
+instruction only when it preserves their reading order and text; it must not
+invent an action, heading, or grouping.
+
+Conditional sensory checkpoints and conditional or alternative duration
+branches are also outside v1. Authored completion guidance remains in the
+source-language instruction. When a duration cannot be represented as one exact
+value or one ordered `minimum`/`target`/`maximum` window without choosing a
+condition or alternative, the adapter omits portable `duration` rather than
+guessing. It may preserve the source wording in application data or evidence.
+Consequently, a valid Schemami v1 document is a normalized culinary and
+computational backbone; it is not required to be a lossless editorial, workflow,
+or UI interchange document.
+
 Only explicit structured members may drive deterministic behavior, including
 dependencies, ingredients used or produced, duration, equipment, and technique.
 Readiness remains in the source-language instruction under ADR-010. Step `id`,
@@ -367,10 +413,26 @@ step boundary are recorded in
 
 ## Conformance and release gates
 
-One shared vector corpus is replayed by Go and TypeScript. The release gates
-cover schema admission/refusal, canonical JSON, local reference scope, evidence
+Two shared vector corpora are replayed by Go and TypeScript: validation vectors
+for document admission and dogfood regressions, and Calculus vectors for exact
+operations. The release gates cover schema admission/refusal, canonical JSON, local reference scope, evidence
 pointers, exact quantity arithmetic, conversion/refusal, operation diagnostics,
 pack resolution, extension preservation, and unsupported RCP input.
+
+The validation corpus permanently includes the Pão dogfood corrections:
+ordered duration windows, non-recursive open guides, percentage-basis authority,
+portable origin, ordered plural techniques, non-empty supplied source URIs, and
+valid/refused W3C Media Fragment selectors. Known tagged-union failures should
+return one concise pointer-level diagnostic instead of exposing a nested
+JSON-Schema `oneOf` trace; this changes diagnostics, never admission.
+
+Post-correction adapter experiments in Pão de Portugal and Fornada confirmed
+the same application boundary. Pão validated 49/49 formula documents and all
+117 promoted method stages while deliberately omitting two conditional
+schedules. Fornada round-tripped all 20 current system bread formulas and
+refused only application projections that required an unreviewed local mapping
+or numeric rounding. These experiments are adoption evidence, not clean-clone
+release inputs or additional protocol fields.
 
 A release is proven only from a clean clone of the candidate commit. It requires
 zero active RCP wire identifiers outside historical documents and the explicit
@@ -384,8 +446,9 @@ to a documentation application:
 
 - core and pack schemas use their declared
   `https://schemami.dev/schema/schemami/1/*.schema.json` identifiers;
-- the shared corpus publishes at
-  `https://schemami.dev/conformance/schemami/1/calculus.json`;
+- the shared corpora publish at
+  `https://schemami.dev/conformance/schemami/1/calculus.json` and
+  `https://schemami.dev/conformance/schemami/1/validation.json`;
 - each minimum problem type publishes human-readable HTML documentation at its
   own existing `https://schemami.dev/problems/<code>` identity, following the
   RFC 9457 recommendation for locator problem-type URIs.

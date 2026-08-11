@@ -4,6 +4,7 @@
 Makefile
 README.md
 conformance/schemami-v1/calculus.json
+conformance/schemami-v1/validation.json
 docs/STATUS.md
 docs/architecture/decisions/ADR-004-presentation-owned-translations.edikt.yaml
 docs/architecture/decisions/ADR-004-presentation-owned-translations.md
@@ -23,6 +24,8 @@ docs/architecture/decisions/ADR-011-operation-results-and-earliest-start-schedul
 docs/architecture/decisions/ADR-011-operation-results-and-earliest-start-scheduling.md
 docs/architecture/decisions/ADR-012-formula-authority-and-effective-quantity-scaling.edikt.yaml
 docs/architecture/decisions/ADR-012-formula-authority-and-effective-quantity-scaling.md
+docs/architecture/decisions/ADR-013-dogfood-corrections-and-source-selectors.edikt.yaml
+docs/architecture/decisions/ADR-013-dogfood-corrections-and-source-selectors.md
 docs/guidelines/standards-first.edikt.yaml
 docs/guidelines/standards-first.md
 docs/plans/PLAN-schemami-v1-stable-release-criteria.yaml

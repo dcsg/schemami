@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 map="$root/release/schemami-v1.0.0/contract-map.json"
 evidence_map="$root/release/schemami-v1.0.0/evidence-map.json"
-jq -e '.release == "schemami-v1.0.0" and (.artifacts | length == 14)' "$map" >/dev/null
+jq -e '.release == "schemami-v1.0.0" and (.artifacts | length == 15)' "$map" >/dev/null
 jq -e '.release == "schemami-v1.0.0" and (.requirements | length == 9)' "$evidence_map" >/dev/null
 
 duplicate_paths="$(jq -r '[.artifacts[].path] | group_by(.)[] | select(length > 1) | .[0]' "$map")"
@@ -43,4 +43,4 @@ while IFS= read -r type; do
   }
 done < <(jq -r '.. | objects | .type? // empty' "$root/conformance/schemami-v1/calculus.json" | sort -u)
 
-echo "schemami release contract map: 14 unique local artifacts and 11 problem types verified"
+echo "schemami release contract map: 15 unique local artifacts and 11 problem types verified"

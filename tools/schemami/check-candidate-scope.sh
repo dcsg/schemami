@@ -16,6 +16,7 @@ for required in \
   schema/schemami-v1-core.schema.json \
   schema/schemami-v1-pack.schema.json \
   conformance/schemami-v1/calculus.json \
+  conformance/schemami-v1/validation.json \
   tools/schemami/main.go \
   tools/viewer/dist/index.html \
   release/schemami-v1.0.0/contract-map.json; do

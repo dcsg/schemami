@@ -4,6 +4,7 @@ import {
   resolveFormula,
   scale,
   schedule,
+  validateDurationWindow,
   type Envelope,
   type Formula,
   type Recipe,
@@ -15,6 +16,7 @@ const knownUnits = new Set([
   "g", "kg", "mL", "L", "Cel", "[degF]", "[cup_us]", "[tbs_us]",
   "[tsp_us]", "[foz_us]", "[cup_m]",
 ]);
+const MEDIA_FRAGMENTS_SPECIFICATION = "https://www.w3.org/TR/media-frags/";
 
 type Dict = Record<string, unknown>;
 const object = (value: unknown): Dict | null =>
@@ -103,7 +105,67 @@ function validateQuantity(quantity: Dict, pointer: string, problems: ViewerProbl
   }
   if (quantity.kind === "open") {
     const guide = object(quantity.guide);
-    if (guide) validateQuantity(guide, `${pointer}/guide`, problems);
+    if (guide && guide.kind !== "measured" && guide.kind !== "range") {
+      problems.push(problem("invalid-document", `${pointer}/guide`, "Open quantity guide must be measured or range."));
+    } else if (guide) {
+      validateQuantity(guide, `${pointer}/guide`, problems);
+    }
+  }
+}
+
+function structuralProblems(document: Dict): ViewerProblem[] {
+  const problems: ViewerProblem[] = [];
+  for (const [index, value] of list(document.ingredients).entries()) {
+    const quantity = object(object(value)?.quantity);
+    if (quantity?.kind === "open") validateQuantity(quantity, `/ingredients/${index}/quantity`, problems);
+  }
+  const formula = object(document.formula);
+  if (formula) {
+    for (const field of ["target", "basis_quantity"] as const) {
+      const quantity = object(formula[field]);
+      if (quantity?.kind === "open") validateQuantity(quantity, `/formula/${field}`, problems);
+    }
+  }
+  return problems;
+}
+
+type Fraction = { numerator: bigint; denominator: bigint };
+
+function parseNptTime(value: string): Fraction | null {
+  if (!/^(?:[0-9]+(?:\.[0-9]+)?|[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?|[0-9]+:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?)$/.test(value)) return null;
+  const parts = value.split(":");
+  const secondsText = parts.at(-1)!;
+  const [wholeSeconds, fraction = ""] = secondsText.split(".");
+  const denominator = 10n ** BigInt(fraction.length);
+  let numerator = BigInt(wholeSeconds) * denominator + BigInt(fraction || "0");
+  if (parts.length >= 2) {
+    const minutes = BigInt(parts.at(-2)!);
+    if (minutes > 59n || BigInt(wholeSeconds) > 59n) return null;
+    numerator += minutes * 60n * denominator;
+  }
+  if (parts.length === 3) numerator += BigInt(parts[0]) * 3600n * denominator;
+  return { numerator, denominator };
+}
+
+function validateSelector(selector: Dict, pointer: string, problems: ViewerProblem[]): void {
+  if (selector.conforms_to !== MEDIA_FRAGMENTS_SPECIFICATION) return;
+  for (const component of String(selector.value ?? "").split("&")) {
+    if (!component.startsWith("t=")) continue;
+    const raw = component.slice(2).replace(/^npt:/, "");
+    const parts = raw.split(",");
+    if (parts.length > 2 || parts.length === 0 || (parts.length === 2 && parts[1] === "")) {
+      problems.push(problem("invalid-document", pointer, "Invalid W3C media temporal fragment."));
+      continue;
+    }
+    const start = parts[0] === "" ? null : parseNptTime(parts[0]);
+    const end = parts.length === 2 ? parseNptTime(parts[1]) : null;
+    if ((parts[0] !== "" && !start) || (parts.length === 2 && !end) || (!start && !end)) {
+      problems.push(problem("invalid-document", pointer, "Invalid W3C normal play time."));
+      continue;
+    }
+    if (start && end && start.numerator * end.denominator >= end.numerator * start.denominator) {
+      problems.push(problem("invalid-document", pointer, "W3C media temporal fragment start must be less than end."));
+    }
   }
 }
 
@@ -113,6 +175,10 @@ function semanticProblems(document: Dict): ViewerProblem[] {
     Intl.getCanonicalLocales(String(document.content_language ?? ""));
   } catch {
     problems.push(problem("invalid-document", "/content_language", "content_language is not a well-formed BCP 47 tag."));
+  }
+  const origin = object(document.origin);
+  if (origin && typeof origin.country === "string" && typeof origin.subdivision === "string" && !origin.subdivision.startsWith(`${origin.country}-`)) {
+    problems.push(problem("invalid-document", "/origin/subdivision", "Subdivision must belong to origin country."));
   }
   const ingredients = named(document.ingredients, "/ingredients", problems);
   const techniques = named(document.techniques, "/techniques", problems);
@@ -133,6 +199,7 @@ function semanticProblems(document: Dict): ViewerProblem[] {
       problems.push(problem("unresolved-reference", "/formula/basis", `Unknown ingredient ${basis}.`));
     }
     const seen = new Set<string>();
+    let basisIndex = -1;
     for (const [index, value] of list(formula.terms).entries()) {
       const term = object(value)!;
       const ingredient = String(term.ingredient ?? "");
@@ -145,6 +212,14 @@ function semanticProblems(document: Dict): ViewerProblem[] {
         problems.push(problem("invalid-document", `/formula/terms/${index}/ingredient`, `Formula repeats ingredient ${ingredient}.`));
       }
       seen.add(ingredient);
+      if (formula.kind === "percentage" && ingredient === basis) basisIndex = index;
+    }
+    if (formula.kind === "percentage") {
+      if (basisIndex < 0) {
+        problems.push(problem("invalid-document", "/formula/terms", "Named percentage basis must occur exactly once in terms."));
+      } else if (object(list(formula.terms)[basisIndex])?.percentage !== "100") {
+        problems.push(problem("invalid-document", `/formula/terms/${basisIndex}/percentage`, "Named percentage basis must be 100."));
+      }
     }
     for (const field of ["target", "basis_quantity"] as const) {
       const quantity = object(formula[field]);
@@ -168,11 +243,16 @@ function semanticProblems(document: Dict): ViewerProblem[] {
         if (!ingredients.has(ingredient)) problems.push(problem("unresolved-reference", `/steps/${index}/${field}`, `Unknown ingredient ${ingredient}.`));
       }
     }
-    if (typeof step.technique === "string" && !techniques.has(step.technique)) {
-      problems.push(problem("unresolved-reference", `/steps/${index}/technique`, `Unknown technique ${step.technique}.`));
+    for (const technique of list(step.techniques).map(String)) {
+      if (!techniques.has(technique)) {
+        problems.push(problem("unresolved-reference", `/steps/${index}/techniques`, `Unknown technique ${technique}.`));
+      }
     }
     for (const item of list(step.equipment).map(String)) {
       if (!equipment.has(item)) problems.push(problem("unresolved-reference", `/steps/${index}/equipment`, `Unknown equipment ${item}.`));
+    }
+    if (validateDurationWindow(step.duration)) {
+      problems.push(problem("invalid-document", `/steps/${index}/duration`, "Duration window is not ordered."));
     }
   }
   const visiting = new Set<string>();
@@ -202,6 +282,8 @@ function semanticProblems(document: Dict): ViewerProblem[] {
     if (!resolvePointer(document, pointer)) {
       problems.push(problem("invalid-document", `/evidence/${index}/pointer`, "Evidence pointer does not identify an existing value."));
     }
+    const selector = object(evidence.selector);
+    if (selector) validateSelector(selector, `/evidence/${index}/selector`, problems);
   }
   return problems;
 }
@@ -225,10 +307,13 @@ export function createSchemamiEngine(schema: Record<string, unknown>): SchemamiE
         if (Object.hasOwn(value, "rcp")) {
           problems = [problem("unsupported-legacy", "", "RCP input is not supported by Schemami v1.")];
         } else {
-          const result = validator.validate(value);
-          problems = result.errors.map((error) =>
-            problem("invalid-document", pointerOf(error.instanceLocation), error.error)
-          );
+          problems = structuralProblems(value);
+          if (problems.length === 0) {
+            const result = validator.validate(value);
+            problems = result.errors.map((error) =>
+              problem("invalid-document", pointerOf(error.instanceLocation), error.error)
+            );
+          }
           if (problems.length === 0) problems = semanticProblems(value);
         }
         documents.push({

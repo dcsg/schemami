@@ -25,6 +25,7 @@ test("unknown local concepts project directly to source-language presentation", 
     steps: [{
       id: "preparar",
       instruction: "Prepare a mistura segundo a técnica da casa.",
+      techniques: ["dobra-da-casa"],
       notes: [],
     }],
   });

@@ -1,0 +1,63 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-013-dogfood-corrections-and-source-selectors.md
+signals:
+  - dogfood
+  - duration window
+  - origin
+  - percentage basis
+  - source selector
+  - techniques
+directives:
+  - text: 'Schemami v1 duration windows MUST be pairwise ordered, open quantity guides MUST be measured or range only, and a percentage basis MUST occur exactly once at 100 percent in its terms. (ref: ADR-013)'
+    source_excerpt:
+      line_start: 22
+      line_end: 29
+      quote: |-
+        1. Every supplied duration-window pair MUST be ordered: `minimum <= target`,
+           `target <= maximum`, and `minimum <= maximum`. Document validation and the
+           direct `schedule` operation enforce the same invariant.
+        2. An open quantity `guide` MAY be measured or range only. It MUST NOT be open.
+           Range ordering applies equally to a top-level quantity and an open guide.
+        3. A percentage formula's named `basis` MUST occur exactly once in `terms` and
+           that term MUST carry `percentage: "100"`. Validation, `resolve_formula`, and
+           formula-backed `scale` enforce this before resolving quantities.
+  - text: 'Schemami v1 origin MAY carry ISO country/subdivision and source-language locality; steps use ordered unique techniques; supplied sources require non-empty URI references. (ref: ADR-013)'
+    source_excerpt:
+      line_start: 30
+      line_end: 42
+      quote: |-
+        4. Optional `origin` has optional `country`, `subdivision`, and `locality`.
+           `country` is ISO 3166-1 alpha-2; `subdivision` is ISO 3166-2 syntax and MUST
+           start with the supplied country plus `-`; `locality` is source-language
+           authored place text, not a globally resolved identity. When present,
+           `origin` MUST contain at least one of those fields. Integrators MAY carry a
+           versioned national identifier in an owner extension.
+        5. A step uses ordered, unique `techniques`, not singular `technique`. Array
+           order is the authored/application sequence inside that step. Readers and
+           writers MUST preserve it and MUST NOT sort it. Reordering changes canonical
+           bytes and hashes. The outer `steps` array remains the method sequence.
+        6. `sources` remains optional. A supplied source requires a non-empty URI or
+           URI-reference; `null` and the empty string are invalid. A missing source is
+           represented by omitting `sources`, not by an empty source record.
+  - text: 'Schemami evidence MAY use a standard-backed fragment selector to locate a source segment; selector offsets MUST NOT become culinary duration or any Recipe Calculus input. (ref: ADR-013)'
+    source_excerpt:
+      line_start: 43
+      line_end: 52
+      quote: |-
+        7. Evidence MAY carry one `selector` with `kind: fragment`, a non-empty
+           fragment `value` without the leading `#`, and an absolute `conforms_to` URI.
+           The shape follows W3C Web Annotation FragmentSelector semantics while
+           retaining Schemami's snake-case field convention. For W3C Media Fragments,
+           temporal `t` intervals use Normal Play Time and MUST have start less than
+           end when both are supplied.
+        8. Evidence `pointer` identifies the exact structured occurrence, such as
+           `/steps/0` or `/steps/0/techniques/1`. A selector locates evidence inside
+           its declared source; it never supplies Recipe Calculus input. Media offsets
+           are not culinary `duration` values.
+paths:
+  - schema/**
+  - calculus/**
+  - conformance/**
+  - tools/**
+  - docs/product/**

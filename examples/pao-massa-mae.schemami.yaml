@@ -4,18 +4,38 @@ id: pao-massa-mae
 revision: 1
 content_language: pt-PT
 title: Pão de massa-mãe
+origin:
+  country: PT
+  locality: Mafra
 x-paodeportugal-review: draft
 sources:
   - id: pao-book
     uri: https://example.org/pao-massa-mae
     media_type: text/plain
     sha256: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  - id: pao-video
+    uri: https://example.org/pao-massa-mae.mp4
+    media_type: video/mp4
 evidence:
   - id: flour-basis
     source: pao-book
     pointer: /formula/basis_quantity/value
     raw_text: 500 g de farinha
     confidence: "0.9"
+  - id: mix-video
+    source: pao-video
+    pointer: /steps/0/techniques/0
+    selector:
+      kind: fragment
+      value: t=300,600
+      conforms_to: https://www.w3.org/TR/media-frags/
+  - id: rest-video
+    source: pao-video
+    pointer: /steps/1/techniques/0
+    selector:
+      kind: fragment
+      value: t=600,900
+      conforms_to: https://www.w3.org/TR/media-frags/
 ingredients:
   - id: starter
     name: Massa-mãe
@@ -25,6 +45,11 @@ ingredients:
     name: Farinha T65
   - id: water
     name: Água
+techniques:
+  - id: mixing
+    name: Mistura
+  - id: bulk-fermentation
+    name: Fermentação em massa
 formula:
   kind: percentage
   basis: flour
@@ -43,10 +68,12 @@ steps:
   - id: mix
     instruction: Misture os ingredientes.
     uses: [starter, flour, water]
+    techniques: [mixing]
     duration: PT8M
   - id: rest
     instruction: Deixe repousar.
     after: [mix]
+    techniques: [bulk-fermentation]
     duration:
       minimum: PT30M
       target: PT45M

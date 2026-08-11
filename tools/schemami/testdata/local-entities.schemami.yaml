@@ -17,5 +17,5 @@ steps:
   - id: preparar
     instruction: Prepare a mistura segundo a técnica da casa.
     uses: [ingrediente-da-casa]
-    technique: dobra-da-casa
+    techniques: [dobra-da-casa]
     equipment: [panela-x]

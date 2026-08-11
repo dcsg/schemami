@@ -28,11 +28,11 @@ approval and, for a release, all final gates.
 | 2. Exact quantities and Recipe Calculus | completed — five-operation Go/TypeScript corpus and refusal gates verified | quantity algebra and UCUM conversion parity |
 | 3. Local entities, evidence, and diagnostics | completed — registry-free rendering, evidence isolation, and diagnostic parity verified | registry-free capture and refusal boundary |
 | 4. Tooling, viewer, packs, and repository rename | completed — full local DAG and isolated bootstrap proof verified | end-to-end Schemami-only runtime |
-| 5. Conformance and release proof | in progress — local 14-artifact contract and 120-file candidate scope verified; candidate commit and HTTPS publication pending | clean-clone stable release evidence |
+| 5. Conformance and release proof | in progress — first candidate superseded by accepted Pão SPEC-013 dogfood corrections; replacement candidate pending | clean-clone stable release evidence |
 
 ## Binding decisions and protected scope
 
-- PRD-007, SPEC-007, ADR-004 through ADR-012, and the accepted field register
+- PRD-007, SPEC-007, ADR-004 through ADR-013, and the accepted field register
   bind implementation.
 - Schemami v1 is a clean cutover. Do not ship a dual reader, compatibility
   alias, public migration tool, or deprecation window.
@@ -184,6 +184,16 @@ canonicalization, governance, generated-artifact, privacy, and cutover gates.
 Create the versioned `schemami-v1.0.0` release manifest and reproduce it from a
 clean clone of the candidate commit with the pinned toolchain and no dirty
 overlay or Pão checkout.
+
+Before rebuilding the candidate, incorporate the accepted Pão SPEC-013
+dogfood corrections without changing the v1 marker: pairwise duration-window
+ordering, non-recursive open guides, percentage basis exactly once at 100,
+structured origin, ordered plural step techniques, non-empty supplied source
+URIs, and standard-backed evidence fragment selectors. Replay the adversarial
+inputs as inverted vectors in both runtimes. The replacement candidate commit,
+schema digest, validation/Calculus conformance digests, and manifest supersede the unpublished
+`884d584` candidate. Pão then updates its pin and dogfoods again; that replay is
+adoption feedback, not a Schemami release prerequisite.
 
 Verify every normative schema/vector/problem URL resolves immutably over HTTPS.
 If hosting is not ready, the release remains a verified candidate and must not

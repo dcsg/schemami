@@ -247,6 +247,21 @@ func resolveFormula(formula Formula, pointer string, anchorFactor rational) Enve
 			})
 		}
 	case "percentage":
+		basisIndex := -1
+		basisCount := 0
+		for index, term := range formula.Terms {
+			if term.Ingredient != formula.Basis {
+				continue
+			}
+			basisIndex = index
+			basisCount++
+		}
+		if basisCount != 1 {
+			return refused(operation, "invalid-operation-arguments", pointer+"/terms")
+		}
+		if formula.Terms[basisIndex].Percentage != "100" {
+			return refused(operation, "invalid-operation-arguments", fmt.Sprintf("%s/terms/%d/percentage", pointer, basisIndex))
+		}
 		if formula.BasisQuantity == nil {
 			return refused(operation, "missing-fact", pointer+"/basis_quantity")
 		}
@@ -599,11 +614,71 @@ func stepDuration(value any) (*big.Int, string) {
 	if !ok {
 		return nil, "invalid-operation-arguments"
 	}
-	target, ok := window["target"].(string)
+	if problem := ValidateDurationWindow(window); problem != "" {
+		return nil, problem
+	}
+	parsed := map[string]*big.Int{}
+	for _, field := range []string{"minimum", "target", "maximum"} {
+		raw, present := window[field]
+		if !present {
+			continue
+		}
+		text, ok := raw.(string)
+		if !ok {
+			return nil, "invalid-operation-arguments"
+		}
+		duration, problem := parseDuration(text)
+		if problem != "" {
+			return nil, problem
+		}
+		parsed[field] = duration
+	}
+	for _, pair := range [][2]string{{"minimum", "target"}, {"target", "maximum"}, {"minimum", "maximum"}} {
+		left, hasLeft := parsed[pair[0]]
+		right, hasRight := parsed[pair[1]]
+		if hasLeft && hasRight && left.Cmp(right) > 0 {
+			return nil, "invalid-operation-arguments"
+		}
+	}
+	target, ok := parsed["target"]
 	if !ok {
 		return nil, "missing-fact"
 	}
-	return parseDuration(target)
+	return target, ""
+}
+
+// ValidateDurationWindow validates the relational invariant between every
+// supplied duration-window pair. Missing target remains a schedule-time
+// missing fact rather than a document error.
+func ValidateDurationWindow(value any) string {
+	window, ok := value.(map[string]any)
+	if !ok {
+		return ""
+	}
+	parsed := map[string]*big.Int{}
+	for _, field := range []string{"minimum", "target", "maximum"} {
+		raw, present := window[field]
+		if !present {
+			continue
+		}
+		text, ok := raw.(string)
+		if !ok {
+			return "invalid-operation-arguments"
+		}
+		duration, problem := parseDuration(text)
+		if problem != "" {
+			return problem
+		}
+		parsed[field] = duration
+	}
+	for _, pair := range [][2]string{{"minimum", "target"}, {"target", "maximum"}, {"minimum", "maximum"}} {
+		left, hasLeft := parsed[pair[0]]
+		right, hasRight := parsed[pair[1]]
+		if hasLeft && hasRight && left.Cmp(right) > 0 {
+			return "invalid-operation-arguments"
+		}
+	}
+	return ""
 }
 
 func parseDuration(raw string) (*big.Int, string) {

@@ -1,7 +1,7 @@
 ---
 title: "PRD-007 Pão de Portugal adoption gap"
 date: 2026-08-10
-status: historical-evidence-not-release-scope
+status: verified-adoption-evidence-not-release-input
 source: "/Users/danielgomessm/MyProjects/dcsg/paodeportugal/experiments/recipe-rcp-parity/"
 ---
 
@@ -75,9 +75,66 @@ that separates:
 The report is Pão application evidence. It is not a new Schemami recipe field,
 translation artifact, account record, or hosted service.
 
+## Verified post-correction adoption evidence — 2026-08-11
+
+Two independent application experiments were replayed against the corrected
+unpublished Schemami v1 candidate. Neither application worktree is a release
+input and neither result expands the canonical schema.
+
+### Pão de Portugal complete-recipe replay
+
+- The durable corpus query reports 49 formulas, 18 method-bearing recipes, 117
+  authored stages, 226 named actions, 37 conditional cues, 41 technique
+  references, and 105 authored duration labels.
+- The real adapter validates 49/49 formula documents and 18/18 method documents.
+  It preserves all 117 stage occurrences and all 41 technique references.
+- 103 duration labels map losslessly to one exact value or ordered duration
+  window. Two conditional/alternative labels deliberately remain app-owned and
+  portable `duration` is omitted.
+- The fit findings confirm the v1 boundary: `instruction` is the smallest
+  portable method unit; named sub-actions and structured conditional cues are
+  not canonical v1 members. A Schemami document is the normalized culinary and
+  computational backbone, not a lossless Pão editorial/UI snapshot.
+
+Reproduced command:
+
+```sh
+SCHEMAMI_WORKTREE_ROOT=/Users/danielgomessm/MyProjects/personal/RecipesProtocol \
+  docs/product/specs/SPEC-013-schemami-v1-candidate-dogfood/run-working-tree-adapter-replay.sh
+```
+
+Observed result: the three selected adapter tests passed; corpus replay reported
+`schemami_valid=49`, `schemami_invalid=0`, `method_documents=18`,
+`promoted_method_stages=117`, and `scheduled_method_stages=103`.
+
+### Fornada Swift boundary replay
+
+- All 20 current system bread formulas export to Schemami and project exactly
+  back into the existing Fornada snapshot model.
+- Unknown local ingredients remain valid Schemami data while the app projection
+  refuses until a reviewed mapping exists.
+- A ratio whose target would require fractional redistribution refuses rather
+  than rounding into Fornada's integer-gram model.
+- App lifecycle, timers, variants, mappings, UI state, and the legacy method
+  snapshot remain in a separate Fornada-owned overlay.
+- Eight focused Swift adapter tests pass and the independently generated
+  Alentejano fixture is accepted by the Go reference validator.
+
+Production overlay and mapping bindings MUST use the published document
+identity `(collection, id, revision, JCS SHA-256 digest)`, not only the first
+three members. The digest prevents changed bytes under a reused revision from
+inheriting stale app mappings, timer data, or other overlay meaning.
+
+These results support a future protocol-owned Swift SDK that shares the v1
+conformance corpus. Codable model generation alone is not conformance: the SDK
+also needs semantic validation, exact decimals, canonicalization/digests, pack
+verification, stable diagnostics, extension preservation, and all five Recipe
+Calculus operations.
+
 ## Boundary after ADR-006
 
-- The current Pão worktree is dirty and is not Schemami release evidence.
+- The Pão and Fornada experiment worktrees are dirty and are not Schemami
+  clean-clone release inputs.
 - The Schemami repository owns Schemami schemas, Calculus, conformance vectors,
   and protocol diagnostics. It proves ADR-005 without a Pão checkout.
 - The Pão repository owns any future adapter, application mappings, UI

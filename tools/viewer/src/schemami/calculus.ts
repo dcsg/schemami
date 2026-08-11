@@ -191,6 +191,14 @@ function resolveFormulaExact(formula: Formula, pointer: string, anchorFactor: Ra
       quantities.push({ ingredient: term.ingredient, quantity: { kind: "measured", value, unit: formula.target.unit } });
     }
   } else if (formula.kind === "percentage") {
+    const basisIndexes = formula.terms
+      .map((term, index) => term.ingredient === formula.basis ? index : -1)
+      .filter((index) => index >= 0);
+    if (basisIndexes.length !== 1) return refused(operation, "invalid-operation-arguments", `${pointer}/terms`);
+    const basisIndex = basisIndexes[0];
+    if (formula.terms[basisIndex].percentage !== "100") {
+      return refused(operation, "invalid-operation-arguments", `${pointer}/terms/${basisIndex}/percentage`);
+    }
     if (!formula.basis_quantity) return refused(operation, "missing-fact", `${pointer}/basis_quantity`);
     if (formula.basis_quantity.kind !== "measured") {
       return refused(operation, "unsupported-quantity-kind", `${pointer}/basis_quantity`);
@@ -327,9 +335,42 @@ function stepDuration(value: unknown): bigint | "missing-fact" | "invalid-operat
   if (value === undefined || value === null) return "missing-fact";
   if (typeof value === "string") return parseDuration(value) ?? "invalid-operation-arguments";
   if (typeof value !== "object" || Array.isArray(value)) return "invalid-operation-arguments";
-  const target = (value as Record<string, unknown>).target;
-  if (typeof target !== "string") return "missing-fact";
-  return parseDuration(target) ?? "invalid-operation-arguments";
+  const window = value as Record<string, unknown>;
+  const windowProblem = validateDurationWindow(window);
+  if (windowProblem) return windowProblem;
+  const parsed = new Map<string, bigint>();
+  for (const field of ["minimum", "target", "maximum"] as const) {
+    if (!Object.hasOwn(window, field)) continue;
+    if (typeof window[field] !== "string") return "invalid-operation-arguments";
+    const duration = parseDuration(window[field]);
+    if (duration === null) return "invalid-operation-arguments";
+    parsed.set(field, duration);
+  }
+  for (const [leftName, rightName] of [["minimum", "target"], ["target", "maximum"], ["minimum", "maximum"]] as const) {
+    const left = parsed.get(leftName);
+    const right = parsed.get(rightName);
+    if (left !== undefined && right !== undefined && left > right) return "invalid-operation-arguments";
+  }
+  return parsed.get("target") ?? "missing-fact";
+}
+
+export function validateDurationWindow(value: unknown): "invalid-operation-arguments" | null {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
+  const window = value as Record<string, unknown>;
+  const parsed = new Map<string, bigint>();
+  for (const field of ["minimum", "target", "maximum"] as const) {
+    if (!Object.hasOwn(window, field)) continue;
+    if (typeof window[field] !== "string") return "invalid-operation-arguments";
+    const duration = parseDuration(window[field]);
+    if (duration === null) return "invalid-operation-arguments";
+    parsed.set(field, duration);
+  }
+  for (const [leftName, rightName] of [["minimum", "target"], ["target", "maximum"], ["minimum", "maximum"]] as const) {
+    const left = parsed.get(leftName);
+    const right = parsed.get(rightName);
+    if (left !== undefined && right !== undefined && left > right) return "invalid-operation-arguments";
+  }
+  return null;
 }
 
 function formatElapsed(seconds: bigint): string {

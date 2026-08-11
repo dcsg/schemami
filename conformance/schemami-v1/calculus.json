@@ -171,6 +171,34 @@
     "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/formula/basis_quantity"}]}
   },
   {
+    "name": "percentage formula omitted named basis term refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "percentage",
+        "basis": "flour",
+        "terms": [{"ingredient": "water", "percentage": "75"}],
+        "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/formula/terms"}]}
+  },
+  {
+    "name": "percentage formula named basis not one hundred refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "percentage",
+        "basis": "flour",
+        "terms": [{"ingredient": "flour", "percentage": "80"}],
+        "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/formula/terms/0/percentage"}]}
+  },
+  {
     "name": "scale explicit measured fixed range and open quantities",
     "operation": "scale",
     "input": {
@@ -232,8 +260,8 @@
         "formula": {
           "kind": "percentage",
           "basis": "trace",
-          "terms": [{"ingredient": "trace", "percentage": "1000000"}],
-          "basis_quantity": {"kind": "measured", "value": "0.0001", "unit": "g"}
+          "terms": [{"ingredient": "trace", "percentage": "100"}],
+          "basis_quantity": {"kind": "measured", "value": "1", "unit": "g"}
         }
       }
     },
@@ -314,5 +342,11 @@
     "operation": "schedule",
     "input": {"steps": [{"id": "rest", "duration": {"minimum": "PT30M", "maximum": "PT1H"}}]},
     "expected": {"operation": "schedule", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/steps/0/duration"}]}
+  },
+  {
+    "name": "inverted duration window refuses",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "rest", "duration": {"minimum": "PT2H", "target": "PT1H", "maximum": "PT30M"}}]},
+    "expected": {"operation": "schedule", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/steps/0/duration"}]}
   }
 ]

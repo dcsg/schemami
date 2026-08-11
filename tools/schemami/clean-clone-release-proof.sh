@@ -28,7 +28,7 @@ env \
 
 manifest="$proof_root/schemami-v1.0.0.manifest.json"
 bash "$clone/tools/schemami/build-release-manifest.sh" "$manifest" >/dev/null
-jq -e --arg candidate "$candidate" '.source_commit == $candidate and (.artifacts | length == 14)' "$manifest" >/dev/null
+jq -e --arg candidate "$candidate" '.source_commit == $candidate and (.artifacts | length == 15)' "$manifest" >/dev/null
 test -z "$(git -C "$clone" status --porcelain=v1 --untracked-files=all)"
 
 echo "clean-clone proof: candidate $candidate reproduced the full DAG and 14-artifact release manifest"

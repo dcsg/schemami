@@ -165,10 +165,10 @@ result member:
 | Canonical path/name | Recipe/component `/formula`, with `kind: ratio` or `kind: percentage`. |
 | Ratio terms | Ordered `terms`; each term has `ingredient` referencing a local ingredient ID and positive exact-decimal `parts`. Term order defines display order. `1`, `2`, `2` means and renders `1:2:2`; the protocol never normalizes it into percentages. |
 | Ratio target | Optional measured `target` with exact-decimal `value` and UCUM `unit`. With target 500 g, `1:2:2` resolves as 100 g, 200 g, 200 g. Without a target the formula is valid/renderable but has no absolute weights. |
-| Percentage terms | Required local ingredient `basis`; ordered terms carry `ingredient` plus positive exact-decimal `percentage`. Values are percentage points: `75` means 75%; `1.8` means 1.8%; `0.75` means 0.75%, never 75%. |
+| Percentage terms | Required local ingredient `basis`; ordered terms carry `ingredient` plus positive exact-decimal `percentage`. The basis occurs exactly once with `percentage: "100"`. Values are percentage points: `75` means 75%; `1.8` means 1.8%; `0.75` means 0.75%, never 75%. |
 | Percentage basis quantity | Optional measured `basis_quantity` with exact-decimal `value` and UCUM `unit`. Without it the percentage formula remains valid/renderable but cannot resolve absolute weights. |
 | Forbidden interpretations | A ratio is not a decimal multiplier, percentage, or scalar quantity. A percentage is not a colon ratio. Source display characters (`:`, `%`) are presentation, not stored numeric syntax. |
-| Required vectors | `1:2:2` and `1:15` rendering; ratio target resolution; ratio without target refusal for absolute result; 75%/1.8% basis resolution; 0.75% non-alias; duplicate/unknown term ingredient; non-positive part/percentage refusal. |
+| Required vectors | `1:2:2` and `1:15` rendering; ratio target resolution; ratio without target refusal for absolute result; 75%/1.8% basis resolution; 0.75% non-alias; basis-at-100 acceptance; missing/non-100 basis refusal; duplicate/unknown term ingredient; non-positive part/percentage refusal. |
 
 ## Accepted register entry — elapsed duration windows
 
@@ -176,18 +176,18 @@ result member:
 |---|---|
 | Canonical path/name | Context-specific `/duration`; window members `minimum`, `target`, and `maximum`. |
 | Value semantics | Positive fixed elapsed duration. Examples include `PT8M`, `PT1H10M`, `P2D`, and `P1W`. Scheduling consumes elapsed offsets, not calendar dates. |
-| Forbidden forms | Calendar year/month units, negative durations, Model 1 compact `8m`/`1h10m`, and abbreviated `min`/`max` aliases. |
+| Forbidden forms | Calendar year/month units, negative durations, inverted supplied window pairs, Model 1 compact `8m`/`1h10m`, and abbreviated `min`/`max` aliases. |
 | Presentation boundary | Applications may render `PT1H10M` as “1 h 10 min” in the selected UI language; rendered text does not change canonical input or scheduling. |
-| Standards gate | Owner shape is accepted. The precise lexical subset must be rechecked against the primary RFC/ISO source before schema implementation; the 2026-08-11 live check was denied by the environment. |
+| Standards gate | Owner shape is accepted and the admitted lexical subset is grounded in RFC 5545 section 3.3.6; Schemami applies fixed elapsed semantics to D/W. |
 | Required vectors | every accepted example; malformed ordering; negative/year/month/compact/alias refusal; window ordering; byte-identical Go/TypeScript schedule offsets. |
 
 ## Accepted register entry — evidence, local method entities, and diagnostics
 
 | Register column | Schemami v1 decision |
 |---|---|
-| Evidence placement | Document-level evidence records target canonical fields with RFC 6901 JSON Pointers. Source artifact URIs and raw captured text remain separate from the structured value and are never parsed by protocol logic. |
+| Evidence placement | Document-level evidence records target canonical fields with RFC 6901 JSON Pointers. Optional selectors use standard fragment syntax to locate source segments. Source artifact URIs, fragment offsets, and raw captured text remain separate from the structured value and are never parsed into protocol logic. |
 | Technique/equipment identity | A recipe MAY declare its own local technique and equipment entities, each with an `id` unique in its respective recipe-local collection and an authored source-language `name`. Their use is valid without a central registry. |
-| Step action | Each step is the recipe-local action and requires a local `id` plus source-language `instruction`. It has no second action identifier, mandatory primitive, primitive version, registry admission, or primitive parameter object. v1 structured facts are dependencies, uses/produces, duration, equipment, and technique. Readiness/endpoint, temperature, and constraints remain absent unless a later accepted operation consumes them. |
+| Step action | Each step is the recipe-local action and requires a local `id` plus source-language `instruction`. It has no second action identifier, mandatory primitive, primitive version, registry admission, or primitive parameter object. v1 structured facts are dependencies, uses/produces, duration, equipment, and ordered unique `techniques`. Readiness/endpoint, temperature, and constraints remain absent unless a later accepted operation consumes them. |
 | Protocol operations | A step ID, instruction, technique, or equipment name does not assert deterministic semantics. A protocol operation is introduced only when Recipe Calculus defines and consumes its behavior; v1 does not reserve a speculative operation field. |
 | Diagnostic shape | Operation results use `status` and a list of standards-shaped problems. Each problem has a stable `type` URI and a RFC 6901 `pointer`; rendered wording is presentation-owned. |
 | Required vectors | field evidence target; malformed pointer refusal; step validates/renders without primitive registry; primitive/params reject; unknown local technique/equipment render; instruction changes no calculation; explicit structured facts do; operation with absent required facts refuses; diagnostic type/pointer stability. |

@@ -46,7 +46,7 @@ requirements:
     falsifying_observation: Equivalent admitted JSON and YAML produce different canonical values or identities, or the release claims an unregistered media type as registered.
   - id: SR-LANG-001
     implements: FR-MODEL-001
-    text: "Every root document MUST carry required content_language as a well-formed BCP 47 source-content tag with no default. Authored prose MUST be a string in that language. Locale maps and presentation-language preferences MUST NOT be canonical recipe data; origin country remains a distinct ISO 3166-1 alpha-2 value."
+    text: "Every root document MUST carry required content_language as a well-formed BCP 47 source-content tag with no default. Authored prose MUST be a string in that language. Locale maps and presentation-language preferences MUST NOT be canonical recipe data. Optional origin is distinct and MAY carry ISO 3166-1 alpha-2 country, country-matching ISO 3166-2 subdivision, source-language locality, and owner extensions for versioned national identifiers."
     verify_kind: structural
     intent: Source language, translation, locale, and origin cannot be conflated.
     falsifying_observation: A document validates without content_language, accepts locale-map prose, or treats pt-PT as a country/origin value.
@@ -58,13 +58,13 @@ requirements:
     falsifying_observation: An unknown ingredient cannot validate/render, an uppercase/dotted/spaced or overlong id is normalized or accepted, a lowercase UUID is rejected or gains special behavior, or app catalog identity changes canonical recipe semantics.
   - id: SR-METHOD-001
     implements: FR-VOCAB-001
-    text: "A recipe MAY declare local techniques and equipment with collection-local id and source-language name. Each step MUST itself be the recipe-local action with required local id and source-language instruction. It MUST remain valid/renderable without a primitive or action registry, version, or parameter object. Only explicit structured step fields MAY supply deterministic inputs; id, instruction, technique, and equipment names MUST NOT activate behavior. A protocol operation MAY be added only when Recipe Calculus defines and consumes it."
+    text: "A recipe MAY declare local techniques and equipment with collection-local id and source-language name. Each step MUST itself be the recipe-local action with required local id and source-language instruction. The instruction is the smallest portable method unit in v1; named sub-actions, editorial grouping, application timer policy, conditional checkpoints, and conditional/alternative schedule branches MUST remain outside canonical v1 data. An adapter MUST omit duration rather than choose a condition or alternative. A valid v1 document is a normalized culinary/computational backbone, not necessarily a lossless editorial, workflow, or UI interchange document. It MUST remain valid/renderable without a primitive or action registry, version, or parameter object. Ordered unique steps[].techniques references MUST preserve authored/application order and MUST NOT be sorted; singular technique is invalid. Only explicit structured step fields MAY supply deterministic inputs; id, instruction, technique, and equipment names MUST NOT activate behavior. A protocol operation MAY be added only when Recipe Calculus defines and consumes it."
     verify_kind: behavioral
     intent: Integrators can express recipe-local method concepts without global taxonomy pressure or unearned operation semantics.
-    falsifying_observation: A step requires primitive/action minting, primitive params survive, authored text activates calculation, or an unconsumed speculative operation field is added.
+    falsifying_observation: A step requires primitive/action minting, primitive params survive, authored text activates calculation, an adapter guesses one conditional schedule, or an unconsumed speculative operation field is added.
   - id: SR-QTY-001
     implements: FR-CALC-006
-    text: "quantity MUST replace amount for absolute amounts and MUST be a closed union selected by required kind: measured, range, or open. A grouped formula MUST represent either an ordered ratio whose terms store positive exact-decimal parts, or percentages whose terms store percentage points directly against one named ingredient basis. Ratio 1:2:2 MUST remain 1:2:2; percentage 75 MUST mean 75%, never a 0.75 multiplier. An ingredient named by formula terms MUST NOT also carry explicit quantity. Schemami v1 MUST NOT admit a canonical endpoint or readiness-condition field; completion conditions remain source-language step instructions."
+    text: "quantity MUST replace amount for absolute amounts and MUST be a closed union selected by required kind: measured, range, or open; an open guide MUST be measured or range only. A grouped formula MUST represent either an ordered ratio whose terms store positive exact-decimal parts, or percentages whose terms store percentage points directly against one named ingredient basis that occurs exactly once at 100. Ratio 1:2:2 MUST remain 1:2:2; percentage 75 MUST mean 75%, never a 0.75 multiplier. An ingredient named by formula terms MUST NOT also carry explicit quantity. Schemami v1 MUST NOT admit a canonical endpoint or readiness-condition field; completion conditions remain source-language step instructions."
     verify_kind: behavioral
     intent: Absolute amounts, colon ratios, and percentages have separate explicit meanings while readiness prose does not masquerade as computation.
     falsifying_observation: Logic infers a quantity or endpoint from prose, stores 75% as a 0.75 ratio multiplier, normalizes 1:2:2 into percentages, admits binary floating values as canonical scalars, or validates a canonical endpoint field.
@@ -82,7 +82,7 @@ requirements:
     falsifying_observation: Implementations differ, accept g-to-mL, use floating tolerance, accept or emit more than 16 total or four fractional digits, or expose a rational object.
   - id: SR-DURATION-001
     implements: FR-CALC-006
-    text: "Elapsed recipe durations MUST use Schemami's strict positive unsigned RFC 5545 section 3.3.6 day/time/week profile, including PT8M, PT1H10M, P2D, and P1W. Schemami treats D and W as fixed 86400- and 604800-second elapsed values. Duration windows MUST use minimum, target, and maximum. Calendar years/months, signed/zero durations, Model 1 compact duration strings, and abbreviated min/max members MUST reject."
+    text: "Elapsed recipe durations MUST use Schemami's strict positive unsigned RFC 5545 section 3.3.6 day/time/week profile, including PT8M, PT1H10M, P2D, and P1W. Schemami treats D and W as fixed 86400- and 604800-second elapsed values. Duration windows MUST use minimum, target, and maximum and every supplied pair MUST be ordered. Calendar years/months, signed/zero durations, inverted windows, Model 1 compact duration strings, and abbreviated min/max members MUST reject."
     verify_kind: behavioral
     intent: Scheduling uses portable fixed elapsed time rather than a custom parser or calendar-dependent period.
     falsifying_observation: 1h10m validates, a signed/zero/year/month duration validates, or Go and TypeScript compute different elapsed offsets.
@@ -94,7 +94,7 @@ requirements:
     falsifying_observation: A v1 operation is inferred from prose, a track or guard validates canonically, unknown custom scaling gains core behavior, or Go and TypeScript disagree on reading order.
   - id: SR-EVIDENCE-001
     implements: FR-EVIDENCE-001
-    text: "Document-level sources MUST identify acquisition artifacts by local id and URI/URI-reference with optional immutable digest. Document-level evidence MUST target an existing structured value with RFC 6901 JSON Pointer and MAY retain source id, raw_text, and canonical-decimal confidence. Evidence MUST NOT satisfy a missing structured prerequisite or be parsed by validation/Calculus logic."
+    text: "Optional document-level sources identify acquisition artifacts; every supplied source MUST have local id and a non-empty URI/URI-reference with optional immutable digest. Document-level evidence MUST target an existing structured value with RFC 6901 JSON Pointer and MAY retain source id, raw_text, canonical-decimal confidence, and one standard-backed fragment selector. Selector offsets locate source evidence and MUST NOT become culinary duration, satisfy a missing prerequisite, or be parsed into validation/Calculus facts."
     verify_kind: behavioral
     intent: Partial capture is auditable without masquerading as computation.
     falsifying_observation: Raw text supplies a quantity, a broken pointer validates, or changing confidence changes a calculation.
@@ -124,13 +124,13 @@ requirements:
     falsifying_observation: A released path accepts/emits RCP or silently rewrites legacy input.
   - id: SR-CONFORMANCE-001
     implements: FR-REL-001
-    text: "Go and TypeScript MUST replay one shared normative corpus covering schema admission, JCS canonicalization, local identities, evidence pointers, every quantity/formula kind, deterministic conversion/refusal, diagnostics, pack resolution, extension preservation, and unsupported RCP input. Canonical decimal fields MUST compare byte-for-byte exactly after the pinned 16-total-digit/four-fractional-digit/tie rule; no floating tolerance is permitted."
+    text: "Go and TypeScript MUST replay shared normative validation and Calculus corpora covering schema admission, Pão dogfood regressions, JCS canonicalization, local identities, evidence pointers/selectors, every quantity/formula kind, deterministic conversion/refusal, diagnostics, pack resolution, extension preservation, and unsupported RCP input. Canonical decimal fields MUST compare byte-for-byte exactly after the pinned 16-total-digit/four-fractional-digit/tie rule; no floating tolerance is permitted."
     verify_kind: behavioral
     intent: Language-independent behavior, not implementation preference, defines conformance.
     falsifying_observation: Either implementation skips a vector class or produces a different admitted value/result.
   - id: SR-RELEASE-001
     implements: FR-REL-001
-    text: "A stable release MUST be proven from a clean clone of the candidate commit, publish its byte-identical versioned manifest at https://schemami.dev/releases/schemami-v1.0.0.json, contain a clean-cutover inventory, publish the core/pack schema IDs, https://schemami.dev/conformance/schemami/1/calculus.json, and human-readable HTML for each https://schemami.dev/problems/<code> identity with manifest-pinned media type and SHA-256 bytes; any redirect MUST remain on the canonical host. It MUST contain no active RCP identity outside historical/negative fixtures and pass all local/cross-language gates. Pão de Portugal code MUST NOT be a release prerequisite."
+    text: "A stable release MUST be proven from a clean clone of the candidate commit, publish its byte-identical versioned manifest at https://schemami.dev/releases/schemami-v1.0.0.json, contain a clean-cutover inventory, publish the core/pack schema IDs, https://schemami.dev/conformance/schemami/1/calculus.json, https://schemami.dev/conformance/schemami/1/validation.json, and human-readable HTML for each https://schemami.dev/problems/<code> identity with manifest-pinned media type and SHA-256 bytes; any redirect MUST remain on the canonical host. It MUST contain no active RCP identity outside historical/negative fixtures and pass all local/cross-language gates. Pão de Portugal code MUST NOT be a release prerequisite."
     verify_kind: behavioral
     intent: The release is reproducible and independently adoptable before AI/docs work.
     falsifying_observation: Evidence depends on the dirty worktree, a mutable/missing normative URL, active RCP surface, or Pão application checkout.
@@ -158,19 +158,19 @@ acceptance_criteria:
     fr: FR-VOCAB-001
     given: a step with local id, source-language instruction, and explicit structured fields but no primitive/action reference
     when: schema validation, rendering, and scheduling run
-    then: the step is valid and readable and only its explicit structured fields affect deterministic behavior
+    then: the step is valid and readable, ordered unique techniques remain in authored order, and only explicit structured fields affect deterministic behavior
   - id: AC-DURATION-001
     source: prd
     fr: FR-CALC-006
     given: positive elapsed duration examples and nearest negative, calendar, and Model 1 compact forms
     when: schema validation and scheduling run in Go and TypeScript
-    then: admitted values produce identical elapsed offsets and unsupported forms reject before scheduling
+    then: admitted values produce identical elapsed offsets, every supplied window pair is ordered, and unsupported or inverted forms reject before scheduling
   - id: AC-QTY-001
     source: spec
     fr: FR-CALC-006
     given: each tagged quantity and grouped ratio/percentage formula shape plus its nearest ambiguous malformed shape
     when: validation and relevant Calculus operations run
-    then: the valid shape retains its explicit semantics and the malformed/unsupported shape refuses without inference
+    then: the valid shape retains its explicit semantics, open guides admit measured/range only, percentage basis occurs exactly once at 100, and malformed/unsupported shapes refuse without inference
   - id: AC-CONVERT-001
     source: prd
     fr: FR-CALC-006
@@ -182,7 +182,7 @@ acceptance_criteria:
     fr: FR-EVIDENCE-001
     given: evidence targeting a structured quantity plus raw conflicting text
     when: validation and conversion run
-    then: the pointer/source binding validates but only the structured quantity affects the deterministic result
+    then: the pointer/source/optional-selector binding validates but only the structured quantity affects the deterministic result; source offsets never become culinary duration
   - id: AC-CUTOVER-001
     source: prd
     fr: FR-CUTOVER-001

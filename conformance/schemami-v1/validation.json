@@ -1,0 +1,123 @@
+{
+  "suite": "schemami-v1-validation",
+  "version": 1,
+  "vectors": [
+    {
+      "id": "duration-window-inverted-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "duration-inverted", "revision": 1,
+        "content_language": "pt-PT", "title": "Janela invertida",
+        "ingredients": [{"id": "agua", "name": "Água"}],
+        "steps": [{"id": "esperar", "instruction": "Espere.", "duration": {"minimum": "PT2H", "target": "PT1H", "maximum": "PT30M"}}]
+      }
+    },
+    {
+      "id": "recursive-open-guide-refuses-concisely",
+      "expected_valid": false,
+      "expected_diagnostic": {
+        "pointer": "/ingredients/0/quantity/guide",
+        "message": "Open quantity guide must be measured or range."
+      },
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "recursive-guide", "revision": 1,
+        "content_language": "pt-PT", "title": "Guia aberto recursivo",
+        "ingredients": [{"id": "sal", "name": "Sal", "quantity": {"kind": "open", "qualifier": "to_taste", "guide": {"kind": "open", "qualifier": "as_needed"}}}],
+        "steps": []
+      }
+    },
+    {
+      "id": "percentage-basis-at-eighty-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "basis-eighty", "revision": 1,
+        "content_language": "pt-PT", "title": "Base a oitenta",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}, {"id": "agua", "name": "Água"}],
+        "steps": [],
+        "formula": {"kind": "percentage", "basis": "farinha", "terms": [{"ingredient": "farinha", "percentage": "80"}, {"ingredient": "agua", "percentage": "75"}]}
+      }
+    },
+    {
+      "id": "percentage-basis-omitted-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "basis-omitted", "revision": 1,
+        "content_language": "pt-PT", "title": "Base omitida",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}, {"id": "agua", "name": "Água"}],
+        "steps": [],
+        "formula": {"kind": "percentage", "basis": "farinha", "terms": [{"ingredient": "agua", "percentage": "75"}]}
+      }
+    },
+    {
+      "id": "portable-origin-accepts",
+      "expected_valid": true,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "origin", "revision": 1,
+        "content_language": "pt-PT", "title": "Origem portuguesa",
+        "origin": {"country": "PT", "subdivision": "PT-11", "locality": "Mafra"},
+        "ingredients": [{"id": "agua", "name": "Água"}],
+        "steps": []
+      }
+    },
+    {
+      "id": "empty-source-uri-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "empty-source", "revision": 1,
+        "content_language": "pt-PT", "title": "Fonte vazia",
+        "ingredients": [{"id": "agua", "name": "Água"}],
+        "steps": [],
+        "sources": [{"id": "fonte", "uri": ""}]
+      }
+    },
+    {
+      "id": "ordered-plural-techniques-accept",
+      "expected_valid": true,
+      "expected_techniques": ["misturar", "amassar"],
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "ordered-techniques", "revision": 1,
+        "content_language": "pt-PT", "title": "Técnicas ordenadas",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}],
+        "techniques": [{"id": "misturar", "name": "Misturar"}, {"id": "amassar", "name": "Amassar"}],
+        "steps": [{"id": "trabalhar", "instruction": "Misture e amasse.", "techniques": ["misturar", "amassar"]}]
+      }
+    },
+    {
+      "id": "singular-technique-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "singular-technique", "revision": 1,
+        "content_language": "pt-PT", "title": "Técnica singular",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}],
+        "techniques": [{"id": "misturar", "name": "Misturar"}],
+        "steps": [{"id": "trabalhar", "instruction": "Misture.", "technique": "misturar"}]
+      }
+    },
+    {
+      "id": "w3c-video-selector-accepts",
+      "expected_valid": true,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "video-selector", "revision": 1,
+        "content_language": "pt-PT", "title": "Seletor de vídeo",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}],
+        "techniques": [{"id": "misturar", "name": "Misturar"}, {"id": "amassar", "name": "Amassar"}],
+        "steps": [{"id": "trabalhar", "instruction": "Misture e amasse.", "duration": "PT15M", "techniques": ["misturar", "amassar"]}],
+        "sources": [{"id": "video", "uri": "https://example.invalid/recipe.mp4", "media_type": "video/mp4"}],
+        "evidence": [{"id": "amassar-video", "source": "video", "pointer": "/steps/0/techniques/1", "selector": {"kind": "fragment", "value": "t=300,600", "conforms_to": "https://www.w3.org/TR/media-frags/"}}]
+      }
+    },
+    {
+      "id": "inverted-w3c-video-selector-refuses",
+      "expected_valid": false,
+      "document": {
+        "schemami": "1", "collection": "conformance", "id": "video-selector-inverted", "revision": 1,
+        "content_language": "pt-PT", "title": "Seletor de vídeo invertido",
+        "ingredients": [{"id": "farinha", "name": "Farinha"}],
+        "techniques": [{"id": "amassar", "name": "Amassar"}],
+        "steps": [{"id": "trabalhar", "instruction": "Amasse.", "duration": "PT15M", "techniques": ["amassar"]}],
+        "sources": [{"id": "video", "uri": "https://example.invalid/recipe.mp4"}],
+        "evidence": [{"id": "amassar-video", "source": "video", "pointer": "/steps/0/techniques/0", "selector": {"kind": "fragment", "value": "t=600,300", "conforms_to": "https://www.w3.org/TR/media-frags/"}}]
+      }
+    }
+  ]
+}

@@ -3,12 +3,59 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"math"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 )
+
+func TestSharedValidationConformanceVectors(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "conformance", "schemami-v1", "validation.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var corpus struct {
+		Vectors []struct {
+			ID                 string         `json:"id"`
+			ExpectedValid      bool           `json:"expected_valid"`
+			ExpectedTechniques []string       `json:"expected_techniques"`
+			ExpectedDiagnostic map[string]any `json:"expected_diagnostic"`
+			Document           map[string]any `json:"document"`
+		} `json:"vectors"`
+	}
+	if err := json.Unmarshal(raw, &corpus); err != nil {
+		t.Fatal(err)
+	}
+	schema, err := schemaFor(filepath.Join("testdata", "basic.schemami.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, vector := range corpus.Vectors {
+		t.Run(vector.ID, func(t *testing.T) {
+			err := validateDocumentData(vector.Document, schema)
+			if (err == nil) != vector.ExpectedValid {
+				t.Fatalf("valid = %v, want %v; error = %v", err == nil, vector.ExpectedValid, err)
+			}
+			if len(vector.ExpectedDiagnostic) > 0 {
+				want := vector.ExpectedDiagnostic["pointer"].(string) + ": " + vector.ExpectedDiagnostic["message"].(string)
+				if err == nil || err.Error() != want {
+					t.Fatalf("diagnostic = %v, want %q", err, want)
+				}
+			}
+			if len(vector.ExpectedTechniques) > 0 {
+				steps := vector.Document["steps"].([]any)
+				values := steps[0].(map[string]any)["techniques"].([]any)
+				for index, want := range vector.ExpectedTechniques {
+					if got := values[index].(string); got != want {
+						t.Fatalf("techniques[%d] = %q, want %q", index, got, want)
+					}
+				}
+			}
+		})
+	}
+}
 
 func TestValidateAdmitsSchemamiFixture(t *testing.T) {
 	path := filepath.Join("testdata", "basic.schemami.yaml")
@@ -180,6 +227,7 @@ func TestSchemaRejectsMalformedQuantityShapes(t *testing.T) {
 		map[string]any{"kind": "range", "minimum": "1", "unit": "g"},
 		map[string]any{"kind": "open"},
 		map[string]any{"kind": "ratio", "parts": "1"},
+		map[string]any{"kind": "open", "qualifier": "as_needed", "guide": map[string]any{"kind": "open", "qualifier": "to_taste"}},
 		"100 g",
 	}
 	for _, quantity := range tests {
@@ -188,6 +236,73 @@ func TestSchemaRejectsMalformedQuantityShapes(t *testing.T) {
 		if err := schema.Validate(doc); err == nil {
 			t.Fatalf("malformed quantity %#v unexpectedly admitted", quantity)
 		}
+	}
+}
+
+func TestSchemaRejectsSingularTechniqueAndEmptySourceURI(t *testing.T) {
+	schema, err := schemaFor(filepath.Join("testdata", "basic.schemami.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, mutate := range []func(map[string]any){
+		func(doc map[string]any) { doc["steps"].([]any)[0].(map[string]any)["technique"] = "mixing" },
+		func(doc map[string]any) { doc["sources"].([]any)[0].(map[string]any)["uri"] = "" },
+	} {
+		doc := validDocument()
+		mutate(doc)
+		if err := schema.Validate(doc); err == nil {
+			t.Fatal("invalid Schemami v1 wire unexpectedly admitted")
+		}
+	}
+}
+
+func TestOriginPluralTechniquesAndVideoSelectorValidate(t *testing.T) {
+	doc := validDocument()
+	doc["origin"] = map[string]any{"country": "PT", "subdivision": "PT-11", "locality": "Mafra"}
+	doc["techniques"] = []any{
+		map[string]any{"id": "mixing", "name": "Mistura"},
+		map[string]any{"id": "kneading", "name": "Amassadura"},
+	}
+	doc["steps"].([]any)[0].(map[string]any)["techniques"] = []any{"mixing", "kneading"}
+	doc["sources"].([]any)[0].(map[string]any)["uri"] = "https://example.org/bread.mp4"
+	doc["sources"].([]any)[0].(map[string]any)["media_type"] = "video/mp4"
+	doc["evidence"] = []any{map[string]any{
+		"id": "clip", "source": "source", "pointer": "/steps/0/techniques/1",
+		"selector": map[string]any{"kind": "fragment", "value": "t=300,600", "conforms_to": mediaFragmentsSpecification},
+	}}
+	schema, err := schemaFor(filepath.Join("testdata", "basic.schemami.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := schema.Validate(doc); err != nil {
+		t.Fatal(err)
+	}
+	if err := validateSemantics(doc); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTechniqueOrderIsCanonicalAndHashSignificant(t *testing.T) {
+	document := validDocument()
+	document["techniques"] = []any{
+		map[string]any{"id": "mixing", "name": "Mistura"},
+		map[string]any{"id": "kneading", "name": "Amassadura"},
+	}
+	document["steps"].([]any)[0].(map[string]any)["techniques"] = []any{"mixing", "kneading"}
+	if err := validateSemantics(document); err != nil {
+		t.Fatal(err)
+	}
+	first, err := canonicalise(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	document["steps"].([]any)[0].(map[string]any)["techniques"] = []any{"kneading", "mixing"}
+	second, err := canonicalise(document)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first == second {
+		t.Fatal("reordered step techniques produced identical canonical bytes")
 	}
 }
 
@@ -238,6 +353,42 @@ func TestValidateSemanticsRejectsBrokenLocalAndEvidenceReferences(t *testing.T) 
 			want: "minimum exceeds maximum",
 		},
 		{
+			name: "open guide range out of order",
+			mutate: func(doc map[string]any) {
+				doc["ingredients"].([]any)[0].(map[string]any)["quantity"] = map[string]any{
+					"kind": "open", "qualifier": "as_needed",
+					"guide": map[string]any{"kind": "range", "minimum": "500", "maximum": "450", "unit": "g"},
+				}
+				doc["evidence"].([]any)[0].(map[string]any)["pointer"] = "/ingredients/0/quantity/guide/minimum"
+			},
+			want: "minimum exceeds maximum",
+		},
+		{
+			name: "inverted duration window",
+			mutate: func(doc map[string]any) {
+				doc["steps"].([]any)[0].(map[string]any)["duration"] = map[string]any{
+					"minimum": "PT2H", "target": "PT1H", "maximum": "PT30M",
+				}
+			},
+			want: "duration window is not ordered",
+		},
+		{
+			name: "origin subdivision belongs to another country",
+			mutate: func(doc map[string]any) {
+				doc["origin"] = map[string]any{"country": "PT", "subdivision": "ES-MD"}
+			},
+			want: "must belong to origin/country",
+		},
+		{
+			name: "inverted video selector",
+			mutate: func(doc map[string]any) {
+				doc["evidence"].([]any)[0].(map[string]any)["selector"] = map[string]any{
+					"kind": "fragment", "value": "t=600,300", "conforms_to": mediaFragmentsSpecification,
+				}
+			},
+			want: "start must be less than end",
+		},
+		{
 			name: "unresolved unit spelling",
 			mutate: func(doc map[string]any) {
 				doc["ingredients"].([]any)[0].(map[string]any)["quantity"].(map[string]any)["unit"] = "cup"
@@ -263,6 +414,29 @@ func TestValidateSemanticsRejectsBrokenLocalAndEvidenceReferences(t *testing.T) 
 			test.mutate(doc)
 			if err := validateSemantics(doc); err == nil || !strings.Contains(err.Error(), test.want) {
 				t.Fatalf("validateSemantics() error = %v, want substring %q", err, test.want)
+			}
+		})
+	}
+}
+
+func TestValidateSemanticsRejectsInvalidPercentageBasisAuthority(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		terms []any
+		want  string
+	}{
+		{name: "omitted", terms: []any{map[string]any{"ingredient": "water", "percentage": "75"}}, want: "must occur exactly once"},
+		{name: "not one hundred", terms: []any{map[string]any{"ingredient": "flour", "percentage": "80"}}, want: "must be 100"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			doc := validDocument()
+			doc["ingredients"] = []any{
+				map[string]any{"id": "flour", "name": "Farinha"},
+				map[string]any{"id": "water", "name": "Água"},
+			}
+			doc["formula"] = map[string]any{"kind": "percentage", "basis": "flour", "terms": test.terms}
+			if err := validateSemantics(doc); err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("validateSemantics() error = %v, want %q", err, test.want)
 			}
 		})
 	}

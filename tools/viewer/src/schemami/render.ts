@@ -110,13 +110,34 @@ function steps(document: Dict): string {
     const step = object(value);
     const metadata = [
       step.duration ? `duração ${duration(step.duration)}` : "",
-      typeof step.technique === "string" ? `técnica ${techniques.get(step.technique) ?? step.technique}` : "",
+      ...list(step.techniques).map((id) => `técnica ${techniques.get(String(id)) ?? id}`),
       ...list(step.equipment).map((id) => `equipamento ${equipment.get(String(id)) ?? id}`),
       list(step.uses).length ? `usa ${list(step.uses).map((id) => ingredientsById.get(String(id)) ?? id).join(", ")}` : "",
     ].filter(Boolean).map((item) => `<span class="meta">${esc(item)}</span>`).join(" ");
     return `<li><p>${esc(step.instruction)}</p>${metadata}${notes(step.notes)}</li>`;
   }).join("");
   return `<section><h2>Método</h2><ol class="steps">${items}</ol></section>`;
+}
+
+function origin(document: Dict): string {
+  const value = object(document.origin);
+  const parts = [value.country, value.subdivision, value.locality].filter(Boolean).map(esc);
+  return parts.length ? `<section class="origin"><h2>Origem</h2><p>${parts.join(" · ")}</p></section>` : "";
+}
+
+function evidenceSelectors(document: Dict): string {
+  const sources = new Map(list(document.sources).map((value) => {
+    const source = object(value);
+    return [String(source.id), String(source.uri)];
+  }));
+  const items = list(document.evidence).flatMap((value) => {
+    const evidence = object(value);
+    const selector = object(evidence.selector);
+    if (selector.kind !== "fragment") return [];
+    const source = sources.get(String(evidence.source)) ?? String(evidence.source ?? "");
+    return [`<li><code>${esc(evidence.pointer)}</code>: <code>${esc(source)}#${esc(selector.value)}</code></li>`];
+  }).join("");
+  return items ? `<section class="evidence"><h2>Segmentos da fonte</h2><ul>${items}</ul></section>` : "";
 }
 
 function localEntities(document: Dict): string {
@@ -161,12 +182,14 @@ export function renderDocument(
   return `<article class="doc-block" data-doc="${index}" lang="${esc(document.content_language)}">
     <header><h1>${esc(document.title)}</h1><p><code>${esc(document.collection)}/${esc(document.id)}@${esc(document.revision)}</code> · ${esc(document.content_language)}</p></header>
     ${notes(document.notes)}
+    ${origin(document)}
     <form class="scale-control" data-doc="${index}"><label for="scale-${index}">Fator de escala</label> <input id="scale-${index}" name="factor" inputmode="decimal" value="1"> <button type="submit">Aplicar</button></form>
     ${scaleProblems}
     ${formulaSection(document)}
     ${ingredients(document, context, formulaResult, scaled)}
     ${localEntities(document)}
     ${steps(document)}
+    ${evidenceSelectors(document)}
     ${scheduleRows}
   </article>`;
 }

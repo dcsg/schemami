@@ -3,9 +3,10 @@
 ## Principle
 
 Conformance proves public behavior, not internal implementation similarity.
-Every normative operation and refusal replays one shared JSON corpus in Go and
-TypeScript. Schema-only rules have positive and nearest-negative fixtures; no
-broad passing suite substitutes for the named release gates below.
+Every normative operation/refusal replays the shared Calculus JSON corpus, and
+document admission plus dogfood regressions replay the shared validation JSON
+corpus in Go and TypeScript. No broad passing suite substitutes for the named
+release gates below.
 
 ## Evidence matrix
 
@@ -13,12 +14,12 @@ broad passing suite substitutes for the named release gates below.
 |---|---|---|
 | Wire identity | `schemami: "1"`, immutable schema ID, owner extension round-trip | numeric marker, unknown model, RCP marker, active `x-rcp-*`, extension alters logic |
 | Serialisation | JSON/YAML parse to equal I-JSON and equal JCS bytes | duplicate keys, non-string YAML key, non-finite number, invalid Unicode, unregistered media claim |
-| Language/prose | `pt-PT`, `en-GB`, source-language strings | absent/malformed language, locale map, country used as language |
-| Local identity | unknown ingredient/technique/equipment validates and renders; lowercase kebab/snake/UUID/128-character local IDs resolve exactly; step works from local `id`, `instruction`, and explicit structured fields | uppercase/dot/space/tilde/non-ASCII/129-character ID, silent normalization, duplicate local ID, broken local reference, UUID-specific behavior, app mapping embedded canonically, mandatory primitive/action reference, primitive params, prose activating logic |
-| Quantity/formula | measured/range/open plus `1:2:2`, `1:15`, 75%, 1.8%, and 16-total-digit canonical decimals | missing/unknown kind, mixed members, decimal-ratio multiplier, percentage normalization, JSON number, non-canonical decimal, 17-digit decimal |
+| Language/origin/prose | `pt-PT`, `en-GB`, source-language strings; `PT`/`PT-11`/`Mafra` origin | absent/malformed language, locale map, country used as language, subdivision-country mismatch, extension-only origin |
+| Local identity | unknown ingredient/technique/equipment validates and renders; lowercase kebab/snake/UUID/128-character local IDs resolve exactly; step works from local `id`, `instruction`, ordered unique `techniques`, and explicit structured fields | uppercase/dot/space/tilde/non-ASCII/129-character ID, silent normalization, duplicate local ID, broken local reference, UUID-specific behavior, singular/sorted/duplicate technique references, app mapping embedded canonically, mandatory primitive/action reference, primitive params, prose activating logic |
+| Quantity/formula | measured/range/open with measured/range guide plus `1:2:2`, `1:15`, basis exactly once at 100, 75%, 1.8%, and 16-total-digit canonical decimals | missing/unknown kind, recursive open guide, inverted guide range, missing/non-100 basis term, mixed members, decimal-ratio multiplier, percentage normalization, JSON number, non-canonical decimal, 17-digit decimal |
 | Unit conversion | exact mass, volume, regional, and C/F vectors at the accepted numeric bounds | bare/unknown unit, cross-dimension, g/mL, unsupported kind, 17-digit decimal |
 | Duration | `PT8M`, `PT1H10M`, `P2D`, `P1W`; minimum/target/maximum scheduling parity | compact `8m`/`1h10m`, negative, year/month, min/max aliases, inconsistent window |
-| Evidence | valid source and RFC 6901 target with raw disagreement | broken pointer/source, duplicate ID, evidence used as calculation input |
+| Evidence | valid non-empty source, RFC 6901 target, and standard-backed W3C video fragments with raw disagreement | empty URI, broken pointer/source, duplicate ID, malformed/inverted media interval, selector timing used as culinary duration or calculation input |
 | Diagnostics | stable operation/status/type/pointer in both languages | human prose parsed, HTTP status conflation, unstable problem URI |
 | Pack/resolution | two explicit collections with colliding recipe IDs remain scoped | global search fallback, missing pin, manifest/document conflict hidden |
 | Cutover | clean Schemami read/write | RCP accepted, aliased, migrated, or emitted |

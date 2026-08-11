@@ -7,9 +7,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"mime"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -72,20 +74,11 @@ func validate(path string) error {
 	if err != nil {
 		return err
 	}
-	if marker, ok := doc["schemami"].(string); !ok || marker != "1" {
-		return fmt.Errorf("unsupported document marker")
-	}
 	schema, err := schemaFor(path)
 	if err != nil {
 		return err
 	}
-	if err := schema.Validate(doc); err != nil {
-		return err
-	}
-	if _, err := canonicalise(doc); err != nil {
-		return err
-	}
-	return validateSemantics(doc)
+	return validateDocumentData(doc, schema)
 }
 
 func canonicaliseFile(path string) (string, error) {
@@ -100,20 +93,67 @@ func canonicaliseFile(path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if marker, ok := doc["schemami"].(string); !ok || marker != "1" {
-		return "", fmt.Errorf("unsupported document marker")
-	}
 	schema, err := schemaFor(path)
 	if err != nil {
 		return "", err
 	}
-	if err := schema.Validate(doc); err != nil {
-		return "", err
-	}
-	if err := validateSemantics(doc); err != nil {
+	if err := validateDocumentData(doc, schema); err != nil {
 		return "", err
 	}
 	return canonicalise(doc)
+}
+
+func validateDocumentData(doc map[string]any, schema *jsonschema.Schema) error {
+	if marker, ok := doc["schemami"].(string); !ok || marker != "1" {
+		return fmt.Errorf("unsupported document marker")
+	}
+	if err := validateStructuralDiagnostics(doc); err != nil {
+		return err
+	}
+	if err := schema.Validate(doc); err != nil {
+		return err
+	}
+	if _, err := canonicalise(doc); err != nil {
+		return err
+	}
+	return validateSemantics(doc)
+}
+
+// validateStructuralDiagnostics recognizes high-value tagged-union mistakes
+// before JSON Schema expands them into nested oneOf traces. The schema remains
+// the admission authority; this function only makes known failures concise.
+func validateStructuralDiagnostics(doc map[string]any) error {
+	validateQuantity := func(value any, pointer string) error {
+		quantity, ok := value.(map[string]any)
+		if !ok || quantity["kind"] != "open" {
+			return nil
+		}
+		guide, present := quantity["guide"].(map[string]any)
+		if !present {
+			return nil
+		}
+		if guide["kind"] != "measured" && guide["kind"] != "range" {
+			return fmt.Errorf("%s/guide: Open quantity guide must be measured or range.", pointer)
+		}
+		return nil
+	}
+	if ingredients, ok := doc["ingredients"].([]any); ok {
+		for index, value := range ingredients {
+			if ingredient, ok := value.(map[string]any); ok {
+				if err := validateQuantity(ingredient["quantity"], fmt.Sprintf("/ingredients/%d/quantity", index)); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	if formula, ok := doc["formula"].(map[string]any); ok {
+		for _, field := range []string{"target", "basis_quantity"} {
+			if err := validateQuantity(formula[field], "/formula/"+field); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func validatePack(path string) error {
@@ -459,6 +499,9 @@ func validateSemantics(doc map[string]any) error {
 	if _, err := language.Parse(contentLanguage); err != nil {
 		return fmt.Errorf("content_language is not a well-formed BCP 47 tag: %w", err)
 	}
+	if err := validateOrigin(doc); err != nil {
+		return err
+	}
 
 	ingredients, err := namedCollection(doc, "ingredients")
 	if err != nil {
@@ -515,6 +558,19 @@ func namedCollection(doc map[string]any, name string) (map[string]map[string]any
 	return result, nil
 }
 
+func validateOrigin(doc map[string]any) error {
+	origin, present := doc["origin"].(map[string]any)
+	if !present {
+		return nil
+	}
+	country, hasCountry := origin["country"].(string)
+	subdivision, hasSubdivision := origin["subdivision"].(string)
+	if hasCountry && hasSubdivision && !strings.HasPrefix(subdivision, country+"-") {
+		return fmt.Errorf("origin/subdivision must belong to origin/country")
+	}
+	return nil
+}
+
 func validateSteps(doc map[string]any, ingredients, techniques, equipment, steps map[string]map[string]any) error {
 	items, _ := doc["steps"].([]any)
 	calculusSteps := make([]calculus.Step, 0, len(items))
@@ -536,13 +592,14 @@ func validateSteps(doc map[string]any, ingredients, techniques, equipment, steps
 		if err := referencedIDs(step["produces"], ingredients, "produces", index, "", false); err != nil {
 			return err
 		}
-		if technique, present := step["technique"].(string); present {
-			if _, ok := techniques[technique]; !ok {
-				return fmt.Errorf("steps/%d/technique references undeclared technique %q", index, technique)
-			}
+		if err := referencedIDs(step["techniques"], techniques, "techniques", index, "", false); err != nil {
+			return err
 		}
 		if err := referencedIDs(step["equipment"], equipment, "equipment", index, "", false); err != nil {
 			return err
+		}
+		if duration, present := step["duration"]; present && calculus.ValidateDurationWindow(duration) != "" {
+			return fmt.Errorf("steps/%d/duration window is not ordered", index)
 		}
 	}
 	if result := calculus.ReadingOrder(calculusSteps); result.Status != "ok" {
@@ -587,6 +644,8 @@ func validateFormula(doc map[string]any, ingredients map[string]map[string]any) 
 	}
 	terms, _ := formula["terms"].([]any)
 	seen := map[string]struct{}{}
+	basis, isPercentage := formula["basis"].(string)
+	basisIndex := -1
 	for index, value := range terms {
 		term, _ := value.(map[string]any)
 		ingredient, _ := term["ingredient"].(string)
@@ -600,6 +659,18 @@ func validateFormula(doc map[string]any, ingredients map[string]map[string]any) 
 			return fmt.Errorf("formula term ingredient %q must not carry explicit quantity", ingredient)
 		}
 		seen[ingredient] = struct{}{}
+		if isPercentage && ingredient == basis {
+			basisIndex = index
+		}
+	}
+	if isPercentage {
+		if basisIndex < 0 {
+			return fmt.Errorf("formula/basis must occur exactly once in formula/terms")
+		}
+		basisTerm, _ := terms[basisIndex].(map[string]any)
+		if basisTerm["percentage"] != "100" {
+			return fmt.Errorf("formula/terms/%d/percentage must be 100 for the named basis", basisIndex)
+		}
 	}
 	return nil
 }
@@ -630,8 +701,95 @@ func validateSourcesAndEvidence(doc map[string]any) error {
 		if _, err := resolveJSONPointer(doc, pointer); err != nil {
 			return fmt.Errorf("evidence/%s/pointer: %w", id, err)
 		}
+		if selector, present := record["selector"].(map[string]any); present {
+			if err := validateSelector(selector); err != nil {
+				return fmt.Errorf("evidence/%s/selector: %w", id, err)
+			}
+		}
 	}
 	return nil
+}
+
+const mediaFragmentsSpecification = "https://www.w3.org/TR/media-frags/"
+
+var nptTimePattern = regexp.MustCompile(`^(?:[0-9]+(?:\.[0-9]+)?|[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?|[0-9]+:[0-9]{2}:[0-9]{2}(?:\.[0-9]+)?)$`)
+
+func validateSelector(selector map[string]any) error {
+	if selector["conforms_to"] != mediaFragmentsSpecification {
+		return nil
+	}
+	value, _ := selector["value"].(string)
+	for _, component := range strings.Split(value, "&") {
+		if !strings.HasPrefix(component, "t=") {
+			continue
+		}
+		if err := validateNPTFragment(strings.TrimPrefix(component, "t=")); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateNPTFragment(value string) error {
+	value = strings.TrimPrefix(value, "npt:")
+	parts := strings.Split(value, ",")
+	if len(parts) > 2 || len(parts) == 0 || (len(parts) == 2 && parts[1] == "") {
+		return fmt.Errorf("invalid W3C media temporal fragment")
+	}
+	var start, end *big.Rat
+	var err error
+	if parts[0] != "" {
+		start, err = parseNPTTime(parts[0])
+		if err != nil {
+			return err
+		}
+	}
+	if len(parts) == 2 {
+		end, err = parseNPTTime(parts[1])
+		if err != nil {
+			return err
+		}
+	}
+	if start == nil && end == nil {
+		return fmt.Errorf("invalid W3C media temporal fragment")
+	}
+	if start != nil && end != nil && start.Cmp(end) >= 0 {
+		return fmt.Errorf("W3C media temporal fragment start must be less than end")
+	}
+	return nil
+}
+
+func parseNPTTime(value string) (*big.Rat, error) {
+	if !nptTimePattern.MatchString(value) {
+		return nil, fmt.Errorf("invalid W3C normal play time")
+	}
+	parts := strings.Split(value, ":")
+	if len(parts) == 1 {
+		result, ok := new(big.Rat).SetString(value)
+		if !ok {
+			return nil, fmt.Errorf("invalid W3C normal play time")
+		}
+		return result, nil
+	}
+	secondsText := parts[len(parts)-1]
+	minutesText := parts[len(parts)-2]
+	seconds, ok := new(big.Rat).SetString(secondsText)
+	if !ok {
+		return nil, fmt.Errorf("invalid W3C normal play time")
+	}
+	minutes, ok := new(big.Int).SetString(minutesText, 10)
+	if !ok || minutes.Cmp(big.NewInt(59)) > 0 || seconds.Cmp(big.NewRat(60, 1)) >= 0 {
+		return nil, fmt.Errorf("invalid W3C normal play time")
+	}
+	result := new(big.Rat).Add(seconds, new(big.Rat).SetInt(new(big.Int).Mul(minutes, big.NewInt(60))))
+	if len(parts) == 3 {
+		hours, ok := new(big.Int).SetString(parts[0], 10)
+		if !ok {
+			return nil, fmt.Errorf("invalid W3C normal play time")
+		}
+		result.Add(result, new(big.Rat).SetInt(new(big.Int).Mul(hours, big.NewInt(3600))))
+	}
+	return result, nil
 }
 
 func resolveJSONPointer(value any, pointer string) (any, error) {
@@ -685,13 +843,27 @@ func validateRanges(doc map[string]any) error {
 	for index, item := range ingredients {
 		ingredient := item.(map[string]any)
 		quantity, ok := ingredient["quantity"].(map[string]any)
-		if !ok || quantity["kind"] != "range" {
+		if !ok {
 			continue
 		}
+		if err := validateQuantityRange(quantity, fmt.Sprintf("ingredients/%d/quantity", index)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateQuantityRange(quantity map[string]any, pointer string) error {
+	if quantity["kind"] == "range" {
 		minimum, _ := quantity["minimum"].(string)
 		maximum, _ := quantity["maximum"].(string)
 		if compareCanonicalDecimals(minimum, maximum) > 0 {
-			return fmt.Errorf("ingredients/%d/quantity minimum exceeds maximum", index)
+			return fmt.Errorf("%s minimum exceeds maximum", pointer)
+		}
+	}
+	if quantity["kind"] == "open" {
+		if guide, present := quantity["guide"].(map[string]any); present {
+			return validateQuantityRange(guide, pointer+"/guide")
 		}
 	}
 	return nil
