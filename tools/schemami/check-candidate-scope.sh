@@ -40,7 +40,7 @@ for required in \
   grep -Fqx "$required" "$scope" || { echo "candidate scope: required path omitted: $required" >&2; exit 1; }
 done
 
-if rg -n '(^|/)(rcplint|registry|i18n|docsite)(/|$)|\.rcp\.|PRD-00[1-6]|SPEC-00[1-6]|PLAN-rcp' "$scope"; then
+if grep -En '(^|/)(rcplint|registry|i18n|docsite)(/|$)|\.rcp\.|PRD-00[1-6]|SPEC-00[1-6]|PLAN-rcp' "$scope"; then
   echo "candidate scope: historical implementation entered the release candidate" >&2
   exit 1
 fi

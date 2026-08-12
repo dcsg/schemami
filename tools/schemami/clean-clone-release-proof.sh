@@ -4,7 +4,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 bash "$root/tools/schemami/check-candidate-scope.sh" --committed >/dev/null
 candidate="$(git -C "$root" rev-parse HEAD)"
-proof_root="$(mktemp -d /private/tmp/schemami-release-proof.XXXXXX)"
+proof_root="$(mktemp -d "${TMPDIR:-/tmp}/schemami-release-proof.XXXXXX")"
 clone="$proof_root/repository"
 cleanup() {
   chmod -R u+w "$proof_root" 2>/dev/null || true

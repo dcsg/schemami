@@ -9,9 +9,9 @@ root="$(cd "$(dirname "$0")/../.." && pwd)"
   "$root/tools/viewer/conformance/schemami-local-entities.test.ts" \
   "$root/tools/viewer/conformance/schemami-viewer.test.ts"
 
-if rg -n 'registry/|i18n/|rcp-core|\.rcp\.' \
+if grep -REn --include='*.ts' 'registry/|i18n/|rcp-core|\.rcp\.' \
   "$root/tools/viewer/build.ts" \
-  "$root/tools/viewer/src/schemami" --glob '*.ts'; then
+  "$root/tools/viewer/src/schemami"; then
   echo "active Schemami viewer depends on a legacy or hosted vocabulary surface" >&2
   exit 1
 fi

@@ -3,7 +3,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 map="$root/release/schemami-v1.0.0/contract-map.json"
-proof_root="$(mktemp -d /private/tmp/schemami-publication-tree.XXXXXX)"
+proof_root="$(mktemp -d "${TMPDIR:-/tmp}/schemami-publication-tree.XXXXXX")"
 cleanup() { rm -rf -- "$proof_root"; }
 trap cleanup EXIT
 

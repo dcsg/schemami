@@ -8,7 +8,7 @@ GOSUMDB=off GOPROXY=off "$root/tools/with-toolchain.sh" go -C "$root/tools/schem
   "$root/tools/viewer/conformance/schemami-calculus.test.ts" \
   "$root/tools/viewer/conformance/schemami-phase9.test.ts"
 
-if rg -n -i 'raw_text|confidence|instruction|evidence|notes' \
+if grep -Eni 'raw_text|confidence|instruction|evidence|notes' \
   "$root/tools/schemami/calculus/calculus.go" \
   "$root/tools/viewer/src/schemami/calculus.ts"; then
   echo "normative calculus references prose or evidence fields" >&2

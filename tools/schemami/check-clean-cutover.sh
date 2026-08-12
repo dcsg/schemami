@@ -58,7 +58,7 @@ active_positive=(
 )
 
 legacy_pattern='\bRCP\b|\brcp\b|x-rcp|rcp\.invalid|rcplint|RecipesProtocol|recipesprotocol'
-if rg -n -i "$legacy_pattern" "${active_positive[@]}"; then
+if grep -REni "$legacy_pattern" "${active_positive[@]}"; then
   echo "cutover: predecessor identity found in active positive surface" >&2
   exit 1
 fi
@@ -70,7 +70,7 @@ grep -Fq 'type: "https://schemami.dev/problems/unsupported-legacy"' tools/viewer
 grep -Fq 'legacy RCP input is refused without fallback' tools/viewer/conformance/schemami-viewer.test.ts
 
 # The active DAG may not call historical implementation or vocabulary surfaces.
-if rg -n -i 'tools/rcplint|registry/|i18n/|schema/rcp-|calculus/SPEC|docsite' \
+if grep -Eni 'tools/rcplint|registry/|i18n/|schema/rcp-|calculus/SPEC|docsite' \
   Makefile tools/ci/run-gate-dag.sh tools/ci/gate-dag-manifest.json \
   tools/bootstrap.sh tools/with-toolchain.sh .github/workflows/validate.yml; then
   echo "cutover: active build or CI invokes a historical surface" >&2

@@ -11,7 +11,7 @@ test "$(jq '[.requirements[].id] | length == (unique | length)' "$evidence_map")
 
 grep -Fq 'status: accepted' "$root/docs/product/prds/PRD-007-schemami-stable-protocol-release.yaml"
 grep -Fq 'status: accepted' "$root/docs/product/specs/SPEC-007-schemami-v1-stable-release/spec.yaml"
-if rg -n 'status: (draft|proposed)' \
+if grep -En 'status: (draft|proposed)' \
   "$root/docs/product/prds/PRD-007-schemami-stable-protocol-release.yaml" \
   "$root/docs/product/specs/SPEC-007-schemami-v1-stable-release/spec.yaml"; then
   echo "release evidence: accepted PRD/SPEC contains draft or proposed status" >&2
@@ -24,7 +24,7 @@ make -C "$root" ci >/dev/null
 edikt gov compile --check --json | jq -e '.status == "ok" and (.phase_a.errors | length == 0) and (.lossless_report | length == 0)' >/dev/null
 bash "$root/tools/schemami/clean-clone-release-proof.sh" >/dev/null
 
-temporary_manifest="$(mktemp /private/tmp/schemami-v1.0.0.manifest.XXXXXX)"
+temporary_manifest="$(mktemp "${TMPDIR:-/tmp}/schemami-v1.0.0.manifest.XXXXXX")"
 cleanup() { rm -f -- "$temporary_manifest"; }
 trap cleanup EXIT
 bash "$root/tools/schemami/build-release-manifest.sh" "$temporary_manifest" >/dev/null

@@ -10,7 +10,7 @@ if [ -z "$host_mise" ] || ! "$host_mise" --version | grep -Eq '^2026\.3\.17( |$)
   exit 1
 fi
 
-test_root="$(mktemp -d /private/tmp/schemami-bootstrap.XXXXXX)"
+test_root="$(mktemp -d "${TMPDIR:-/tmp}/schemami-bootstrap.XXXXXX")"
 work="$test_root/work"
 test_home="$test_root/home"
 cleanup() {

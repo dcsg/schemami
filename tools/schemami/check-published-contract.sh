@@ -9,7 +9,7 @@ test -f "$manifest" || {
 }
 jq -e '.manifest_version == 1 and .release == "schemami-v1.0.0" and .manifest_url == "https://schemami.dev/releases/schemami-v1.0.0.json" and (.source_commit | test("^[a-f0-9]{40}$"))' "$manifest" >/dev/null
 
-download_root="$(mktemp -d /private/tmp/schemami-published-contract.XXXXXX)"
+download_root="$(mktemp -d "${TMPDIR:-/tmp}/schemami-published-contract.XXXXXX")"
 cleanup() { rm -rf -- "$download_root"; }
 trap cleanup EXIT
 

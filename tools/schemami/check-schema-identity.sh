@@ -11,7 +11,7 @@ test -f "$bundle"
 grep -Fqx '  "$id": "https://schemami.dev/schema/schemami/1/core.schema.json",' "$core"
 grep -Fqx '  "$id": "https://schemami.dev/schema/schemami/1/bundle.schema.json",' "$bundle"
 
-if rg -n -i 'rcp|locale|profiles?|"kind"[[:space:]]*:[[:space:]]*\{"const":"profile"' "$core" "$bundle"; then
+if grep -Eni 'rcp|locale|profiles?|"kind"[[:space:]]*:[[:space:]]*\{"const":"profile"' "$core" "$bundle"; then
   echo "schemami schema identity contains a forbidden legacy/profile term" >&2
   exit 1
 fi
