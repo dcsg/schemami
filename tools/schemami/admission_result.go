@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	sdk "github.com/dcsg/schemami/sdk/go"
 	"github.com/dcsg/schemami/tools/schemami/calculus"
 	"golang.org/x/text/language"
 )
@@ -36,28 +37,33 @@ func admitFile(path string) (admissionArtifact, error) {
 		SubmittedSHA256: hex.EncodeToString(submitted[:]),
 		Problems:        []calculus.Problem{},
 	}
-	document, err := parseDocument(path, raw)
-	if err != nil {
+	if !strings.HasSuffix(path, ".json") {
 		result.Problems = []calculus.Problem{{Type: stableProblemBase + "invalid-json"}}
 		return result, nil
 	}
-	schema, err := schemaFor(path)
-	if err != nil {
-		return admissionArtifact{}, err
-	}
-	if problems := stableAdmissionProblems(document, schema.Validate(document)); len(problems) > 0 {
-		result.Problems = problems
+	{
+		parsed := sdk.Parse(raw, sdk.ProtocolFloor)
+		if !parsed.OK() {
+			result.Problems = publicSDKProblems(parsed.Problems)
+			return result, nil
+		}
+		admission := sdk.Admit(parsed.Parsed, sdk.ProtocolFloor)
+		if !admission.OK() || admission.Recipe == nil {
+			result.Problems = publicSDKProblems(admission.Problems)
+			return result, nil
+		}
+		result.Status = "ok"
+		result.CanonicalSHA256 = admission.Recipe.SHA256()
 		return result, nil
 	}
-	canonical, err := canonicalise(document)
-	if err != nil {
-		result.Problems = []calculus.Problem{{Type: stableProblemBase + "invalid-document"}}
-		return result, nil
+}
+
+func publicSDKProblems(values []sdk.Problem) []calculus.Problem {
+	result := make([]calculus.Problem, len(values))
+	for index, value := range values {
+		result[index] = calculus.Problem{Type: value.Type, Pointer: value.Pointer}
 	}
-	digest := sha256.Sum256([]byte(canonical))
-	result.Status = "ok"
-	result.CanonicalSHA256 = hex.EncodeToString(digest[:])
-	return result, nil
+	return result
 }
 
 func stableAdmissionProblems(document map[string]any, schemaError error) []calculus.Problem {

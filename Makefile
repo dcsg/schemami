@@ -1,12 +1,23 @@
 TOOLCHAIN := ./tools/with-toolchain.sh
 
-.PHONY: bootstrap toolchain-check validate conformance calculus viewer bundle cutover release-contract ci
+.PHONY: bootstrap toolchain-check sdk-resources go-sdk typescript-sdk validate conformance calculus viewer bundle cutover release-contract ci
 
 bootstrap:
 	bash tools/bootstrap.sh
 
 toolchain-check:
 	bash tools/schemami/check-toolchain.sh
+
+sdk-resources:
+	bash tools/schemami/check-sdk-resources.sh
+	bash tools/schemami/check-swift-resources.sh
+
+go-sdk:
+	$(TOOLCHAIN) go -C sdk/go test -count=1 ./...
+
+typescript-sdk:
+	$(TOOLCHAIN) bun run --cwd sdk/typescript build
+	$(TOOLCHAIN) bun test --cwd sdk/typescript
 
 validate: schemami-schema schemami-canonical
 	$(TOOLCHAIN) go -C tools/schemami run . validate ../../examples/pao-massa-mae.schemami.yaml

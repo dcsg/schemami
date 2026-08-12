@@ -15,6 +15,7 @@ public struct Problem: Sendable, Equatable, Hashable, Codable {
 public struct ResourceBudgets: Sendable, Equatable {
     public let recursiveLevels: Int
     public let semanticOccurrences: Int
+    public let analysisStates: Int
     public let bundleDocuments: Int
     public let selectedComponentInstances: Int
 
@@ -22,10 +23,12 @@ public struct ResourceBudgets: Sendable, Equatable {
         recursiveLevels: Int,
         semanticOccurrences: Int,
         bundleDocuments: Int,
-        selectedComponentInstances: Int
+        selectedComponentInstances: Int,
+        analysisStates: Int = 10_000
     ) {
         self.recursiveLevels = recursiveLevels
         self.semanticOccurrences = semanticOccurrences
+        self.analysisStates = analysisStates
         self.bundleDocuments = bundleDocuments
         self.selectedComponentInstances = selectedComponentInstances
     }
@@ -34,7 +37,8 @@ public struct ResourceBudgets: Sendable, Equatable {
         recursiveLevels: 64,
         semanticOccurrences: 10_000,
         bundleDocuments: 1_024,
-        selectedComponentInstances: 1_024
+        selectedComponentInstances: 1_024,
+        analysisStates: 10_000
     )
 }
 

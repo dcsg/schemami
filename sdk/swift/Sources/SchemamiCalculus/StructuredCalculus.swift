@@ -5,11 +5,53 @@ import SchemamiCore
 enum StructuredCalculus {
     private static let base = "https://schemami.dev/problems/"
 
+    private final class OperationResourceLedger {
+        let recursiveLimit: Int
+        let semanticLimit: Int
+        let selectedComponentLimit: Int
+        private var semanticOccurrences = 0
+        private var enteredPaths = Set<String>()
+
+        init(recursiveLimit: Int, semanticLimit: Int, selectedComponentLimit: Int) {
+            self.recursiveLimit = recursiveLimit
+            self.semanticLimit = semanticLimit
+            self.selectedComponentLimit = selectedComponentLimit
+        }
+
+        func enter(recipe: SchemamiValue, path: String) -> Bool {
+            let depth = path.isEmpty ? 1 : path.split(separator: "/").count + 1
+            guard depth <= recursiveLimit else { return false }
+            guard enteredPaths.insert(path).inserted else { return true }
+            guard enteredPaths.count <= selectedComponentLimit else { return false }
+            let (next, overflow) = semanticOccurrences.addingReportingOverflow(protocolObjectCount(recipe))
+            guard !overflow, next <= semanticLimit else { return false }
+            semanticOccurrences = next
+            return true
+        }
+
+        private func protocolObjectCount(_ value: SchemamiValue) -> Int {
+            var count = 0
+            var stack = [value]
+            while let current = stack.popLast() {
+                switch current {
+                case .object(let members):
+                    count += 1
+                    stack.append(contentsOf: members.filter { !$0.name.hasPrefix("x-") }.map(\.value))
+                case .array(let values): stack.append(contentsOf: values)
+                default: break
+                }
+            }
+            return count
+        }
+    }
+
     static func evaluate(
         operation: String,
         recipe: SchemamiValue?,
         bundle: SchemamiValue?,
         arguments: SchemamiValue,
+        recursiveLimit: Int = ResourceBudgets.protocolFloor.recursiveLevels,
+        semanticLimit: Int = ResourceBudgets.protocolFloor.semanticOccurrences,
         selectedComponentLimit: Int = ResourceBudgets.protocolFloor.selectedComponentInstances
     ) -> SchemamiValue {
         guard (recipe == nil) != (bundle == nil) else { return refused(operation, "invalid-operation-arguments", "") }
@@ -22,7 +64,11 @@ enum StructuredCalculus {
             root: root,
             bundle: bundle,
             arguments: arguments,
-            selectedComponentLimit: selectedComponentLimit
+            resources: OperationResourceLedger(
+                recursiveLimit: recursiveLimit,
+                semanticLimit: semanticLimit,
+                selectedComponentLimit: selectedComponentLimit
+            )
         )
         if let refusal = context.validateSelections() { return refusal }
         switch operation {
@@ -40,19 +86,18 @@ enum StructuredCalculus {
         let root: SchemamiValue
         let bundle: SchemamiValue?
         let arguments: SchemamiValue
-        let selectedComponentLimit: Int
-        var selectedComponentCount = 0
+        let resources: OperationResourceLedger
         var selections: [String: SchemamiValue] = [:]
         var effective: [String: [(String, SchemamiValue, String)]] = [:]
         var effectiveAlternatives: [String: [(String, String, String)]] = [:]
 
-        init(operation: String, root: SchemamiValue, bundle: SchemamiValue?, arguments: SchemamiValue, selectedComponentLimit: Int) {
+        init(operation: String, root: SchemamiValue, bundle: SchemamiValue?, arguments: SchemamiValue, resources: OperationResourceLedger) {
             self.operation = operation; self.root = root; self.bundle = bundle; self.arguments = arguments
-            self.selectedComponentLimit = selectedComponentLimit
+            self.resources = resources
         }
 
         mutating func validateSelections() -> SchemamiValue? {
-            if (arguments[member: "selections"]?.arrayValue ?? []).count > selectedComponentLimit {
+            if (arguments[member: "selections"]?.arrayValue ?? []).count > resources.selectedComponentLimit {
                 return refused(operation, "resource-limit", "/arguments/selections")
             }
             for (index, selection) in (arguments[member: "selections"]?.arrayValue ?? []).enumerated() {
@@ -84,10 +129,7 @@ enum StructuredCalculus {
         }
 
         mutating func selectionInstance(recipe: SchemamiValue, path: String, visiting: inout Set<String>, instances: inout [SchemamiValue]) -> SchemamiValue? {
-            selectedComponentCount += 1
-            if selectedComponentCount > selectedComponentLimit {
-                return refused(operation, "resource-limit", "/arguments/selections")
-            }
+            if let problem = enterInstance(recipe: recipe, path: path) { return problem }
             let reference = recipeReference(recipe)
             if !visiting.insert(reference).inserted { return refused(operation, "component-cycle", "/bundle/documents") }
             defer { visiting.remove(reference) }
@@ -126,6 +168,7 @@ enum StructuredCalculus {
         }
 
         mutating func resolveFormula() -> SchemamiValue {
+            if let problem = enterInstance(recipe: root, path: "") { return problem }
             guard let formulaID = arguments[member: "formula_id"]?.stringValue,
                   let formula = find(root[member: "formulas"], id: formulaID) else { return refused(operation, "unresolved-reference", "/arguments/formula_id") }
             let evaluation = evaluateFormula(formula, recipe: root, path: "", factor: nil)
@@ -134,6 +177,7 @@ enum StructuredCalculus {
         }
 
         mutating func scale() -> SchemamiValue {
+            if let problem = enterInstance(recipe: root, path: "") { return problem }
             let factorRaw = arguments[member: "factor"]?.stringValue
             let formulaTarget = arguments[member: "formula_target"]
             guard (factorRaw == nil) != (formulaTarget == nil) else { return refused(operation, "invalid-operation-arguments", "/arguments") }
@@ -159,21 +203,18 @@ enum StructuredCalculus {
                 guard baseEvaluation.selected > 0 else { return refused(operation, "invalid-operation-arguments", "/arguments/formula_target") }
                 factor = converted / baseEvaluation.selected
             }
-
             var formulaEvaluations: [FormulaEvaluation] = []
-            var formulaQuantities: [String: SchemamiValue] = [:]
+            var formulaQuantities: [String: ExactFormulaQuantity] = [:]
             for formula in root[member: "formulas"]?.arrayValue ?? [] {
                 let evaluation = evaluateFormula(formula, recipe: root, path: "", factor: factor)
                 if let problem = evaluation.problem { return problem }
                 formulaEvaluations.append(evaluation)
-                for item in evaluation.quantities {
-                    if let input = item[member: "input"], input[member: "kind"]?.stringValue == "ingredient", let id = input[member: "id"]?.stringValue, let quantity = item[member: "quantity"] { formulaQuantities[id] = quantity }
-                }
+                for item in evaluation.exactQuantities { formulaQuantities[formulaKey(item.input)] = item }
             }
             var quantities: [SchemamiValue] = []
             for (index, ingredient) in (root[member: "ingredients"]?.arrayValue ?? []).enumerated() where active(ingredient, recipe: root, path: "") {
                 let id = ingredient[member: "id"]?.stringValue ?? ""
-                if let quantity = formulaQuantities[id] { quantities.append(inputQuantity(kind: "ingredient", id: id, quantity: quantity)); continue }
+                if let resolved = formulaQuantities[formulaKey(kind: "ingredient", id: id)] { quantities.append(inputQuantity(kind: "ingredient", id: id, quantity: resolved.quantity)); continue }
                 guard let quantity = ingredient[member: "quantity"] else { return refused(operation, "missing-fact", "/recipe/ingredients/\(index)/quantity") }
                 let scaled = scaleQuantity(quantity, factor: factor, pointer: "/recipe/ingredients/\(index)/quantity")
                 if scaled[member: "status"] != nil { return scaled }
@@ -182,36 +223,50 @@ enum StructuredCalculus {
             var componentInstances: [SchemamiValue] = []
             for (index, component) in (root[member: "components"]?.arrayValue ?? []).enumerated() where active(component, recipe: root, path: "") {
                 let id = component[member: "id"]?.stringValue ?? ""
-                guard let quantity = component[member: "quantity"] else { return refused(operation, "missing-fact", "/recipe/components/\(index)/quantity") }
-                let scaled = scaleQuantity(quantity, factor: factor, pointer: "/recipe/components/\(index)/quantity")
-                if scaled[member: "status"] != nil { return scaled }
-                quantities.append(inputQuantity(kind: "component", id: id, quantity: scaled))
+                let resolved: ExactFormulaQuantity
+                if let formulaOwned = formulaQuantities[formulaKey(kind: "component", id: id)] { resolved = formulaOwned }
+                else {
+                    guard let quantity = component[member: "quantity"], quantity[member: "kind"]?.stringValue == "measured",
+                          case .success(let authored) = Rational.parsePositive(quantity[member: "value"]?.stringValue ?? "") else {
+                        return refused(operation, "missing-fact", "/recipe/components/\(index)/quantity")
+                    }
+                    let applied = quantity[member: "scaling"]?.stringValue == "fixed" ? authored : authored * factor
+                    guard case .success(let formatted) = applied.formatted() else { return refused(operation, "resource-limit", "/recipe/components/\(index)/quantity") }
+                    resolved = ExactFormulaQuantity(input: object([("kind", .string("component")), ("id", .string(id))]), value: applied, unit: quantity[member: "unit"]?.stringValue ?? "", quantity: measured(formatted, unit: quantity[member: "unit"]?.stringValue ?? ""))
+                }
+                quantities.append(inputQuantity(kind: "component", id: id, quantity: resolved.quantity))
                 guard let child = bundleRecipe(component[member: "recipe"]) else { return refused(operation, "unresolved-reference", "/bundle/documents") }
                 var visiting = Set<String>()
                 let expansion = scaleComponent(
                     child,
                     component: component,
-                    requested: scaled,
+                    requested: resolved.quantity,
+                    requestedExact: resolved.value,
+                    requestedUnit: resolved.unit,
                     path: id,
                     componentPointer: "/recipe/components/\(index)",
                     visiting: &visiting
                 )
                 if let problem = expansion.problem { return problem }
                 componentInstances.append(contentsOf: expansion.instances)
+                formulaEvaluations.append(contentsOf: expansion.formulaEvaluations)
             }
             return success(result: object([("component_instances", .array(componentInstances)), ("quantities", .array(quantities))]), formulaEvaluations: formulaEvaluations.map(\.metadata))
         }
 
-        private struct ComponentExpansion { var instances: [SchemamiValue] = []; var problem: SchemamiValue? }
+        private struct ComponentExpansion { var instances: [SchemamiValue] = []; var formulaEvaluations: [FormulaEvaluation] = []; var problem: SchemamiValue? }
 
         private mutating func scaleComponent(
             _ recipe: SchemamiValue,
             component: SchemamiValue,
             requested: SchemamiValue,
+            requestedExact: Rational,
+            requestedUnit: String,
             path: String,
             componentPointer: String,
             visiting: inout Set<String>
         ) -> ComponentExpansion {
+            if let problem = enterInstance(recipe: recipe, path: path) { return ComponentExpansion(problem: problem) }
             let reference = recipeReference(recipe)
             guard visiting.insert(reference).inserted else {
                 return ComponentExpansion(problem: refused(operation, "component-cycle", "/bundle/documents"))
@@ -220,28 +275,45 @@ enum StructuredCalculus {
             guard let outputID = component[member: "output"]?.stringValue,
                   let output = find(recipe[member: "outputs"], id: outputID),
                   let yield = output[member: "yield"], yield[member: "kind"]?.stringValue == "measured",
-                  case .success(let desired) = Rational.parsePositive(requested[member: "value"]?.stringValue ?? ""),
                   case .success(let baseYield) = Rational.parsePositive(yield[member: "value"]?.stringValue ?? ""),
-                  let converted = convert(desired, from: requested[member: "unit"]?.stringValue ?? "", to: yield[member: "unit"]?.stringValue ?? "") else {
+                  let converted = convert(requestedExact, from: requestedUnit, to: yield[member: "unit"]?.stringValue ?? "") else {
                 return ComponentExpansion(problem: refused(operation, "missing-fact", componentPointer + "/output"))
             }
             let factor = converted / baseYield
+            var formulaEvaluations: [FormulaEvaluation] = []
+            var formulaQuantities: [String: ExactFormulaQuantity] = [:]
+            for formula in recipe[member: "formulas"]?.arrayValue ?? [] {
+                let evaluation = evaluateFormula(formula, recipe: recipe, path: path, factor: factor)
+                if let problem = evaluation.problem { return ComponentExpansion(problem: problem) }
+                formulaEvaluations.append(evaluation)
+                for item in evaluation.exactQuantities { formulaQuantities[formulaKey(item.input)] = item }
+            }
             var quantities: [SchemamiValue] = []
             for (index, ingredient) in (recipe[member: "ingredients"]?.arrayValue ?? []).enumerated() where active(ingredient, recipe: recipe, path: path) {
-                guard let id = ingredient[member: "id"]?.stringValue, let quantity = ingredient[member: "quantity"] else { continue }
+                guard let id = ingredient[member: "id"]?.stringValue else { continue }
+                if let resolved = formulaQuantities[formulaKey(kind: "ingredient", id: id)] {
+                    quantities.append(inputQuantity(kind: "ingredient", id: id, quantity: resolved.quantity)); continue
+                }
+                guard let quantity = ingredient[member: "quantity"] else { return ComponentExpansion(problem: refused(operation, "missing-fact", "/bundle/documents/ingredients/\(index)/quantity")) }
                 let scaled = scaleQuantity(quantity, factor: factor, pointer: "/bundle/documents/ingredients/\(index)/quantity")
                 if scaled[member: "status"] != nil { return ComponentExpansion(problem: scaled) }
                 quantities.append(inputQuantity(kind: "ingredient", id: id, quantity: scaled))
             }
             var nested: [SchemamiValue] = []
             for (index, childComponent) in (recipe[member: "components"]?.arrayValue ?? []).enumerated() where active(childComponent, recipe: recipe, path: path) {
-                guard let childID = childComponent[member: "id"]?.stringValue,
-                      let quantity = childComponent[member: "quantity"] else {
-                    return ComponentExpansion(problem: refused(operation, "missing-fact", componentPointer + "/components/\(index)/quantity"))
+                guard let childID = childComponent[member: "id"]?.stringValue else { continue }
+                let resolved: ExactFormulaQuantity
+                if let formulaOwned = formulaQuantities[formulaKey(kind: "component", id: childID)] { resolved = formulaOwned }
+                else {
+                    guard let quantity = childComponent[member: "quantity"], quantity[member: "kind"]?.stringValue == "measured",
+                          case .success(let authored) = Rational.parsePositive(quantity[member: "value"]?.stringValue ?? "") else {
+                        return ComponentExpansion(problem: refused(operation, "missing-fact", componentPointer + "/components/\(index)/quantity"))
+                    }
+                    let applied = quantity[member: "scaling"]?.stringValue == "fixed" ? authored : authored * factor
+                    guard case .success(let formatted) = applied.formatted() else { return ComponentExpansion(problem: refused(operation, "resource-limit", componentPointer + "/components/\(index)/quantity")) }
+                    resolved = ExactFormulaQuantity(input: object([("kind", .string("component")), ("id", .string(childID))]), value: applied, unit: quantity[member: "unit"]?.stringValue ?? "", quantity: measured(formatted, unit: quantity[member: "unit"]?.stringValue ?? ""))
                 }
-                let scaled = scaleQuantity(quantity, factor: factor, pointer: componentPointer + "/components/\(index)/quantity")
-                if scaled[member: "status"] != nil { return ComponentExpansion(problem: scaled) }
-                quantities.append(inputQuantity(kind: "component", id: childID, quantity: scaled))
+                quantities.append(inputQuantity(kind: "component", id: childID, quantity: resolved.quantity))
                 guard let grandchild = bundleRecipe(childComponent[member: "recipe"]) else {
                     return ComponentExpansion(problem: refused(operation, "unresolved-reference", "/bundle/documents"))
                 }
@@ -249,23 +321,34 @@ enum StructuredCalculus {
                 let expansion = scaleComponent(
                     grandchild,
                     component: childComponent,
-                    requested: scaled,
+                    requested: resolved.quantity,
+                    requestedExact: resolved.value,
+                    requestedUnit: resolved.unit,
                     path: childPath,
                     componentPointer: componentPointer + "/components/\(index)",
                     visiting: &visiting
                 )
                 if let problem = expansion.problem { return ComponentExpansion(problem: problem) }
                 nested.append(contentsOf: expansion.instances)
+                formulaEvaluations.append(contentsOf: expansion.formulaEvaluations)
             }
             let instance = object([
                 ("component_path", pathArray(path)), ("output", .string(outputID)), ("quantities", .array(quantities)),
                 ("quantity", requested), ("recipe", recipeIdentity(recipe)),
             ])
-            return ComponentExpansion(instances: [instance] + nested)
+            return ComponentExpansion(instances: [instance] + nested, formulaEvaluations: formulaEvaluations)
+        }
+
+        private struct ExactFormulaQuantity {
+            let input: SchemamiValue
+            let value: Rational
+            let unit: String
+            let quantity: SchemamiValue
         }
 
         private struct FormulaEvaluation {
             var quantities: [SchemamiValue] = []
+            var exactQuantities: [ExactFormulaQuantity] = []
             var authored: Rational = 0
             var selected: Rational = 0
             var unit = ""
@@ -308,8 +391,11 @@ enum StructuredCalculus {
             for item in exactTerms { result.authored = result.authored + item.1; if item.2 { result.selected = result.selected + item.1 } }
             let appliedFactor = factor ?? 1
             for item in exactTerms where item.2 {
-                guard case .success(let formatted) = (item.1 * appliedFactor).formatted() else { result.problem = refused(operation, "resource-limit", "/recipe/formulas"); return result }
-                result.quantities.append(object([("input", item.0), ("quantity", measured(formatted, unit: result.unit))]))
+                let exact = item.1 * appliedFactor
+                guard case .success(let formatted) = exact.formatted() else { result.problem = refused(operation, "resource-limit", "/recipe/formulas"); return result }
+                let quantity = measured(formatted, unit: result.unit)
+                result.quantities.append(object([("input", item.0), ("quantity", quantity)]))
+                result.exactQuantities.append(ExactFormulaQuantity(input: item.0, value: exact, unit: result.unit, quantity: quantity))
             }
             guard case .success(let authored) = result.authored.formatted(), case .success(let selected) = result.selected.formatted() else { return result }
             var metadata: [(String, SchemamiValue)] = [
@@ -324,6 +410,7 @@ enum StructuredCalculus {
 
         mutating func methodProjection(schedule: Bool) -> SchemamiValue {
             if bundle != nil { return composedMethodProjection(schedule: schedule) }
+            if let problem = enterInstance(recipe: root, path: "") { return problem }
             let nodes = activeMethod(root, path: "").filter { $0[member: "kind"]?.stringValue == "step" }
             let result = projectSteps(nodes, path: "", schedule: schedule, initialOffset: 0)
             if let problem = result.problem { return problem }
@@ -332,20 +419,220 @@ enum StructuredCalculus {
         }
 
         mutating func composedMethodProjection(schedule: Bool) -> SchemamiValue {
-            var allSteps: [SchemamiValue] = []
-            var childEnds: [String: BigInt] = [:]
-            for component in root[member: "components"]?.arrayValue ?? [] {
-                guard let id = component[member: "id"]?.stringValue, consumed(component: id, in: root), let child = bundleRecipe(component[member: "recipe"]) else { continue }
-                let projection = projectSteps(activeMethod(child, path: id).filter { $0[member: "kind"]?.stringValue == "step" }, path: id, schedule: schedule, initialOffset: 0)
-                if let problem = projection.problem { return problem }
-                allSteps.append(contentsOf: projection.steps); childEnds[id] = projection.end
+            var visiting = Set<String>()
+            if !schedule {
+                let collected = collectComposedSteps(recipe: root, path: "", visiting: &visiting)
+                if let problem = collected.problem { return problem }
+                guard !collected.steps.isEmpty else { return refused(operation, "missing-fact", "/recipe/method/sequence") }
+                var index: [String: Int] = [:]
+                for (position, step) in collected.steps.enumerated() { index[stepKey(step.path, step.id)] = position }
+                var indegree = Array(repeating: 0, count: collected.steps.count)
+                var dependents = Array(repeating: [Int](), count: collected.steps.count)
+                for (position, step) in collected.steps.enumerated() {
+                    for dependency in step.after {
+                        guard let dependencyIndex = index[dependency] else { return refused(operation, "unresolved-reference", "/recipe/method") }
+                        indegree[position] += 1; dependents[dependencyIndex].append(position)
+                    }
+                }
+                var used = Array(repeating: false, count: collected.steps.count)
+                var projected: [SchemamiValue] = []
+                while projected.count < collected.steps.count {
+                    let ready = collected.steps.indices.filter { !used[$0] && indegree[$0] == 0 }
+                    guard let selected = ready.min(by: { collected.steps[$0].order < collected.steps[$1].order }) else {
+                        return refused(operation, "dependency-cycle", "/recipe/method")
+                    }
+                    used[selected] = true
+                    let step = collected.steps[selected]
+                    projected.append(object([("component_path", pathArray(step.path)), ("id", .string(step.id))]))
+                    for dependent in dependents[selected] { indegree[dependent] -= 1 }
+                }
+                return success(result: object([("steps", .array(projected)), ("unplaced_components", .array(collected.notices))]))
             }
-            let offset = childEnds.values.max() ?? 0
-            let rootProjection = projectSteps(activeMethod(root, path: "").filter { $0[member: "kind"]?.stringValue == "step" }, path: "", schedule: schedule, initialOffset: offset)
-            if let problem = rootProjection.problem { return problem }
-            allSteps.append(contentsOf: rootProjection.steps)
-            let key = schedule ? "unscheduled_components" : "unplaced_components"
-            return success(result: object([("steps", .array(allSteps)), (key, .array([]))]))
+
+            let composed = composeScheduleInstance(recipe: root, path: "", visiting: &visiting)
+            if let problem = composed.problem { return problem }
+            guard !composed.steps.isEmpty else { return refused(operation, "missing-fact", "/recipe/method/sequence") }
+            let minimum = composed.steps.map(\.start).min() ?? 0
+            var shifted = composed.steps
+            for index in shifted.indices { shifted[index].start -= minimum; shifted[index].end -= minimum }
+            // Schedule ties follow the same composed reading preorder instead
+            // of colliding per-recipe local ordinals.
+            var orderingContext = self
+            var orderingVisiting = Set<String>()
+            let ordering = orderingContext.collectComposedSteps(recipe: root, path: "", visiting: &orderingVisiting)
+            let ordinals = Dictionary(uniqueKeysWithValues: ordering.steps.enumerated().map { (stepKey($0.element.path, $0.element.id), $0.offset) })
+            for index in shifted.indices { shifted[index].order = ordinals[stepKey(shifted[index].path, shifted[index].id)] ?? Int.max }
+            shifted.sort { left, right in left.start == right.start ? left.order < right.order : left.start < right.start }
+            let projected = shifted.map { step in object([
+                ("component_path", pathArray(step.path)), ("duration", .string(formatElapsed(step.duration))),
+                ("end", .string(formatElapsed(step.end))), ("id", .string(step.id)),
+                ("start", .string(formatElapsed(step.start))),
+            ]) }
+            return success(result: object([("steps", .array(projected)), ("unscheduled_components", .array(composed.notices))]))
+        }
+
+        private struct ComposedStep {
+            var path: String
+            var id: String
+            var after: [String] = []
+            var duration: BigInt = 0
+            var start: BigInt = 0
+            var end: BigInt = 0
+            var order: Int = 0
+        }
+
+        private struct ComposedProjection {
+            var steps: [ComposedStep] = []
+            var notices: [SchemamiValue] = []
+            var problem: SchemamiValue?
+        }
+
+        private mutating func collectComposedSteps(
+            recipe: SchemamiValue,
+            path: String,
+            visiting: inout Set<String>
+        ) -> ComposedProjection {
+            if let problem = enterInstance(recipe: recipe, path: path) { return ComposedProjection(problem: problem) }
+            let reference = recipeReference(recipe)
+            guard visiting.insert(reference).inserted else {
+                return ComposedProjection(problem: refused(operation, "component-cycle", "/bundle/documents"))
+            }
+            defer { visiting.remove(reference) }
+            let nodes = activeMethod(recipe, path: path)
+            let activeIDs = Set(nodes.compactMap { $0[member: "id"]?.stringValue })
+            var roots = nodes.filter { $0[member: "kind"]?.stringValue == "step" }.map { node in
+                ComposedStep(
+                    path: path,
+                    id: node[member: "id"]?.stringValue ?? "",
+                    after: strings(node[member: "after"]).filter { activeIDs.contains($0) }.map { stepKey(path, $0) }
+                )
+            }
+            var byID: [String: Int] = [:]
+            for (index, step) in roots.enumerated() { byID[step.id] = index }
+            var result: [ComposedStep] = []
+            var notices: [SchemamiValue] = []
+            for component in recipe[member: "components"]?.arrayValue ?? [] where active(component, recipe: recipe, path: path) {
+                guard let componentID = component[member: "id"]?.stringValue else { continue }
+                let consumers = componentConsumers(nodes, componentID: componentID)
+                let childPath = path.isEmpty ? componentID : path + "/" + componentID
+                if consumers.isEmpty {
+                    notices.append(componentNotice(path: childPath)); continue
+                }
+                guard let child = bundleRecipe(component[member: "recipe"]) else {
+                    return ComposedProjection(problem: refused(operation, "unresolved-reference", "/bundle/documents"))
+                }
+                let childProjection = collectComposedSteps(recipe: child, path: childPath, visiting: &visiting)
+                if let problem = childProjection.problem { return ComposedProjection(problem: problem) }
+                guard let producer = selectedOutputProducer(recipe: child, path: childPath, outputID: component[member: "output"]?.stringValue ?? "") else {
+                    return ComposedProjection(problem: refused(operation, "missing-producer", "/bundle/documents"))
+                }
+                if producer.multiple { return ComposedProjection(problem: refused(operation, "multiple-producers", "/bundle/documents")) }
+                for consumer in consumers { if let index = byID[consumer] { roots[index].after.append(stepKey(childPath, producer.id)) } }
+                result.append(contentsOf: childProjection.steps); notices.append(contentsOf: childProjection.notices)
+            }
+            result.append(contentsOf: roots)
+            for index in result.indices { result[index].order = index }
+            return ComposedProjection(steps: result, notices: notices)
+        }
+
+        private mutating func composeScheduleInstance(
+            recipe: SchemamiValue,
+            path: String,
+            visiting: inout Set<String>
+        ) -> ComposedProjection {
+            if let problem = enterInstance(recipe: recipe, path: path) { return ComposedProjection(problem: problem) }
+            let reference = recipeReference(recipe)
+            guard visiting.insert(reference).inserted else {
+                return ComposedProjection(problem: refused(operation, "component-cycle", "/bundle/documents"))
+            }
+            defer { visiting.remove(reference) }
+            var local = collectLocalSchedule(recipe: recipe, path: path)
+            if let problem = local.problem { return ComposedProjection(problem: problem) }
+            let nodes = activeMethod(recipe, path: path)
+            for component in recipe[member: "components"]?.arrayValue ?? [] where active(component, recipe: recipe, path: path) {
+                guard let componentID = component[member: "id"]?.stringValue else { continue }
+                let consumers = componentConsumers(nodes, componentID: componentID)
+                let childPath = path.isEmpty ? componentID : path + "/" + componentID
+                if consumers.isEmpty { local.notices.append(componentNotice(path: childPath)); continue }
+                guard let child = bundleRecipe(component[member: "recipe"]) else {
+                    return ComposedProjection(problem: refused(operation, "unresolved-reference", "/bundle/documents"))
+                }
+                var childProjection = composeScheduleInstance(recipe: child, path: childPath, visiting: &visiting)
+                if let problem = childProjection.problem { return ComposedProjection(problem: problem) }
+                guard let producer = selectedOutputProducer(recipe: child, path: childPath, outputID: component[member: "output"]?.stringValue ?? "") else {
+                    return ComposedProjection(problem: refused(operation, "missing-producer", "/bundle/documents"))
+                }
+                if producer.multiple { return ComposedProjection(problem: refused(operation, "multiple-producers", "/bundle/documents")) }
+                guard let producerStep = childProjection.steps.first(where: { $0.path == childPath && $0.id == producer.id }),
+                      let earliestConsumer = local.steps.filter({ $0.path == path && consumers.contains($0.id) }).map(\.start).min()
+                else { return ComposedProjection(problem: refused(operation, "missing-producer", "/bundle/documents")) }
+                let shift = earliestConsumer - producerStep.end
+                for index in childProjection.steps.indices {
+                    childProjection.steps[index].start += shift; childProjection.steps[index].end += shift
+                }
+                local.steps.append(contentsOf: childProjection.steps); local.notices.append(contentsOf: childProjection.notices)
+            }
+            return local
+        }
+
+        private mutating func collectLocalSchedule(recipe: SchemamiValue, path: String) -> ComposedProjection {
+            let nodes = activeMethod(recipe, path: path).filter { $0[member: "kind"]?.stringValue == "step" }
+            var indexByID: [String: Int] = [:]
+            for (index, node) in nodes.enumerated() { indexByID[node[member: "id"]?.stringValue ?? ""] = index }
+            var indegree = Array(repeating: 0, count: nodes.count)
+            var dependents = Array(repeating: [Int](), count: nodes.count)
+            for (index, node) in nodes.enumerated() {
+                for dependency in strings(node[member: "after"]) where indexByID[dependency] != nil {
+                    indegree[index] += 1; dependents[indexByID[dependency]!].append(index)
+                }
+            }
+            var order: [Int] = []; var used = Array(repeating: false, count: nodes.count)
+            while order.count < nodes.count {
+                guard let selected = nodes.indices.first(where: { !used[$0] && indegree[$0] == 0 }) else {
+                    return ComposedProjection(problem: refused(operation, "dependency-cycle", "/recipe/method"))
+                }
+                used[selected] = true; order.append(selected); for child in dependents[selected] { indegree[child] -= 1 }
+            }
+            var ends = Array(repeating: BigInt(0), count: nodes.count)
+            var result: [ComposedStep] = []
+            for (authoredOrder, index) in order.enumerated() {
+                guard let duration = durationSeconds(nodes[index][member: "duration"]) else {
+                    return ComposedProjection(problem: refused(operation, "missing-fact", "/recipe/method"))
+                }
+                var start: BigInt = 0
+                for dependency in strings(nodes[index][member: "after"]) {
+                    if let dependencyIndex = indexByID[dependency] { start = max(start, ends[dependencyIndex]) }
+                }
+                let end = start + duration; ends[index] = end
+                result.append(ComposedStep(path: path, id: nodes[index][member: "id"]?.stringValue ?? "", duration: duration, start: start, end: end, order: authoredOrder))
+            }
+            return ComposedProjection(steps: result)
+        }
+
+        private mutating func componentConsumers(_ nodes: [SchemamiValue], componentID: String) -> [String] {
+            nodes.filter { node in
+                node[member: "kind"]?.stringValue == "step" &&
+                (node[member: "uses"]?.arrayValue ?? []).contains { $0[member: "kind"]?.stringValue == "component" && $0[member: "id"]?.stringValue == componentID }
+            }.compactMap { $0[member: "id"]?.stringValue }
+        }
+
+        private mutating func selectedOutputProducer(recipe: SchemamiValue, path: String, outputID: String) -> (id: String, multiple: Bool)? {
+            let producers = activeMethod(recipe, path: path).filter { node in
+                node[member: "kind"]?.stringValue == "step" &&
+                (node[member: "produces"]?.arrayValue ?? []).contains { $0[member: "kind"]?.stringValue == "output" && $0[member: "id"]?.stringValue == outputID }
+            }.compactMap { $0[member: "id"]?.stringValue }
+            guard let first = producers.first else { return nil }
+            return (first, producers.count > 1)
+        }
+
+        private func stepKey(_ path: String, _ id: String) -> String { path + "\u{0}" + id }
+        private func componentNotice(path: String) -> SchemamiValue { object([("component_path", pathArray(path)), ("reason", .string("not-consumed"))]) }
+
+        private func enterInstance(recipe: SchemamiValue, path: String) -> SchemamiValue? {
+            if !resources.enter(recipe: recipe, path: path) {
+                return refused(operation, "resource-limit", "/bundle/documents")
+            }
+            return nil
         }
 
         private struct StepProjection { var steps: [SchemamiValue] = []; var end: BigInt = 0; var problem: SchemamiValue? }
@@ -528,6 +815,8 @@ enum StructuredCalculus {
     }
 
     private static func inputQuantity(kind: String, id: String, quantity: SchemamiValue) -> SchemamiValue { object([("input", object([("id", .string(id)), ("kind", .string(kind))])), ("quantity", quantity)]) }
+    private static func formulaKey(_ input: SchemamiValue) -> String { formulaKey(kind: input[member: "kind"]?.stringValue ?? "", id: input[member: "id"]?.stringValue ?? "") }
+    private static func formulaKey(kind: String, id: String) -> String { kind + "\u{0}" + id }
     private static func measured(_ value: String, unit: String) -> SchemamiValue { object([("kind", .string("measured")), ("value", .string(value)), ("unit", .string(unit))]) }
     private static func recipeIdentity(_ recipe: SchemamiValue) -> SchemamiValue { object([("collection", recipe[member: "collection"] ?? .string("")), ("id", recipe[member: "id"] ?? .string("")), ("revision", recipe[member: "revision"] ?? .integer(0)), ("sha256", .string((try? recipe.canonicalSHA256()) ?? ""))]) }
     private static func recipeReference(_ recipe: SchemamiValue) -> String { "\(recipe[member: "collection"]?.stringValue ?? "")/\(recipe[member: "id"]?.stringValue ?? "")/\(recipe[member: "revision"]?.integerValue ?? 0)" }

@@ -207,9 +207,9 @@ acceptance_criteria:
     status: accepted
   - id: AC-CALC-006-7
     fr: FR-CALC-006
-    given: nested components, equivalent reachable graphs, multiple independent blockers, and requests at the portability floor
-    when: admission and Calculus run in both implementations
-    then: results, evaluation digests and selections, component paths, deduplicated diagnostics, pointer and type ordering, and resource-limit boundary behavior match byte-for-byte
+    given: nested components, equivalent reachable graphs, multiple independent blockers, requests at each logical capacity floor, and pathological residual-analysis expressions
+    when: admission and Calculus run in both implementations at default and raised analysis-state ceilings
+    then: results, evaluation digests and selections, component paths, deduplicated diagnostics, pointer and type ordering, logical-capacity boundaries, and request-scoped analysis-state refusals match byte-for-byte
     status: accepted
   - id: AC-EVIDENCE-001-1
     fr: FR-EVIDENCE-001
@@ -327,7 +327,7 @@ revision_history:
   - at: "2026-08-11T18:00:00Z"
     author: Daniel Gomes
     action: calculus-closure-approved
-    note: "Accepted ADR-016 after aligned Pão and Fornada review: resolve_selection, exhaustive distinct reachable graphs, non-redistributing optional terms, factor XOR root formula_target, exact component scaling, composed schedule reporting, deterministic diagnostics, and portable resource floors."
+    note: "Accepted ADR-016 after aligned Pão and Fornada review: resolve_selection, exhaustive distinct reachable graphs, non-redistributing optional terms, factor XOR root formula_target, exact component scaling, composed schedule reporting, deterministic diagnostics, and portable logical capacity. ADR-017 separately bounds request-scoped residual-analysis states."
   - at: "2026-08-11T16:30:00Z"
     author: Daniel Gomes
     action: wire-closure-approved

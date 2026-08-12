@@ -15,6 +15,9 @@ stage() {
 }
 
 stage toolchain make toolchain-check
+stage sdk-resources make sdk-resources
+stage go-sdk make go-sdk
+stage typescript-sdk make typescript-sdk
 stage go tools/with-toolchain.sh go -C tools/schemami test -count=1 ./...
 stage validate make validate
 stage conformance make conformance

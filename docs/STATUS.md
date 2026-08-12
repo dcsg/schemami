@@ -21,9 +21,9 @@ offline pack verification, and a generated single-file viewer.
 - explicit offline pack resolution by collection, revision, and JCS SHA-256;
 - 44 Schemami viewer/calculus tests with 252 assertions;
 - byte-stable generation of `tools/viewer/dist/index.html`.
-- a 14-artifact release contract map covering two schemas, one shared corpus,
+- a 19-artifact release contract map covering two schemas, six shared corpora,
   and all 11 minimum problem types;
-- an explicit 120-file candidate scope that excludes retained historical and
+- an explicit candidate scope that excludes retained historical and
   unrelated dirty work.
 
 ## Still required before stable release

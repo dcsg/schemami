@@ -27,5 +27,5 @@ test "$(cat "$proof_root/public/_headers")" = "$expected_headers" || {
   echo "publication tree: Cloudflare schema media-type rules drifted" >&2
   exit 1
 }
-test "$(find "$proof_root/public" -type f | wc -l | tr -d ' ')" = 17
-echo "schemami publication tree: 16 route artifacts and Cloudflare media-type rules assembled byte-for-byte"
+test "$(find "$proof_root/public" -type f | wc -l | tr -d ' ')" = 20
+echo "schemami publication tree: 19 route artifacts and Cloudflare media-type rules assembled byte-for-byte"

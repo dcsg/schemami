@@ -1,5 +1,31 @@
 import Foundation
 
+private final class AdmissionResourceLedger {
+    let budgets: ResourceBudgets
+    private(set) var semanticOccurrences = 0
+    private(set) var analysisStates = 0
+
+    init(budgets: ResourceBudgets) { self.budgets = budgets }
+
+    func chargeSemantic(_ amount: Int, pointer: String = "") -> Problem? {
+        let (next, overflow) = semanticOccurrences.addingReportingOverflow(amount)
+        guard amount >= 0, !overflow, next <= budgets.semanticOccurrences else {
+            return SemanticAdmission.problem(ProblemType.resourceLimit, pointer)
+        }
+        semanticOccurrences = next
+        return nil
+    }
+
+    func chargeAnalysisState(pointer: String = "") -> Problem? {
+        let (next, overflow) = analysisStates.addingReportingOverflow(1)
+        guard !overflow, next <= budgets.analysisStates else {
+            return SemanticAdmission.problem(ProblemType.resourceLimit, pointer)
+        }
+        analysisStates = next
+        return nil
+    }
+}
+
 enum SemanticAdmission {
     private static let knownUnitDimensions: [String: String] = [
         "1": "unity", "g": "mass", "kg": "mass", "mL": "volume", "L": "volume",
@@ -8,9 +34,19 @@ enum SemanticAdmission {
     ]
 
     static func validate(_ document: SchemamiValue, budgets: ResourceBudgets) -> [Problem] {
+        let ledger = AdmissionResourceLedger(budgets: budgets)
+        return validate(document, budgets: budgets, ledger: ledger, chargeProtocolObjects: true)
+    }
+
+    private static func validate(
+        _ document: SchemamiValue,
+        budgets: ResourceBudgets,
+        ledger: AdmissionResourceLedger,
+        chargeProtocolObjects: Bool
+    ) -> [Problem] {
         guard document.objectMembers != nil else { return [invalid()] }
-        guard semanticObjectCount(document) <= budgets.semanticOccurrences else {
-            return [problem(ProblemType.resourceLimit)]
+        if chargeProtocolObjects, let limit = ledger.chargeSemantic(semanticObjectCount(document)) {
+            return [limit]
         }
 
         var failures: [Problem] = []
@@ -25,20 +61,32 @@ enum SemanticAdmission {
         validateSourcesAndEvidence(document, collections: collections, into: &failures)
         validateQuantities(document, into: &failures)
 
+        if failures.contains(where: { $0.type == ProblemType.resourceLimit }) {
+            return [problem(ProblemType.resourceLimit)]
+        }
         failures = ProblemNormalizer.normalize(failures)
         guard failures.isEmpty else { return failures }
-        return ReachableGraphAdmission.validate(document, collections: collections, budgets: budgets)
+        return ReachableGraphAdmission.validate(document, collections: collections, ledger: ledger)
     }
 
     static func validateBundle(_ bundle: RecipeBundle, budgets: ResourceBudgets) -> [Problem] {
         guard bundle.documents.count <= budgets.bundleDocuments else {
             return [problem(ProblemType.resourceLimit, "/documents")]
         }
+        let ledger = AdmissionResourceLedger(budgets: budgets)
+        if let limit = ledger.chargeSemantic(semanticObjectCount(bundle.value), pointer: "/documents") {
+            return [limit]
+        }
         var failures: [Problem] = []
         var byReference: [String: BundledRecipe] = [:]
         var references: [String] = []
         for (index, entry) in bundle.documents.enumerated() {
-            let nested = validate(entry.recipe.value, budgets: budgets)
+            let nested = validate(
+                entry.recipe.value,
+                budgets: budgets,
+                ledger: ledger,
+                chargeProtocolObjects: false
+            )
             failures.append(contentsOf: nested.map {
                 Problem(type: $0.type, pointer: prefixed($0.pointer, "/documents/\(index)/document"))
             })
@@ -591,7 +639,9 @@ enum SemanticAdmission {
         var stack = [value]
         while let current = stack.popLast() {
             switch current {
-            case .object(let members): count += 1; stack.append(contentsOf: members.map(\.value))
+            case .object(let members):
+                count += 1
+                stack.append(contentsOf: members.filter { !$0.name.hasPrefix("x-") }.map(\.value))
             case .array(let values): stack.append(contentsOf: values)
             default: break
             }
@@ -605,7 +655,7 @@ enum SemanticAdmission {
             visit(value, pointer)
             switch value {
             case .object(let members):
-                stack.append(contentsOf: members.reversed().map { ($0.value, pointer + "/" + escape($0.name)) })
+                stack.append(contentsOf: members.reversed().filter { !$0.name.hasPrefix("x-") }.map { ($0.value, pointer + "/" + escape($0.name)) })
             case .array(let values):
                 stack.append(contentsOf: values.enumerated().reversed().map { ($0.element, pointer + "/\($0.offset)") })
             default: break
@@ -649,15 +699,18 @@ private enum ReachableGraphAdmission {
     static func validate(
         _ recipe: SchemamiValue,
         collections: [String: [String: SchemamiValue]],
-        budgets: ResourceBudgets
+        ledger: AdmissionResourceLedger
     ) -> [Problem] {
-        let parameters = recipe[member: "parameters"]?.arrayValue ?? []
+        let usedParameters = activationParameterIDs(recipe)
+        let parameters = (recipe[member: "parameters"]?.arrayValue ?? []).filter {
+            guard let id = $0[member: "id"]?.stringValue else { return false }
+            return usedParameters.contains(id)
+        }
         let candidates = parameters.map { parameterCandidates(recipe, parameter: $0) }
         guard candidates.allSatisfy({ !$0.isEmpty }) else {
             return [SemanticAdmission.problem(ProblemType.invalidDocument, "/parameters")]
         }
         let objectCount = max(1, SemanticAdmission.semanticObjectCount(recipe))
-        let graphBudget = max(1, budgets.semanticOccurrences / objectCount)
         var alternatives: [String: SchemamiValue] = [:]
         for ingredient in recipe[member: "ingredients"]?.arrayValue ?? [] {
             guard let id = ingredient[member: "id"]?.stringValue,
@@ -667,28 +720,152 @@ private enum ReachableGraphAdmission {
         }
 
         var distinct = Set<String>()
+        var partialStates = Set<String>()
         var bindings: [String: SchemamiValue] = [:]
         var failures: [Problem] = []
         var exhausted = false
         func explore(_ index: Int) {
             guard !exhausted else { return }
+            let state = "\(index)|\(residualActivationSignature(recipe, bindings: bindings))"
+            guard partialStates.insert(state).inserted else { return }
+            if let limit = ledger.chargeAnalysisState() {
+                failures.append(limit); exhausted = true; return
+            }
             if index < parameters.count {
                 guard let id = parameters[index][member: "id"]?.stringValue else { return }
-                for candidate in candidates[index] { bindings[id] = candidate; explore(index + 1) }
+                for candidate in candidates[index] {
+                    bindings[id] = candidate; explore(index + 1)
+                }
                 bindings.removeValue(forKey: id)
                 return
             }
             let nodes = activeMethod(recipe, bindings: bindings)
             let signature = graphSignature(recipe, nodes: nodes, bindings: bindings)
             guard distinct.insert(signature).inserted else { return }
-            guard distinct.count <= graphBudget else {
-                failures.append(SemanticAdmission.problem(ProblemType.resourceLimit)); exhausted = true; return
+            if let limit = ledger.chargeSemantic(objectCount) {
+                failures.append(limit); exhausted = true; return
             }
             failures.append(contentsOf: validateActiveGraph(recipe, nodes: nodes, collections: collections, bindings: bindings))
         }
         explore(0)
         _ = alternatives
         return ProblemNormalizer.normalize(failures)
+    }
+
+    private static func residualActivationSignature(
+        _ recipe: SchemamiValue,
+        bindings: [String: SchemamiValue]
+    ) -> String {
+        normativeActivations(recipe).map { residualActivation($0, bindings: bindings) }.joined(separator: ";")
+    }
+
+    private static func residualActivation(
+        _ activation: SchemamiValue,
+        bindings: [String: SchemamiValue]
+    ) -> String {
+        guard let kind = activation[member: "kind"]?.stringValue else { return "invalid" }
+        if ["choice_is", "toggle_is", "measurement_compare"].contains(kind) {
+            guard let parameter = activation[member: "parameter"]?.stringValue else { return "invalid" }
+            guard let bound = bindings[parameter] else {
+                switch kind {
+                case "choice_is":
+                    return "choice(\(parameter)=\(activation[member: "option"]?.stringValue ?? ""))"
+                case "toggle_is":
+                    return activation[member: "enabled"] == .boolean(false)
+                        ? "!toggle(\(parameter))" : "toggle(\(parameter))"
+                default:
+                    let measurement = activation[member: "measurement"]
+                    return "measure(\(parameter),\(activation[member: "operator"]?.stringValue ?? ""),\(measurement?[member: "value"]?.stringValue ?? ""),\(measurement?[member: "unit"]?.stringValue ?? ""))"
+                }
+            }
+            guard let value = residualLeafValue(kind, bound: bound, activation: activation) else { return "invalid" }
+            return value ? "1" : "0"
+        }
+        if kind == "not" {
+            guard let condition = activation[member: "condition"] else { return "invalid" }
+            let value = residualActivation(condition, bindings: bindings)
+            if value == "1" { return "0" }
+            if value == "0" { return "1" }
+            if value.hasPrefix("!") { return String(value.dropFirst()) }
+            return "!(\(value))"
+        }
+        if kind == "all" || kind == "any" {
+            let identity = kind == "all" ? "1" : "0"
+            let absorbing = kind == "all" ? "0" : "1"
+            var children = Set<String>()
+            for condition in activation[member: "conditions"]?.arrayValue ?? [] {
+                let value = residualActivation(condition, bindings: bindings)
+                if value == absorbing { return absorbing }
+                if value != identity { children.insert(value) }
+            }
+            if children.isEmpty { return identity }
+            if children.count == 1 { return children.first! }
+            return "\(kind)(\(children.sorted().joined(separator: ",")))"
+        }
+        return "invalid"
+    }
+
+    private static func residualLeafValue(
+        _ kind: String,
+        bound: SchemamiValue,
+        activation: SchemamiValue
+    ) -> Bool? {
+        switch kind {
+        case "choice_is": return bound == activation[member: "option"]
+        case "toggle_is": return bound == activation[member: "enabled"]
+        case "measurement_compare":
+            guard let left = SemanticAdmission.exactDecimal(bound[member: "value"]),
+                  let boundUnit = bound[member: "unit"]?.stringValue,
+                  let measurement = activation[member: "measurement"],
+                  let rightRaw = SemanticAdmission.exactDecimal(measurement[member: "value"]),
+                  let measurementUnit = measurement[member: "unit"]?.stringValue,
+                  let right = SemanticAdmission.convert(rightRaw, from: measurementUnit, to: boundUnit)
+            else { return nil }
+            switch activation[member: "operator"]?.stringValue {
+            case "equal": return left == right
+            case "less_than": return left < right
+            case "less_than_or_equal": return left <= right
+            case "greater_than": return left > right
+            case "greater_than_or_equal": return left >= right
+            default: return nil
+            }
+        default: return nil
+        }
+    }
+
+    private static func activationParameterIDs(_ recipe: SchemamiValue) -> Set<String> {
+        var result = Set<String>(); var stack = normativeActivations(recipe)
+        while let current = stack.popLast() {
+            switch current {
+            case .array(let values): stack.append(contentsOf: values)
+            case .object(let members):
+                if let kind = current[member: "kind"]?.stringValue,
+                   ["choice_is", "toggle_is", "measurement_compare"].contains(kind),
+                   let parameter = current[member: "parameter"]?.stringValue {
+                    result.insert(parameter)
+                }
+                stack.append(contentsOf: members.map(\.value))
+            default: break
+            }
+        }
+        return result
+    }
+
+    private static func normativeActivations(_ recipe: SchemamiValue) -> [SchemamiValue] {
+        var result: [SchemamiValue] = []
+        func append(_ object: SchemamiValue) {
+            if let activation = object[member: "activation"] { result.append(activation) }
+        }
+        for collection in ["ingredients", "components", "equipment"] {
+            for object in recipe[member: collection]?.arrayValue ?? [] { append(object) }
+        }
+        var nodes = recipe[member: "method"]?[member: "sequence"]?.arrayValue ?? []
+        while let node = nodes.popLast() {
+            append(node)
+            for action in node[member: "actions"]?.arrayValue ?? [] { append(action) }
+            nodes.append(contentsOf: node[member: "sequence"]?.arrayValue ?? [])
+        }
+        return result
     }
 
     private static func parameterCandidates(_ recipe: SchemamiValue, parameter: SchemamiValue) -> [SchemamiValue] {
@@ -729,7 +906,7 @@ private enum ReachableGraphAdmission {
 
     private static func measurementThresholds(_ root: SchemamiValue, parameter: String) -> [SchemamiValue] {
         var result: [SchemamiValue] = []
-        var stack = [root]
+        var stack = normativeActivations(root)
         while let current = stack.popLast() {
             if current[member: "kind"]?.stringValue == "measurement_compare",
                current[member: "parameter"]?.stringValue == parameter,

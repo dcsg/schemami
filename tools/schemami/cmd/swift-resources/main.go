@@ -26,6 +26,8 @@ var mappings = []struct {
 	{"conformance/schemami-v1/validation.json", "conformance/validation.json"},
 	{"conformance/schemami-v1/calculus.json", "conformance/calculus.json"},
 	{"conformance/schemami-v1/structured-calculus.json", "conformance/structured-calculus.json"},
+	{"conformance/schemami-v1/diff.json", "conformance/diff.json"},
+	{"conformance/schemami-v1/resource-budgets.json", "conformance/resource-budgets.json"},
 	{"conformance/schemami-v1/canonicalization.json", "conformance/canonicalization.json"},
 	{"conformance/schemami-v1/canonicalization/member-order-a.schemami.json", "conformance/fixtures/canonicalization/member-order-a.schemami.json"},
 	{"conformance/schemami-v1/canonicalization/member-order-b.schemami.json", "conformance/fixtures/canonicalization/member-order-b.schemami.json"},

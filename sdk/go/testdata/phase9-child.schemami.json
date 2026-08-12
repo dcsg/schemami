@@ -1,0 +1,30 @@
+{
+  "schemami": "1",
+  "collection": "conformance",
+  "id": "phase9-child",
+  "revision": 1,
+  "content_language": "pt-PT",
+  "title": "Componente",
+  "ingredients": [
+    {"id": "flour", "name": "Farinha", "quantity": {"kind": "measured", "value": "60", "unit": "g"}},
+    {"id": "water", "name": "Água", "quantity": {"kind": "measured", "value": "40", "unit": "g"}}
+  ],
+  "outputs": [
+    {"id": "component", "name": "Componente", "yield": {"kind": "measured", "value": "100", "unit": "g"}}
+  ],
+  "method": {
+    "sequence": [
+      {
+        "kind": "step",
+        "id": "prepare",
+        "instruction": "Misture.",
+        "uses": [
+          {"kind": "ingredient", "id": "flour"},
+          {"kind": "ingredient", "id": "water"}
+        ],
+        "produces": [{"kind": "output", "id": "component"}],
+        "duration": {"target": "PT5M"}
+      }
+    ]
+  }
+}

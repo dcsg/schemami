@@ -26,9 +26,15 @@ env \
   http_proxy=http://127.0.0.1:9 https_proxy=http://127.0.0.1:9 \
   make -C "$clone" ci >/dev/null
 
+echo "clean-clone proof: run locked Swift SDK package"
+swift package --package-path "$clone/sdk/swift" resolve >/dev/null
+env http_proxy=http://127.0.0.1:9 https_proxy=http://127.0.0.1:9 \
+  swift test --package-path "$clone/sdk/swift" --disable-sandbox \
+  --disable-automatic-resolution --skip-update >/dev/null
+
 manifest="$proof_root/schemami-v1.0.0.manifest.json"
 bash "$clone/tools/schemami/build-release-manifest.sh" "$manifest" >/dev/null
-jq -e --arg candidate "$candidate" '.source_commit == $candidate and (.artifacts | length == 15)' "$manifest" >/dev/null
+jq -e --arg candidate "$candidate" '.source_commit == $candidate and (.artifacts | length == 19)' "$manifest" >/dev/null
 test -z "$(git -C "$clone" status --porcelain=v1 --untracked-files=all)"
 
-echo "clean-clone proof: candidate $candidate reproduced the full DAG and 14-artifact release manifest"
+echo "clean-clone proof: candidate $candidate reproduced the full DAG and 19-artifact release manifest"

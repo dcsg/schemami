@@ -1,0 +1,36 @@
+{
+  "suite": "schemami-v1-canonicalization",
+  "version": 1,
+  "vectors": [
+    {
+      "id": "member-order-a",
+      "fixture": "canonicalization/member-order-a.schemami.json",
+      "expected_canonical": "{\"collection\":\"conformance\",\"content_language\":\"en-GB\",\"id\":\"member-order\",\"ingredients\":[],\"method\":{\"sequence\":[]},\"revision\":1,\"schemami\":\"1\",\"title\":\"Canonical\",\"x-conformance-order\":{\"a\":\"<tag>\",\"b\":1,\"supplementary\":\"😀\"}}",
+      "expected_sha256": "e0066948ac7fc695ac5769afb4977c849d3584145cc1f7541d9e46cc6ad7f657"
+    },
+    {
+      "id": "member-order-b-same-identity",
+      "fixture": "canonicalization/member-order-b.schemami.json",
+      "expected_canonical": "{\"collection\":\"conformance\",\"content_language\":\"en-GB\",\"id\":\"member-order\",\"ingredients\":[],\"method\":{\"sequence\":[]},\"revision\":1,\"schemami\":\"1\",\"title\":\"Canonical\",\"x-conformance-order\":{\"a\":\"<tag>\",\"b\":1,\"supplementary\":\"😀\"}}",
+      "expected_sha256": "e0066948ac7fc695ac5769afb4977c849d3584145cc1f7541d9e46cc6ad7f657"
+    },
+    {
+      "id": "number-boundaries",
+      "fixture": "canonicalization/number-boundaries.schemami.json",
+      "expected_canonical": "{\"collection\":\"conformance\",\"content_language\":\"en-GB\",\"id\":\"number-boundaries\",\"ingredients\":[],\"method\":{\"sequence\":[]},\"revision\":1,\"schemami\":\"1\",\"title\":\"Canonical\",\"x-conformance-numbers\":{\"fixedHigh\":100000000000000000000,\"fixedLow\":0.000001,\"fraction\":4.5,\"negativeZero\":0,\"scientificHigh\":1e+21,\"scientificLow\":1e-7}}",
+      "expected_sha256": "4661a5b460780e617b491ace3a99b8fe831e98e6e2e3b2a9c464ac08c29890ec"
+    },
+    {
+      "id": "string-escapes",
+      "fixture": "canonicalization/string-escapes.schemami.json",
+      "expected_canonical": "{\"collection\":\"conformance\",\"content_language\":\"en-GB\",\"id\":\"string-escapes\",\"ingredients\":[],\"method\":{\"sequence\":[]},\"revision\":1,\"schemami\":\"1\",\"title\":\"Canonical\",\"x-conformance-strings\":{\"literal\":\"</script>\",\"text\":\"quote:\\\" slash:\\\\ controls:\\b\\f\\n\\r\\t end\"}}",
+      "expected_sha256": "ba125c2d56bdc660d38642eb9c4e5e7a07dcce9ca76e512e41f5cddeb50c7292"
+    },
+    {
+      "id": "utf16-property-order",
+      "fixture": "canonicalization/utf16-order.schemami.json",
+      "expected_canonical": "{\"collection\":\"conformance\",\"content_language\":\"en-GB\",\"id\":\"utf16-order\",\"ingredients\":[],\"method\":{\"sequence\":[]},\"revision\":1,\"schemami\":\"1\",\"title\":\"Canonical\",\"x-conformance-order\":{\"\\r\":\"control\",\"1\":\"ascii\",\"ö\":\"latin\",\"€\":\"euro\",\"😀\":\"emoji\",\"דּ\":\"hebrew\"}}",
+      "expected_sha256": "fd9567cd552dd1ea4c6d1aa1bbadb49e32dd8e9b49066ad81cc5199beb4b17ee"
+    }
+  ]
+}

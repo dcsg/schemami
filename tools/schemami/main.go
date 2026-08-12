@@ -15,6 +15,7 @@ import (
 	"strconv"
 	"strings"
 
+	sdk "github.com/dcsg/schemami/sdk/go"
 	"github.com/dcsg/schemami/tools/schemami/calculus"
 	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
 	"golang.org/x/text/language"
@@ -76,37 +77,56 @@ func validate(path string) error {
 	if err != nil {
 		return err
 	}
+	if strings.HasSuffix(path, ".json") {
+		parsed := sdk.Parse(raw, sdk.ProtocolFloor)
+		if !parsed.OK() {
+			return fmt.Errorf("admission refused: %s", parsed.Problems[0].Type)
+		}
+		admission := sdk.Admit(parsed.Parsed, sdk.ProtocolFloor)
+		if !admission.OK() || admission.Recipe == nil {
+			return fmt.Errorf("admission refused: %v", admission.Problems)
+		}
+		return nil
+	}
 	doc, err := parseDocument(path, raw)
 	if err != nil {
 		return err
 	}
-	schema, err := schemaFor(path)
+	normalized, err := json.Marshal(doc)
 	if err != nil {
 		return err
 	}
-	return validateDocumentData(doc, schema)
+	parsed := sdk.Parse(normalized, sdk.ProtocolFloor)
+	if !parsed.OK() {
+		return fmt.Errorf("admission refused: %s", parsed.Problems[0].Type)
+	}
+	admission := sdk.Admit(parsed.Parsed, sdk.ProtocolFloor)
+	if !admission.OK() || admission.Recipe == nil {
+		return fmt.Errorf("admission refused: %v", admission.Problems)
+	}
+	return nil
 }
 
 func canonicaliseFile(path string) (string, error) {
 	if err := validateFileSuffix(path); err != nil {
 		return "", err
 	}
+	if !strings.HasSuffix(path, ".json") {
+		return "", fmt.Errorf("canonical identity requires admitted strict JSON; YAML is an authoring input only")
+	}
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
-	doc, err := parseDocument(path, raw)
-	if err != nil {
-		return "", err
+	parsed := sdk.Parse(raw, sdk.ProtocolFloor)
+	if !parsed.OK() {
+		return "", fmt.Errorf("admission refused: %s", parsed.Problems[0].Type)
 	}
-	schema, err := schemaFor(path)
-	if err != nil {
-		return "", err
+	admission := sdk.Admit(parsed.Parsed, sdk.ProtocolFloor)
+	if !admission.OK() || admission.Recipe == nil {
+		return "", fmt.Errorf("admission refused: %v", admission.Problems)
 	}
-	if err := validateDocumentData(doc, schema); err != nil {
-		return "", err
-	}
-	return canonicalise(doc)
+	return string(admission.Recipe.CanonicalJSON()), nil
 }
 
 func validateDocumentData(doc map[string]any, schema *jsonschema.Schema) error {

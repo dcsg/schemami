@@ -140,10 +140,10 @@ requirements:
     falsifying_observation: A renderer must parse prose, two implementations return different problem identity/pointer, or status is confused with an HTTP code.
   - id: SR-RESOURCE-001
     implements: FR-CALC-006
-    text: "Conforming implementations MUST support at least 64 recursive levels, 10,000 evaluated semantic object/reference occurrences, 1,024 embedded bundle documents, and 1,024 selected component instances under the exact Phase 8 counting rules. Static admission and each deduplicated reachable graph charge deterministic occurrences even under symbolic analysis. Evaluation MUST be exact, bounded, iterative or stack-safe, and cycle-safe. Above a floor an implementation MAY refuse with the existing resource-limit type; it MUST NOT silently truncate, skip a graph, or claim intrinsic document invalidity. Authentication, rate limiting, and request-body protection remain deployment concerns."
+    text: "Conforming implementations MUST support logical capacity of at least 64 recursive levels, 10,000 evaluated semantic object/reference occurrences, 1,024 embedded bundle documents, and 1,024 selected component instances under the exact Phase 8 counting rules. Static admission and each deduplicated completed reachable graph charge semantic occurrences; partial solver states MUST NOT. Implementations MUST separately expose a positive request-scoped analysis-state safety ceiling using ADR-017 canonical residual states; the Schemami v1 SDK profile defaults to 10,000 and bundle admission shares one counter across documents. Exhaustion MUST return the existing resource-limit type without silent truncation, skipped graphs, or intrinsic-invalidity claims. Authentication, rate limiting, and request-body protection remain deployment concerns."
     verify_kind: behavioral
     intent: Ordinary portability has a shared security floor while pathological work fails explicitly.
-    falsifying_observation: An implementation refuses below the floor, symbolic and enumerating implementations charge different logical work, or excessive work is skipped silently.
+    falsifying_observation: An implementation charges partial solver states as semantic occurrences, resets the analysis-state counter per embedded document, silently skips excessive work, or gives completed graphs different logical charges because of solver strategy.
   - id: SR-PORTABLE-001
     implements: FR-PORTABLE-001
     text: "Document id and collection MUST use the 1-to-128-character local-ID grammar; revision MUST be a positive base-10 integer without a leading zero. Published bundles MUST pin JCS SHA-256 document bytes. external_references MAY contain absolute RFC 3986 URIs but MUST NOT resolve or supply facts. Canonical authored prose MUST occur only in explicitly registered source-language fields. x-owner extension names use lowercase DNS-label-style tokens, round-trip unchanged, and MUST NOT affect core logic; they remain digest-significant canonical content."
@@ -226,9 +226,9 @@ acceptance_criteria:
   - id: AC-CALCULUS-PORTABILITY-001
     source: prd
     fr: FR-CALC-006
-    given: nested selections, multiple independent blockers, JCS-equivalent inputs, and requests at each minimum resource floor
-    when: both implementations admit and evaluate them
-    then: evaluation identities, effective selections, formula and component ordering, problem deduplication and order, and resource-limit boundaries agree byte-for-byte
+    given: nested selections, multiple independent blockers, JCS-equivalent inputs, requests at each logical capacity floor, and the 14+14 residual-analysis vector
+    when: both implementations admit and evaluate them with default and raised analysis-state ceilings
+    then: evaluation identities, effective selections, formula and component ordering, problem deduplication and order, logical capacity boundaries, and request-scoped analysis-state refusals agree byte-for-byte
   - id: AC-LINEAGE-001
     source: prd
     fr: FR-LINEAGE-001
@@ -352,7 +352,7 @@ revision_history:
   - at: "2026-08-11T18:00:00Z"
     author: Daniel Gomes
     action: calculus-closure-approved
-    note: "ADR-016 closes Phase 8 with aligned founder, Pão, and Fornada authority: resolve_selection, exhaustive threshold-region graphs, non-redistributing formulas, factor XOR formula_target, composed components/schedules, JCS evaluation identity, deterministic problems, and resource floors."
+    note: "ADR-016 closes Phase 8 with aligned founder, Pão, and Fornada authority: resolve_selection, exhaustive threshold-region graphs, non-redistributing formulas, factor XOR root formula_target, composed components/schedules, JCS evaluation identity, deterministic problems, and logical resource capacity. ADR-017 separates logical semantic capacity from the request-scoped residual-analysis safety ceiling."
   - at: "2026-08-11T16:30:00Z"
     author: Daniel Gomes
     action: wire-closure-approved

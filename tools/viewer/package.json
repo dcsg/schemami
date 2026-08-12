@@ -4,6 +4,7 @@
   "description": "Offline Schemami v1 validator, recipe viewer, and exact Calculus client.",
   "type": "module",
   "dependencies": {
+    "@schemami/sdk": "file:../../sdk/typescript",
     "yaml": "2.9.0",
     "@cfworker/json-schema": "4.1.1"
   }

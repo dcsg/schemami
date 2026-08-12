@@ -26,8 +26,14 @@ for required in \
   schema/schemami-v1-core.schema.json \
   schema/schemami-v1-bundle.schema.json \
   conformance/schemami-v1/calculus.json \
+  conformance/schemami-v1/canonicalization.json \
+  conformance/schemami-v1/diff.json \
+  conformance/schemami-v1/resource-budgets.json \
   conformance/schemami-v1/structured-calculus.json \
   conformance/schemami-v1/validation.json \
+  sdk/go/api.go \
+  sdk/swift/Package.swift \
+  sdk/typescript/package.json \
   tools/schemami/main.go \
   tools/viewer/dist/index.html \
   release/schemami-v1.0.0/contract-map.json; do

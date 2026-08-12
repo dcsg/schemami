@@ -1,0 +1,38 @@
+{
+  "schemami": "1",
+  "collection": "conformance",
+  "id": "phase9-root",
+  "revision": 1,
+  "content_language": "pt-PT",
+  "title": "Receita composta",
+  "ingredients": [],
+  "components": [
+    {
+      "id": "child",
+      "name": "Componente",
+      "recipe": {
+        "collection": "conformance",
+        "id": "phase9-child",
+        "revision": 1,
+        "sha256": "bc12c836f1cc6b489cb6a4edf7e9883f99ea684cbc49ba65f05d810da4e5831b"
+      },
+      "output": "component",
+      "quantity": {"kind": "measured", "value": "200", "unit": "g"}
+    }
+  ],
+  "outputs": [
+    {"id": "result", "name": "Resultado", "yield": {"kind": "measured", "value": "1", "unit": "1"}}
+  ],
+  "method": {
+    "sequence": [
+      {
+        "kind": "step",
+        "id": "finish",
+        "instruction": "Use o componente.",
+        "uses": [{"kind": "component", "id": "child"}],
+        "produces": [{"kind": "output", "id": "result"}],
+        "duration": {"target": "PT10M"}
+      }
+    ]
+  }
+}

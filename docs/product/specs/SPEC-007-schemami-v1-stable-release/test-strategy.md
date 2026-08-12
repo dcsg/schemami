@@ -45,12 +45,16 @@ values immediately below and above each midpoint. Implementations may not use
 binary floating-point tolerance to classify a tie.
 
 The 16-digit decimal cap is a normative operation input. Both implementations
-must refuse a 17-digit decimal before allocating unbounded work. ADR-016 also
-pins a minimum supported floor of 64 recursive levels, 10,000 evaluated
-semantic object/reference occurrences, 1,024 embedded documents, and 1,024 selected
-component instances. Boundary vectors use the exact counting definitions from
-the Phase 8 contract. Evaluation is iterative/stack-safe and cycle-safe; above
-the floor an explicit `resource-limit` is permitted, never silent truncation.
+must refuse a 17-digit decimal before allocating unbounded work. ADR-016 pins a
+minimum logical capacity of 64 recursive levels, 10,000 evaluated semantic
+object/reference occurrences, 1,024 embedded documents, and 1,024 selected
+component instances. ADR-017 separately pins the reference SDK profile to
+10,000 request-scoped canonical residual analysis states. Boundary vectors must
+prove that partial states do not consume semantic occurrences, bundle documents
+share one analysis counter, a 14+14 vector-equality expression refuses at the
+default analysis ceiling, and the same document proceeds when that ceiling is
+raised. Evaluation is iterative/stack-safe and cycle-safe; exhaustion returns
+explicit `resource-limit`, never silent truncation.
 
 ## Field-name and schema review
 

@@ -1,0 +1,43 @@
+{
+  "suite": "schemami-v1-resource-budgets",
+  "version": 1,
+  "vectors": [
+    {
+      "id": "toggle-vector-equality-14",
+      "generator": {
+        "kind": "toggle-vector-equality",
+        "width": 14,
+        "parameter_order": "all-left-then-all-right",
+        "activation": "all-pairwise-equality"
+      },
+      "expected": {
+        "static_semantic_occurrences": 130,
+        "distinct_reachable_graphs": 2,
+        "total_semantic_occurrences": 390,
+        "analysis_states": 49164,
+        "default_analysis_states": 10000,
+        "below_exact_analysis_states": 49163,
+        "exact_analysis_states": 49164
+      }
+    }
+  ],
+  "diagnostic_vectors": [
+    {
+      "id": "recursive-method-depth-one",
+      "fixture": "phase9-structured.schemami.json",
+      "budgets": {
+        "recursive_levels": 1,
+        "semantic_occurrences": 10000,
+        "analysis_states": 10000,
+        "bundle_documents": 1024,
+        "selected_component_instances": 1024
+      },
+      "expected_problems": [
+        {
+          "type": "https://schemami.dev/problems/resource-limit",
+          "pointer": ""
+        }
+      ]
+    }
+  ]
+}

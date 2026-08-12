@@ -87,6 +87,66 @@ final class SchemamiDiffTests: XCTestCase {
         XCTAssertNotNil(added.candidatePointer)
     }
 
+    func testExtensionArrayReorderIgnoresObjectMemberOrder() throws {
+        let fixture = try parseFixture("phase9-structured.schemami.json")
+        let sourceValue = set(fixture, ["x-order"], .array([
+            object([("a", .integer(1)), ("b", .integer(2))]),
+            object([("a", .integer(3)), ("b", .integer(4))]),
+        ]))
+        let candidateValue = set(fixture, ["x-order"], .array([
+            object([("b", .integer(4)), ("a", .integer(3))]),
+            object([("b", .integer(2)), ("a", .integer(1))]),
+        ]))
+        let result = SchemamiDiff.compare(source: try admit(sourceValue), candidate: try admit(candidateValue))
+        XCTAssertEqual(result.changes.count, 1)
+        XCTAssertEqual(result.changes.first?.kind, .reordered)
+        XCTAssertEqual(result.changes.first?.pointer.rawValue, "/x-order")
+    }
+
+    func testScalarDistinctCanonicallyEquivalentExtensionKeysDoNotTrap() throws {
+        let fixture = try parseFixture("phase9-structured.schemami.json")
+        let sourceValue = set(fixture, ["x-unicode"], object([
+            ("é", .integer(1)), ("e\u{301}", .integer(2)),
+        ]))
+        let candidateValue = set(fixture, ["x-unicode"], object([
+            ("é", .integer(3)), ("e\u{301}", .integer(4)),
+        ]))
+        let result = SchemamiDiff.compare(source: try admit(sourceValue), candidate: try admit(candidateValue))
+        XCTAssertEqual(result.changes.count, 2)
+        XCTAssertTrue(result.changes.allSatisfy { $0.kind == .modified })
+    }
+
+    func testLargeOpaqueObjectsUseExactKeyLookup() throws {
+        let fixture = try parseFixture("phase9-structured.schemami.json")
+        let members = (0..<2_000).map { ("key-\($0)", SchemamiValue.integer($0)) }
+        let value = set(fixture, ["x-large"], object(members))
+        let recipe = try admit(value)
+        XCTAssertFalse(SchemamiDiff.compare(source: recipe, candidate: recipe).hasChanges)
+    }
+
+    func testSharedCrossLanguageDiffConformanceCorpus() throws {
+        let raw = try SchemaResources.conformanceData("diff.json")
+        let corpus = try XCTUnwrap(JSONSerialization.jsonObject(with: raw) as? [String: Any])
+        let vectors = try XCTUnwrap(corpus["vectors"] as? [[String: Any]])
+        for vector in vectors {
+            let id = try XCTUnwrap(vector["id"] as? String)
+            let sourceData = try JSONSerialization.data(withJSONObject: try XCTUnwrap(vector["source"]), options: [.sortedKeys])
+            let candidateData = try JSONSerialization.data(withJSONObject: try XCTUnwrap(vector["candidate"]), options: [.sortedKeys])
+            guard case .parsed(let sourceParsed) = SchemamiCore.parse(sourceData),
+                  case .parsed(let candidateParsed) = SchemamiCore.parse(candidateData),
+                  case .recipe(let source) = SchemamiCore.admit(sourceParsed),
+                  case .recipe(let candidate) = SchemamiCore.admit(candidateParsed)
+            else { return XCTFail("\(id): parse/admit refused") }
+            let actual: [[String: String]] = SchemamiDiff.compare(source: source, candidate: candidate).changes.map { change in
+                var item = ["kind": change.kind.rawValue, "pointer": change.pointer.rawValue]
+                if let source = change.sourcePointer { item["source_pointer"] = source.rawValue }
+                if let candidate = change.candidatePointer { item["candidate_pointer"] = candidate.rawValue }
+                return item
+            }
+            XCTAssertEqual(actual as NSArray, try XCTUnwrap(vector["expected_changes"] as? NSArray), id)
+        }
+    }
+
     private func admittedFixture() throws -> AdmittedRecipe {
         try admit(parseFixture("phase9-structured.schemami.json"))
     }

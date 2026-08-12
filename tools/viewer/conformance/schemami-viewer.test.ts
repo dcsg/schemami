@@ -89,6 +89,12 @@ test("legacy RCP input is refused without fallback", async () => {
   expect(renderAnalysis(result)).toContain("unsupported-legacy");
 });
 
+test("cyclic YAML aliases return a parse result instead of throwing", async () => {
+  const result = await engine.analyze("schemami: '1'\na: &a\n  self: *a\n");
+  expect(result.parse.ok).toBe(false);
+  expect(result.documents).toHaveLength(0);
+});
+
 test("untrusted structured prose is escaped", async () => {
   const document = { schemami: "1", collection: "test", id: "unsafe", revision: 1, content_language: "pt-PT", title: "<img src=x onerror=alert(1)>", ingredients: [{ id: "x", name: "</li><script>alert(1)</script>" }], method: { sequence: [] } };
   const analysis = (await engine.analyze(JSON.stringify(document))).documents[0]!;

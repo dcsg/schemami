@@ -172,6 +172,7 @@ public struct Problem: Hashable, Sendable {
 public struct ResourceBudgets: Sendable {
     public let recursiveLevels: Int
     public let semanticOccurrences: Int
+    public let analysisStates: Int
     public let bundleDocuments: Int
     public let selectedComponentInstances: Int
 }
@@ -181,12 +182,19 @@ Defaults meet or exceed the protocol floor:
 
 - 64 recursive levels;
 - 10,000 evaluated semantic object/reference occurrences;
+- 10,000 request-scoped canonical residual analysis states;
 - 1,024 bundle documents;
 - 1,024 selected component instances.
 
+`semanticOccurrences` measures logical protocol work; `analysisStates` bounds
+solver work and may exhaust even when the logical count remains below its
+floor. Bundle admission shares one analysis counter across embedded documents.
 Exhaustion returns the existing `resource-limit` identity. It does not make an
 otherwise-valid document permanently invalid and never traps, recurses without
 a guard, or returns an implementation exception as the public result.
+Admission-wide exhaustion returns exactly one problem at `JSONPointer.root`;
+it never emits one problem for every descendant beyond the same request budget.
+Operation-local exhaustion may retain its exact request/result pointer.
 
 ## 7. Recipe Calculus API
 

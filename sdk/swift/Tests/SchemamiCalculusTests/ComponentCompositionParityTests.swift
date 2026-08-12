@@ -3,6 +3,98 @@ import XCTest
 @testable import SchemamiCore
 
 final class ComponentCompositionParityTests: XCTestCase {
+    func testFormulaOwnedComponentQuantityScalesThroughPublicAdmittedAPI() throws {
+        let base = try bundleFixture()
+        var documents = try XCTUnwrap(base[member: "documents"]?.arrayValue)
+        var rootEntry = documents[0]
+        var root = try XCTUnwrap(rootEntry[member: "document"])
+        var components = try XCTUnwrap(root[member: "components"]?.arrayValue)
+        components[0] = removing(components[0], "quantity")
+        root = set(root, "components", .array(components))
+        root = set(root, "ingredients", .array([object([("id", .string("salt")), ("name", .string("Salt"))])]))
+        root = set(root, "formulas", .array([object([
+            ("id", .string("component-formula")), ("kind", .string("ratio")),
+            ("terms", .array([object([
+                ("input", object([("kind", .string("component")), ("id", .string("child"))])),
+                ("parts", .string("1")),
+            ]), object([
+                ("input", object([("kind", .string("ingredient")), ("id", .string("salt"))])),
+                ("parts", .string("1")),
+            ])])),
+            ("target", measured("400", "g")),
+        ])]))
+        let rootDigest = try root.canonicalSHA256()
+        rootEntry = set(set(rootEntry, "document", root), "sha256", .string(rootDigest))
+        documents[0] = rootEntry
+        var bundleValue = set(base, "documents", .array(documents))
+        bundleValue = set(bundleValue, "root", set(try XCTUnwrap(base[member: "root"]), "sha256", .string(rootDigest)))
+
+        guard case .parsed(let parsed) = SchemamiCore.parse(try bundleValue.canonicalJSON()) else { return XCTFail("formula-owned component bundle did not parse") }
+        let admission = SchemamiCore.admit(parsed)
+        guard case .bundle(let admitted) = admission else { return XCTFail("formula-owned component bundle did not admit: \(admission)") }
+        let result = SchemamiCalculus.evaluate(
+            .scale(arguments: object([("factor", .string("2"))])), input: .bundle(admitted)
+        )
+        XCTAssertEqual(result.status, .ok)
+        let rootQuantities = try XCTUnwrap(result.result?[member: "quantities"]?.arrayValue)
+        XCTAssertEqual(rootQuantities.first(where: { $0[member: "input"]?[member: "kind"]?.stringValue == "component" })?[member: "quantity"]?[member: "value"]?.stringValue, "400")
+        let child = try XCTUnwrap(result.result?[member: "component_instances"]?.arrayValue?.first)
+        XCTAssertEqual(quantityValues(child), ["240", "160"])
+    }
+
+    func testScheduleAlignsSelectedProducerWithConsumerWithoutWaitingForChildPostWork() throws {
+        let base = try bundleFixture()
+        var documents = try XCTUnwrap(base[member: "documents"]?.arrayValue)
+
+        var childEntry = documents[1]
+        var child = try XCTUnwrap(childEntry[member: "document"])
+        var childMethod = try XCTUnwrap(child[member: "method"])
+        var childSequence = try XCTUnwrap(childMethod[member: "sequence"]?.arrayValue)
+        childSequence.append(object([
+            ("kind", .string("step")), ("id", .string("cleanup")), ("instruction", .string("Clean up.")),
+            ("after", .array([.string("prepare")])), ("duration", object([("target", .string("PT7M"))])),
+        ]))
+        childMethod = set(childMethod, "sequence", .array(childSequence))
+        child = set(child, "method", childMethod)
+        let childDigest = try child.canonicalSHA256()
+        childEntry = set(set(childEntry, "document", child), "sha256", .string(childDigest))
+        documents[1] = childEntry
+
+        var rootEntry = documents[0]
+        var root = try XCTUnwrap(rootEntry[member: "document"])
+        var components = try XCTUnwrap(root[member: "components"]?.arrayValue)
+        components[0] = set(components[0], "recipe", set(try XCTUnwrap(components[0][member: "recipe"]), "sha256", .string(childDigest)))
+        root = set(root, "components", .array(components))
+        var rootMethod = try XCTUnwrap(root[member: "method"])
+        var rootSequence = try XCTUnwrap(rootMethod[member: "sequence"]?.arrayValue)
+        rootSequence[0] = set(rootSequence[0], "after", .array([.string("prework")]))
+        rootSequence.insert(object([
+            ("kind", .string("step")), ("id", .string("prework")), ("instruction", .string("Prepare the bench.")),
+            ("duration", object([("target", .string("PT2M"))])),
+        ]), at: 0)
+        rootMethod = set(rootMethod, "sequence", .array(rootSequence))
+        root = set(root, "method", rootMethod)
+        let rootDigest = try root.canonicalSHA256()
+        rootEntry = set(set(rootEntry, "document", root), "sha256", .string(rootDigest))
+        documents[0] = rootEntry
+
+        var bundle = set(base, "documents", .array(documents))
+        bundle = set(bundle, "root", set(try XCTUnwrap(base[member: "root"]), "sha256", .string(rootDigest)))
+        let result = SchemamiCalculus.evaluateStructured(
+            operation: "schedule", recipe: nil, bundle: bundle, arguments: .object([])
+        )
+        XCTAssertEqual(result[member: "status"]?.stringValue, "ok")
+        let steps = try XCTUnwrap(result[member: "result"]?[member: "steps"]?.arrayValue)
+        XCTAssertEqual(step(steps, path: ["child"], id: "prepare")?[member: "start"]?.stringValue, "PT0S")
+        XCTAssertEqual(step(steps, path: [], id: "prework")?[member: "start"]?.stringValue, "PT3M")
+        XCTAssertEqual(step(steps, path: ["child"], id: "cleanup")?[member: "start"]?.stringValue, "PT5M")
+        XCTAssertEqual(step(steps, path: [], id: "finish")?[member: "start"]?.stringValue, "PT5M")
+        XCTAssertLessThan(
+            try XCTUnwrap(steps.firstIndex(where: { $0[member: "id"]?.stringValue == "cleanup" })),
+            try XCTUnwrap(steps.firstIndex(where: { $0[member: "id"]?.stringValue == "finish" }))
+        )
+    }
+
     func testSiblingAndNestedComponentInstancesRemainDistinctAndPreordered() throws {
         let base = try bundleFixture()
 
@@ -149,6 +241,13 @@ final class ComponentCompositionParityTests: XCTestCase {
 
     private func quantityValues(_ instance: SchemamiValue) -> [String] {
         (instance[member: "quantities"]?.arrayValue ?? []).compactMap { $0[member: "quantity"]?[member: "value"]?.stringValue }
+    }
+
+    private func step(_ steps: [SchemamiValue], path: [String], id: String) -> SchemamiValue? {
+        steps.first {
+            $0[member: "id"]?.stringValue == id &&
+            $0[member: "component_path"]?.arrayValue?.compactMap(\.stringValue) == path
+        }
     }
 
     private func problemType(_ value: SchemamiValue) -> String? { value[member: "problems"]?.arrayValue?.first?[member: "type"]?.stringValue }

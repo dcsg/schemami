@@ -1,0 +1,1 @@
+{"schemami":"1","collection":"conformance","id":"string-escapes","revision":1,"content_language":"en-GB","title":"Canonical","ingredients":[],"method":{"sequence":[]},"x-conformance-strings":{"text":"quote:\" slash:\\ controls:\b\f\n\r\t end","literal":"</script>"}}

@@ -1,3 +1,4 @@
+import Foundation
 import SchemamiCore
 
 public enum ChangeKind: String, Sendable, Equatable, Hashable, Codable {
@@ -64,15 +65,18 @@ public enum SchemamiDiff {
         candidatePointer: JSONPointer,
         changes: inout [ProtocolChange]
     ) {
-        guard source != candidate else { return }
+        guard !jsonEqual(source, candidate) else { return }
         switch (source, candidate) {
         case (.object(let sourceMembers), .object(let candidateMembers)):
-            let sourceMap = Dictionary(uniqueKeysWithValues: sourceMembers.map { ($0.name, $0.value) })
-            let candidateMap = Dictionary(uniqueKeysWithValues: candidateMembers.map { ($0.name, $0.value) })
-            for name in Set(sourceMap.keys).union(candidateMap.keys).sorted() {
+            let sourceMap = Dictionary(uniqueKeysWithValues: sourceMembers.map { (ExactScalarKey($0.name), $0) })
+            let candidateMap = Dictionary(uniqueKeysWithValues: candidateMembers.map { (ExactScalarKey($0.name), $0) })
+            for key in Set(sourceMap.keys).union(candidateMap.keys).sorted() {
+                let name = sourceMap[key]?.name ?? candidateMap[key]!.name
                 let sourceChild = sourcePointer.appending(name)
                 let candidateChild = candidatePointer.appending(name)
-                switch (sourceMap[name], candidateMap[name]) {
+                let sourceValue = sourceMap[key]?.value
+                let candidateValue = candidateMap[key]?.value
+                switch (sourceValue, candidateValue) {
                 case (.none, .some(let value)):
                     changes.append(change(.added, source: nil, candidate: candidateChild, sourceValue: nil, candidateValue: value))
                 case (.some(let value), .none):
@@ -177,14 +181,36 @@ public enum SchemamiDiff {
     }
 
     private static func sameMultiset(_ source: [SchemamiValue], _ candidate: [SchemamiValue]) -> Bool {
-        guard source.count == candidate.count, source != candidate else { return false }
-        var counts: [SchemamiValue: Int] = [:]
-        for value in source { counts[value, default: 0] += 1 }
-        for value in candidate {
-            guard let count = counts[value], count > 0 else { return false }
-            counts[value] = count - 1
+        guard source.count == candidate.count,
+              let sourceKeys = try? source.map({ try $0.canonicalJSON() }),
+              let candidateKeys = try? candidate.map({ try $0.canonicalJSON() }),
+              sourceKeys != candidateKeys else { return false }
+        var counts: [Data: Int] = [:]
+        for key in sourceKeys { counts[key, default: 0] += 1 }
+        for key in candidateKeys {
+            guard let count = counts[key], count > 0 else { return false }
+            if count == 1 { counts.removeValue(forKey: key) } else { counts[key] = count - 1 }
         }
-        return counts.values.allSatisfy { $0 == 0 }
+        return counts.isEmpty
+    }
+
+    private static func jsonEqual(_ left: SchemamiValue, _ right: SchemamiValue) -> Bool {
+        switch (left, right) {
+        case (.object(let lhs), .object(let rhs)):
+            guard lhs.count == rhs.count else { return false }
+            let rightByName = Dictionary(uniqueKeysWithValues: rhs.map { (ExactScalarKey($0.name), $0.value) })
+            return lhs.allSatisfy { member in
+                rightByName[ExactScalarKey(member.name)].map { jsonEqual(member.value, $0) } ?? false
+            }
+        case (.array(let lhs), .array(let rhs)):
+            return lhs.count == rhs.count && zip(lhs, rhs).allSatisfy(jsonEqual)
+        default:
+            return left == right
+        }
+    }
+
+    private static func exactStringEqual(_ left: String, _ right: String) -> Bool {
+        left.unicodeScalars.elementsEqual(right.unicodeScalars)
     }
 
     private static func change(
@@ -211,6 +237,17 @@ public enum SchemamiDiff {
             revision: value[member: "revision"]?.integerValue ?? 0,
             sha256: digest
         )
+    }
+}
+
+private struct ExactScalarKey: Hashable, Comparable {
+    let scalars: [UInt32]
+
+    init(_ value: String) { scalars = value.unicodeScalars.map(\.value) }
+
+    static func < (left: ExactScalarKey, right: ExactScalarKey) -> Bool {
+        for (a, b) in zip(left.scalars, right.scalars) where a != b { return a < b }
+        return left.scalars.count < right.scalars.count
     }
 }
 

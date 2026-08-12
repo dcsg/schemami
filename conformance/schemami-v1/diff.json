@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "vectors": [
+    {
+      "id": "scalar-title-modification",
+      "source": {"schemami":"1","collection":"diff","id":"title","revision":1,"content_language":"en-GB","title":"Source","ingredients":[],"method":{"sequence":[]}},
+      "candidate": {"schemami":"1","collection":"diff","id":"title","revision":1,"content_language":"en-GB","title":"Candidate","ingredients":[],"method":{"sequence":[]}},
+      "expected_changes": [
+        {"kind":"modified","pointer":"/title","source_pointer":"/title","candidate_pointer":"/title"}
+      ]
+    },
+    {
+      "id": "identified-reorder-and-rename",
+      "source": {"schemami":"1","collection":"diff","id":"identified","revision":1,"content_language":"en-GB","title":"Identified","ingredients":[{"id":"a","name":"A"},{"id":"b","name":"B"}],"method":{"sequence":[]}},
+      "candidate": {"schemami":"1","collection":"diff","id":"identified","revision":1,"content_language":"en-GB","title":"Identified","ingredients":[{"id":"b","name":"Bee"},{"id":"a","name":"A"}],"method":{"sequence":[]}},
+      "expected_changes": [
+        {"kind":"reordered","pointer":"/ingredients","source_pointer":"/ingredients","candidate_pointer":"/ingredients"},
+        {"kind":"renamed","pointer":"/ingredients/0/name","source_pointer":"/ingredients/1/name","candidate_pointer":"/ingredients/0/name"}
+      ]
+    },
+    {
+      "id": "unkeyed-extension-reorder",
+      "source": {"schemami":"1","collection":"diff","id":"extension-order","revision":1,"content_language":"en-GB","title":"Extension order","ingredients":[],"method":{"sequence":[]},"x-order":[{"a":1,"b":2},{"a":3,"b":4}]},
+      "candidate": {"schemami":"1","collection":"diff","id":"extension-order","revision":1,"content_language":"en-GB","title":"Extension order","ingredients":[],"method":{"sequence":[]},"x-order":[{"b":4,"a":3},{"b":2,"a":1}]},
+      "expected_changes": [
+        {"kind":"reordered","pointer":"/x-order","source_pointer":"/x-order","candidate_pointer":"/x-order"}
+      ]
+    },
+    {
+      "id": "extension-add-and-remove",
+      "source": {"schemami":"1","collection":"diff","id":"extension-members","revision":1,"content_language":"en-GB","title":"Extension members","ingredients":[],"method":{"sequence":[]},"x-old":true},
+      "candidate": {"schemami":"1","collection":"diff","id":"extension-members","revision":1,"content_language":"en-GB","title":"Extension members","ingredients":[],"method":{"sequence":[]},"x-new":true},
+      "expected_changes": [
+        {"kind":"added","pointer":"/x-new","candidate_pointer":"/x-new"},
+        {"kind":"removed","pointer":"/x-old","source_pointer":"/x-old"}
+      ]
+    }
+  ]
+}

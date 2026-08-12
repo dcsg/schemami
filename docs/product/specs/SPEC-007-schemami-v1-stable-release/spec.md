@@ -394,6 +394,10 @@ codes `unsupported-legacy`, `invalid-document`, `invalid-decimal`,
 `dependency-cycle`, `component-cycle`, and `relative-timing-conflict`. SPEC
 vectors pin their exact URI spellings. Independent problems are cascade-
 suppressed, deduplicated, and sorted by ASCII request pointer then type URI.
+Admission-wide resource exhaustion is one root-pointer `resource-limit`
+problem; descendant pointers are suppressed because they are consequences of
+the same exhausted request budget. Operation-local arithmetic or traversal
+exhaustion may retain the exact operation request/result pointer.
 
 ## Bundles, document identity, and revisions
 
@@ -505,13 +509,16 @@ refuse. The exact contract, result members, ordering, security floors, and
 nearest invalid cases are normative in
 `docs/product/prds/artifacts/PRD-007/active-graph-composition-calculus.md`.
 
-The portable resource floor is 64 recursive levels, 10,000 evaluated semantic
-object/reference occurrences across static admission and distinct reachable
-graphs, 1,024 embedded bundle documents, and 1,024 selected component
-instances. The Phase 8 contract defines each count exactly. Implementations may
-support more; above a floor they may return `resource-limit`, but never silently
-skip a graph, truncate a result, or claim that the document is intrinsically
-invalid merely because a local budget was exceeded.
+The portable logical-capacity floor is 64 recursive levels, 10,000 evaluated
+semantic object/reference occurrences across static admission and distinct
+completed reachable graphs, 1,024 embedded bundle documents, and 1,024 selected
+component instances. Partial solver states never consume semantic occurrences.
+ADR-017 adds a separate request-scoped `analysisStates` safety ceiling, with a
+10,000-state default in the Schemami v1 SDK profile. Implementations may support
+more; exceeding a floor or declared analysis ceiling may return
+`resource-limit`, but never silently skip a graph, truncate a result, or claim
+that the document is intrinsically invalid merely because a local budget was
+exceeded.
 
 The runtime audit found that no normative Recipe Calculus function branches on
 the current primitive ID, 21 of 24 primitive ParamSpecs are empty, viewer usage

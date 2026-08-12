@@ -77,6 +77,9 @@ public enum SchemamiCalculus {
             case .schedule(let value): operation = "schedule"; arguments = value
             case .convertQuantity: preconditionFailure("handled above")
             }
+            guard validArguments(operation: operation, arguments: arguments) else {
+                return EvaluationResult(envelope: invalidArguments(operation: operation, pointer: "/arguments"))
+            }
             switch input {
             case .recipe(let admitted):
                 envelope = StructuredCalculus.evaluate(
@@ -84,6 +87,8 @@ public enum SchemamiCalculus {
                     recipe: admitted.value,
                     bundle: nil,
                     arguments: arguments,
+                    recursiveLimit: budgets.recursiveLevels,
+                    semanticLimit: budgets.semanticOccurrences,
                     selectedComponentLimit: budgets.selectedComponentInstances
                 )
             case .bundle(let admitted):
@@ -92,6 +97,8 @@ public enum SchemamiCalculus {
                     recipe: nil,
                     bundle: admitted.value,
                     arguments: arguments,
+                    recursiveLimit: budgets.recursiveLevels,
+                    semanticLimit: budgets.semanticOccurrences,
                     selectedComponentLimit: budgets.selectedComponentInstances
                 )
             case .standalone:
@@ -115,6 +122,93 @@ public enum SchemamiCalculus {
         arguments: SchemamiValue
     ) -> SchemamiValue {
         StructuredCalculus.evaluate(operation: operation, recipe: recipe, bundle: bundle, arguments: arguments)
+    }
+
+    private static func validArguments(operation: String, arguments: SchemamiValue) -> Bool {
+        guard let members = arguments.objectMembers else { return false }
+        let allowed: Set<String>
+        switch operation {
+        case "resolve_selection", "reading_order", "schedule": allowed = ["selections"]
+        case "resolve_formula": allowed = ["formula_id", "selections"]
+        case "scale": allowed = ["factor", "formula_target", "selections"]
+        default: return false
+        }
+        for index in members.indices {
+            guard allowed.contains(members[index].name) else { return false }
+            for previous in members[..<index] where exactStringEqual(previous.name, members[index].name) { return false }
+        }
+        if let selections = arguments[member: "selections"], selections.arrayValue == nil { return false }
+        if operation == "resolve_formula", arguments[member: "formula_id"]?.stringValue == nil { return false }
+        if operation == "scale" {
+            if let factor = arguments[member: "factor"], factor.stringValue == nil { return false }
+            if let target = arguments[member: "formula_target"],
+               !closedObject(target, allowed: ["formula_id", "quantity"])
+                || target[member: "formula_id"]?.stringValue == nil
+                || !measuredQuantity(target[member: "quantity"]) { return false }
+        }
+        return validSelections(arguments[member: "selections"])
+    }
+
+    private static func validSelections(_ value: SchemamiValue?) -> Bool {
+        guard let value else { return true }
+        guard let selections = value.arrayValue else { return false }
+        for selection in selections {
+            guard closedObject(selection, allowed: ["component_path", "bindings", "alternatives"]),
+                  let path = selection[member: "component_path"]?.arrayValue,
+                  path.allSatisfy({ $0.stringValue.map(isLocalID) == true }) else { return false }
+            if let bindings = selection[member: "bindings"] {
+                guard let members = bindings.objectMembers else { return false }
+                guard uniqueLocalNames(members) else { return false }
+                for member in members where member.value.stringValue == nil && !isBoolean(member.value) && !measuredQuantity(member.value) { return false }
+            }
+            if let alternatives = selection[member: "alternatives"] {
+                guard let members = alternatives.objectMembers,
+                      uniqueLocalNames(members),
+                      members.allSatisfy({ $0.value.stringValue.map(isLocalID) == true }) else { return false }
+            }
+        }
+        return true
+    }
+
+    private static func measuredQuantity(_ value: SchemamiValue?) -> Bool {
+        guard let value, closedObject(value, allowed: ["kind", "value", "unit"]) else { return false }
+        return value[member: "kind"]?.stringValue == "measured" && value[member: "value"]?.stringValue != nil && value[member: "unit"]?.stringValue != nil
+    }
+
+    private static func isBoolean(_ value: SchemamiValue) -> Bool {
+        if case .boolean = value { return true }
+        return false
+    }
+
+    private static func closedObject(_ value: SchemamiValue, allowed: Set<String>) -> Bool {
+        guard let members = value.objectMembers else { return false }
+        for index in members.indices {
+            guard allowed.contains(members[index].name) else { return false }
+            for previous in members[..<index] where exactStringEqual(previous.name, members[index].name) { return false }
+        }
+        return true
+    }
+
+    private static func exactStringEqual(_ left: String, _ right: String) -> Bool {
+        left.unicodeScalars.elementsEqual(right.unicodeScalars)
+    }
+
+    private static func uniqueLocalNames(_ members: [SchemamiMember]) -> Bool {
+        for index in members.indices {
+            guard isLocalID(members[index].name) else { return false }
+            for previous in members[..<index] where exactStringEqual(previous.name, members[index].name) { return false }
+        }
+        return true
+    }
+
+    private static func isLocalID(_ value: String) -> Bool {
+        let bytes = Array(value.utf8)
+        guard let first = bytes.first, isLowerAlphaNumeric(first) else { return false }
+        return bytes.dropFirst().allSatisfy { isLowerAlphaNumeric($0) || $0 == 0x2D || $0 == 0x5F }
+    }
+
+    private static func isLowerAlphaNumeric(_ byte: UInt8) -> Bool {
+        (byte >= 0x61 && byte <= 0x7A) || (byte >= 0x30 && byte <= 0x39)
     }
 
     private static func invalidArguments(operation: String, pointer: String) -> SchemamiValue {

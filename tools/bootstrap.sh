@@ -16,7 +16,9 @@ export BUN_INSTALL_CACHE_DIR="$root/.toolchain/bun-cache"
 
 "$root/tools/mise" trust --yes "$root/.mise.toml"
 "$root/tools/mise" install --locked
+"$root/tools/mise" exec --locked -- go -C "$root/sdk/go" mod download
 "$root/tools/mise" exec --locked -- go -C "$root/tools/schemami" mod download
+"$root/tools/mise" exec --locked -- bun install --cwd "$root/sdk/typescript" --frozen-lockfile
 "$root/tools/mise" exec --locked -- bun install --cwd "$root/tools/viewer" --frozen-lockfile
 
 exec "$root/tools/schemami/check-toolchain.sh"

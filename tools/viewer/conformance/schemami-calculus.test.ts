@@ -101,7 +101,7 @@ test("all operation envelopes are closed and machine-only", () => {
 });
 
 test("the exact implementation has no runtime imports", () => {
-  const source = readFileSync(join(REPO_ROOT, "tools", "viewer", "src", "schemami", "calculus.ts"), "utf8");
+  const source = readFileSync(join(REPO_ROOT, "sdk", "typescript", "src", "calculus.ts"), "utf8");
   const imports = source.split("\n").filter((line) => /^\s*(import\b|require\()/.test(line));
   expect(imports).toEqual([]);
 });

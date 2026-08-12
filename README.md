@@ -71,3 +71,7 @@ classification is recorded in the PRD-007 cutover ledger.
 
 See [current status](docs/STATUS.md), [roadmap](docs/product/ROADMAP.md), and
 [Schemami v1 plan](docs/plans/PLAN-schemami-v1-stable-release.md).
+
+## License
+
+Schemami is licensed under the [Apache License 2.0](LICENSE).

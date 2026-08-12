@@ -1,0 +1,95 @@
+schema_version: "1.0"
+type: prd
+id: PRD-010
+title: "Schemami Go and TypeScript SDK parity"
+slug: schemami-go-typescript-sdks
+status: accepted
+rigor: platform
+author: Daniel Gomes
+created_at: "2026-08-11T22:00:00Z"
+requirements:
+  - id: FR-SDK-001
+    text: "Deliver independently consumable Go and TypeScript packages exposing Core, Calculus, and Diff responsibilities."
+    status: proposed
+  - id: FR-SDK-002
+    text: "Both SDKs MUST retain submitted bytes and complete admitted JSON, reject ambiguous I-JSON, preserve order and x-* values, and admit recipes and bundles."
+    status: proposed
+  - id: FR-SDK-003
+    text: "Both SDKs MUST produce RFC 8785 JCS and SHA-256 matching the shared corpus."
+    status: proposed
+  - id: FR-SDK-004
+    text: "Both SDKs MUST implement all six v1 Calculus operations with exact accepted behavior."
+    status: proposed
+  - id: FR-SDK-005
+    text: "Both SDKs MUST return stable pointer-addressed deterministic problems and resource-limit refusals."
+    status: proposed
+  - id: FR-SDK-006
+    text: "Both SDKs MUST provide deterministic protocol-only structural Diff and exclude app/provider policy."
+    status: proposed
+  - id: FR-SDK-007
+    text: "The Go CLI and TypeScript viewer MUST delegate reusable normative behavior to the SDK packages."
+    status: proposed
+  - id: FR-SDK-008
+    text: "Go, TypeScript, and Swift MUST replay the same repository-owned corpus without cross-language runtime dependencies."
+    status: proposed
+acceptance_criteria:
+  - id: AC-SDK-001
+    fr: FR-SDK-001
+    given: disposable external Go and TypeScript consumers
+    when: they import the packages
+    then: Core, Calculus, and Diff work without CLI or viewer UI code
+    status: proposed
+  - id: AC-SDK-002
+    fr: FR-SDK-008
+    given: the shared v1 corpus
+    when: Go, TypeScript, and Swift replay it
+    then: language-neutral results are identical
+    status: proposed
+  - id: AC-SDK-003
+    fr: FR-SDK-007
+    given: existing CLI and viewer tests
+    when: the SDK extraction is complete
+    then: both consumers pass while importing SDK behavior
+    status: proposed
+protections:
+  - id: SP-001
+    text: "No SDK contains provider calls, OCR, scraping, app mappings, UI, persistence, HTTP policy, or culinary heuristics."
+  - id: SP-002
+    text: "Generated types alone are not an SDK; admission, identity, Calculus, diagnostics, Diff, and corpus parity are required."
+  - id: SP-003
+    text: "No package publication, tag, or immutable release occurs without explicit approval."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-009-schemami-swift-sdk-and-recipe-adjustment.md
+    description: SDK responsibility and API boundary.
+dependencies: [PRD-007, PRD-009]
+nfrs:
+  - category: security
+    requirement: "Parsing and evaluation are offline, bounded, cycle-safe, and never execute source content."
+  - category: other
+    requirement: "Exact results do not depend on locale or binary floating-point intermediates."
+risks: []
+open_questions: []
+source_specs: [SPEC-010]
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+forcing_questions:
+  problem_behind_problem: "Integrators need reusable protocol behavior rather than copying a CLI or viewer engine."
+  evidence_or_hypothesis: "The existing reference engines can become public packages without changing v1 semantics."
+  north_metric_and_counter: "North: two independent package consumers pass the shared corpus. Counter: zero new SDK-only semantics."
+  must_not_change: "Schemami v1 wire behavior and app/provider boundaries."
+  riskiest_assumption: "Extraction can remove duplication without destabilizing existing CLI/viewer consumers."
+revision_history:
+  - at: "2026-08-11T22:00:00Z"
+    author: Daniel Gomes
+    action: created
+    note: "Accepted follow-on parity track previously approved in PRD-009 discussions."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

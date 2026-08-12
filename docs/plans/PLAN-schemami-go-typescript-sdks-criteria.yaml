@@ -1,0 +1,61 @@
+schema_version: 1
+plan: PLAN-schemami-go-typescript-sdks
+target_release: schemami-go-typescript-sdk-v1.0.0
+created: "2026-08-11"
+phases:
+  - id: "1"
+    name: Contract and corpus boundary
+    classification: testable
+    completion_promise: PHASE 1 COMPLETE SDK CONTRACT AND CORPUS FROZEN
+    criteria:
+      - id: AC-1.1
+        statement: "Accepted PRD/SPEC define public packages, responsibilities, corpus, and release boundary."
+        verify: "test -f docs/product/specs/SPEC-010-schemami-go-typescript-sdks/spec.md"
+  - id: "2"
+    name: Go SDK extraction
+    classification: testable
+    completion_promise: PHASE 2 COMPLETE GO SDK VERIFIED
+    criteria:
+      - id: AC-2.1
+        statement: "The Go SDK implements Core, Calculus, and Diff and independently passes the shared corpus."
+        verify: "go -C sdk/go test ./..."
+      - id: AC-2.2
+        statement: "The existing CLI remains green while consuming the Go SDK."
+        verify: "go -C tools/schemami test ./..."
+  - id: "3"
+    name: TypeScript SDK extraction
+    classification: testable
+    completion_promise: PHASE 3 COMPLETE TYPESCRIPT SDK VERIFIED
+    criteria:
+      - id: AC-3.1
+        statement: "The TypeScript package builds declarations and passes Core, Calculus, and Diff corpus suites."
+        verify: "bun --cwd sdk/typescript test"
+      - id: AC-3.2
+        statement: "The viewer remains green while consuming @schemami/sdk."
+        verify: "bun --cwd tools/viewer test"
+  - id: "4"
+    name: Cross-language parity
+    classification: testable
+    completion_promise: PHASE 4 COMPLETE THREE SDK PARITY VERIFIED
+    criteria:
+      - id: AC-4.1
+        statement: "Go, TypeScript, and Swift replay the same schema, canonicalization, Calculus, and Diff authorities with no unexplained mismatch."
+  - id: "5"
+    name: Release-readiness evidence
+    classification: release
+    completion_promise: PHASE 5 COMPLETE SDK RELEASE CANDIDATES READY
+    criteria:
+      - id: AC-5.1
+        statement: "Evidence records exact commands/results, dependencies, known limits, and proposed identities without publishing or tagging."
+dependencies:
+  "1": {blocks: ["2", "3", "4", "5"]}
+  "2": {blocks: ["4", "5"]}
+  "3": {blocks: ["4", "5"]}
+  "4": {blocks: ["5"]}
+risks:
+  - id: R-1
+    severity: high
+    mitigation_phase: "2"
+  - id: R-2
+    severity: high
+    mitigation_phase: "3"

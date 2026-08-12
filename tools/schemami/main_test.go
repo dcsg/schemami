@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -126,13 +124,15 @@ func TestParseAndCanonicalizationUseIJSONAndJCS(t *testing.T) {
 	}
 }
 
-func TestCanonicalFixtureDigestIsPinned(t *testing.T) {
-	canonical, err := canonicaliseFile(filepath.Join("testdata", "basic.schemami.yaml"))
+func TestYAMLAuthoringInputCannotDefineCanonicalIdentity(t *testing.T) {
+	if _, err := canonicaliseFile(filepath.Join("testdata", "basic.schemami.yaml")); err == nil || !strings.Contains(err.Error(), "strict JSON") {
+		t.Fatalf("YAML canonical identity was not refused: %v", err)
+	}
+	result, err := admitFile(filepath.Join("testdata", "basic.schemami.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	digest := sha256.Sum256([]byte(canonical))
-	if got, want := hex.EncodeToString(digest[:]), "d281957075f4f98b5e5021f6aa7ba4ee901f7a32c64a5d613dbb8aee7236bbe0"; got != want {
-		t.Fatalf("digest = %s, update the pin only with intentional wire review", got)
+	if result.Status != "refused" || result.CanonicalSHA256 != "" || len(result.Problems) != 1 || result.Problems[0].Type != stableProblemBase+"invalid-json" {
+		t.Fatalf("YAML admission identity was not refused: %#v", result)
 	}
 }

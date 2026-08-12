@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 import OrderedJSON
 
@@ -6,10 +7,10 @@ public struct ParsedDocument: Sendable, Equatable {
     public let value: SchemamiValue
     let schemaValue: JSONValue
 
-    init(submittedJSON: Data, schemaValue: JSONValue) {
+    init(submittedJSON: Data, schemaValue: JSONValue, value: SchemamiValue? = nil) {
         self.submittedJSON = submittedJSON
         self.schemaValue = schemaValue
-        self.value = SchemamiValue(schemaValue)
+        self.value = value ?? SchemamiValue(schemaValue)
     }
 
     public static func == (lhs: ParsedDocument, rhs: ParsedDocument) -> Bool {
@@ -28,9 +29,9 @@ public enum SchemamiCore {
         budgets: ResourceBudgets = .protocolFloor
     ) -> ParseResult {
         do {
-            try StrictJSONScanner(data: data, budgets: budgets).scan()
-            let value = try JSONValue.parse(data)
-            return .parsed(ParsedDocument(submittedJSON: data, schemaValue: value))
+            let retained = try StrictJSONScanner(data: data, budgets: budgets).parse()
+            let schemaValue = try JSONValue.parse(data)
+            return .parsed(ParsedDocument(submittedJSON: data, schemaValue: schemaValue, value: retained))
         } catch let failure as ParseFailure {
             return .refused([failure.problem])
         } catch {
@@ -47,79 +48,78 @@ private struct StrictJSONScanner {
     let data: Data
     let budgets: ResourceBudgets
 
-    func scan() throws {
+    func parse() throws -> SchemamiValue {
         var cursor = Cursor(bytes: Array(data), budgets: budgets)
-        try cursor.scanValue(depth: 0)
+        let value = try cursor.scanValue(depth: 0)
         cursor.skipWhitespace()
         guard cursor.isAtEnd else { throw cursor.failure(ProblemType.invalidJSON) }
+        return value
     }
 
     private struct Cursor {
         let bytes: [UInt8]
         let budgets: ResourceBudgets
         var index = 0
-        var occurrences = 0
 
         var isAtEnd: Bool { index == bytes.count }
 
-        mutating func scanValue(depth: Int) throws {
+        mutating func scanValue(depth: Int) throws -> SchemamiValue {
             skipWhitespace()
-            occurrences += 1
-            guard occurrences <= budgets.semanticOccurrences else {
-                throw failure(ProblemType.resourceLimit)
-            }
             guard let byte = peek else { throw failure(ProblemType.invalidJSON) }
             switch byte {
             case UInt8(ascii: "{"):
-                try scanObject(depth: depth)
+                return try scanObject(depth: depth)
             case UInt8(ascii: "["):
-                try scanArray(depth: depth)
+                return try scanArray(depth: depth)
             case UInt8(ascii: "\""):
-                _ = try scanString()
+                return .string(try scanString())
             case UInt8(ascii: "t"):
-                try scanLiteral("true")
+                try scanLiteral("true"); return .boolean(true)
             case UInt8(ascii: "f"):
-                try scanLiteral("false")
+                try scanLiteral("false"); return .boolean(false)
             case UInt8(ascii: "n"):
-                try scanLiteral("null")
+                try scanLiteral("null"); return .null
             case UInt8(ascii: "-"), UInt8(ascii: "0")...UInt8(ascii: "9"):
-                try scanNumber()
+                return try scanNumber()
             default:
                 throw failure(ProblemType.invalidJSON)
             }
         }
 
-        mutating func scanObject(depth: Int) throws {
-            guard depth < budgets.recursiveLevels else { throw failure(ProblemType.resourceLimit) }
+        mutating func scanObject(depth: Int) throws -> SchemamiValue {
+            guard depth < 256 else { throw failure(ProblemType.resourceLimit) }
             index += 1
             skipWhitespace()
-            if consume(UInt8(ascii: "}")) { return }
-            var names = Set<String>()
+            if consume(UInt8(ascii: "}")) { return .object([]) }
+            var members: [SchemamiMember] = []
+            var memberNames = Set<[UInt32]>()
             while true {
                 skipWhitespace()
                 guard peek == UInt8(ascii: "\"") else { throw failure(ProblemType.invalidJSON) }
                 let name = try scanString()
-                guard names.insert(name).inserted else {
+                guard memberNames.insert(name.unicodeScalars.map(\.value)).inserted else {
                     throw failure(ProblemType.duplicateObjectMember)
                 }
                 skipWhitespace()
                 guard consume(UInt8(ascii: ":")) else { throw failure(ProblemType.invalidJSON) }
-                try scanValue(depth: depth + 1)
+                let value = try scanValue(depth: depth + 1)
+                members.append(SchemamiMember(name: name, value: value))
                 skipWhitespace()
-                if consume(UInt8(ascii: "}")) { return }
+                if consume(UInt8(ascii: "}")) { return .object(members) }
                 guard consume(UInt8(ascii: ",")) else { throw failure(ProblemType.invalidJSON) }
             }
         }
 
-        mutating func scanArray(depth: Int) throws {
-            guard depth < budgets.recursiveLevels else { throw failure(ProblemType.resourceLimit) }
+        mutating func scanArray(depth: Int) throws -> SchemamiValue {
+            guard depth < 256 else { throw failure(ProblemType.resourceLimit) }
             index += 1
             skipWhitespace()
-            if consume(UInt8(ascii: "]")) { return }
+            if consume(UInt8(ascii: "]")) { return .array([]) }
+            var values: [SchemamiValue] = []
             while true {
-                try scanValue(depth: depth + 1)
+                values.append(try scanValue(depth: depth + 1))
                 skipWhitespace()
-                if consume(UInt8(ascii: "]")) { return }
+                if consume(UInt8(ascii: "]")) { return .array(values) }
                 guard consume(UInt8(ascii: ",")) else { throw failure(ProblemType.invalidJSON) }
             }
         }
@@ -156,7 +156,8 @@ private struct StrictJSONScanner {
             throw failure(ProblemType.invalidJSON)
         }
 
-        mutating func scanNumber() throws {
+        mutating func scanNumber() throws -> SchemamiValue {
+            let start = index
             if consume(UInt8(ascii: "-")), isAtEnd { throw failure(ProblemType.invalidJSON) }
             if consume(UInt8(ascii: "0")) {
                 if let next = peek, isDigit(next) { throw failure(ProblemType.invalidJSON) }
@@ -176,6 +177,35 @@ private struct StrictJSONScanner {
                 guard let next = peek, isDigit(next) else { throw failure(ProblemType.invalidJSON) }
                 while let next = peek, isDigit(next) { index += 1 }
             }
+            let raw = String(decoding: bytes[start..<index], as: UTF8.self)
+            guard let value = Double(raw), value.isFinite else { throw failure(ProblemType.invalidJSON) }
+            let mantissa = raw.split(whereSeparator: { $0 == "e" || $0 == "E" }).first ?? ""
+            if value == 0, mantissa.contains(where: { $0 >= "1" && $0 <= "9" }) {
+                throw failure(ProblemType.invalidJSON)
+            }
+            if let exactInteger = exactIntegerLexeme(raw),
+               BigInt(String(format: "%.0f", locale: Locale(identifier: "en_US_POSIX"), value)) != exactInteger {
+                throw failure(ProblemType.invalidJSON)
+            }
+            if !raw.contains(".") && !raw.lowercased().contains("e"), let integer = Int(raw) { return .integer(integer) }
+            return .number(value)
+        }
+
+        private func exactIntegerLexeme(_ raw: String) -> BigInt? {
+            let pieces = raw.lowercased().split(separator: "e", omittingEmptySubsequences: false)
+            guard pieces.count <= 2, let exponent = Int(pieces.count == 2 ? pieces[1] : "0") else { return nil }
+            let mantissa = String(pieces[0]); let negative = mantissa.hasPrefix("-")
+            let unsigned = negative ? String(mantissa.dropFirst()) : mantissa
+            let decimals = unsigned.split(separator: ".", omittingEmptySubsequences: false)
+            let fractionCount = decimals.count == 2 ? decimals[1].count : 0
+            guard let magnitude = BigInt(decimals.joined()) else { return nil }
+            if magnitude == 0 { return 0 }
+            let scale = exponent - fractionCount
+            if scale >= 0 { return (negative ? -magnitude : magnitude) * BigInt(10).power(scale) }
+            let divisor = BigInt(10).power(-scale)
+            guard magnitude % divisor == 0 else { return nil }
+            let integral = magnitude / divisor
+            return negative ? -integral : integral
         }
 
         mutating func scanLiteral(_ literal: StaticString) throws {

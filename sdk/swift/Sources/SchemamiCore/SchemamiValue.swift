@@ -9,6 +9,15 @@ public struct SchemamiMember: Sendable, Equatable, Hashable {
         self.name = name
         self.value = value
     }
+
+    public static func == (lhs: SchemamiMember, rhs: SchemamiMember) -> Bool {
+        exactStringEqual(lhs.name, rhs.name) && lhs.value == rhs.value
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hashExactString(name, into: &hasher)
+        hasher.combine(value)
+    }
 }
 
 public indirect enum SchemamiValue: Sendable, Equatable, Hashable {
@@ -54,7 +63,32 @@ public indirect enum SchemamiValue: Sendable, Equatable, Hashable {
     }
 
     public subscript(member name: String) -> SchemamiValue? {
-        objectMembers?.first(where: { $0.name == name })?.value
+        objectMembers?.first(where: { exactStringEqual($0.name, name) })?.value
+    }
+
+    public static func == (lhs: SchemamiValue, rhs: SchemamiValue) -> Bool {
+        switch (lhs, rhs) {
+        case (.string(let left), .string(let right)): return exactStringEqual(left, right)
+        case (.number(let left), .number(let right)): return left == right
+        case (.integer(let left), .integer(let right)): return left == right
+        case (.object(let left), .object(let right)): return left == right
+        case (.array(let left), .array(let right)): return left == right
+        case (.boolean(let left), .boolean(let right)): return left == right
+        case (.null, .null): return true
+        default: return false
+        }
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .string(let value): hasher.combine(0); hashExactString(value, into: &hasher)
+        case .number(let value): hasher.combine(1); hasher.combine(value)
+        case .integer(let value): hasher.combine(2); hasher.combine(value)
+        case .object(let value): hasher.combine(3); hasher.combine(value)
+        case .array(let value): hasher.combine(4); hasher.combine(value)
+        case .boolean(let value): hasher.combine(5); hasher.combine(value)
+        case .null: hasher.combine(6)
+        }
     }
 
     public func encodedJSON() throws -> Data {
@@ -102,6 +136,15 @@ public indirect enum SchemamiValue: Sendable, Equatable, Hashable {
             output.append(Data("null".utf8))
         }
     }
+}
+
+private func exactStringEqual(_ left: String, _ right: String) -> Bool {
+    left.unicodeScalars.elementsEqual(right.unicodeScalars)
+}
+
+private func hashExactString(_ value: String, into hasher: inout Hasher) {
+    for scalar in value.unicodeScalars { hasher.combine(scalar.value) }
+    hasher.combine(UInt32.max)
 }
 
 private enum ValueEncodingError: Error {

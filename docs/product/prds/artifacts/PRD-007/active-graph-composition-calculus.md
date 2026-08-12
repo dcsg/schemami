@@ -399,10 +399,10 @@ placement notices live only in the closed result fields described above.
 HTTP status, RFC 9457 serialization, authentication, rate limiting, body-size
 limits, and localized messages are integration/deployment concerns.
 
-## Resource-limit portability floor
+## Resource capacity and analysis safety
 
-A conforming implementation must process, without a resource-limit refusal,
-requests at or below all of these bounds when otherwise valid:
+A conforming implementation must not refuse solely because one of these
+logical capacity counters is at or below its floor:
 
 - 64 recursive levels;
 - 10,000 evaluated protocol semantic object/reference occurrences across
@@ -422,11 +422,21 @@ portable floor. Embedded documents count `bundle.documents` entries. A
 selected component instance is one distinct `component_path` reached during
 the operation, including siblings that pin the same recipe.
 
-Implementations may support more. Above any floor, an implementation may refuse
-with `resource-limit`; that outcome is not a claim that the document is
-intrinsically invalid. Evaluation must be iterative or otherwise stack-safe,
-cycle-safe, exact, and bounded. Deployment request-size and abuse protections
-do not become recipe semantics.
+Partial symbolic/solver states do not consume semantic occurrences. They use a
+separate positive `analysisStates` safety budget under ADR-017. A canonical
+analysis state is the next authored parameter index plus the simplified
+residual vector of all normative activations. The counter is shared across one
+request, including every embedded document or operation stage that performs
+activation analysis, and equivalent states count once. The Schemami v1
+reference SDK profile defaults to 10,000 analysis states.
+
+Implementations may support more logical capacity or analysis states. Exceeding
+either an applicable logical floor or the declared analysis-state ceiling may
+return `resource-limit`; that outcome is not a claim that the document is
+intrinsically invalid. Analysis-state exhaustion may occur even when completed
+graphs remain below the semantic floor. Evaluation must be iterative or
+otherwise stack-safe, cycle-safe, exact, and bounded. Deployment request-size
+and abuse protections do not become recipe semantics.
 
 ## Identity and lineage
 

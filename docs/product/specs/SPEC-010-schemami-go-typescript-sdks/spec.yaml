@@ -1,0 +1,109 @@
+schema_version: "1.0"
+type: spec
+id: SPEC-010
+title: "Schemami Go and TypeScript SDKs"
+slug: schemami-go-typescript-sdks
+status: accepted
+author: Daniel Gomes
+created_at: "2026-08-11T22:00:00Z"
+source_prd: PRD-010
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-010
+  covered:
+    - fr: FR-SDK-001
+      by: [SR-SDK-001]
+    - fr: FR-SDK-002
+      by: [SR-SDK-002]
+    - fr: FR-SDK-003
+      by: [SR-SDK-003]
+    - fr: FR-SDK-004
+      by: [SR-SDK-004]
+    - fr: FR-SDK-005
+      by: [SR-SDK-005]
+    - fr: FR-SDK-006
+      by: [SR-SDK-006]
+    - fr: FR-SDK-007
+      by: [SR-SDK-007]
+    - fr: FR-SDK-008
+      by: [SR-SDK-008]
+  deferred: []
+  uncovered: []
+requirements:
+  - id: SR-SDK-001
+    implements: FR-SDK-001
+    text: "Create sdk/go and sdk/typescript with idiomatic Core, Calculus, and Diff public exports and no runtime CLI/viewer dependency."
+    verify_kind: structural
+  - id: SR-SDK-002
+    implements: FR-SDK-002
+    text: "Strict parsing and full recipe/bundle admission retain submitted bytes and complete values while rejecting duplicate members and invalid I-JSON."
+    verify_kind: behavioral
+  - id: SR-SDK-003
+    implements: FR-SDK-003
+    text: "Canonical bytes and digests MUST match RFC 8785 shared vectors."
+    verify_kind: behavioral
+  - id: SR-SDK-004
+    implements: FR-SDK-004
+    text: "All six operations MUST match the shared exact-arithmetic corpus."
+    verify_kind: behavioral
+  - id: SR-SDK-005
+    implements: FR-SDK-005
+    text: "Expected failure MUST use stable result problems, deterministic ordering, cycle guards, and protocol-floor budgets."
+    verify_kind: behavioral
+  - id: SR-SDK-006
+    implements: FR-SDK-006
+    text: "Diff MUST be deterministic, pointer-addressed, protocol-only, and complete across admitted values."
+    verify_kind: behavioral
+  - id: SR-SDK-007
+    implements: FR-SDK-007
+    text: "CLI and viewer MUST consume SDK exports and retain regression behavior."
+    verify_kind: structural
+  - id: SR-SDK-008
+    implements: FR-SDK-008
+    text: "Both packages MUST independently replay deterministic resource copies/manifests from repository authorities."
+    verify_kind: behavioral
+acceptance_criteria:
+  - id: AC-SDK-001
+    source: prd
+    fr: FR-SDK-001
+    given: disposable external consumers
+    when: packages are imported
+    then: Core, Calculus, and Diff work without CLI/viewer code
+  - id: AC-SDK-002
+    source: prd
+    fr: FR-SDK-008
+    given: the shared corpus
+    when: all SDKs replay it
+    then: language-neutral results match
+  - id: AC-SDK-003
+    source: prd
+    fr: FR-SDK-007
+    given: CLI and viewer regressions
+    when: extraction is complete
+    then: consumers pass through SDK imports
+protections:
+  - id: SP-001
+    source: prd
+    text: "SDKs exclude provider, app, persistence, HTTP, and culinary policy."
+  - id: SP-002
+    source: prd
+    text: "No generated-types-only SDK claim."
+  - id: SP-003
+    source: prd
+    text: "Publication and tagging require explicit later approval."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-010-schemami-go-typescript-sdks.md
+    description: Product authority.
+    source: prd
+revision_history:
+  - at: "2026-08-11T22:00:00Z"
+    author: Daniel Gomes
+    action: created
+    note: "Accepted parity implementation contract."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

@@ -1,0 +1,45 @@
+schema_version: 1
+topic: recipe-calculus
+path: docs/architecture/decisions/ADR-017-separate-semantic-capacity-and-analysis-safety-budgets.md
+signals:
+  - analysis states
+  - resource budget
+  - semantic occurrences
+  - solver safety
+directives:
+  - text: 'Schemami implementations MUST keep logical semantic occurrences separate from request-scoped canonical residual analysis states, default the v1 SDK profile to 10,000 analysis states, and return resource-limit explicitly without treating exhaustion as intrinsic document invalidity. (ref: ADR-017)'
+    source_excerpt:
+      line_start: 23
+      line_end: 49
+      quote: |-
+        1. Keep `semanticOccurrences` as the algorithm-independent logical capacity
+           budget. It counts registered protocol objects/references during static
+           admission and once in each deduplicated completed active graph in which they
+           participate. Partial solver states never consume this budget.
+        2. Add a separate `analysisStates` safety budget. One analysis state is one
+           newly visited canonical residual-analysis state, keyed by the next parameter
+           index and the canonical residual vector of every normative activation after
+           current bindings are substituted and simplified.
+        3. Parameter exploration follows authored parameter declaration order after
+           removing parameters unused by normative activation sites. Equivalent
+           residual states are visited once. Extension content never supplies a
+           parameter, threshold, residual expression, or analysis state.
+        4. The analysis-state counter is request-scoped. Recipe admission uses one
+           counter; bundle admission shares one counter across all embedded documents;
+           an operation shares one counter across every activation-analysis stage it
+           invokes. It is never reset per embedded document or component instance.
+        5. The Schemami v1 reference SDK profile defaults to 10,000 analysis states.
+           Callers may choose a positive lower or higher ceiling. Exceeding it returns
+           the existing `resource-limit` identity without claiming the recipe is
+           intrinsically invalid and without changing its canonical identity.
+        6. The analysis-state ceiling is an implementation safety declaration, not a
+           portability minimum. Therefore an otherwise-valid request can explicitly
+           refuse below the semantic-occurrence floor when its solver complexity
+           exceeds the declared analysis-state ceiling.
+        7. Implementations must still validate every completed reachable graph they do
+           discover. They may not silently truncate, skip a graph, reinterpret
+           extension content, or charge partial solver states as semantic occurrences.
+paths:
+  - sdk/**
+  - tools/schemami/**
+  - docs/product/**

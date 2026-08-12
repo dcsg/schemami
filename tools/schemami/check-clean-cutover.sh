@@ -65,8 +65,8 @@ fi
 
 # Negative recognition is exact, reviewed, and refusal-only.
 grep -Fq '"recipe.rcp.yaml"' tools/schemami/main_test.go
-grep -Fq 'Object.hasOwn(value, "rcp")' tools/viewer/src/schemami/engine.ts
-grep -Fq 'problem("unsupported-legacy"' tools/viewer/src/schemami/engine.ts
+grep -Fq 'Object.hasOwn(canonical, "rcp")' tools/viewer/src/schemami/engine.ts
+grep -Fq 'type: "https://schemami.dev/problems/unsupported-legacy"' tools/viewer/src/schemami/engine.ts
 grep -Fq 'legacy RCP input is refused without fallback' tools/viewer/conformance/schemami-viewer.test.ts
 
 # The active DAG may not call historical implementation or vocabulary surfaces.

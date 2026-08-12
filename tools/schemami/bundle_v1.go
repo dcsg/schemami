@@ -7,6 +7,8 @@ import (
 	"os"
 	"sort"
 	"strings"
+
+	sdk "github.com/dcsg/schemami/sdk/go"
 )
 
 type bundleDocument struct {
@@ -23,6 +25,16 @@ func validateBundle(path string) error {
 	if err != nil {
 		return err
 	}
+	parsed := sdk.Parse(raw, sdk.ProtocolFloor)
+	if !parsed.OK() {
+		return fmt.Errorf("bundle admission refused: %v", parsed.Problems)
+	}
+	admission := sdk.Admit(parsed.Parsed, sdk.ProtocolFloor)
+	if !admission.OK() || admission.Bundle == nil {
+		return fmt.Errorf("bundle admission refused: %v", admission.Problems)
+	}
+	return nil
+	/* Legacy implementation retained temporarily for YAML-era diagnostic tests.
 	bundle, err := parseDocument(path, raw)
 	if err != nil {
 		return err
@@ -40,7 +52,7 @@ func validateBundle(path string) error {
 	if _, err := canonicalise(bundle); err != nil {
 		return err
 	}
-	return validateBundleSemantics(bundle)
+	return validateBundleSemantics(bundle) */
 }
 
 func validateBundleSemantics(bundle map[string]any) error {

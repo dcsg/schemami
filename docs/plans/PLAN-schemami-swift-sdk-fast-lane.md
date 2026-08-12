@@ -1,6 +1,6 @@
 # PLAN: Schemami Swift SDK fast lane
 
-**Status:** active  
+**Status:** release candidate approved
 **PRD:** PRD-009  
 **SPEC:** SPEC-009  
 **Created:** 2026-08-11
@@ -151,6 +151,12 @@ projection remains outside the SDK.
 **Checkpoint:** Fornada handoff report with exact revision and commands/results.  
 **Completion:** `PHASE 5 COMPLETE FORNADA SWIFT SDK DOGFOOD REVIEWED`
 
+**Result:** completed 2026-08-12. Fornada compiled against the hardened SDK and
+passed all 11 focused dogfood cases plus all 29 Schemami-related acquisition,
+adapter, and SDK tests. The replay exposed one diagnostic-parity issue, which
+was corrected across Go, TypeScript, and Swift and pinned in the shared
+resource-budget corpus. No Fornada source or persistence file was changed.
+
 ## Phase 6 — Package release proof
 
 **Classification:** testable/release. **Depends on:** Phase 5.
@@ -166,6 +172,10 @@ projection remains outside the SDK.
 
 **Checkpoint:** release evidence ledger and proposed immutable release identity.  
 **Completion:** `PHASE 6 COMPLETE SWIFT SDK RELEASED AND PINNED`
+
+**Status:** release-candidate proof in progress. Daniel approved the
+`v1.0.0-rc.0` candidate commit and Apache-2.0 package boundary. Tagging,
+publication, and Fornada revision pinning remain intentionally unperformed.
 
 ## Later track — Go and TypeScript SDK parity
 
