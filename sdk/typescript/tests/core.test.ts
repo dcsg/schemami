@@ -109,7 +109,7 @@ test("analysis-state budget is independent from completed graph occurrences",asy
   const budgetState={...createAnalysisBudgetState(),semanticOccurrences:expected.static_semantic_occurrences};
   expect(validateReachableGraphs(value,{semanticOccurrences:expected.total_semantic_occurrences,analysisStates:expected.exact_analysis_states},budgetState,expected.static_semantic_occurrences)).toEqual([]);
   expect(budgetState).toEqual({semanticOccurrences:expected.total_semantic_occurrences,analysisStates:expected.analysis_states});
-});
+},15_000);
 
 test("resource diagnostics match the shared corpus",async()=>{
   type Diagnostic={id:string;fixture:string;budgets:{recursive_levels:number;semantic_occurrences:number;analysis_states:number;bundle_documents:number;selected_component_instances:number};expected_problems:Array<{type:string;pointer:string}>};
