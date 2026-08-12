@@ -19,7 +19,7 @@ TMP="$(mktemp "${TMPDIR:-/tmp}/schemami-mise.XXXXXX")"
 cleanup() { rm -f -- "$TMP"; }
 trap cleanup EXIT
 curl --fail --location --silent --show-error --proto '=https' --tlsv1.2 "$URL" --output "$TMP"
-printf '%s  %s\n' "$SHA256" "$TMP" | sha256sum -c -
+printf '%s  %s\n' "$SHA256" "$TMP" | sha256sum -c - >&2
 install -m 0755 "$TMP" "$BIN"
 test "$("$BIN" --version | awk '{print $1}')" = "$VERSION"
 printf 'MISE_BIN=%s\n' "$BIN"
