@@ -1,0 +1,31 @@
+{
+  "release": "schemami-v1.0.0",
+  "artifacts": [
+    {"kind":"schema","path":"schema/schemami-v1-core.schema.json","url":"https://schemami.dev/schema/schemami/1/core.schema.json","media_type":"application/schema+json"},
+    {"kind":"schema","path":"schema/schemami-v1-bundle.schema.json","url":"https://schemami.dev/schema/schemami/1/bundle.schema.json","media_type":"application/schema+json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/calculus.json","url":"https://schemami.dev/conformance/schemami/1/calculus.json","media_type":"application/json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/structured-calculus.json","url":"https://schemami.dev/conformance/schemami/1/structured-calculus.json","media_type":"application/json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/validation.json","url":"https://schemami.dev/conformance/schemami/1/validation.json","media_type":"application/json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/canonicalization.json","url":"https://schemami.dev/conformance/schemami/1/canonicalization.json","media_type":"application/json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/diff.json","url":"https://schemami.dev/conformance/schemami/1/diff.json","media_type":"application/json"},
+    {"kind":"conformance","path":"conformance/schemami-v1/resource-budgets.json","url":"https://schemami.dev/conformance/schemami/1/resource-budgets.json","media_type":"application/json"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/unsupported-legacy.html","url":"https://schemami.dev/problems/unsupported-legacy","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/invalid-document.html","url":"https://schemami.dev/problems/invalid-document","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/invalid-decimal.html","url":"https://schemami.dev/problems/invalid-decimal","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/resource-limit.html","url":"https://schemami.dev/problems/resource-limit","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/unknown-unit.html","url":"https://schemami.dev/problems/unknown-unit","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/ambiguous-unit.html","url":"https://schemami.dev/problems/ambiguous-unit","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/dimension-mismatch.html","url":"https://schemami.dev/problems/dimension-mismatch","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/unsupported-quantity-kind.html","url":"https://schemami.dev/problems/unsupported-quantity-kind","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/unresolved-reference.html","url":"https://schemami.dev/problems/unresolved-reference","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/missing-fact.html","url":"https://schemami.dev/problems/missing-fact","media_type":"text/html"},
+    {"kind":"problem","path":"release/schemami-v1.0.0/problems/invalid-operation-arguments.html","url":"https://schemami.dev/problems/invalid-operation-arguments","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/dependency-cycle.html","url":"https://schemami.dev/problems/dependency-cycle","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/duplicate-object-member.html","url":"https://schemami.dev/problems/duplicate-object-member","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/inactive-reference.html","url":"https://schemami.dev/problems/inactive-reference","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/invalid-json.html","url":"https://schemami.dev/problems/invalid-json","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/missing-producer.html","url":"https://schemami.dev/problems/missing-producer","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/multiple-producers.html","url":"https://schemami.dev/problems/multiple-producers","media_type":"text/html"}
+    ,{"kind":"problem","path":"release/schemami-v1.0.0/problems/relative-timing-conflict.html","url":"https://schemami.dev/problems/relative-timing-conflict","media_type":"text/html"}
+  ]
+}

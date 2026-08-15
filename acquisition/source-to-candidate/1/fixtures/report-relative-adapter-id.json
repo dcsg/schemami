@@ -1,0 +1,7 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {"id": "adapter-1", "release": "1"},
+  "submitted_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "coverage": [{"source": "source-1", "status": "captured"}],
+  "review_items": []
+}

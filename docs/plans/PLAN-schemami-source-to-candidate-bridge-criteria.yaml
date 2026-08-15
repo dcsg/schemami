@@ -1,0 +1,92 @@
+schema_version: 1
+plan: PLAN-schemami-source-to-candidate-bridge
+target_release: schemami-source-to-candidate-contract-v1
+created: "2026-08-11"
+phases:
+  - id: "0"
+    name: Contract and vocabulary acceptance
+    classification: operational
+    completion_promise: PHASE 0 COMPLETE ACQUISITION CONTRACT ACCEPTED
+    criteria:
+      - id: AC-0.1
+        statement: "Daniel accepts complete positive and invalid request/report/admission/repair examples, closed vocabularies, deterministic local-ID policy, standards mappings, and three-artifact authority separation before schemas are implemented."
+        verify: "rg -q 'Decision: accepted' docs/reports/schemami-source-to-candidate-phase0-decision.md"
+  - id: "1"
+    name: Schemas, instructions, and manifest
+    classification: testable
+    completion_promise: PHASE 1 COMPLETE ACQUISITION CONTRACT BYTES VERIFIED
+    criteria:
+      - id: AC-1.1
+        statement: "Contract schemas accept every positive example and reject nearest invalid fields, values, pointers, IDs, language/media/URI/digest forms, unknown codes, and candidate/report authority collisions."
+        verify: "bash tools/acquisition-harness/check-contract.sh"
+        verify_kind: behavioral
+        intent: "The provider-neutral contract has one closed, standards-backed shape."
+        falsifying_observation: "An invalid alias/free-form value passes or a valid provider-neutral example requires a provider fork."
+      - id: AC-1.2
+        statement: "The manifest is byte-stable, covers every contract file with exact SHA-256, and local use succeeds without hosting or network access."
+        verify: "bash tools/acquisition-harness/check-manifest.sh"
+  - id: "2"
+    name: Deterministic admission and repair harness
+    classification: testable
+    completion_promise: PHASE 2 COMPLETE ACQUISITION ADMISSION AND REPAIR VERIFIED
+    criteria:
+      - id: AC-2.1
+        statement: "Only deterministic Schemami tooling writes admission results, canonical identity appears only after full admission, and report-only changes never affect identity or Calculus."
+        verify: "bash tools/acquisition-harness/check-admission-boundary.sh"
+        verify_kind: behavioral
+        intent: "Probabilistic adapters cannot self-certify or alter trusted results."
+        falsifying_observation: "An adapter claim changes admission status, digest, problem, or operation output."
+      - id: AC-2.2
+        statement: "Repairs pin exact stale-sensitive input identity, return complete replacement artifacts, respect attempt budgets, and re-run full admission without patching or weakened validation."
+        verify: "bash tools/acquisition-harness/check-repair.sh"
+  - id: "3"
+    name: Adversarial deterministic corpus
+    classification: testable
+    completion_promise: PHASE 3 COMPLETE ACQUISITION ADVERSARIAL CORPUS VERIFIED
+    criteria:
+      - id: AC-3.1
+        statement: "At least 20 repository-safe cases cover every declared source kind, hostile instructions, ambiguity/invention pressure, local identity, structured methods/variation/composition, invalid JSON/extensions, identity separation, and repair outcomes."
+        verify: "bash tools/acquisition-harness/check-adversarial.sh"
+        verify_kind: behavioral
+        intent: "The acquisition boundary fails honestly under adversarial inputs before real-source use."
+        falsifying_observation: "A hostile/ambiguous case silently invents authority, executes content, or disappears from results."
+  - id: "4"
+    name: AI conversion kit documentation
+    classification: operational
+    completion_promise: PHASE 4 COMPLETE AI CONVERSION KIT DOCUMENTED
+    criteria:
+      - id: AC-4.1
+        statement: "Documentation provides a direct-AI path and an SDK integration path, routes every candidate through deterministic admission, makes the acquisition report optional for direct use, and requires no Schemami-owned capture, provider, model runtime, source storage, or telemetry."
+        verify: "test -f docs/guides/ai-conversion.md && rg -q 'Direct AI workflow' docs/guides/ai-conversion.md && rg -q 'SDK workflow' docs/guides/ai-conversion.md"
+  - id: "5"
+    name: Contract and documentation release
+    classification: operational
+    completion_promise: PHASE 5 COMPLETE AI CONVERSION KIT RELEASED
+    criteria:
+      - id: AC-5.1
+        statement: "A clean checkout reproduces the immutable advanced contract and /ai/v1 kit; publication includes the direct guide, minimal interview, safe non-validating preview, optional advanced contract, released schemas, and SDK links without provider-support claims."
+        verify: "bash tools/acquisition-harness/check-ai-kit.sh && rg -q 'AI conversion kit' docs/reports/schemami-source-to-candidate-release-evidence.md"
+dependencies:
+  "0":
+    blocks: ["1", "2", "3", "4", "5"]
+  "1":
+    blocks: ["2", "3", "4", "5"]
+  "2":
+    blocks: ["3", "4", "5"]
+  "3":
+    blocks: ["4", "5"]
+  "4":
+    blocks: ["5"]
+risks:
+  - id: R-1
+    severity: critical
+    mitigation_phase: "0"
+  - id: R-2
+    severity: critical
+    mitigation_phase: "2"
+  - id: R-3
+    severity: high
+    mitigation_phase: "3"
+  - id: R-4
+    severity: high
+    mitigation_phase: "4"

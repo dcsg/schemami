@@ -1,0 +1,23 @@
+schemami: "1"
+collection: integrator-test
+id: unknown-local-concepts
+revision: 1
+content_language: pt-PT
+title: Receita com conceitos locais
+ingredients:
+  - id: ingrediente-da-casa
+    name: Mistura secreta da casa
+techniques:
+  - id: dobra-da-casa
+    name: Dobra da casa
+equipment:
+  - id: panela-x
+    name: Panela experimental X
+method:
+  sequence:
+    - kind: step
+      id: preparar
+      instruction: Prepare a mistura segundo a técnica da casa.
+      uses: [{ kind: ingredient, id: ingrediente-da-casa }]
+      techniques: [dobra-da-casa]
+      equipment: [panela-x]

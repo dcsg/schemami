@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:; script-src 'unsafe-inline'">
+  <title>Schemami production identity and design-system specimen</title>
+  <!-- SCHEMAMI_FOUNDATION_CSS -->
+  <style>
+    body::before { content: ""; display: block; height: .55rem; background: linear-gradient(90deg, var(--sm-color-brass-500) 0 18%, var(--sm-color-clay-600) 18% 45%, var(--sm-color-marine-600) 45% 100%); }
+    .theme-dock { position: fixed; z-index: 20; inset: 1rem 1rem auto auto; display: flex; align-items: center; gap: var(--sm-space-2); padding: .24rem; border: var(--sm-border-hairline) solid var(--sm-semantic-color-border-default); border-radius: var(--sm-radius-md); background: var(--sm-semantic-color-background-surface); box-shadow: 0 .5rem 1.6rem rgb(35 26 32 / 12%); }
+    .theme-dock-label { padding-inline: var(--sm-space-2); color: var(--sm-semantic-color-text-secondary); font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-xs); letter-spacing: var(--sm-font-tracking-label); text-transform: uppercase; }
+    .theme-choice { min-height: 2.1rem; padding-inline: .62rem; border: 0; border-radius: var(--sm-radius-sm); color: var(--sm-semantic-color-text-secondary); background: transparent; font: var(--sm-font-weight-semibold) var(--sm-font-size-xs) / 1 var(--sm-font-family-sans); cursor: pointer; }
+    .theme-choice:hover { color: var(--sm-semantic-color-text-primary); background: var(--sm-semantic-color-action-secondary-hover); }
+    .theme-choice[aria-pressed="true"] { color: var(--sm-semantic-color-action-primary-foreground); background: var(--sm-semantic-color-action-primary-background); }
+    .shell { width: min(calc(100% - 2rem), var(--sm-component-content-wide-measure)); margin-inline: auto; padding-block: clamp(3rem, 7vw, 7rem); }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr); gap: var(--sm-space-12); align-items: end; }
+    .hero-lockup { width: min(100%, 38rem); margin-bottom: var(--sm-space-12); }
+    .hero-lockup-dark { display: none; }
+    .hero h1 { max-width: 11ch; }
+    .lede { color: var(--sm-semantic-color-text-secondary); font-size: var(--sm-font-size-lg); }
+    .decision { padding: var(--sm-space-6); border: var(--sm-border-hairline) solid var(--sm-semantic-color-border-default); background: var(--sm-semantic-color-background-surface); }
+    .decision strong { display: block; color: var(--sm-color-marine-700); font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-xs); letter-spacing: var(--sm-font-tracking-label); text-transform: uppercase; }
+    .decision p { margin-bottom: 0; }
+    .section { margin-top: var(--sm-space-20); }
+    .section-head { display: grid; grid-template-columns: 1fr minmax(18rem, .6fr); gap: var(--sm-space-8); align-items: end; border-top: var(--sm-border-hairline) solid var(--sm-semantic-color-border-subtle); padding-top: var(--sm-space-4); }
+    .section-head p { color: var(--sm-semantic-color-text-secondary); }
+    .asset-grid, .component-grid, .message-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sm-space-4); }
+    .asset { min-height: 15rem; display: grid; place-items: center; padding: var(--sm-space-6); border: var(--sm-border-hairline) solid var(--sm-semantic-color-border-subtle); background: var(--sm-semantic-color-background-surface); }
+    .asset img { width: min(100%, 18rem); max-height: 9rem; }
+    .asset.light { color-scheme: light; color: var(--sm-color-ink-900); background: var(--sm-color-page-100); }
+    .asset.dark { color-scheme: dark; background: var(--sm-color-ink-900); }
+    .asset figcaption { align-self: end; font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-xs); color: var(--sm-semantic-color-text-secondary); }
+    .asset.light figcaption { color: var(--sm-color-ink-600); }
+    .asset.dark figcaption { color: var(--sm-color-page-100); }
+    .palette { display: grid; grid-template-columns: repeat(5, minmax(8rem, 1fr)); gap: var(--sm-space-2); }
+    .swatch { min-height: 12rem; padding: var(--sm-space-4); display: flex; flex-direction: column; justify-content: end; border: var(--sm-border-hairline) solid rgb(35 26 32 / 15%); color: var(--swatch-text); background: var(--swatch); }
+    .swatch strong { font-size: var(--sm-font-size-lg); }
+    .swatch code { font-size: var(--sm-font-size-xs); }
+    .type-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: var(--sm-space-4); }
+    .type-card { padding: clamp(1.5rem, 4vw, 3.5rem); border: var(--sm-border-hairline) solid var(--sm-semantic-color-border-subtle); background: var(--sm-semantic-color-background-surface); }
+    .display-sample { font-family: var(--sm-font-family-display); font-variation-settings: "opsz" 88, "wght" 700, "SOFT" 76, "WONK" 1; font-size: clamp(3.5rem, 8vw, 7rem); line-height: .9; letter-spacing: var(--sm-font-tracking-display); }
+    .mono-sample { color: var(--sm-color-marine-700); font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-sm); white-space: pre-wrap; }
+    .component-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .component-grid > article { display: grid; align-content: start; gap: var(--sm-space-4); }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--sm-space-3); }
+    label { display: grid; gap: var(--sm-space-2); font-weight: var(--sm-font-weight-medium); }
+    .dark-lab { margin-inline: calc(50% - 50vw); padding: var(--sm-space-16) max(1rem, calc(50vw - 46rem)); color: var(--sm-semantic-color-text-primary); background: var(--sm-semantic-color-background-canvas); }
+    .dark-lab .section-head { margin-top: 0; }
+    .message-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .message-grid h3 { margin-top: auto; }
+    .risk { color: var(--sm-color-clay-700); font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-xs); }
+    .recipe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .7fr); gap: var(--sm-space-4); }
+    .recipe-meta { display: flex; flex-wrap: wrap; gap: var(--sm-space-2); }
+    .chip { padding: .2rem .45rem; border: var(--sm-border-hairline) solid var(--sm-semantic-color-border-default); border-radius: var(--sm-radius-sm); font-family: var(--sm-font-family-mono); font-size: var(--sm-font-size-xs); }
+    @media (max-width: 860px) { .hero, .section-head, .type-grid, .recipe { grid-template-columns: 1fr; } .asset-grid, .message-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .palette { grid-template-columns: repeat(2, minmax(8rem, 1fr)); } }
+    @media (max-width: 580px) { .asset-grid, .component-grid, .message-grid { grid-template-columns: 1fr; } .shell { width: min(calc(100% - 1rem), var(--sm-component-content-wide-measure)); padding-top: 6rem; } .theme-dock { inset: 1rem .5rem auto auto; } .theme-dock-label { display: none; } }
+    @media (prefers-color-scheme: dark) { html:not([data-theme="light"]) .hero-lockup-light { display: none; } html:not([data-theme="light"]) .hero-lockup-dark { display: block; } }
+    html[data-theme="dark"] .hero-lockup-light { display: none; }
+    html[data-theme="dark"] .hero-lockup-dark { display: block; }
+    @media print { .theme-dock { display: none; } }
+  </style>
+</head>
+<body>
+  <nav class="theme-dock" aria-label="Color theme">
+    <span class="theme-dock-label">Theme</span>
+    <button class="theme-choice" type="button" data-theme-choice="system" aria-pressed="true">System</button>
+    <button class="theme-choice" type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+    <button class="theme-choice" type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+  </nav>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <img class="hero-lockup hero-lockup-light" src="assets/logos/schemami-lockup-color.svg" alt="Schemami">
+        <img class="hero-lockup hero-lockup-dark" src="assets/logos/schemami-lockup-reversed.svg" alt="Schemami">
+        <p class="sm-eyebrow">Production identity · version 1.0</p>
+        <h1>Recipes, structured to taste.</h1>
+        <p class="lede">The flexible recipe protocol for software. This specimen uses the canonical assets, real bundled fonts and generated semantic tokens.</p>
+        <div class="actions"><a class="sm-button" data-variant="primary" href="#components">Inspect the system</a><a class="sm-button" data-variant="secondary" href="#voice">Read the voice</a></div>
+      </div>
+      <aside class="decision">
+        <strong>Founder-approved direction</strong>
+        <p>Identity A: bracket-and-node mark, Fraunces display typography, IBM Plex interface typography and the Page/Ink/Marine/Clay/Brass palette.</p>
+      </aside>
+    </header>
+
+    <section class="section" id="identity">
+      <div class="section-head"><div><p class="sm-eyebrow">Identity assets</p><h2>One idea. Every constraint.</h2></div><p>The full-color lockup is preferred. One-color and reversed variants keep the mark usable without changing its meaning.</p></div>
+      <div class="asset-grid">
+        <figure class="asset light"><img src="assets/logos/schemami-lockup-color.svg" alt="Full-color Schemami lockup"><figcaption>Full color · Page or white</figcaption></figure>
+        <figure class="asset light"><img src="assets/logos/schemami-lockup-ink.svg" alt="One-color Ink Schemami lockup"><figcaption>One-color Ink · constrained use</figcaption></figure>
+        <figure class="asset dark"><img src="assets/logos/schemami-lockup-reversed.svg" alt="Reversed Schemami lockup"><figcaption>Reversed · Ink or deep Marine</figcaption></figure>
+      </div>
+    </section>
+
+    <section class="section" id="color">
+      <div class="section-head"><div><p class="sm-eyebrow">Identity anchors</p><h2>Calm structure. Warm signals.</h2></div><p>Page and Ink establish the reading field. Marine carries technical structure; Clay and Brass appear selectively.</p></div>
+      <div class="palette">
+        <div class="swatch" style="--swatch:#FBF7EF;--swatch-text:#231A20"><strong>Page</strong><code>#FBF7EF</code></div>
+        <div class="swatch" style="--swatch:#231A20;--swatch-text:#FBF7EF"><strong>Ink</strong><code>#231A20</code></div>
+        <div class="swatch" style="--swatch:#235D73;--swatch-text:#FFFFFF"><strong>Marine</strong><code>#235D73</code></div>
+        <div class="swatch" style="--swatch:#A94436;--swatch-text:#FFFFFF"><strong>Clay</strong><code>#A94436</code></div>
+        <div class="swatch" style="--swatch:#D09A22;--swatch-text:#231A20"><strong>Brass</strong><code>#D09A22</code></div>
+      </div>
+    </section>
+
+    <section class="section" id="type">
+      <div class="section-head"><div><p class="sm-eyebrow">Typography</p><h2>Warm at the entrance. Exact in use.</h2></div><p>Fraunces is scarce and expressive. Plex Sans does the reading; Plex Mono carries protocol evidence.</p></div>
+      <div class="type-grid">
+        <article class="type-card"><p class="sm-eyebrow">Fraunces variable</p><p class="display-sample">Madalenas</p><p>Wordmark, hero and major display moments only.</p></article>
+        <article class="type-card"><p class="sm-eyebrow">IBM Plex Sans + Mono</p><h3>Ingredients carry meaning.</h3><p>Stable IDs let applications resolve labels, units and behavior without hiding unknowns. Portuguese diacritics stay intact: pão, açúcar, fermentação.</p><p class="mono-sample">ingredient:
+  id: ingredient.flour.wheat
+  amount: 500 g
+  source: "farinha de trigo"</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="components">
+      <div class="section-head"><div><p class="sm-eyebrow">Foundation components</p><h2>Behavior before decoration.</h2></div><p>States remain explicit, readable and useful when an operation cannot continue.</p></div>
+      <div class="component-grid">
+        <article class="sm-card"><h3>Actions and fields</h3><div class="actions"><button class="sm-button" data-variant="primary">Validate document</button><button class="sm-button" data-variant="secondary">Inspect source</button><button class="sm-button" disabled>Publishing</button></div><label>Registry identity<input class="sm-field" value="ingredient.flour.wheat"></label><label>Unresolved technique<input class="sm-field" aria-invalid="true" value="bater até fazer fita"></label></article>
+        <article class="sm-card"><h3>Operational states</h3><div class="sm-alert" data-tone="success"><strong>Yield scaled to 18 pieces.</strong><br>Oven temperature and method order were not changed.</div><div class="sm-alert" data-tone="warning"><strong>Technique unresolved.</strong><br>Preserve the source text; do not calculate timing from it yet.</div><div class="sm-alert" data-tone="danger"><strong>Scaling stopped.</strong><br>The result exceeds the recipe’s authored salt bound.</div></article>
+      </div>
+    </section>
+
+    <section class="section recipe" id="recipe">
+      <article class="sm-card"><p class="sm-eyebrow">Recipe document</p><h2>Madalenas de laranja</h2><div class="recipe-meta"><span class="chip">12 pieces</span><span class="chip">190°C</span><span class="chip">metric</span></div><p>Fold the flour into the egg mixture without knocking out the air. Preserve the authored method while applications adapt presentation and schedule.</p></article>
+      <pre class="sm-code"><code>method:
+  - id: fold-flour
+    input: batter
+    constraint:
+      preserve_aeration: true
+
+provenance:
+  source: photo/page-42
+  reviewed: true</code></pre>
+    </section>
+
+    <section class="section dark-lab" data-theme="dark">
+      <div class="section-head"><div><p class="sm-eyebrow">Dark mode</p><h2>The hierarchy survives the theme.</h2></div><p>Semantic aliases change values; component meaning stays fixed. Focus uses Brass here because it clears the dark canvas.</p></div>
+      <div class="component-grid"><article class="sm-card"><h3>Resolved identity</h3><p><code>ingredient.orange.zest</code> is ready for a localized application label.</p><a class="sm-button" data-variant="primary" href="#identity">Inspect provenance</a></article><article class="sm-alert" data-tone="danger"><strong>Calculation refused.</strong><br>No supported conversion exists for the authored “one glass” measure.</article></div>
+    </section>
+
+    <section class="section" id="voice">
+      <div class="section-head"><div><p class="sm-eyebrow">Message architecture</p><h2>Memorable—and still true.</h2></div><p>One line earns attention. The next line establishes category and evidence.</p></div>
+      <div class="message-grid">
+        <article class="sm-card"><p class="sm-eyebrow">Canonical tagline</p><h3>Recipes, structured to taste.</h3><p>The flexible recipe protocol for software.</p><p class="risk">Distinctive by design; always pair with the descriptor on first encounter.</p></article>
+        <article class="sm-card"><p class="sm-eyebrow">Technical promise</p><h3>Structure the recipe without flattening the method.</h3><p>Represent what the author defined. Keep uncertainty visible. Refuse what the document cannot support.</p><p class="risk">Use near method, provenance and conformance proof.</p></article>
+        <article class="sm-card"><p class="sm-eyebrow">Truthful challenger</p><h3>Keep the method. Make recipes computable.</h3><p>A flexible recipe protocol for software.</p><p class="risk">Candidate hero; external comprehension testing remains open.</p></article>
+        <article class="sm-card"><p class="sm-eyebrow">Name reveal</p><h3>Schema meets umami.</h3><p>The wordplay explains the name after the product category is clear.</p><p class="risk">Use once. Then return to plain technical language.</p></article>
+      </div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var buttons = Array.from(document.querySelectorAll("[data-theme-choice]"));
+
+      function selectTheme(choice, persist) {
+        if (choice === "light" || choice === "dark") root.setAttribute("data-theme", choice);
+        else root.removeAttribute("data-theme");
+        buttons.forEach(function (button) {
+          button.setAttribute("aria-pressed", String(button.getAttribute("data-theme-choice") === choice));
+        });
+        if (persist) {
+          try { localStorage.setItem("schemami-theme", choice); } catch (_) {}
+        }
+      }
+
+      var saved = "system";
+      try { saved = localStorage.getItem("schemami-theme") || "system"; } catch (_) {}
+      if (!["system", "light", "dark"].includes(saved)) saved = "system";
+      selectTheme(saved, false);
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          selectTheme(button.getAttribute("data-theme-choice") || "system", true);
+        });
+      });
+    }());
+  </script>
+</body>
+</html>

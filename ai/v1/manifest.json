@@ -1,0 +1,46 @@
+{
+  "workflow": "https://schemami.dev/ai/v1",
+  "schemami_wire": "1",
+  "status": "informative",
+  "files": [
+    {
+      "path": "INSTRUCTIONS.md",
+      "media_type": "text/markdown",
+      "sha256": "1848917b69391f77aeffdc3c44f60282085c26554ac36becd6e4cf340a52bdec"
+    },
+    {
+      "path": "RENDERING.md",
+      "media_type": "text/markdown",
+      "sha256": "0c723f056af48647e2000586df36733dc30af5fba544b14c2bc8ff7a304ce8e2"
+    },
+    {
+      "path": "examples/candidate.schemami.json",
+      "media_type": "application/json",
+      "sha256": "516fe71e0bc37b9f0927593d23592d557cf0a1b2fb470c60b57cd1c076fa1ebe"
+    },
+    {
+      "path": "index.html",
+      "media_type": "text/html",
+      "sha256": "a0a165fdde934cf2a3eb9c74af62611737156812000cb4a6b937f14e0021d4ec"
+    },
+    {
+      "path": "recipe-card.html",
+      "media_type": "text/html",
+      "sha256": "e7987e9a565e55d7a529479564eb9397f97a00fba9be4c42d3dcd4b7053756e0"
+    }
+  ],
+  "dependencies": [
+    {
+      "role": "advanced_acquisition_contract",
+      "path": "acquisition/source-to-candidate/1/manifest.json",
+      "url": "https://schemami.dev/contracts/source-to-candidate/1/manifest.json",
+      "sha256": "ddb2cd3c4eae99361fb35d731371738d3932e2ee851ac10dadac5393a32a2b91"
+    },
+    {
+      "role": "core_schema",
+      "path": "schema/schemami-v1-core.schema.json",
+      "url": "https://schemami.dev/schema/schemami/1/core.schema.json",
+      "sha256": "82971d505b3a17560105cc41bcb6d1aab2813bcdbfadb5329a06eab930df7be6"
+    }
+  ]
+}

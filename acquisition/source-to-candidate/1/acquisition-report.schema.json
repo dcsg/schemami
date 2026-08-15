@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemami.dev/contracts/source-to-candidate/1/acquisition-report.schema.json",
+  "title": "Schemami source-to-candidate acquisition report 1",
+  "type": "object",
+  "required": ["contract", "adapter", "submitted_sha256", "coverage", "review_items"],
+  "additionalProperties": false,
+  "properties": {
+    "contract": {"const": "https://schemami.dev/contracts/source-to-candidate/1"},
+    "adapter": {
+      "type": "object",
+      "required": ["id", "release"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1, "format": "uri"},
+        "release": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "submitted_sha256": {"$ref": "#/$defs/sha256"},
+    "coverage": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/coverage_item"}
+    },
+    "review_items": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/review_item"}
+    }
+  },
+  "$defs": {
+    "local_id": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-z0-9][a-z0-9_-]*$"},
+    "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "pointer": {"type": "string", "pattern": "^(?:$|/(?:[^~/]|~[01])*)+$"},
+    "selector": {
+      "type": "object",
+      "required": ["kind", "value", "conforms_to"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {"const": "fragment"},
+        "value": {"type": "string", "minLength": 1, "maxLength": 2048, "pattern": "^[^#]+$"},
+        "conforms_to": {"type": "string", "format": "uri"}
+      }
+    },
+    "coverage_item": {
+      "type": "object",
+      "required": ["source", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {"$ref": "#/$defs/local_id"},
+        "status": {"enum": ["captured", "partially_captured", "unresolved", "omitted", "inaccessible"]},
+        "candidate_pointer": {"$ref": "#/$defs/pointer"},
+        "selector": {"$ref": "#/$defs/selector"}
+      }
+    },
+    "review_item": {
+      "type": "object",
+      "required": ["code"],
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "ambiguous-source-value",
+            "missing-structured-fact",
+            "conflicting-source-evidence",
+            "inaccessible-source",
+            "unsupported-source",
+            "adapter-representation-choice",
+            "manual-review-required",
+            "provisional-document-identity"
+          ]
+        },
+        "source": {"$ref": "#/$defs/local_id"},
+        "candidate_pointer": {"$ref": "#/$defs/pointer"},
+        "selector": {"$ref": "#/$defs/selector"},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

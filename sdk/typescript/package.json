@@ -1,0 +1,40 @@
+{
+  "name": "@schemami/sdk",
+  "version": "1.0.0",
+  "description": "Deterministic Schemami v1 Core, Recipe Calculus, and Diff SDK",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./calculus": {
+      "types": "./dist/types/public-calculus.d.ts",
+      "import": "./dist/public-calculus.js"
+    },
+    "./diff": {
+      "types": "./dist/types/diff.d.ts",
+      "import": "./dist/diff.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "src", "resources", "README.md", "CHANGELOG.md", "LICENSE", "THIRD_PARTY_NOTICES.md"],
+  "scripts": {
+    "test": "bun test",
+    "sync-resources": "bun scripts/sync-resources.ts",
+    "build": "bun run clean && bun run sync-resources && bun build src/index.ts src/public-calculus.ts src/diff.ts --outdir dist --target browser --format esm && bunx tsc",
+    "clean": "rm -rf dist",
+    "prepack": "bun run build && bun test"
+  },
+  "dependencies": {
+    "@cfworker/json-schema": "4.1.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}

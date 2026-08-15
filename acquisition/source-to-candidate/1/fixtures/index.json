@@ -1,0 +1,22 @@
+{
+  "cases": [
+    {"id": "request-valid", "schema": "acquisition-request.schema.json", "path": "examples/acquisition-request.json", "expected_valid": true},
+    {"id": "request-provisional-valid", "schema": "acquisition-request.schema.json", "path": "examples/provisional-acquisition-request.json", "expected_valid": true},
+    {"id": "report-valid", "schema": "acquisition-report.schema.json", "path": "examples/acquisition-report.json", "expected_valid": true},
+    {"id": "repair-valid", "schema": "repair-request.schema.json", "path": "examples/repair-request.json", "expected_valid": true},
+    {"id": "request-bundle-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-bundle.json", "expected_valid": false},
+    {"id": "request-partial-identity-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-partial-identity.json", "expected_valid": false},
+    {"id": "request-locale-alias-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-locale-alias.json", "expected_valid": false},
+    {"id": "request-uppercase-id-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-uppercase-id.json", "expected_valid": false},
+    {"id": "request-invalid-language-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-invalid-language.json", "expected_valid": false},
+    {"id": "request-invalid-media-type-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-invalid-media-type.json", "expected_valid": false},
+    {"id": "request-invalid-digest-refuses", "schema": "acquisition-request.schema.json", "path": "fixtures/request-invalid-digest.json", "expected_valid": false},
+    {"id": "report-admission-authority-refuses", "schema": "acquisition-report.schema.json", "path": "fixtures/report-admission-authority.json", "expected_valid": false},
+    {"id": "report-numeric-confidence-refuses", "schema": "acquisition-report.schema.json", "path": "fixtures/report-numeric-confidence.json", "expected_valid": false},
+    {"id": "report-unknown-code-refuses", "schema": "acquisition-report.schema.json", "path": "fixtures/report-unknown-code.json", "expected_valid": false},
+    {"id": "report-relative-adapter-id-refuses", "schema": "acquisition-report.schema.json", "path": "fixtures/report-relative-adapter-id.json", "expected_valid": false},
+    {"id": "report-invalid-pointer-refuses", "schema": "acquisition-report.schema.json", "path": "fixtures/report-invalid-pointer.json", "expected_valid": false},
+    {"id": "repair-patch-refuses", "schema": "repair-request.schema.json", "path": "fixtures/repair-patch.json", "expected_valid": false},
+    {"id": "repair-unstable-problem-refuses", "schema": "repair-request.schema.json", "path": "fixtures/repair-unstable-problem.json", "expected_valid": false}
+  ]
+}

@@ -1,0 +1,194 @@
+schema_version: "1.0"
+type: spec
+id: SPEC-008
+title: "Schemami source-to-candidate bridge"
+slug: schemami-source-to-candidate-bridge
+status: accepted
+author: Daniel Gomes
+created_at: "2026-08-11T18:21:47Z"
+source_prd: PRD-008
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-008
+  covered:
+    - fr: FR-AI-001
+      by: [SR-AI-001, SR-AI-002]
+    - fr: FR-AI-002
+      by: [SR-AI-003]
+    - fr: FR-AI-003
+      by: [SR-AI-004]
+    - fr: FR-AI-004
+      by: [SR-AI-005]
+    - fr: FR-AI-005
+      by: [SR-AI-006]
+    - fr: FR-AI-006
+      by: [SR-AI-007, SR-AI-008]
+    - fr: FR-AI-007
+      by: [SR-AI-009]
+    - fr: FR-AI-008
+      by: [SR-AI-010]
+    - fr: FR-AI-009
+      by: [SR-AI-011]
+  deferred: []
+  uncovered: []
+requirements:
+  - id: SR-AI-001
+    implements: FR-AI-001
+    text: "Publish immutable source-to-candidate contract version 1 with a deterministic manifest, provider-neutral instructions, request/report/repair schemas, examples, fixtures, and exact hashes; hosting MUST NOT be required for local use."
+    verify_kind: structural
+    intent: "Every adapter receives one pinned contract without a provider-specific protocol fork."
+    falsifying_observation: "Two adapters use mutable or differently hashed instructions while claiming the same version."
+  - id: SR-AI-002
+    implements: FR-AI-001
+    text: "The host MUST control source access and supply source content language; it SHOULD supply recipe identity, otherwise the adapter MUST use the fixed provisional imports/candidate/1 identity and report that status, and MUST NOT mint another application identity."
+  - id: SR-AI-003
+    implements: FR-AI-002
+    text: "Candidates MUST preserve source-language prose, authored order, declared sources/selectors/evidence, and every represented source fact; acquisition metadata and adapter claims MUST NOT enter Recipe Calculus."
+  - id: SR-AI-004
+    implements: FR-AI-003
+    text: "Existing valid app IDs MUST be preserved; otherwise the reference contract MUST assign deterministic kind-prefixed ordinal local IDs by authored occurrence and MUST NOT assert global equivalence or require a registry."
+  - id: SR-AI-005
+    implements: FR-AI-004
+    text: "Ambiguous, missing, conflicting, inaccessible, or unsupported facts MUST be omitted rather than guessed; when the optional report is used, closed report codes MUST keep them visible for review."
+    verify_kind: behavioral
+    intent: "Partial capture remains readable without masquerading as trusted computation."
+    falsifying_observation: "An adapter inserts a quantity, unit identity, dependency, substitution, or fact absent from its source evidence."
+  - id: SR-AI-006
+    implements: FR-AI-005
+    text: "Direct use MUST return one candidate; an optional acquisition report and the deterministic admission result MUST remain separate artifacts, only conformant Schemami tooling writes admission results, and report presence or changes cannot affect recipe identity or Calculus."
+  - id: SR-AI-007
+    implements: FR-AI-006
+    text: "The local harness MUST run strict JSON, schema, and semantic admission and emit stable deduplicated RFC 6901 problems plus canonical SHA-256 only after successful admission."
+  - id: SR-AI-008
+    implements: FR-AI-006
+    text: "Repair requests MUST pin contract and candidate input identity, contain deterministic problems, return a complete replacement candidate/report, and re-run full admission without weakening rules."
+  - id: SR-AI-009
+    implements: FR-AI-007
+    text: "Instructions and tooling MUST treat source content as untrusted data, allow only host-authorized source access, escape returned text, execute no returned content, and prevent source instructions from altering contract or validation."
+    verify_kind: behavioral
+    intent: "Prompt injection and hostile source text remain data rather than authority."
+    falsifying_observation: "Source content changes output rules, reads undeclared resources, hides issues, or executes code/HTML."
+  - id: SR-AI-010
+    implements: FR-AI-008
+    text: "Documentation MUST provide a direct AI workflow and an SDK workflow, MUST route every returned candidate to deterministic admission, and MUST NOT require an acquisition report or model-generated digest for direct use."
+  - id: SR-AI-011
+    implements: FR-AI-009
+    text: "Request/report/repair schemas MUST remain optional advanced integrator artifacts; OCR, transcription, source upload, provider adapters, model runtimes, telemetry, and support claims MUST remain outside the release."
+acceptance_criteria:
+  - id: AC-AI-001-1
+    source: prd
+    fr: FR-AI-001
+    given: the same acquisition contract and source fixture
+    when: an adapter emits a candidate
+    then: it identifies the contract and cannot substitute an adapter validity claim for admission
+  - id: AC-AI-002-1
+    source: prd
+    fr: FR-AI-002
+    given: ordered source-authored culinary facts
+    when: capture represents them
+    then: each is traceable and authored order is preserved
+  - id: AC-AI-003-1
+    source: prd
+    fr: FR-AI-003
+    given: an unfamiliar local concept
+    when: no app mapping exists
+    then: it receives a local ID and source-language name without a global claim
+  - id: AC-AI-004-1
+    source: prd
+    fr: FR-AI-004
+    given: an ambiguous or missing structured fact
+    when: conversion completes
+    then: the optional report records the issue when present and dependent operations refuse instead of consuming a guess
+  - id: AC-AI-005-1
+    source: prd
+    fr: FR-AI-005
+    given: candidate and optional report artifacts
+    when: report presence or report-only bytes change
+    then: recipe identity and calculations remain unchanged
+  - id: AC-AI-006-1
+    source: prd
+    fr: FR-AI-006
+    given: deterministic admission problems
+    when: repair runs
+    then: a complete replacement is fully re-admitted using stable problems and pointers
+  - id: AC-AI-007-1
+    source: prd
+    fr: FR-AI-007
+    given: hostile source instructions
+    when: acquisition runs
+    then: they cannot alter validation, fabricate authority, hide omissions, or execute content
+  - id: AC-AI-008-1
+    source: prd
+    fr: FR-AI-008
+    given: source material and the direct AI guide
+    when: a user requests a candidate
+    then: the guide routes the untrusted JSON to deterministic admission and makes no provider-validity claim
+  - id: AC-AI-009-1
+    source: prd
+    fr: FR-AI-009
+    given: an integrator needing auditable source coverage
+    when: it adopts the optional contract
+    then: candidate report and admission remain separate and exact candidate bytes are verified
+  - id: SAC-AI-001
+    source: spec
+    fr: FR-AI-005
+    given: candidate, acquisition report, and admission result
+    when: any report field changes
+    then: exact candidate input bytes and admitted canonical identity remain unchanged
+  - id: SAC-AI-002
+    source: spec
+    fr: FR-AI-006
+    given: a stale candidate digest or partial repair output
+    when: the repair harness evaluates it
+    then: repair refuses and never patches or weakens the previous candidate
+protections:
+  - id: SP-001
+    source: prd
+    text: "Acquisition output remains untrusted until deterministic Schemami admission succeeds."
+  - id: SP-002
+    source: prd
+    text: "Source prose, evidence, confidence, and acquisition-report content never become Recipe Calculus inputs."
+  - id: SP-003
+    source: prd
+    text: "Conversion never depends on a Schemami-owned central vocabulary registry."
+  - id: SP-004
+    source: prd
+    text: "Schemami owns no source upload, OCR, transcription, provider, model runtime, or recipe storage in this release."
+  - id: SP-005
+    source: prd
+    text: "Adapters prefer visible omission or unresolved reporting over unsupported invention."
+  - id: SSP-001
+    source: spec
+    text: "An adapter can never write or override the deterministic admission result."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-008-schemami-source-to-candidate-bridge.md
+    description: Track A product requirements.
+    source: prd
+  - type: doc
+    path_or_url: docs/product/specs/SPEC-007-schemami-v1-stable-release/spec.md
+    description: Stable v1 admission and Calculus authority.
+    source: prd
+revision_history:
+  - at: "2026-08-13T00:00:00Z"
+    author: Daniel Gomes
+    action: revised
+    note: "Replaced the capture/evaluation program with direct-AI and SDK conversion-kit documentation; retained request/report/repair as an optional integrator contract."
+  - at: "2026-08-11T21:30:19Z"
+    author: Daniel Gomes
+    action: revised
+    note: "Excluded cloud-provider lanes and specified local hybrid versus native local/offline evidence boundaries."
+  - at: "2026-08-11T21:30:19Z"
+    author: Daniel Gomes
+    action: revised
+    note: "Specified the approved five-lane real-source evaluation and shared twelve-source corpus floor."
+  - at: "2026-08-11T18:21:47Z"
+    author: Daniel Gomes
+    action: created
+    note: "Draft provider-neutral acquisition contract, artifact separation, repair boundary, and evaluation design for current Schemami v1."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

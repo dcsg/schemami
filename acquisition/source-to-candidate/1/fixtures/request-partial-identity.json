@@ -1,0 +1,5 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "document": {"kind": "recipe", "collection": "personal", "content_language": "pt-PT"},
+  "sources": [{"id": "source-1", "kind": "text"}]
+}

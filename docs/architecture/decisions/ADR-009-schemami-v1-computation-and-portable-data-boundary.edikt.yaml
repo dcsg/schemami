@@ -1,0 +1,59 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-009-schemami-v1-computation-and-portable-data-boundary.md
+signals:
+  - diagnostics
+  - document identity
+  - recipe calculus
+  - source evidence
+directives:
+  - text: 'Schemami v1 retains scale, resolve_formula, convert_quantity, reading_order, and schedule; ADR-014 additionally requires deterministic typed-recipe resolution before they consume an active graph. Tracks, lanes, arbitrary expressions, and untyped constraints remain outside v1. (ref: ADR-009)'
+    source_excerpt:
+      line_start: 6
+      line_end: 10
+      quote: |-
+        **Schemami v1 amendment:** ADR-014 supersedes the closed five-operation claim
+        and the exclusion of typed options/guards. The five existing operations remain;
+        the revised wire must add deterministic recipe resolution before those
+        operations consume an active graph. Tracks, lanes, arbitrary expressions, and
+        untyped constraints remain outside v1.
+  - text: 'Schemami v1 document identity MUST be local to an explicit collection and exact published bytes; external references, evidence, prose, and extensions MUST remain separate from calculation semantics. (ref: ADR-009)'
+    source_excerpt:
+      line_start: 35
+      line_end: 64
+      quote: |-
+        5. A document has opaque `collection` and `id` identifiers using the accepted
+           lowercase 1–128-character local-ID grammar. `id` is unique within its
+           collection. `revision` is a positive base-10 integer without a leading zero.
+           A published pack identifies an exact document by `(collection, id, revision,
+           JCS SHA-256 digest)`; no global registry or lookup is implied.
+        6. An entity MAY carry `external_references`, an array of absolute RFC 3986
+           URI strings. References are optional, never resolved by the protocol, and
+           never provide calculation facts or alter canonical local identity.
+        7. `sources` are document-level acquisition records with a local `id`, a URI
+           or URI-reference, optional registered `media_type`, and optional lowercase
+           hexadecimal SHA-256 digest. Evidence records carry `source`, RFC 6901
+           target `pointer`, optional source `raw_text`, and optional canonical-decimal
+           `confidence` from `0` to `1`. A media-type-defined URI fragment may locate a
+           source span; no Schemami free-form span grammar is introduced.
+        8. Canonical authored prose is limited to recipe `title`, entity `name`, step
+           `instruction`, and `notes`. All are source-language strings under
+           `content_language`; `description`, `label`, and locale-map aliases are not
+           canonical alternatives.
+        9. Extension member names match `x-` followed by one or more lowercase ASCII
+           DNS-label-style tokens separated by hyphens. The first token is a claimed
+           owner convention, not a Schemami registry. Unknown extensions round-trip
+           unchanged and do not affect Schemami logic.
+        10. Operation results use `operation` tokens above, `status` values `ok`,
+           `refused`, or `not_applicable`, and RFC 9457-inspired absolute problem
+           type URIs under `https://schemami.dev/problems/`. Initial codes are
+           `unsupported-legacy`, `invalid-document`, `invalid-decimal`,
+           `resource-limit`, `unknown-unit`, `ambiguous-unit`, `dimension-mismatch`,
+           `unsupported-quantity-kind`, `unresolved-reference`, `missing-fact`, and
+           `invalid-operation-arguments`. A problem with document scope carries an
+           RFC 6901 `pointer`.
+paths:
+  - schema/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

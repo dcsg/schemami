@@ -1,0 +1,391 @@
+schema_version: "1.0"
+type: prd
+id: PRD-007
+title: "Schemami stable protocol release — full wire rename and PaodePortugal adoption"
+slug: schemami-stable-protocol-release
+status: accepted
+rigor: platform
+author: Daniel Gomes
+created_at: "2026-08-10T21:35:00Z"
+requirements:
+  - id: FR-NAME-001
+    component: protocol-identity
+    text: "Deliver Schemami wire v1 with accepted schemami: \"1\", protocol-reserved x-schemami- extensions, Schemami-named schema/bundle/vector/validator artifacts, and immutable canonical schema URLs under the accepted schemami.dev host. New canonical RCP identifiers and rcp.invalid identifiers are rejected. Integrator x-<owner>- extensions are preserved but cannot affect protocol logic unless explicitly standardized."
+    status: accepted
+  - id: FR-MODEL-001
+    component: semantic-field-contract
+    text: "Audit every field and public API across documents, bundles, schemas, registry, Calculus, validator, viewer, vectors, and cutover inventory. Publish an accepted field-name register before new schemas are written: name, type, scope, semantic definition, and authoritative standard/value vocabulary where one exists. Reuse of a familiar name is allowed when containing type and scope make meaning unambiguous; rename only for a demonstrated semantic collision, not repetition alone. Required content_language contains a BCP 47 source-content tag; UI locale/translation is outside the protocol. Optional origin uses ISO 3166-1 country, matching ISO 3166-2 subdivision, and source-language locality; country/region, unit identity, display formatting, source evidence, local identity, external reference, and app resolution context are all distinct concepts."
+    status: accepted
+  - id: FR-CUTOVER-001
+    component: clean-cutover
+    text: "Replace repository-owned active RCP schemas, documents, bundle artifacts, vectors, generated data, validation, Calculus, and viewer paths with Schemami wire v1. The released reader/writer recognizes Schemami only; RCP input returns an explicit unsupported-legacy diagnostic. Ship no dual reader, public migration tool, alias, or deprecation-window commitment. Historical records may retain historical RCP terminology outside the active normative/runtime surface."
+    status: accepted
+  - id: FR-VOCAB-001
+    component: vocabulary-resolution
+    text: "Ingredient lines require recipe-local id and exactly one source-language name or strict alternatives; recipes MAY also declare local technique and equipment entities with their own local IDs and source-language names. Every recipe-local ID matches ^[a-z0-9][a-z0-9_-]*$ and contains at most 128 characters; matching is exact and case-sensitive, and readers never normalize uppercase. Lowercase UUID strings are permitted without acquiring UUID semantics. Local entities remain structurally valid and readable without a central registry. An optional integrator maps (document identity, local id) as application resolution context only. Do not introduce item, generic terms, package-owned vocabulary, federation, or global registries in v1. Local labels do not assert deterministic facts; operations needing absent facts return structured diagnostics."
+    status: accepted
+  - id: FR-METHOD-002
+    component: structured-method
+    text: "Represent the authored method as one recursively nested ordered sequence containing only sections and steps. Array order is authored reading order; explicit dependencies govern execution. Sections express culinary phases and may be conditional. Steps are the only dependency and scheduling units and use exactly one of direct instruction or a non-empty ordered action list. Actions preserve meaningful internal order and may carry techniques, completion conditions, ingredient/equipment usage, and evidence, but never independent dependencies or schedule duration. Application timer policy, notifications, session state, and UI behavior remain outside canonical data."
+    status: accepted
+  - id: FR-VARIATION-001
+    component: authored-variation
+    text: "Represent source-authored recipe-local choices, toggles, and measured inputs with closed typed predicates. Conditional activation may apply to ingredients, component references, equipment, sections, steps, and actions. resolve_selection uses instance-scoped selections and returns active identifiers without rewriting a recipe. Missing required selections keep all authored alternatives displayable and refuse only dependent operations. Admission validates every distinct reachable active graph, including exact measurement-threshold boundaries and regions, and never lets an inactive branch hide invalid content. Only a source-authored default may select implicitly. Strict substitutions replace exactly one ingredient at the same resolved quantity, unit, formula participation, and scaling behavior; anything requiring recalculation or another process change is an authored branch or separate recipe."
+    status: accepted
+  - id: FR-COMPOSITION-001
+    component: composition-and-timing
+    text: "Allow exact references to required outputs of other recipe documents by collection, document ID, revision, and JCS SHA-256 digest, resolved only from explicitly loaded offline bytes. A parent component declares its required amount; the referenced child output may declare a compatible measured yield for exact UCUM cross-recipe scaling, and absent or incompatible yield causes refusal. Step resource flow is authoritative and action flow is subset attribution. Each selected preparation or output has at most one producer and each consumed one exactly one. Composed reading and schedule results place a used child output producer from explicit facts, while reporting active unconsumed components instead of silently claiming completeness. relative_timing remains validated authored and calendar-presentation data and does not alter earliest-start scheduling. Complete export is one self-contained JSON bundle containing exactly the deduplicated dependency closure of every declared branch."
+    status: accepted
+  - id: FR-LINEAGE-001
+    component: recipe-identity-and-lineage
+    text: "Source-authored optional ingredients, strict one-for-one substitutions, and alternatives remain one recipe. Any user modification outside those declared choices creates a complete new recipe document with lineage to its source; lineage is provenance, never a runtime patch. Imports preserve the source recipe unchanged."
+    status: accepted
+  - id: FR-CALC-006
+    component: recipe-calculus
+    text: "Define tagged absolute quantity shapes for measured, range, and open and ordered locally identified formulas with typed inputs, direct ratio parts, percentage points, and one authority per input. Public operations are resolve_selection, resolve_formula, scale, convert_quantity, reading_order, and schedule. Formula evaluation computes all authored terms, filters inactive results without redistribution, and reports authored and selected totals. scale requires exactly one decimal factor or root formula_target; target scaling derives one unrounded exact rational factor from the selected total and applies it once across active root and component inputs. Results carry JCS-derived input identity, effective selection, typed quantities, and applicable formula evaluations, never a rewritten recipe. Canonical values and results retain the accepted 16-total-digit, four-fractional-digit, half-even rule. Core scaling is linear or fixed; unknown extension behavior, ambiguous or physical conversion, arbitrary expressions, tracks, lanes, inferred interleaving, and residual rounding allocation remain absent."
+    status: accepted
+  - id: FR-EVIDENCE-001
+    component: source-evidence-and-diagnostics
+    text: "Preserve imported values through optional document-level sources and RFC 6901-targeted evidence. A supplied source has local ID, non-empty URI or URI-reference, optional registered media type, and optional SHA-256 digest. Evidence may carry raw text, 0-to-1 canonical-decimal confidence, and a standard-backed fragment selector locating part of its source. Selector offsets are source locators, never culinary duration or Calculus input. Calculus and validation never parse evidence into structured recipe facts. Operation results use accepted operation tokens, status, stable https://schemami.dev/problems/ type URIs, and RFC 6901 pointers; human rendering and localization remain integrator-owned."
+    status: accepted
+  - id: FR-PORTABLE-001
+    component: portable-data-boundary
+    text: "Keep document identity local to an explicit collection: document id and collection use the accepted opaque local-ID grammar; revision is a positive integer, and a published bundle pins JCS SHA-256 bytes. Optional external_references contain absolute RFC 3986 URIs without resolution or calculation semantics. Canonical prose occurs only in explicitly registered source-language fields. Extension names use lowercase DNS-label-style x-<owner>-<name> tokens and round-trip unchanged; they never affect core logic but remain digest-significant canonical content."
+    status: accepted
+  - id: FR-PAO-001
+    component: adoption-readiness
+    text: "Prove the registry-free and cross-product boundary through owner-reviewed Pão de Portugal and Fornada adapter dogfood against the same committed candidate bytes. Each product owns its adapter, mapping, UI overlay, aggregate, and compatibility report; neither application checkout becomes an automated Schemami conformance input."
+    status: accepted
+  - id: FR-REL-001
+    component: release-conformance
+    text: "Publish a versioned release manifest, clean-cutover scope note, normative conversion and recipe-local vocabulary vectors, and cross-language conformance results. Owner-reviewed two-product dogfood precedes publication, but clean-clone release gates consume only repository-owned Schemami fixtures and never either application repository."
+    status: accepted
+acceptance_criteria:
+  - id: AC-NAME-001-1
+    fr: FR-NAME-001
+    given: a canonical Schemami v1 schema, bundle, vector, or document
+    when: identity and marker gates run
+    then: it uses only the approved Schemami wire identity and protocol-owned immutable URL; legacy RCP identifiers fail in newly written canonical artifacts
+    status: accepted
+  - id: AC-MODEL-001-1
+    fr: FR-MODEL-001
+    given: the complete protocol field and API inventory
+    when: the field-name review runs
+    then: every field has an accepted definition, scope, type, and standard/value vocabulary decision; only same-scope ambiguity, unsafe aliasing, or undocumented semantics fail the review
+    status: accepted
+  - id: AC-MODEL-001-2
+    fr: FR-MODEL-001
+    given: a Schemami v1 document, bundle, validator result, and Calculus result
+    when: naming and language ambiguity gates run
+    then: contextually repeated names remain valid where their types and scopes differ; required content_language is one BCP 47 field and is never conflated with UI locale, translation, country or region, or display preference
+    status: accepted
+  - id: AC-CUTOVER-001-1
+    fr: FR-CUTOVER-001
+    given: an active Schemami v1 schema, bundle, vector, document, validator, viewer, or Calculus path
+    when: the cutover inventory gate runs
+    then: it contains only Schemami names and identifiers; RCP remains only in explicitly historical records, ADR-006, or negative unsupported-legacy input vectors
+    status: accepted
+  - id: AC-CUTOVER-001-2
+    fr: FR-CUTOVER-001
+    given: an RCP-marked input
+    when: the released Schemami reader evaluates it
+    then: it returns the documented unsupported-legacy diagnostic and never falls back to a legacy parser or migrator
+    status: accepted
+  - id: AC-VOCAB-001-1
+    fr: FR-VOCAB-001
+    given: a recipe-local ingredient, technique, or equipment entity unknown to any catalog
+    when: it is structurally validated and rendered
+    then: it remains valid and readable from source facts without a central or package entry
+    status: accepted
+  - id: AC-VOCAB-001-2
+    fr: FR-VOCAB-001
+    given: an operation requiring an absent fact for an unknown or local term
+    when: the operation runs
+    then: only that operation refuses with a pointer-specific machine code and the recipe remains available
+    status: accepted
+  - id: AC-VOCAB-001-3
+    fr: FR-VOCAB-001
+    given: a step with local id, source-language instruction, and explicit structured facts
+    when: it is validated, rendered, and scheduled
+    then: it requires no primitive or action catalog and only its explicit structured facts affect protocol behavior
+    status: accepted
+  - id: AC-VOCAB-001-4
+    fr: FR-VOCAB-001
+    given: lowercase kebab, snake, UUID-shaped, and 128-character local IDs plus uppercase, dotted, spaced, tilde, non-ASCII, and 129-character neighbours
+    when: local identity validation and reference resolution run
+    then: lowercase letters, digits, hyphen, and underscore at no more than 128 characters resolve exactly and every unsupported spelling or overlong value rejects without normalization
+    status: accepted
+  - id: AC-VOCAB-001-5
+    fr: FR-VOCAB-001
+    given: one step references multiple declared techniques
+    when: validation, canonicalization, and round-trip rendering run
+    then: ordered unique techniques is preserved byte-significantly; singular technique, duplicates, undeclared IDs, and reader sorting reject or fail conformance
+    status: accepted
+  - id: AC-METHOD-002-1
+    fr: FR-METHOD-002
+    given: nested sections, steps, ordered actions, and step and action resource declarations
+    when: validation, round-trip rendering, and selected-graph calculation run
+    then: the recursive sequence preserves authored order; only steps own dependencies, schedule duration, and authoritative resource flow; action flow is a subset; selected action-list steps retain an action; and each consumed resource has exactly one active producer
+    status: accepted
+  - id: AC-METHOD-002-2
+    fr: FR-METHOD-002
+    given: observation, measurement, and composed completion conditions
+    when: validation and method resolution run
+    then: conditions remain structured, target the correct semantic node, and are never inferred by parsing prose or confused with elapsed duration
+    status: accepted
+  - id: AC-METHOD-002-3
+    fr: FR-METHOD-002
+    given: an application workflow primitive and an explicitly authored culinary technique
+    when: an adapter creates a Schemami document
+    then: only the explicitly authored technique is emitted; workflow step types, heuristics, timer defaults, and recommendations do not become canonical technique facts
+    status: accepted
+  - id: AC-VARIATION-001-1
+    fr: FR-VARIATION-001
+    given: a recipe with authored choices, toggles, measured inputs, alternatives, optional nodes, and a dormant broken branch
+    when: admission and resolve_selection run over exact threshold boundaries and regions plus valid, missing, and invalid instance-scoped selections
+    then: every distinct reachable graph is checked and equivalent graphs deduplicated; valid selection returns active identifiers and effective defaults without changing identity; missing values refuse only dependent operations; dormant invalid content rejects; excessive analysis returns resource-limit
+    status: accepted
+  - id: AC-VARIATION-001-2
+    fr: FR-VARIATION-001
+    given: a declared strict substitution and a proposed replacement needing quantity or process compensation
+    when: validation and scaling run
+    then: the one-for-one replacement preserves exact quantity, unit, formula participation, and scaling behavior; the compensating replacement cannot masquerade as a substitution
+    status: accepted
+  - id: AC-COMPOSITION-001-1
+    fr: FR-COMPOSITION-001
+    given: a parent recipe references an exact child output and all pinned bytes are loaded
+    when: resolution, scaling, reading order, and scheduling run
+    then: the reference resolves offline by collection, id, revision, and JCS digest; exact compatible measured yield scales the child once; explicit producer and consumer facts compose order and schedule; active unconsumed components are reported; missing bytes, mismatch, incompatible yield, producer ambiguity, or cycle refuses
+    status: accepted
+  - id: AC-COMPOSITION-001-2
+    fr: FR-COMPOSITION-001
+    given: a complete export with nested component dependencies and conditional branches
+    when: bundle validation runs
+    then: one JSON bundle contains exactly the deduplicated closure of every declared branch, rejects missing, duplicate, and unrelated documents, detects cycles and resource exhaustion, and needs no network access
+    status: accepted
+  - id: AC-LINEAGE-001-1
+    fr: FR-LINEAGE-001
+    given: a source recipe, a source-authored option selection, and a user-authored undeclared modification
+    when: identity evaluation runs
+    then: the option selection retains source identity while the undeclared modification is a complete new recipe with lineage and never a runtime patch
+    status: accepted
+  - id: AC-CALC-006-1
+    fr: FR-CALC-006
+    given: explicit UCUM 2.2 same-dimension or Celsius/Fahrenheit input
+    when: Go and TypeScript replay shared vectors
+    then: they return identical canonical decimal strings with at most 16 total digits and four fractional digits under the pinned tie-rounding rule and no floating tolerance or integrator-dependent rounding
+    status: accepted
+  - id: AC-CALC-006-2
+    fr: FR-CALC-006
+    given: bare regional, unknown, formula relationship, non-measured quantity, cross-dimension, or mass-volume input
+    when: conversion runs
+    then: it refuses with the documented code and does not infer region, density, percentage, ratio, or ingredient facts
+    status: accepted
+  - id: AC-CALC-006-3
+    fr: FR-CALC-006
+    given: positive elapsed durations and a duration window
+    when: schema validation and Go and TypeScript scheduling run
+    then: PT8M, PT1H10M, P2D, and P1W use identical elapsed semantics; minimum, target, and maximum are preserved and every supplied pair is ordered; inverted windows, compact Model 1, negative, year, and month forms reject
+    status: accepted
+  - id: AC-CALC-006-4
+    fr: FR-CALC-006
+    given: a recipe with dependency edges and unrelated declared steps
+    when: Go and TypeScript run reading_order
+    then: they return the same dependency-respecting linear projection, using declaration order only to break ties, with no track or lane field required
+    status: accepted
+  - id: AC-CALC-006-5
+    fr: FR-CALC-006
+    given: an open guide plus percentage formulas whose named basis is correct, non-100, or absent
+    when: schema, semantic validation, resolve_formula, and scale run
+    then: guides admit measured or range only; a percentage basis appears exactly once at 100; recursive open guides and invalid basis authority reject identically
+    status: accepted
+  - id: AC-CALC-006-6
+    fr: FR-CALC-006
+    given: a formula with optional terms, authored total 400 g, selected total 300 g, and a 400 g formula_target
+    when: both implementations resolve and scale it
+    then: inactive terms do not redistribute; one exact unrounded 400/300 factor applies once to all active root and component quantities; targeted scaled_total is 400 g; line quantization is half-even with no residual allocation
+    status: accepted
+  - id: AC-CALC-006-7
+    fr: FR-CALC-006
+    given: nested components, equivalent reachable graphs, multiple independent blockers, requests at each logical capacity floor, and pathological residual-analysis expressions
+    when: admission and Calculus run in both implementations at default and raised analysis-state ceilings
+    then: results, evaluation digests and selections, component paths, deduplicated diagnostics, pointer and type ordering, logical-capacity boundaries, and request-scoped analysis-state refusals match byte-for-byte
+    status: accepted
+  - id: AC-EVIDENCE-001-1
+    fr: FR-EVIDENCE-001
+    given: imported source evidence and a structured target field
+    when: evidence validation runs
+    then: the evidence uses a valid RFC 6901 target and cannot substitute for or alter the structured value used by logic
+    status: accepted
+  - id: AC-EVIDENCE-001-2
+    fr: FR-EVIDENCE-001
+    given: a refused operation
+    when: its result is rendered by two integrations
+    then: its stable problem type and pointer are identical; each integration may render its own localized wording
+    status: accepted
+  - id: AC-EVIDENCE-001-3
+    fr: FR-EVIDENCE-001
+    given: one video source and evidence for a step plus two ordered technique occurrences
+    when: evidence validation and URI-fragment reconstruction run
+    then: each pointer resolves, W3C temporal intervals are ordered, one source is reused, and selector offsets never alter schedule or culinary duration
+    status: accepted
+  - id: AC-PORTABLE-001-1
+    fr: FR-PORTABLE-001
+    given: a bundled document, owner extension, and external URI reference
+    when: canonicalization and bundle resolution run
+    then: authored identity is local to collection, id, and revision; exact bytes use the digest; the extension changes that digest but not protocol logic; and the URI remains optional and unresolved
+    status: accepted
+  - id: AC-PAO-001-1
+    fr: FR-PAO-001
+    given: a Schemami recipe with an unknown recipe-local term
+    when: it is validated, rendered, and a fact-dependent operation is evaluated
+    then: it remains valid and readable without a central entry; only the dependent operation refuses with a stable diagnostic
+    status: accepted
+  - id: AC-PAO-001-2
+    fr: FR-PAO-001
+    given: a Schemami release candidate accepted through Pão and Fornada dogfood
+    when: clean-clone release gates run
+    then: adapter reports are owner acceptance evidence, while no application checkout, branch, overlay, aggregate, or product test executes as a conformance input
+    status: accepted
+  - id: AC-REL-001-1
+    fr: FR-REL-001
+    given: a release candidate
+    when: release gates run from a clean clone
+    then: cutover, schema, semantic, Calculus, vocabulary, and cross-language conformance gates pass before the stable tag is created
+    status: accepted
+protections:
+  - id: SP-001
+    text: "No released Schemami v1 path accepts, emits, aliases, or migrates RCP. Historical records remain clearly historical; an RCP marker receives an explicit unsupported-legacy result."
+  - id: SP-002
+    text: "Local, package, external, and integrator-resolved facts remain distinguishable in operation diagnostics; resolution never makes an unknown term appear centrally governed."
+  - id: SP-003
+    text: "The release must not create a Schemami recipe store, translation service, hosted model, or global catalog stewardship obligation."
+  - id: SP-004
+    text: "Pão and Fornada dogfood committed candidate bytes before publication as owner acceptance. Their product aggregates remain authoritative, and no application code, branch, or test is a clean-clone Schemami conformance input."
+  - id: SP-005
+    text: "Active RCP implementation surfaces are classified before replacement; generated data is regenerated from Schemami sources. No text replacement may silently turn a historical record into false Schemami evidence."
+  - id: SP-006
+    text: "A field rename is a model decision, not a style cleanup. Reuse is permitted when scope and type retain meaning. Schemami v1 carries no convenience aliases or legacy spellings."
+  - id: SP-007
+    text: "Prose, labels, evidence, and app extensions never activate alternatives or satisfy completion conditions. Every executable variation is typed, source-authored, and deterministically resolved or explicitly refused."
+solution_references:
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-004-presentation-owned-translations.md
+    description: Translation stays presentation-owned.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-005-local-vocabulary-and-integrator-resolution.md
+    description: Registry-optional vocabulary boundary.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-006-schemami-v1-clean-cutover.md
+    description: No legacy RCP support or Pão release dependency.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-007-recipe-line-local-identity.md
+    description: Ingredient-line local identity replaces registry references.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-008-local-method-entities-and-exact-quantity-contract.md
+    description: Local method entities, quantities, evidence, and diagnostics, as amended by ADR-014.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-014-structured-method-variation-composition-and-lineage.md
+    description: Structured method, authored variation, composition, and recipe lineage boundary.
+  - type: adr
+    path_or_url: docs/architecture/decisions/ADR-015-exact-structured-method-wire-and-bundle-closure.md
+    description: Exact field shapes, minimal requiredness, resource authority, bundle closure, and digest semantics.
+  - type: doc
+    path_or_url: docs/product/prds/artifacts/PRD-007/field-name-audit.md
+    description: Field/API ambiguity inventory and required naming register.
+  - type: doc
+    path_or_url: docs/product/prds/artifacts/PRD-007/wire-identity-standards-fit.md
+    description: Standards-fit assessment for the in-document Schemami identity marker.
+  - type: doc
+    path_or_url: docs/product/prds/artifacts/PRD-007/rcp-clean-cutover-inventory.md
+    description: Classified active RCP identity surface and clean-cutover evidence plan.
+  - type: doc
+    path_or_url: docs/product/prds/artifacts/PRD-007/paodeportugal-adoption-gap.md
+    description: Existing Pão parity assumptions and stable adoption corpus requirements.
+  - type: prototype
+    path_or_url: prototypes/discovery-002/
+    description: Non-normative unit and local payload evidence.
+stakeholders: [Daniel Gomes, Pão de Portugal]
+dependencies: [accepted release identity and field-name decisions]
+nfrs: []
+risks: []
+open_questions: []
+source_specs: []
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+forcing_questions:
+  problem_behind_problem: "A brand rename cannot produce a stable public protocol if the public wire contract remains RCP; retaining a private pre-publication contract as a compatibility burden would weaken the clean Schemami boundary."
+  evidence_or_hypothesis: "A full clean Schemami cutover with registry-optional local vocabulary and exact unit conversion can become a stable PaodePortugal-ready boundary without content-service or catalog stewardship."
+  north_metric_and_counter: "North: a clean-clone Schemami stable release. Counter: zero active RCP runtime identities, zero central-catalog admission blockers, and no Pão application dependency in the release gate."
+  must_not_change: "Translation remains presentation-owned; Schemami does not host recipes or inference; unknown local terms remain readable; mass-volume conversion is out of scope; Pão stays an external future integrator."
+  riskiest_assumption: "The clean cutover captures the right protocol boundary without an undisclosed external RCP consumer or an essential Pão dependency."
+revision_history:
+  - at: "2026-08-11T18:00:00Z"
+    author: Daniel Gomes
+    action: calculus-closure-approved
+    note: "Accepted ADR-016 after aligned Pão and Fornada review: resolve_selection, exhaustive distinct reachable graphs, non-redistributing optional terms, factor XOR root formula_target, exact component scaling, composed schedule reporting, deterministic diagnostics, and portable logical capacity. ADR-017 separately bounds request-scoped residual-analysis states."
+  - at: "2026-08-11T16:30:00Z"
+    author: Daniel Gomes
+    action: wire-closure-approved
+    note: "Accepted ADR-015 and the reviewed Phase 7 wire: minimal required identity/readability fields, step-authoritative resource flow, all-branch exact bundles, child-output yield ownership, digest-significant extensions, separate formula allocations, and two-product owner acceptance without application checkouts in conformance."
+  - at: "2026-08-11T14:45:00Z"
+    author: Daniel Gomes
+    action: scope-amended
+    note: "Accepted ADR-014 after Pão and Fornada dogfood: preserve authored method hierarchy, actions, completion conditions, alternatives, explicit environment facts, exact recipe composition, and lineage; keep application heuristics, workflow primitives, timer policy, and bake state outside the protocol. The unpublished da8449f candidate is now a verified baseline, not the stable release."
+  - at: "2026-08-11T00:45:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted ADR-009: minimal v1 Calculus with reading_order, deferred lanes/branches/constraints, local pack identity, optional unresolved URI references, source evidence, canonical prose, extension grammar, and problem URI registry."
+  - at: "2026-08-11T00:35:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted a 16-total-digit maximum (excluding decimal point and permitted minus sign) for canonical decimal inputs and public results, in addition to the four-fractional-digit maximum."
+  - at: "2026-08-11T00:30:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted a 128-character maximum for recipe-local IDs."
+  - at: "2026-08-10T23:55:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted recipe-practical numeric precision: canonical decimal strings allow at most four fractional digits, normally remain integers, trim trailing zeros, and are used for public results instead of rational objects."
+  - at: "2026-08-10T23:45:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted grouped formula semantics: ratios are ordered colon parts such as 1:2:2 or 1:15; percentages store percentage points such as 75 or 1.8 against a named basis. Neither is a scalar quantity kind."
+  - at: "2026-08-10T23:15:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted ADR-008: recipe-local techniques/equipment, tagged quantities with canonical decimal strings, UCUM 2.2 measured units, document-level JSON-Pointer evidence, and stable URI/pointer diagnostics."
+  - at: "2026-08-10T23:00:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted ADR-007: an ingredient line id is the recipe-local vocabulary identity, with source-language name. No generic terms catalogue, item reference, package vocabulary, or central registry requirement in v1."
+  - at: "2026-08-10T22:45:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Verified no remote RCP tags, published schema host, or known external adopter. Accepted ADR-006 clean cutover: no dual reader, migration tool, deprecation window, or Pão integration release dependency."
+  - at: "2026-08-10T22:30:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted required content_language as the source-content BCP 47 tag. It replaces Model 1 lang in Schemami v1; no default, UI locale, translation, or geographic-origin semantics are permitted."
+  - at: "2026-08-10T22:20:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted Schemami root marker schemami: \"1\" and reserved protocol extension namespace x-schemami-*. Integrator-owned x-<owner>- extensions are preserved but cannot affect protocol logic unless standardized."
+  - at: "2026-08-10T22:10:00Z"
+    author: Daniel Gomes
+    action: decision-recorded
+    note: "Accepted schemami.dev as the canonical schema-ID host. Host readiness and immutable HTTPS publication remain release gates. Refined pending root-marker recommendation from numeric schemami: 1 to string schemami: \"1\" after standards comparison."
+  - at: "2026-08-10T21:35:00Z"
+    author: Daniel Gomes
+    action: created
+    note: "Drafted after Daniel selected the full wire rename path. AI conversion and documentation follow this stable-release and PaodePortugal adoption proof."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

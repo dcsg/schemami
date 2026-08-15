@@ -1,0 +1,205 @@
+schema_version: "1.0"
+type: spec
+id: SPEC-009
+title: "Schemami Swift SDK fast lane"
+slug: schemami-swift-sdk-fast-lane
+status: accepted
+author: Daniel Gomes
+created_at: "2026-08-11T18:21:47Z"
+source_prd: PRD-009
+source_brainstorm: null
+source_prompt: null
+source_prd_coverage:
+  prd: PRD-009
+  covered:
+    - fr: FR-SWIFT-001
+      by: [SR-SWIFT-001, SR-SWIFT-002]
+    - fr: FR-SWIFT-002
+      by: [SR-SWIFT-003, SR-SWIFT-004]
+    - fr: FR-SWIFT-003
+      by: [SR-SWIFT-005]
+    - fr: FR-SWIFT-004
+      by: [SR-SWIFT-006]
+    - fr: FR-SWIFT-005
+      by: [SR-SWIFT-007]
+    - fr: FR-SWIFT-006
+      by: [SR-SWIFT-008]
+    - fr: FR-SWIFT-007
+      by: [SR-SWIFT-009]
+    - fr: FR-ADJ-001
+      by: [SR-ADJ-001]
+    - fr: FR-ADJ-002
+      by: [SR-ADJ-002]
+    - fr: FR-ADJ-003
+      by: [SR-ADJ-002]
+    - fr: FR-ADJ-004
+      by: [SR-ADJ-001]
+  deferred: []
+  uncovered: []
+requirements:
+  - id: SR-SWIFT-001
+    implements: FR-SWIFT-001
+    text: "Create sdk/swift as a versioned Swift Package exposing SchemamiCore, SchemamiCalculus, and SchemamiDiff, targeting iOS 17 and macOS 14 and consumable by Fornada's current root package under the verified local toolchain."
+    verify_kind: structural
+    intent: "The SDK is an independently consumable package on Fornada's actual baseline."
+    falsifying_observation: "Fornada needs copied sources, a CLI subprocess, or a newer unverified deployment target."
+  - id: SR-SWIFT-002
+    implements: FR-SWIFT-001
+    text: "Phase 0 MUST prove exact dependency versions, licenses, Swift tools compatibility, required JSON Schema behavior, and transitive cost before accepting Package.resolved; a failed candidate is recorded rather than patched around invisibly."
+  - id: SR-SWIFT-003
+    implements: FR-SWIFT-002
+    text: "SchemamiCore MUST parse strict JSON into a retained typed SchemamiValue, reject duplicate members and invalid I-JSON/Unicode, preserve arrays and every admitted x-* value, and support exact RFC 6901 navigation."
+    verify_kind: behavioral
+    intent: "Valid unfamiliar content survives and invalid ambiguous JSON never receives canonical identity."
+    falsifying_observation: "Round-trip loses an extension/order or duplicate keys are accepted."
+  - id: SR-SWIFT-004
+    implements: FR-SWIFT-002
+    text: "Admission MUST execute strict parse, JSON Schema 2020-12, complete typed projection, and exhaustive distinct-reachable-graph semantic analysis with deterministic independent problems and cascade suppression."
+  - id: SR-SWIFT-005
+    implements: FR-SWIFT-003
+    text: "SchemamiCore MUST produce RFC 8785 JCS bytes and SHA-256 digests matching committed vectors while keeping authored identity distinct; ordinary sorted-key encoding is insufficient."
+    verify_kind: behavioral
+    intent: "Equivalent admitted values have one exact identity across implementations."
+    falsifying_observation: "Whitespace, key order, locale, or Foundation dictionary order changes the digest."
+  - id: SR-SWIFT-006
+    implements: FR-SWIFT-004
+    text: "SchemamiCalculus MUST implement all six v1 operations exactly, using arbitrary-precision rational intermediates, compatible pinned UCUM conversion, and half-even public quantization without floating tolerance, density, network lookup, or prose parsing."
+    verify_kind: behavioral
+    intent: "Swift returns the same deterministic calculations and refusals as the v1 contract."
+    falsifying_observation: "A shared vector differs, rounds an intermediate, infers density, or depends on network/prose."
+  - id: SR-SWIFT-007
+    implements: FR-SWIFT-005
+    text: "Public APIs MUST use explicit ParseResult, AdmissionResult, and EvaluationResult-style outcomes with stable problem identity, RFC 6901 pointer, deterministic ordering, cycle guards, and protocol-floor resource budgets; exceptions alone are insufficient."
+  - id: SR-SWIFT-008
+    implements: FR-SWIFT-006
+    text: "Swift tests MUST replay deterministic copies/manifests of all required Schemami v1 vectors without Go, TypeScript, Fornada, network, or subprocess runtime dependencies."
+  - id: SR-SWIFT-009
+    implements: FR-SWIFT-007
+    text: "SchemamiDiff MUST compare two admitted recipes across identity, lineage, ingredients, formulas, method, activation, completion, environment, resources, components, outputs, and extensions, producing deterministic non-canonical metadata without culinary equivalence or mutation."
+  - id: SR-ADJ-001
+    implements: FR-ADJ-001
+    text: "SDK targets MUST contain no provider calls, prompts, OCR, app mapping, Fornada model, timer policy, baking model, HTTP presentation, or execution state; they consume admitted structured data only."
+  - id: SR-ADJ-002
+    implements: FR-ADJ-002
+    text: "Adjustment fixtures MUST prove the original remains byte-identical, persisted changes are complete documents with exact lineage.derived_from, and session-only scaling remains non-publishable evaluation metadata."
+acceptance_criteria:
+  - id: AC-SWIFT-001-1
+    source: prd
+    fr: FR-SWIFT-001
+    given: Fornada's verified Swift baseline
+    when: the package is integrated
+    then: all SDK products compile and their tests run with compatible tooling
+  - id: AC-SWIFT-002-1
+    source: prd
+    fr: FR-SWIFT-002
+    given: a valid unfamiliar complete v1 document with x-* values
+    when: Swift decodes and re-encodes it
+    then: no admitted content or authored array order is lost
+  - id: AC-SWIFT-003-1
+    source: prd
+    fr: FR-SWIFT-003
+    given: canonicalization vectors
+    when: Swift processes them
+    then: it returns pinned JCS bytes and SHA-256 or the required refusal
+  - id: AC-SWIFT-004-1
+    source: prd
+    fr: FR-SWIFT-004
+    given: accepted Calculus result and refusal vectors
+    when: Swift replays them
+    then: results match without tolerance, density, network, or Swift-specific rounding
+  - id: AC-SWIFT-005-1
+    source: prd
+    fr: FR-SWIFT-005
+    given: independent semantic blockers or resource exhaustion
+    when: admission or evaluation runs
+    then: stable problems are deduplicated and deterministically pointer-ordered
+  - id: AC-SWIFT-006-1
+    source: prd
+    fr: FR-SWIFT-006
+    given: the complete required v1 corpus
+    when: Swift CI runs
+    then: expected results require no other implementation, consumer checkout, or network
+  - id: AC-SWIFT-007-1
+    source: prd
+    fr: FR-SWIFT-007
+    given: two admitted recipes
+    when: SchemamiDiff compares them
+    then: it returns deterministic structural change metadata without culinary judgment
+  - id: AC-ADJ-001-1
+    source: prd
+    fr: FR-ADJ-001
+    given: hostile or ambiguous adjustment prose
+    when: a structured candidate is submitted
+    then: provider claims cannot override admission or calculation
+  - id: AC-ADJ-002-1
+    source: prd
+    fr: FR-ADJ-002
+    given: an approved changed recipe
+    when: Fornada imports it
+    then: it has exact parent lineage and the original remains unchanged
+  - id: AC-ADJ-003-1
+    source: prd
+    fr: FR-ADJ-003
+    given: a session-only yield change
+    when: scale succeeds
+    then: no new recipe identity, revision, digest, or lineage is invented
+  - id: AC-ADJ-004-1
+    source: prd
+    fr: FR-ADJ-004
+    given: Fornada app policy
+    when: SDK targets are audited
+    then: no app-owned policy appears in the SDK
+  - id: SAC-SWIFT-001
+    source: spec
+    fr: FR-SWIFT-001
+    given: the dependency spike package and Fornada root manifest
+    when: both are resolved and compiled with the verified toolchain
+    then: dependency versions, licenses, platforms, schema keyword behavior, and build cost are recorded before production scaffolding
+  - id: SAC-SWIFT-002
+    source: spec
+    fr: FR-SWIFT-006
+    given: the package copied outside the repository with locked dependencies and vector resources
+    when: tests run with network and consumer checkouts unavailable
+    then: every required Swift suite passes without shelling out
+protections:
+  - id: SP-001
+    source: prd
+    text: "The Swift SDK is deterministic and provider-neutral; no model, prompt, OCR, scraper, retry, or provider policy enters it."
+  - id: SP-002
+    source: prd
+    text: "A changed recipe is complete and derived; the original is immutable and lineage is not a patch chain."
+  - id: SP-003
+    source: prd
+    text: "Generated Codable types alone are not a Schemami SDK."
+  - id: SP-004
+    source: prd
+    text: "Fornada mappings, projections, baking intelligence, execution state, and HTTP presentation remain app-owned."
+  - id: SP-005
+    source: prd
+    text: "Swift does not wait for Go/TypeScript SDK extraction, but no Swift-only protocol behavior is accepted without a shared vector."
+  - id: SSP-001
+    source: spec
+    text: "A third-party validator or arithmetic package is informative implementation machinery; Schemami vectors remain the behavior authority."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/prds/PRD-009-schemami-swift-sdk-and-recipe-adjustment.md
+    description: Product requirements and fast-lane boundary.
+    source: prd
+  - type: doc
+    path_or_url: docs/product/specs/SPEC-007-schemami-v1-stable-release/spec.md
+    description: Normative v1 implementation authority.
+    source: prd
+  - type: doc
+    path_or_url: "Fornada repository: docs/architecture/HANDOFF-schemami-sdk-ai-recipe-adjustment.md"
+    description: Fornada consumer evidence and adjustment boundary.
+    source: prd
+revision_history:
+  - at: "2026-08-11T18:21:47Z"
+    author: Daniel Gomes
+    action: created
+    note: "Draft Swift-first implementation blueprint; dependency choices remain evidence-gated in Phase 0."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

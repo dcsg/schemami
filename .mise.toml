@@ -1,0 +1,7 @@
+# Toolchain pins. Bootstrap accepts only mise 2026.3.17, trusts this project
+# configuration only, and installs these exact versions from mise.lock.
+min_version = "2026.3.17"
+
+[tools]
+go = "1.26.1"
+bun = "1.3.14"

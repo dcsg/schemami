@@ -1,0 +1,95 @@
+schema_version: 1
+topic: recipe-calculus
+path: docs/architecture/decisions/ADR-016-active-graph-composition-and-target-scaling-calculus.md
+signals:
+  - active graph
+  - component scaling
+  - formula target
+  - reachable graph admission
+  - resolve selection
+  - schedule composition
+directives:
+  - text: 'Schemami v1 MUST expose resolve_selection and closed recipe/bundle requests with instance-scoped selections, JCS-derived evaluation identity, dependency-sensitive missing bindings, and exhaustive distinct-reachable-graph admission with explicit resource-limit refusal. (ref: ADR-016)'
+    source_excerpt:
+      line_start: 19
+      line_end: 44
+      quote: |-
+        1. The complete normative behavior and mandatory vectors in
+           `docs/product/prds/artifacts/PRD-007/active-graph-composition-calculus.md` are
+           accepted as the Schemami v1 Phase 8 Calculus authority.
+        2. Add public `resolve_selection` beside `scale`, `resolve_formula`,
+           `convert_quantity`, `reading_order`, and `schedule`. It returns effective
+           selections and active identifiers, never a rewritten recipe.
+        3. Recipe operations use a closed request containing exactly one `recipe` or
+           `bundle`, closed `arguments`, and optional instance-scoped `selections`.
+           `component_path` is an ID array from root to component instance. Duplicate,
+           unknown, or invalid supplied paths/values refuse. Missing values refuse only
+           operations whose result they can affect.
+        4. Every successful recipe/bundle operation reports JCS-derived exact root
+           identity, optional JCS bundle digest, and the effective argument/default
+           selection. Standalone quantity conversion has no invented recipe metadata.
+           Formula evaluations are present only when formulas are actually evaluated.
+        5. Selection removes inactive entities, descendant nodes, actions, and incident
+           dependency edges. Step flow remains authoritative; action flow is subset
+           attribution. Active references to inactive content refuse. Every selected
+           preparation/output has at most one producer and every consumed one has
+           exactly one.
+        6. Admission validates all declared content and every distinct reachable active
+           graph. Choice/toggle values and exact measurement-threshold boundary/interval
+           regions induce finite predicate truth vectors; equivalent active graphs are
+           deduplicated. Analysis is exact, cycle-safe, and may refuse only explicitly
+           with the existing `resource-limit` identity when accepted budgets are
+           exceeded.
+  - text: 'Schemami v1 formula evaluation MUST filter inactive terms without redistribution; scale MUST accept exactly one factor or root formula_target, derive and apply one unrounded exact rational factor, and resolve component instances through compatible measured child yield without rewriting recipes. (ref: ADR-016)'
+    source_excerpt:
+      line_start: 45
+      line_end: 60
+      quote: |-
+        7. Formula evaluation computes every authored term and then filters inactive
+           input results without redistribution. It reports independently quantized
+           authored and selected totals. An inactive percentage basis with another
+           active term refuses; a formula with no active terms is not applicable.
+        8. `scale` accepts exactly one positive decimal `factor` or root
+           `formula_target`. Formula targeting requires a positive resolvable selected
+           scalar total and compatible measured target. It derives one exact rational
+           factor from unquantized values, applies it once across the selected root and
+           component instances, and rounds only public results. No residual is assigned
+           to an ingredient, so independently quantized lines need not sum byte-for-byte
+           to the independently quantized exact target.
+        9. Component scaling resolves exact loaded bytes, selected child output, and
+           positive measured yield. Required amount and yield use exact compatible UCUM
+           conversion; range/open, density, mass-volume, missing/mismatched data, and
+           cycles refuse. Results carry exact component identity and quantities, never
+           rewritten child recipes.
+  - text: 'Schemami v1 composed reading order and schedule MUST use only explicit selected component facts, report unconsumed components, keep relative_timing outside earliest-start mathematics, return deterministic diagnostics, meet the accepted resource floors, and never change recipe identity or lineage. (ref: ADR-016)'
+    source_excerpt:
+      line_start: 61
+      line_end: 81
+      quote: |-
+        10. Composed reading order and schedule use only selected explicit facts. A
+            used child's explicit output producer is placed before/aligned with the
+            earliest explicit parent consumer. The final schedule shifts all offsets so
+            the earliest begins at `PT0S`. Active unconsumed components remain outside
+            the projection and are reported with closed `not-consumed` result entries.
+        11. `relative_timing` remains validated authored content but never changes v1
+            earliest-start schedule. Calendar presentation and a possible future lag
+            operation remain outside this release.
+        12. Independent diagnostics are deduplicated, cascade-suppressed, and sorted by
+            ASCII request pointer then type. Phase 8 adds stable binding, inactive
+            reference, producer, cycle, and relative-timing problem identities while
+            retaining existing `resource-limit` and quantity/reference problems.
+        13. Conforming implementations support at least 64 recursive levels, 10,000
+            evaluated semantic object/reference occurrences, 1,024 bundle documents,
+            and 1,024 selected component instances per otherwise-valid request. They may
+            support more;
+            above the floor, `resource-limit` is an operation outcome rather than a
+            document-invalidity claim.
+        14. Selection and every Calculus result are derived evaluation only. They never
+            change recipe/bundle identity, digest, revision, or lineage and never look
+            like publishable recipe content.
+paths:
+  - schema/**
+  - conformance/**
+  - tools/schemami/**
+  - tools/viewer/**
+  - docs/product/**

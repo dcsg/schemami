@@ -1,0 +1,1 @@
+{"schemami":"1","collection":"conformance","id":"number-boundaries","revision":1,"content_language":"en-GB","title":"Canonical","ingredients":[],"method":{"sequence":[]},"x-conformance-numbers":{"negativeZero":-0.0,"fixedLow":0.000001,"scientificLow":0.0000001,"fixedHigh":100000000000000000000,"scientificHigh":1e21,"fraction":4.50}}

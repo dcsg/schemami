@@ -1,0 +1,25 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-010-defer-structured-readiness-endpoints.md
+signals:
+  - recipe calculus
+  - source-language instruction
+  - method order
+  - readiness condition
+directives:
+  - text: 'ADR-010 readiness deferral is superseded by ADR-014; Schemami v1 now requires typed human-observed and measured completion conditions with closed semantics, refusal behavior, and conformance while prose remains non-executable. (ref: ADR-010)'
+    source_excerpt:
+      line_start: 4
+      line_end: 9
+      quote: |-
+        **Status:** Superseded by ADR-014
+
+        ADR-014 supersedes this pre-dogfood deferral. Schemami v1 will admit typed
+        human-observed and measured completion conditions, composed through a closed
+        grammar and kept separate from planning duration. The historical reasoning
+        below remains useful evidence for why prose must not masquerade as computation.
+paths:
+  - schema/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

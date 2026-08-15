@@ -1,0 +1,116 @@
+schema_version: 1
+plan: PLAN-schemami-swift-sdk-fast-lane
+target_release: schemami-swift-sdk-v1.0.0
+created: "2026-08-11"
+phases:
+  - id: "0"
+    name: Dependency and contract proof
+    classification: testable
+    completion_promise: PHASE 0 COMPLETE SWIFT DEPENDENCIES AND API ACCEPTED
+    criteria:
+      - id: AC-0.1
+        statement: "A disposable spike proves or rejects exact JSON Schema and arbitrary-precision dependency versions against real Schemami fixtures, required keywords, strict JSON cases, licenses, transitive cost, and Fornada's verified toolchain/platform baseline."
+        verify: "test -f docs/reports/schemami-swift-sdk-phase0-dependency-evidence.md"
+        verify_kind: behavioral
+        intent: "Production scaffolding starts with evidence-backed dependencies compatible with the actual consumer."
+        falsifying_observation: "A package is pinned without proving a required schema behavior or Fornada compatibility."
+      - id: AC-0.2
+        statement: "Daniel accepts the dependency recommendation and minimal public result/problem/budget API before a production Package.resolved is added."
+        verify: "rg -q 'Decision: accepted' docs/reports/schemami-swift-sdk-phase0-dependency-evidence.md"
+  - id: "1"
+    name: Strict retained JSON and complete v1 model
+    classification: testable
+    completion_promise: PHASE 1 COMPLETE SWIFT LOSSLESS CORE VERIFIED
+    criteria:
+      - id: AC-1.1
+        statement: "SchemamiCore strictly parses and losslessly projects every core/bundle field and tagged union, preserves authored array order and admitted x-* values, and rejects duplicate members and invalid I-JSON."
+        verify: "swift test --package-path sdk/swift --filter SchemamiCoreTests"
+        verify_kind: behavioral
+        intent: "The Swift model is complete and retains valid unfamiliar content."
+        falsifying_observation: "Any admitted fixture loses a field/order/extension or ambiguous JSON is accepted."
+      - id: AC-1.2
+        statement: "Schema resources and conformance fixtures are generated/copied from declared repository authorities with a deterministic manifest and no hand-edited divergent copy."
+        verify: "bash tools/schemami/check-swift-resources.sh"
+  - id: "2"
+    name: Semantic admission and canonical identity
+    classification: testable
+    completion_promise: PHASE 2 COMPLETE SWIFT ADMISSION AND IDENTITY VERIFIED
+    criteria:
+      - id: AC-2.1
+        statement: "Swift semantic admission evaluates every distinct reachable active graph, exact threshold boundaries, cycles, and resource floors and returns stable deduplicated pointer-ordered problems with cascade suppression."
+        verify: "swift test --package-path sdk/swift --filter SemanticAdmissionTests"
+      - id: AC-2.2
+        statement: "RFC 8785 canonical bytes and SHA-256 match every committed golden vector regardless of submitted whitespace, object key order, or locale."
+        verify: "swift test --package-path sdk/swift --filter CanonicalJSONTests"
+        verify_kind: behavioral
+        intent: "Swift exact identity matches the protocol contract."
+        falsifying_observation: "An equivalent value produces different bytes/digest or invalid input receives identity."
+  - id: "3"
+    name: All six Recipe Calculus operations
+    classification: testable
+    completion_promise: PHASE 3 COMPLETE SWIFT RECIPE CALCULUS VERIFIED
+    criteria:
+      - id: AC-3.1
+        statement: "Swift implements resolve_selection, scale, resolve_formula, convert_quantity, reading_order, and schedule and matches every shared result/refusal vector with exact rational intermediates and half-even public quantization."
+        verify: "swift test --package-path sdk/swift --filter SchemamiCalculusTests"
+        verify_kind: behavioral
+        intent: "All public v1 operations are deterministic and portable."
+        falsifying_observation: "A result differs, uses floating tolerance, rounds an intermediate, infers density, parses prose, or needs network access."
+  - id: "4"
+    name: Deterministic SchemamiDiff
+    classification: testable
+    completion_promise: PHASE 4 COMPLETE SWIFT SCHEMAMI DIFF VERIFIED
+    criteria:
+      - id: AC-4.1
+        statement: "SchemamiDiff deterministically reports all required protocol structural field families without mutation, merge, culinary equivalence, application projection policy, or canonical identity effects."
+        verify: "swift test --package-path sdk/swift --filter SchemamiDiffTests"
+  - id: "5"
+    name: Fornada dogfood
+    classification: operational
+    completion_promise: PHASE 5 COMPLETE FORNADA SWIFT SDK DOGFOOD REVIEWED
+    criteria:
+      - id: AC-5.1
+        statement: "Fornada pins the exact SDK revision, replaces temporary protocol behavior while retaining app-owned boundaries, and reports exact commands/results plus every finding classified as SDK, protocol, projection, or app-policy scope."
+  - id: "6"
+    name: Package release proof
+    classification: testable
+    completion_promise: PHASE 6 COMPLETE SWIFT SDK RELEASED AND PINNED
+    criteria:
+      - id: AC-6.1
+        statement: "A clean package checkout with locked dependencies passes the complete corpus without network after resolution, Go/TypeScript runtime, Fornada checkout, or undocumented Swift-only protocol behavior."
+        verify: "swift test --package-path sdk/swift"
+        verify_kind: behavioral
+        intent: "The SDK release is independently reproducible."
+        falsifying_observation: "Tests consume dirty/private bytes, another runtime, network, or an unvectorized semantic rule."
+      - id: AC-6.2
+        statement: "Commit, tag, publication, and Fornada pin occur only after Daniel approves the exact release identity and evidence ledger."
+        verify: "rg -q 'Release decision: approved' docs/reports/schemami-swift-sdk-release-evidence.md"
+dependencies:
+  "0":
+    blocks: ["1", "2", "3", "4", "5", "6"]
+  "1":
+    blocks: ["2", "3", "4", "5", "6"]
+  "2":
+    blocks: ["3", "4", "5", "6"]
+  "3":
+    blocks: ["4", "5", "6"]
+  "4":
+    blocks: ["5", "6"]
+  "5":
+    blocks: ["6"]
+risks:
+  - id: R-1
+    severity: critical
+    mitigation_phase: "0"
+  - id: R-2
+    severity: high
+    mitigation_phase: "1"
+  - id: R-3
+    severity: critical
+    mitigation_phase: "2"
+  - id: R-4
+    severity: critical
+    mitigation_phase: "3"
+  - id: R-5
+    severity: high
+    mitigation_phase: "5"

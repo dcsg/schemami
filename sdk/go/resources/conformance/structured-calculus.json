@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "description": "Normative structured-method, selection, composition, and bundle envelope byte-parity vectors.",
+  "vectors": [
+    { "id": "bundle-selection-instance-preorder", "fixture": "phase9.schemami-bundle.json", "operation": "resolve_selection", "arguments": {}, "expected_jcs_sha256": "2ea92fa2f0b8257a6e2543dd6c343ea3e820053b5464455daedccf20c346dafc" },
+    { "id": "bundle-exact-component-scale", "fixture": "phase9.schemami-bundle.json", "operation": "scale", "arguments": { "factor": "2" }, "expected_jcs_sha256": "466c2e0cbc665302a4719cf9f66f6a64cdecd621414e6138e4cef8a8001f9994" },
+    { "id": "bundle-composed-reading-order", "fixture": "phase9.schemami-bundle.json", "operation": "reading_order", "arguments": {}, "expected_jcs_sha256": "fa36662b28df578e76aab2b4e4adde68d673fb71415d768b9317f55915c79867" },
+    { "id": "bundle-composed-schedule", "fixture": "phase9.schemami-bundle.json", "operation": "schedule", "arguments": {}, "expected_jcs_sha256": "8fdc1e1cb634bc31e7e14c6e1541e4f5315fd1a4cd1e6b8a335cf0d922a59a17" },
+    {
+      "id": "optional-ratio-term-does-not-redistribute",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "optional", "revision": 1, "content_language": "pt-PT", "title": "Optional", "parameters": [{ "id": "include-c", "kind": "toggle", "name": "C", "default": false }], "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }, { "id": "c", "name": "C", "activation": { "kind": "toggle_is", "parameter": "include-c", "enabled": true } }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "2" }, { "input": { "kind": "ingredient", "id": "c" }, "parts": "1" }], "target": { "kind": "measured", "value": "400", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "resolve_formula", "arguments": { "formula_id": "mix" }, "expected_jcs_sha256": "f769dbcea5b9dcfafe796e79c0c14accc189b4bd47ff73c5d81f4639bfa75ba1"
+    },
+    {
+      "id": "formula-target-scales-selected-view-exactly",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "optional", "revision": 1, "content_language": "pt-PT", "title": "Optional", "parameters": [{ "id": "include-c", "kind": "toggle", "name": "C", "default": false }], "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }, { "id": "c", "name": "C", "activation": { "kind": "toggle_is", "parameter": "include-c", "enabled": true } }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "2" }, { "input": { "kind": "ingredient", "id": "c" }, "parts": "1" }], "target": { "kind": "measured", "value": "400", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "formula_target": { "formula_id": "mix", "quantity": { "kind": "measured", "value": "600", "unit": "g" } } }, "expected_jcs_sha256": "fe2638c7e2105f76f340aa39e0da9a10d123aaf8b36c29fe426a14c27452f185"
+    },
+    {
+      "id": "scale-requires-factor-xor-formula-target-neither",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "plain", "revision": 1, "content_language": "pt-PT", "title": "Plain", "ingredients": [{ "id": "a", "name": "A", "quantity": { "kind": "measured", "value": "1", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": {}, "expected_jcs_sha256": "ef00f5701fd5c69ba0f21f038ce36fa994dec2e5269440713f11edfbaf2874f9"
+    },
+    {
+      "id": "scale-requires-factor-xor-formula-target-both",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "plain", "revision": 1, "content_language": "pt-PT", "title": "Plain", "ingredients": [{ "id": "a", "name": "A", "quantity": { "kind": "measured", "value": "1", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "factor": "2", "formula_target": { "formula_id": "missing", "quantity": { "kind": "measured", "value": "2", "unit": "g" } } }, "expected_jcs_sha256": "ef00f5701fd5c69ba0f21f038ce36fa994dec2e5269440713f11edfbaf2874f9"
+    },
+    {
+      "id": "missing-consequential-selection-refuses",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "binding", "revision": 1, "content_language": "pt-PT", "title": "Binding", "parameters": [{ "id": "include", "kind": "toggle", "name": "Include" }], "ingredients": [{ "id": "a", "name": "A", "activation": { "kind": "toggle_is", "parameter": "include", "enabled": true } }], "method": { "sequence": [] } },
+      "operation": "resolve_selection", "arguments": {}, "expected_jcs_sha256": "d19171ddf47486a754256a9e5e5bafc03ef84d08ed5fa4a574ea762fb6380342"
+    },
+    {
+      "id": "method-only-binding-does-not-block-formula",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "consequential", "revision": 1, "content_language": "pt-PT", "title": "Consequential", "parameters": [{ "id": "branch", "kind": "toggle", "name": "Branch" }], "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "1" }], "target": { "kind": "measured", "value": "200", "unit": "g" } }], "method": { "sequence": [{ "kind": "step", "id": "optional-step", "instruction": "Optional.", "activation": { "kind": "toggle_is", "parameter": "branch", "enabled": true } }] } },
+      "operation": "resolve_formula", "arguments": { "formula_id": "mix" }, "expected_jcs_sha256": "cd780f42535ece3c249ca411c75d4d3c8e2e3c155da843fec87cd7c72d498d6c"
+    },
+    {
+      "id": "unknown-nested-selection-path-refuses",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "plain", "revision": 1, "content_language": "pt-PT", "title": "Plain", "ingredients": [], "method": { "sequence": [] } },
+      "operation": "resolve_selection", "arguments": { "selections": [{ "component_path": ["missing"], "bindings": {} }] }, "expected_jcs_sha256": "d061a341b3ace32f04c13bd65b363fb07e75611db9b81dd4d4143aacf827ffb6"
+    },
+    {
+      "id": "fixed-formula-anchor-refuses-retarget",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "fixed", "revision": 1, "content_language": "pt-PT", "title": "Fixed", "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "1" }], "target": { "kind": "measured", "value": "200", "unit": "g", "scaling": "fixed" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "formula_target": { "formula_id": "mix", "quantity": { "kind": "measured", "value": "400", "unit": "g" } } }, "expected_jcs_sha256": "fcc81d13665fb2bb73838fe8f6ae7cfebae2fe837b43b53ba3bda8ebf8f8fbe0"
+    },
+    {
+      "id": "unconsumed-component-reading-order-is-explicit",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "unconsumed", "revision": 1, "content_language": "pt-PT", "title": "Unconsumed", "ingredients": [], "components": [{ "id": "unused", "name": "Unused", "recipe": { "collection": "other", "id": "child", "revision": 1, "sha256": "1111111111111111111111111111111111111111111111111111111111111111" }, "output": "portion", "quantity": { "kind": "measured", "value": "100", "unit": "g" } }], "method": { "sequence": [{ "kind": "step", "id": "finish", "instruction": "Finish." }] } },
+      "operation": "reading_order", "arguments": {}, "expected_jcs_sha256": "eee029ac2fc20279301d2f71daf5418fbb0cd33ec125702d35a69ec21e9d4ffd"
+    },
+    {
+      "id": "unconsumed-component-schedule-is-explicit",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "unconsumed", "revision": 1, "content_language": "pt-PT", "title": "Unconsumed", "ingredients": [], "components": [{ "id": "unused", "name": "Unused", "recipe": { "collection": "other", "id": "child", "revision": 1, "sha256": "1111111111111111111111111111111111111111111111111111111111111111" }, "output": "portion", "quantity": { "kind": "measured", "value": "100", "unit": "g" } }], "method": { "sequence": [{ "kind": "step", "id": "finish", "instruction": "Finish.", "duration": { "target": "PT1M" } }] } },
+      "operation": "schedule", "arguments": {}, "expected_jcs_sha256": "b2ec93cf2b2d25a15ecaf3f6890fcf78e19d6bcf2acffe6c221a5f61f3b64139"
+    },
+    {
+      "id": "formula-target-factor-applies-to-other-formulas",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "two-formulas", "revision": 1, "content_language": "pt-PT", "title": "Two formulas", "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }, { "id": "c", "name": "C" }, { "id": "d", "name": "D" }], "formulas": [{ "id": "first", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "1" }], "target": { "kind": "measured", "value": "200", "unit": "g" } }, { "id": "second", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "c" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "d" }, "parts": "3" }], "target": { "kind": "measured", "value": "400", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "formula_target": { "formula_id": "first", "quantity": { "kind": "measured", "value": "300", "unit": "g" } } }, "expected_jcs_sha256": "5a8d2a793e5fbf8705267119fd8ab04650db9acf2a7bf58614a546dce2c7c777"
+    },
+    {
+      "id": "optional-percentage-term-does-not-redistribute",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "optional-percentage", "revision": 1, "content_language": "en-GB", "title": "Optional percentage", "parameters": [{ "id": "include-c", "kind": "toggle", "name": "Include C", "default": false }], "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }, { "id": "c", "name": "C", "activation": { "kind": "toggle_is", "parameter": "include-c", "enabled": true } }], "formulas": [{ "id": "mix", "kind": "percentage", "basis": { "kind": "ingredient", "id": "a" }, "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "percentage": "100" }, { "input": { "kind": "ingredient", "id": "b" }, "percentage": "50" }, { "input": { "kind": "ingredient", "id": "c" }, "percentage": "25" }], "basis_quantity": { "kind": "measured", "value": "400", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "resolve_formula", "arguments": { "formula_id": "mix" }, "expected_jcs_sha256": "e0640f1aea287cfdc4560460a8a25ec7fb1866249e59cd36497baa0e561bea2a"
+    },
+    {
+      "id": "duplicate-selection-instance-path-refuses",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "duplicate-selection", "revision": 1, "content_language": "en-GB", "title": "Duplicate selection", "ingredients": [], "method": { "sequence": [] } },
+      "operation": "resolve_selection", "arguments": { "selections": [{ "component_path": [], "bindings": {} }, { "component_path": [], "bindings": {} }] }, "expected_jcs_sha256": "1684d48e1dc94e95e86289f9d71b78b260f35a182156153cf145e62caccb3c3d"
+    },
+    {
+      "id": "formula-target-incompatible-dimension-refuses",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "incompatible-target", "revision": 1, "content_language": "en-GB", "title": "Incompatible target", "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "1" }], "target": { "kind": "measured", "value": "200", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "formula_target": { "formula_id": "mix", "quantity": { "kind": "measured", "value": "1", "unit": "mL" } } }, "expected_jcs_sha256": "5004f96cafafbbcd6ece433b0635a0aee4e86090c3a815bfb0e1a1a0d6946156"
+    },
+    {
+      "id": "formula-target-repeating-factor-stays-exact-before-quantization",
+      "recipe": { "schemami": "1", "collection": "conformance", "id": "repeating-factor", "revision": 1, "content_language": "en-GB", "title": "Repeating factor", "ingredients": [{ "id": "a", "name": "A" }, { "id": "b", "name": "B" }], "formulas": [{ "id": "mix", "kind": "ratio", "terms": [{ "input": { "kind": "ingredient", "id": "a" }, "parts": "1" }, { "input": { "kind": "ingredient", "id": "b" }, "parts": "2" }], "target": { "kind": "measured", "value": "3", "unit": "g" } }], "method": { "sequence": [] } },
+      "operation": "scale", "arguments": { "formula_target": { "formula_id": "mix", "quantity": { "kind": "measured", "value": "1", "unit": "g" } } }, "expected_jcs_sha256": "ebf6c3c7499d40ebe778f0c71d8212192d77ac42590eb83ee8b33e13e43d650e"
+    },
+    {
+      "id": "selection-authored-defaults-only",
+      "recipe_fixture": "phase3-selection.schemami.json",
+      "operation": "resolve_selection",
+      "arguments": {},
+      "expected_jcs_sha256": "deb00f079c116f8dc1edc534741565d6596a8e3228ee91e6d3cef069072ee89e"
+    },
+    {
+      "id": "selection-explicit-bindings-alternative-and-measurement",
+      "recipe_fixture": "phase3-selection.schemami.json",
+      "operation": "resolve_selection",
+      "arguments": { "selections": [{ "component_path": [], "bindings": { "fermentation-mode": "ambient", "include-seeds": true, "ambient-temperature": { "kind": "measured", "value": "18", "unit": "Cel" } }, "alternatives": { "salt": "rock-salt" } }] },
+      "expected_jcs_sha256": "b9999446c407dcd0bb9852e52251fe1ed0def06131be06708acb68a741dade55"
+    },
+    {
+      "id": "selection-unknown-choice-refuses",
+      "recipe_fixture": "phase3-selection.schemami.json",
+      "operation": "resolve_selection",
+      "arguments": { "selections": [{ "component_path": [], "bindings": { "fermentation-mode": "unknown" } }] },
+      "expected_jcs_sha256": "d061a341b3ace32f04c13bd65b363fb07e75611db9b81dd4d4143aacf827ffb6"
+    },
+    {
+      "id": "selection-incompatible-measurement-refuses",
+      "recipe_fixture": "phase3-selection.schemami.json",
+      "operation": "resolve_selection",
+      "arguments": { "selections": [{ "component_path": [], "bindings": { "ambient-temperature": { "kind": "measured", "value": "20", "unit": "g" } } }] },
+      "expected_jcs_sha256": "d061a341b3ace32f04c13bd65b363fb07e75611db9b81dd4d4143aacf827ffb6"
+    },
+    {
+      "id": "standalone-selection-unresolved-component-refuses",
+      "recipe_fixture": "phase9-structured.schemami.json",
+      "operation": "resolve_selection",
+      "arguments": {},
+      "expected_jcs_sha256": "ee4e39fb7471e48131dd0c265857cc272e1c40aa5831dad3a6081735fda98d4a"
+    }
+  ]
+}

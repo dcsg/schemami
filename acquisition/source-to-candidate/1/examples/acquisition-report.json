@@ -1,0 +1,23 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {
+    "id": "https://example.com/adapters/recipe-import",
+    "release": "2026-08-11"
+  },
+  "submitted_sha256": "516fe71e0bc37b9f0927593d23592d557cf0a1b2fb470c60b57cd1c076fa1ebe",
+  "coverage": [
+    {
+      "source": "source-1",
+      "status": "partially_captured",
+      "candidate_pointer": "/method/sequence/0"
+    }
+  ],
+  "review_items": [
+    {
+      "code": "missing-structured-fact",
+      "source": "source-1",
+      "candidate_pointer": "/method/sequence/0",
+      "message": "A fonte não indica a duração da mistura."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+# Schemami feature ledger — source of truth for FEATURES.md.
+# FEAT -> FR (PRD) -> SR/DS/CMP (SPEC) -> plan -> implementation evidence.
+
+schema_version: 1
+features:
+  - id: FEAT-CORE-001
+    name: Schemami wire identity and clean cutover
+    status: shipped
+    target: schemami-v1.0.0
+    realized_by: [FR-NAME-001, FR-CUTOVER-001]
+    description: >-
+      One Schemami-only core and bundle wire, schema identity, CLI, package,
+      example, viewer, and CI surface with explicit refusal of predecessor
+      input and no dual-reader or migration contract.
+  - id: FEAT-MODEL-001
+    name: Audited semantic field contract
+    status: implemented
+    target: schemami-v1.0.0
+    realized_by: [FR-MODEL-001]
+    description: >-
+      Every public field has one scoped meaning and a standards decision;
+      content_language is BCP 47 source language and never UI locale.
+  - id: FEAT-VOCAB-001
+    name: Recipe-local vocabulary
+    status: implemented
+    target: schemami-v1.0.0
+    realized_by: [FR-VOCAB-001]
+    description: >-
+      Local ingredients, techniques, equipment, and steps validate and render
+      without central registry admission; application mappings stay external.
+  - id: FEAT-CALC-001
+    name: Exact Recipe Calculus
+    status: implemented
+    target: schemami-v1.0.0
+    realized_by: [FR-CALC-006]
+    description: >-
+      Exact scale, formula resolution, UCUM conversion, reading order, and
+      scheduling with canonical decimal results and explicit refusal.
+  - id: FEAT-EVIDENCE-001
+    name: Inert source evidence and machine diagnostics
+    status: implemented
+    target: schemami-v1.0.0
+    realized_by: [FR-EVIDENCE-001]
+    description: >-
+      RFC 6901-targeted evidence preserves imports without becoming logic;
+      operations return stable machine-readable supported/refused envelopes.
+  - id: FEAT-PACK-001
+    name: Offline portable bundles
+    status: implemented
+    target: schemami-v1.0.0
+    realized_by: [FR-PORTABLE-001]
+    description: >-
+      Explicit local bundle resolution pins collection, revision, and JCS
+      SHA-256 bytes without network lookup or vocabulary snapshots.
+  - id: FEAT-PAO-001
+    name: Registry-free Pão adoption boundary
+    status: protocol-ready
+    target: post-release-integration
+    realized_by: [FR-PAO-001]
+    description: >-
+      Protocol-owned vectors prove unknown recipe-local terms remain readable;
+      Pão owns its later adapter, mapping, presentation, and compatibility.
+  - id: FEAT-REL-001
+    name: Stable release proof and publication
+    status: shipped
+    target: schemami-v1.0.0
+    realized_by: [FR-REL-001]
+    description: >-
+      Clean-clone conformance, release manifests, version-ready SDK sources,
+      and the immutable HTTPS contract define the stable source release;
+      registry and language-specific tag publication follows with the owner.

@@ -1,0 +1,11 @@
+{
+  "schemami": "1",
+  "collection": "acquisition-tests",
+  "id": "refused",
+  "revision": 1,
+  "content_language": "en-GB",
+  "title": "Refused candidate",
+  "ingredients": [],
+  "method": {"sequence": []},
+  "steps": []
+}

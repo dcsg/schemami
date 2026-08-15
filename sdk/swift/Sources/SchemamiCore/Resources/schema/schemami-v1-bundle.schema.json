@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemami.dev/schema/schemami/1/bundle.schema.json",
+  "title": "Schemami Bundle v1",
+  "type": "object",
+  "required": ["schemami", "root", "documents"],
+  "additionalProperties": false,
+  "properties": {
+    "schemami": {"const": "1"},
+    "root": {"$ref": "https://schemami.dev/schema/schemami/1/core.schema.json#/$defs/recipeReference"},
+    "documents": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1024,
+      "items": {
+        "type": "object",
+        "required": ["sha256", "document"],
+        "additionalProperties": false,
+        "properties": {
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "document": {"$ref": "https://schemami.dev/schema/schemami/1/core.schema.json#/$defs/recipe"}
+        },
+        "patternProperties": {"^x-[a-z0-9]+(?:-[a-z0-9]+)*$": {}}
+      }
+    }
+  },
+  "patternProperties": {"^x-[a-z0-9]+(?:-[a-z0-9]+)*$": {}}
+}

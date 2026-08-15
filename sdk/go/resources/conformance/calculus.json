@@ -1,0 +1,352 @@
+[
+  {
+    "name": "kilograms to grams",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "kg"}, "target_unit": "g", "pointer": "/ingredients/0/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "1000", "unit": "g"}}}
+  },
+  {
+    "name": "litres to millilitres",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1.5", "unit": "L"}, "target_unit": "mL", "pointer": "/ingredients/0/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "1500", "unit": "mL"}}}
+  },
+  {
+    "name": "US cup exact conversion with protocol quantization",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "[cup_us]"}, "target_unit": "mL", "pointer": "/ingredients/0/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "236.5882", "unit": "mL"}}}
+  },
+  {
+    "name": "UCUM metric cup is 240 millilitres",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "[cup_m]"}, "target_unit": "mL", "pointer": "/ingredients/0/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "240", "unit": "mL"}}}
+  },
+  {
+    "name": "Celsius to Fahrenheit",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "100", "unit": "Cel"}, "target_unit": "[degF]", "pointer": "/temperature"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "212", "unit": "[degF]"}}}
+  },
+  {
+    "name": "Fahrenheit Celsius crossover",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "-40", "unit": "[degF]"}, "target_unit": "Cel", "pointer": "/temperature"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "-40", "unit": "Cel"}}}
+  },
+  {
+    "name": "half-even tie rounds down to even",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1234.45", "unit": "mL"}, "target_unit": "L", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "1.2344", "unit": "L"}}}
+  },
+  {
+    "name": "half-even tie rounds up to even",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1234.55", "unit": "mL"}, "target_unit": "L", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "ok", "result": {"quantity": {"kind": "measured", "value": "1.2346", "unit": "L"}}}
+  },
+  {
+    "name": "bare cup refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "cup"}, "target_unit": "mL", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/ambiguous-unit", "pointer": "/quantity/unit"}]}
+  },
+  {
+    "name": "unknown unit refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "[cup_unknown]"}, "target_unit": "mL", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/unknown-unit", "pointer": "/quantity/unit"}]}
+  },
+  {
+    "name": "mass volume refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "100", "unit": "g"}, "target_unit": "mL", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/dimension-mismatch", "pointer": "/quantity/unit"}]}
+  },
+  {
+    "name": "open quantity refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "open"}, "target_unit": "g", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/unsupported-quantity-kind", "pointer": "/quantity"}]}
+  },
+  {
+    "name": "range quantity conversion refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "range", "minimum": "1", "maximum": "2", "unit": "kg"}, "target_unit": "g", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/unsupported-quantity-kind", "pointer": "/quantity"}]}
+  },
+  {
+    "name": "formula relationship passed as quantity refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "ratio"}, "target_unit": "g", "pointer": "/formula"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/unsupported-quantity-kind", "pointer": "/formula"}]}
+  },
+  {
+    "name": "invalid decimal conversion refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "01", "unit": "kg"}, "target_unit": "g", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-decimal", "pointer": "/quantity/value"}]}
+  },
+  {
+    "name": "excessive decimal conversion refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "10000000000000000", "unit": "g"}, "target_unit": "kg", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/resource-limit", "pointer": "/quantity/value"}]}
+  },
+  {
+    "name": "ambiguous target unit refuses",
+    "operation": "convert_quantity",
+    "input": {"quantity": {"kind": "measured", "value": "1", "unit": "mL"}, "target_unit": "cup", "pointer": "/quantity"},
+    "expected": {"operation": "convert_quantity", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/ambiguous-unit"}]}
+  },
+  {
+    "name": "ratio formula resolves ordered parts against target",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "ratio",
+        "terms": [
+          {"ingredient": "starter", "parts": "1"},
+          {"ingredient": "flour", "parts": "2"},
+          {"ingredient": "water", "parts": "2"}
+        ],
+        "target": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {
+      "operation": "resolve_formula",
+      "status": "ok",
+      "result": {"quantities": [
+        {"ingredient": "starter", "quantity": {"kind": "measured", "value": "100", "unit": "g"}},
+        {"ingredient": "flour", "quantity": {"kind": "measured", "value": "200", "unit": "g"}},
+        {"ingredient": "water", "quantity": {"kind": "measured", "value": "200", "unit": "g"}}
+      ]}
+    }
+  },
+  {
+    "name": "percentage formula resolves term order against basis quantity",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "percentage",
+        "basis": "flour",
+        "terms": [
+          {"ingredient": "flour", "percentage": "100"},
+          {"ingredient": "water", "percentage": "75"},
+          {"ingredient": "starter", "percentage": "20"}
+        ],
+        "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {
+      "operation": "resolve_formula",
+      "status": "ok",
+      "result": {"quantities": [
+        {"ingredient": "flour", "quantity": {"kind": "measured", "value": "500", "unit": "g"}},
+        {"ingredient": "water", "quantity": {"kind": "measured", "value": "375", "unit": "g"}},
+        {"ingredient": "starter", "quantity": {"kind": "measured", "value": "100", "unit": "g"}}
+      ]}
+    }
+  },
+  {
+    "name": "ratio formula without target refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {"kind": "ratio", "terms": [{"ingredient": "starter", "parts": "1"}, {"ingredient": "flour", "parts": "2"}]}
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/formula/target"}]}
+  },
+  {
+    "name": "percentage formula without basis quantity refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {"kind": "percentage", "basis": "flour", "terms": [{"ingredient": "flour", "percentage": "100"}]}
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/formula/basis_quantity"}]}
+  },
+  {
+    "name": "percentage formula omitted named basis term refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "percentage",
+        "basis": "flour",
+        "terms": [{"ingredient": "water", "percentage": "75"}],
+        "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/formula/terms"}]}
+  },
+  {
+    "name": "percentage formula named basis not one hundred refuses",
+    "operation": "resolve_formula",
+    "input": {
+      "pointer": "/formula",
+      "formula": {
+        "kind": "percentage",
+        "basis": "flour",
+        "terms": [{"ingredient": "flour", "percentage": "80"}],
+        "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+      }
+    },
+    "expected": {"operation": "resolve_formula", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/formula/terms/0/percentage"}]}
+  },
+  {
+    "name": "scale explicit measured fixed range and open quantities",
+    "operation": "scale",
+    "input": {
+      "factor": "2",
+      "recipe": {"ingredients": [
+        {"id": "flour", "quantity": {"kind": "measured", "value": "500", "unit": "g"}},
+        {"id": "salt", "quantity": {"kind": "measured", "value": "10", "unit": "g", "scaling": "fixed"}},
+        {"id": "water", "quantity": {"kind": "range", "minimum": "450", "maximum": "500", "unit": "mL"}},
+        {"id": "oil", "quantity": {"kind": "open", "qualifier": "as_needed"}}
+      ]}
+    },
+    "expected": {
+      "operation": "scale",
+      "status": "ok",
+      "result": {"quantities": [
+        {"ingredient": "flour", "quantity": {"kind": "measured", "value": "1000", "unit": "g"}},
+        {"ingredient": "salt", "quantity": {"kind": "measured", "value": "10", "unit": "g", "scaling": "fixed"}},
+        {"ingredient": "water", "quantity": {"kind": "range", "minimum": "900", "maximum": "1000", "unit": "mL"}},
+        {"ingredient": "oil", "quantity": {"kind": "open", "qualifier": "as_needed"}}
+      ]}
+    }
+  },
+  {
+    "name": "scale formula anchor but return recipe ingredient order",
+    "operation": "scale",
+    "input": {
+      "factor": "2",
+      "recipe": {
+        "ingredients": [{"id": "starter"}, {"id": "flour"}, {"id": "water"}],
+        "formula": {
+          "kind": "percentage",
+          "basis": "flour",
+          "terms": [
+            {"ingredient": "flour", "percentage": "100"},
+            {"ingredient": "water", "percentage": "75"},
+            {"ingredient": "starter", "percentage": "20"}
+          ],
+          "basis_quantity": {"kind": "measured", "value": "500", "unit": "g"}
+        }
+      }
+    },
+    "expected": {
+      "operation": "scale",
+      "status": "ok",
+      "result": {"quantities": [
+        {"ingredient": "starter", "quantity": {"kind": "measured", "value": "200", "unit": "g"}},
+        {"ingredient": "flour", "quantity": {"kind": "measured", "value": "1000", "unit": "g"}},
+        {"ingredient": "water", "quantity": {"kind": "measured", "value": "750", "unit": "g"}}
+      ]}
+    }
+  },
+  {
+    "name": "scale formula keeps exact anchor until public result quantization",
+    "operation": "scale",
+    "input": {
+      "factor": "0.0001",
+      "recipe": {
+        "ingredients": [{"id": "trace"}],
+        "formula": {
+          "kind": "percentage",
+          "basis": "trace",
+          "terms": [{"ingredient": "trace", "percentage": "100"}],
+          "basis_quantity": {"kind": "measured", "value": "1", "unit": "g"}
+        }
+      }
+    },
+    "expected": {
+      "operation": "scale",
+      "status": "ok",
+      "result": {"quantities": [
+        {"ingredient": "trace", "quantity": {"kind": "measured", "value": "0.0001", "unit": "g"}}
+      ]}
+    }
+  },
+  {
+    "name": "scale ingredient without quantity authority refuses",
+    "operation": "scale",
+    "input": {"factor": "2", "recipe": {"ingredients": [{"id": "flour"}]}},
+    "expected": {"operation": "scale", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/ingredients/0/quantity"}]}
+  },
+  {
+    "name": "scale zero factor refuses",
+    "operation": "scale",
+    "input": {"factor": "0", "recipe": {"ingredients": [{"id": "flour", "quantity": {"kind": "measured", "value": "500", "unit": "g"}}]}},
+    "expected": {"operation": "scale", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/factor"}]}
+  },
+  {
+    "name": "scale ignores conflicting source evidence",
+    "operation": "scale",
+    "input": {
+      "factor": "2",
+      "recipe": {
+        "ingredients": [{"id": "flour", "quantity": {"kind": "measured", "value": "500", "unit": "g"}}],
+        "sources": [{"id": "book", "uri": "book.pdf"}],
+        "evidence": [{"id": "conflict", "source": "book", "pointer": "/ingredients/0/quantity/value", "raw_text": "900 g", "confidence": "0.1"}]
+      }
+    },
+    "expected": {"operation": "scale", "status": "ok", "result": {"quantities": [
+      {"ingredient": "flour", "quantity": {"kind": "measured", "value": "1000", "unit": "g"}}
+    ]}}
+  },
+  {
+    "name": "source evidence cannot supply a missing quantity",
+    "operation": "scale",
+    "input": {
+      "factor": "2",
+      "recipe": {
+        "ingredients": [{"id": "flour"}],
+        "sources": [{"id": "book", "uri": "book.pdf"}],
+        "evidence": [{"id": "amount", "source": "book", "pointer": "/ingredients/0", "raw_text": "500 g", "confidence": "1"}]
+      }
+    },
+    "expected": {"operation": "scale", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/ingredients/0/quantity"}]}
+  },
+  {
+    "name": "reading order respects dependencies and declaration ties",
+    "operation": "reading_order",
+    "input": {"steps": [{"id": "heat"}, {"id": "mix"}, {"id": "finish", "after": ["mix", "heat"]}]},
+    "expected": {"operation": "reading_order", "status": "ok", "result": {"steps": ["heat", "mix", "finish"]}}
+  },
+  {
+    "name": "earliest start schedule",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "mix", "duration": "PT8M"}, {"id": "rest", "after": ["mix"], "duration": {"minimum": "PT30M", "target": "PT45M", "maximum": "PT1H"}}]},
+    "expected": {"operation": "schedule", "status": "ok", "result": {"steps": [{"id": "mix", "start": "PT0S", "duration": "PT8M", "end": "PT8M"}, {"id": "rest", "start": "PT8M", "duration": "PT45M", "end": "PT53M"}]}}
+  },
+  {
+    "name": "independent schedule branches overlap",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "heat", "duration": "PT10M"}, {"id": "mix", "duration": "PT3M"}, {"id": "finish", "after": ["heat", "mix"], "duration": "PT2M"}]},
+    "expected": {"operation": "schedule", "status": "ok", "result": {"steps": [{"id": "heat", "start": "PT0S", "duration": "PT10M", "end": "PT10M"}, {"id": "mix", "start": "PT0S", "duration": "PT3M", "end": "PT3M"}, {"id": "finish", "start": "PT10M", "duration": "PT2M", "end": "PT12M"}]}}
+  },
+  {
+    "name": "missing schedule duration refuses",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "mix"}]},
+    "expected": {"operation": "schedule", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/steps/0/duration"}]}
+  },
+  {
+    "name": "duration window without target refuses",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "rest", "duration": {"minimum": "PT30M", "maximum": "PT1H"}}]},
+    "expected": {"operation": "schedule", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/missing-fact", "pointer": "/steps/0/duration"}]}
+  },
+  {
+    "name": "inverted duration window refuses",
+    "operation": "schedule",
+    "input": {"steps": [{"id": "rest", "duration": {"minimum": "PT2H", "target": "PT1H", "maximum": "PT30M"}}]},
+    "expected": {"operation": "schedule", "status": "refused", "problems": [{"type": "https://schemami.dev/problems/invalid-operation-arguments", "pointer": "/steps/0/duration"}]}
+  }
+]

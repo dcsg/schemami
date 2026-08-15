@@ -1,0 +1,54 @@
+schema_version: 1
+topic: standards
+path: docs/guidelines/standards-first.md
+signals:
+  - canonicalization
+  - country codes
+  - freeform values
+  - language tags
+  - standard identifiers
+  - unit identity
+directives:
+  - text: 'Before introducing an interoperable value or operation, the design MUST identify the relevant established standard or registry and its canonical representation, if one exists. (ref: standards-first)'
+    source_excerpt:
+      line_start: 22
+      line_end: 24
+      quote: |-
+        1. Before introducing an interoperable value or operation, the design MUST
+           identify the relevant established standard or registry and its canonical
+           representation, if one exists.
+  - text: 'The design MUST record why a selected standard fits the required semantics, including authority, version or registry, canonicalisation, and important limits. (ref: standards-first)'
+    source_excerpt:
+      line_start: 25
+      line_end: 27
+      quote: |-
+        2. The design MUST record why the selected standard fits the required
+           semantics, including its authority, version or registry, canonicalisation,
+           and any important limits.
+  - text: 'An RCP-specific representation MUST be introduced only after recording the standard considered, semantic gap, smallest extension, and migration/interoperability impact. (ref: standards-first)'
+    source_excerpt:
+      line_start: 28
+      line_end: 30
+      quote: |-
+        3. An RCP-specific representation MUST be introduced only when the assessment
+           records the standard considered, the semantic gap, the smallest extension,
+           and its migration/interoperability impact.
+  - text: 'A standard-backed field or operation MUST use the standard''s canonical representation in normative data and conformance vectors. (ref: standards-first)'
+    source_excerpt:
+      line_start: 35
+      line_end: 37
+      quote: |-
+        5. Once selected, a standard-backed field or operation MUST use the
+           standard's canonical representation in normative data and conformance
+           vectors.
+paths:
+  - schema/**
+  - registry/**
+  - calculus/**
+  - docs/product/**
+  - prototypes/**
+scope:
+  - planning
+  - design
+  - implementation
+  - review

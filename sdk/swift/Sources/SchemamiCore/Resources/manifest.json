@@ -1,0 +1,99 @@
+{
+  "resources": [
+    {
+      "source": "conformance/schemami-v1/calculus.json",
+      "destination": "conformance/calculus.json",
+      "sha256": "ab5853a0f73514eb53d394ab34927b1741429438c862544df2edb2cb6331122c"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization.json",
+      "destination": "conformance/canonicalization.json",
+      "sha256": "6f2e5b645adee84ebb1f3f9e83ddae4a670ca73a8636b34ebb1b4b1354a655a0"
+    },
+    {
+      "source": "conformance/schemami-v1/diff.json",
+      "destination": "conformance/diff.json",
+      "sha256": "b0ce5da27702e0914a36d7d0f28b77917d5547cc02ae360acc0adfb398c7ce17"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization/member-order-a.schemami.json",
+      "destination": "conformance/fixtures/canonicalization/member-order-a.schemami.json",
+      "sha256": "89c2420d8064e1fdfe0a18aeebfadd9268483ea56d82b093733012fe56cb75f7"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization/member-order-b.schemami.json",
+      "destination": "conformance/fixtures/canonicalization/member-order-b.schemami.json",
+      "sha256": "49a45825b48d0c4df0e5d390aa83d17a044bffe4a0c3d30834cbddb5aa5b1453"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization/number-boundaries.schemami.json",
+      "destination": "conformance/fixtures/canonicalization/number-boundaries.schemami.json",
+      "sha256": "b9666df6a3a04e6119fa2d5f4aa8229f2f80c41557cf1e21554c39645a63bd2b"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization/string-escapes.schemami.json",
+      "destination": "conformance/fixtures/canonicalization/string-escapes.schemami.json",
+      "sha256": "8013120356f722b2c2b2e7b2d5f3f5e4f9df0f012456e6fed3d66774460ebbf3"
+    },
+    {
+      "source": "conformance/schemami-v1/canonicalization/utf16-order.schemami.json",
+      "destination": "conformance/fixtures/canonicalization/utf16-order.schemami.json",
+      "sha256": "69f2d21df7608a49eff6d95f2d0caec9b243e91c38d671b136152fcf295f132e"
+    },
+    {
+      "source": "tools/schemami/testdata/phase3-selection.schemami.json",
+      "destination": "conformance/fixtures/phase3-selection.schemami.json",
+      "sha256": "36e3f624daf42a5adc653a1addd424a82d7bda37ec7d673a5604ebc19e02f397"
+    },
+    {
+      "source": "tools/schemami/testdata/phase9-child.schemami.json",
+      "destination": "conformance/fixtures/phase9-child.schemami.json",
+      "sha256": "3844109a62d5694354f0507b203ba474d6c5415bc3b96b58d79d97743af8dd0c"
+    },
+    {
+      "source": "tools/schemami/testdata/phase9-minimal.schemami.json",
+      "destination": "conformance/fixtures/phase9-minimal.schemami.json",
+      "sha256": "fdf26b6e6007af415bc854becaf52487546f965a305a8343a7f1da66cd422e86"
+    },
+    {
+      "source": "tools/schemami/testdata/phase9-root.schemami.json",
+      "destination": "conformance/fixtures/phase9-root.schemami.json",
+      "sha256": "efce9f10a476c34445ebc55c7b951a392024aa2a4bc2983f413cb91dac928aad"
+    },
+    {
+      "source": "tools/schemami/testdata/phase9-structured.schemami.json",
+      "destination": "conformance/fixtures/phase9-structured.schemami.json",
+      "sha256": "e02188120c39629f5efc5517d603c76cad0691bfde5ee0c710310998d3de16ba"
+    },
+    {
+      "source": "tools/schemami/testdata/phase9.schemami-bundle.json",
+      "destination": "conformance/fixtures/phase9.schemami-bundle.json",
+      "sha256": "4c893b13fd95c2ebe918b7757288a8651a69c99c30e43e5eb86b5384dd913939"
+    },
+    {
+      "source": "conformance/schemami-v1/resource-budgets.json",
+      "destination": "conformance/resource-budgets.json",
+      "sha256": "0005a4fb9e486073438b5fa714a6b812dbbc234a84e7eacc5d3f007df862ff3a"
+    },
+    {
+      "source": "conformance/schemami-v1/structured-calculus.json",
+      "destination": "conformance/structured-calculus.json",
+      "sha256": "637d485f7f42b6c7ded2a029c485dda5f5129b3437acecc6c1375fc3fdc3c8d7"
+    },
+    {
+      "source": "conformance/schemami-v1/validation.json",
+      "destination": "conformance/validation.json",
+      "sha256": "907d8e7b5d98bc9ed621c5d0353eef1fa7b4d48ec8d848bb7f60bf67a3e8d305"
+    },
+    {
+      "source": "schema/schemami-v1-bundle.schema.json",
+      "destination": "schema/schemami-v1-bundle.schema.json",
+      "sha256": "09b14a5a9270c536da81ef8322732db13e6952b52ac7ce39898b61922dd16d65"
+    },
+    {
+      "source": "schema/schemami-v1-core.schema.json",
+      "destination": "schema/schemami-v1-core.schema.json",
+      "sha256": "82971d505b3a17560105cc41bcb6d1aab2813bcdbfadb5329a06eab930df7be6"
+    }
+  ]
+}

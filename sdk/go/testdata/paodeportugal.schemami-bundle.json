@@ -1,0 +1,80 @@
+{
+  "schemami": "1",
+  "root": {
+    "collection": "paodeportugal",
+    "id": "pao-massa-mae",
+    "revision": 1,
+    "sha256": "04e4b54611cfbffbe21a3048b1aac049e7af0ef2881d4afad5947033724ed17a"
+  },
+  "documents": [
+    {
+      "sha256": "04e4b54611cfbffbe21a3048b1aac049e7af0ef2881d4afad5947033724ed17a",
+      "document": {
+        "schemami": "1",
+        "collection": "paodeportugal",
+        "id": "pao-massa-mae",
+        "revision": 1,
+        "content_language": "pt-PT",
+        "title": "Pão de massa-mãe",
+        "origin": { "country": "PT", "locality": "Mafra" },
+        "x-paodeportugal-review": "draft",
+        "sources": [
+          { "id": "pao-book", "uri": "https://example.org/pao-massa-mae", "media_type": "text/plain", "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef" },
+          { "id": "pao-video", "uri": "https://example.org/pao-massa-mae.mp4", "media_type": "video/mp4" }
+        ],
+        "evidence": [
+          { "id": "flour-basis", "source": "pao-book", "pointer": "/formulas/0/basis_quantity/value", "raw_text": "500 g de farinha", "confidence": "0.9" },
+          { "id": "mix-video", "source": "pao-video", "pointer": "/method/sequence/0/techniques/0", "selector": { "kind": "fragment", "value": "t=300,600", "conforms_to": "https://www.w3.org/TR/media-frags/" } },
+          { "id": "rest-video", "source": "pao-video", "pointer": "/method/sequence/1/techniques/0", "selector": { "kind": "fragment", "value": "t=600,900", "conforms_to": "https://www.w3.org/TR/media-frags/" } }
+        ],
+        "ingredients": [
+          { "id": "starter", "name": "Massa-mãe", "notes": ["Ativa, no pico de fermentação."] },
+          { "id": "flour", "name": "Farinha T65" },
+          { "id": "water", "name": "Água" }
+        ],
+        "techniques": [
+          { "id": "mixing", "name": "Mistura" },
+          { "id": "bulk-fermentation", "name": "Fermentação em massa" }
+        ],
+        "formulas": [
+          {
+            "id": "dough",
+            "name": "Massa",
+            "kind": "percentage",
+            "basis": { "kind": "ingredient", "id": "flour" },
+            "terms": [
+              { "input": { "kind": "ingredient", "id": "starter" }, "percentage": "20" },
+              { "input": { "kind": "ingredient", "id": "flour" }, "percentage": "100" },
+              { "input": { "kind": "ingredient", "id": "water" }, "percentage": "75" }
+            ],
+            "basis_quantity": { "kind": "measured", "value": "500", "unit": "g" }
+          }
+        ],
+        "method": {
+          "sequence": [
+            {
+              "kind": "step",
+              "id": "mix",
+              "instruction": "Misture os ingredientes.",
+              "uses": [
+                { "kind": "ingredient", "id": "starter" },
+                { "kind": "ingredient", "id": "flour" },
+                { "kind": "ingredient", "id": "water" }
+              ],
+              "techniques": ["mixing"],
+              "duration": { "target": "PT8M" }
+            },
+            {
+              "kind": "step",
+              "id": "rest",
+              "instruction": "Deixe repousar.",
+              "after": ["mix"],
+              "techniques": ["bulk-fermentation"],
+              "duration": { "minimum": "PT30M", "target": "PT45M", "maximum": "PT1H" }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

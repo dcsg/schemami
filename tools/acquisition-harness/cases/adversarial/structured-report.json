@@ -1,0 +1,35 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {
+    "id": "https://example.com/adapters/adversarial-fixture",
+    "release": "phase-3"
+  },
+  "submitted_sha256": "e02188120c39629f5efc5517d603c76cad0691bfde5ee0c710310998d3de16ba",
+  "coverage": [
+    {
+      "source": "source-1",
+      "status": "partially_captured",
+      "candidate_pointer": "/method"
+    }
+  ],
+  "review_items": [
+    {
+      "code": "adapter-representation-choice",
+      "source": "source-1",
+      "candidate_pointer": "/formulas/0",
+      "message": "The source supports a percentage formula; the adapter retained it without inventing another formula."
+    },
+    {
+      "code": "ambiguous-source-value",
+      "source": "source-1",
+      "candidate_pointer": "/method/sequence/1",
+      "message": "The source gives a fermentation range and an observation, not a deterministic biological endpoint."
+    },
+    {
+      "code": "manual-review-required",
+      "source": "source-1",
+      "candidate_pointer": "/ingredients/2/alternatives",
+      "message": "Confirm that the authored salt alternatives are strict one-for-one choices."
+    }
+  ]
+}

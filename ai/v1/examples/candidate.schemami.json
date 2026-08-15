@@ -1,0 +1,24 @@
+{
+  "schemami": "1",
+  "collection": "personal",
+  "id": "pao-de-centeio",
+  "revision": 1,
+  "content_language": "pt-PT",
+  "title": "Pão de centeio",
+  "ingredients": [
+    {
+      "id": "ingredient-1",
+      "name": "Farinha de centeio",
+      "quantity": {"kind": "measured", "value": "300", "unit": "g"}
+    }
+  ],
+  "method": {
+    "sequence": [
+      {
+        "kind": "step",
+        "id": "step-1",
+        "instruction": "Misturar a farinha com os restantes ingredientes."
+      }
+    ]
+  }
+}

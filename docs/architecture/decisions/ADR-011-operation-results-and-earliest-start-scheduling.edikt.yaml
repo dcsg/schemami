@@ -1,0 +1,46 @@
+schema_version: 1
+topic: protocol-model
+path: docs/architecture/decisions/ADR-011-operation-results-and-earliest-start-scheduling.md
+signals:
+  - operation result
+  - recipe calculus
+  - schedule
+  - reading order
+directives:
+  - text: 'Successful Schemami v1 operations MUST place their closed operation-specific payload in result; refused operations MUST instead carry non-empty stable problems, and not_applicable carries neither. (ref: ADR-011)'
+    source_excerpt:
+      line_start: 16
+      line_end: 22
+      quote: |-
+        1. Every successful public operation envelope has `operation`, `status: ok`,
+           and one operation-specific object named `result`. A refusal has
+           `operation`, `status: refused`, and non-empty `problems`; it has no `result`.
+           `not_applicable` has no `result` or `problems`. Human prose is never part of
+           the machine envelope.
+        2. `convert_quantity.result.quantity` is a measured quantity containing
+           `kind: measured`, canonical-decimal `value`, and the requested UCUM `unit`.
+  - text: 'Schemami v1 schedule MUST be the dependency-derived earliest-start projection, use target for duration windows, refuse missing durations, and emit deterministic elapsed start/duration/end strings in reading_order. (ref: ADR-011)'
+    source_excerpt:
+      line_start: 23
+      line_end: 39
+      quote: |-
+        3. `schedule` is an earliest-start projection over explicit `after`
+           dependencies. Steps with no dependencies start together at offset zero. A
+           dependent step starts at the greatest end offset of its dependencies.
+        4. A scalar duration supplies its elapsed value. A duration window supplies
+           its required `target`; minimum and maximum do not select the planned offset.
+           A scheduled step without a scalar duration or target refuses with
+           `missing-fact` at that step's duration pointer. Dependency cycles are invalid
+           documents and never reach scheduling.
+        5. `schedule.result.steps` follows normative `reading_order`. Each item has
+           `id`, `start`, `duration`, and `end`. These are canonical elapsed-duration
+           strings. Output uniquely uses the largest exact week/day/hour/minute units
+           in that order, omits zero components, and uses `PT0S` for offset zero.
+        6. Scheduling has no wall-clock date, locale, track, lane, readiness condition,
+           or inferred dependency. Independent steps may overlap; the result makes no
+           resource-capacity claim.
+paths:
+  - schema/**
+  - calculus/**
+  - tools/**
+  - docs/product/**

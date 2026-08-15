@@ -1,0 +1,13 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "submitted_sha256": "516fe71e0bc37b9f0927593d23592d557cf0a1b2fb470c60b57cd1c076fa1ebe",
+  "attempt": 1,
+  "problems": [
+    {
+      "type": "https://schemami.dev/problems/invalid-reference",
+      "pointer": "/method/sequence/0/ingredients/0"
+    }
+  ],
+  "authorized_sources": ["source-1"]
+}

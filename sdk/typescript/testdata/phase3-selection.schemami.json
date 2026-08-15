@@ -1,0 +1,84 @@
+{
+  "schemami": "1",
+  "collection": "conformance",
+  "id": "phase3-selection",
+  "revision": 1,
+  "content_language": "en-GB",
+  "title": "Selection parity fixture",
+  "parameters": [
+    {
+      "id": "fermentation-mode",
+      "kind": "choice",
+      "name": "Fermentation mode",
+      "options": [
+        {"id": "ambient", "name": "Ambient"},
+        {"id": "cold", "name": "Cold"}
+      ],
+      "default": "cold"
+    },
+    {
+      "id": "include-seeds",
+      "kind": "toggle",
+      "name": "Include seeds",
+      "default": false
+    },
+    {
+      "id": "ambient-temperature",
+      "kind": "measurement",
+      "name": "Ambient temperature",
+      "unit": "Cel",
+      "default": {"kind": "measured", "value": "22", "unit": "Cel"}
+    }
+  ],
+  "ingredients": [
+    {
+      "id": "flour",
+      "name": "Flour",
+      "quantity": {"kind": "measured", "value": "100", "unit": "g"}
+    },
+    {
+      "id": "salt",
+      "quantity": {"kind": "measured", "value": "2", "unit": "g"},
+      "alternatives": {
+        "options": [
+          {"id": "sea-salt", "name": "Sea salt"},
+          {"id": "rock-salt", "name": "Rock salt"}
+        ],
+        "default": "sea-salt"
+      }
+    },
+    {
+      "id": "seeds",
+      "name": "Seeds",
+      "quantity": {"kind": "measured", "value": "10", "unit": "g"},
+      "activation": {"kind": "toggle_is", "parameter": "include-seeds", "enabled": true}
+    },
+    {
+      "id": "warm-water",
+      "name": "Warm water",
+      "quantity": {"kind": "measured", "value": "50", "unit": "g"},
+      "activation": {
+        "kind": "measurement_compare",
+        "parameter": "ambient-temperature",
+        "operator": "greater_than",
+        "measurement": {"kind": "measured", "value": "20", "unit": "Cel"}
+      }
+    }
+  ],
+  "method": {
+    "sequence": [
+      {
+        "kind": "step",
+        "id": "ambient-proof",
+        "instruction": "Proof at ambient temperature.",
+        "activation": {"kind": "choice_is", "parameter": "fermentation-mode", "option": "ambient"}
+      },
+      {
+        "kind": "step",
+        "id": "cold-proof",
+        "instruction": "Proof cold.",
+        "activation": {"kind": "choice_is", "parameter": "fermentation-mode", "option": "cold"}
+      }
+    ]
+  }
+}

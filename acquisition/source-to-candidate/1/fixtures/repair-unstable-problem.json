@@ -1,0 +1,7 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "submitted_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "attempt": 1,
+  "problems": [{"type": "problem-42", "pointer": ""}]
+}

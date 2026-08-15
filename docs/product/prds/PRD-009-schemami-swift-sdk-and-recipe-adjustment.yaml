@@ -1,0 +1,171 @@
+schema_version: "1.0"
+type: prd
+id: PRD-009
+title: "Schemami Swift SDK fast lane and recipe adjustment"
+slug: schemami-swift-sdk-and-recipe-adjustment
+status: accepted
+rigor: platform
+author: Daniel Gomes
+created_at: "2026-08-11T18:21:47Z"
+requirements:
+  - id: FR-SWIFT-001
+    text: "Deliver a versioned Swift Package with SchemamiCore, SchemamiCalculus, and SchemamiDiff products on Swift tools 5.10, iOS 17, and macOS 14."
+    status: proposed
+  - id: FR-SWIFT-002
+    text: "SchemamiCore MUST losslessly parse and encode the complete v1 recipe/bundle model, preserve authored order and admitted x-* values, retain admitted source access, and separate schema from semantic admission."
+    status: proposed
+  - id: FR-SWIFT-003
+    text: "The SDK MUST provide RFC 8785 JCS canonical bytes and SHA-256 identity while keeping authored collection/id/revision distinct from exact content identity."
+    status: proposed
+  - id: FR-SWIFT-004
+    text: "SchemamiCalculus MUST implement resolve_selection, scale, resolve_formula, convert_quantity, reading_order, and schedule using exact v1 arithmetic, quantization, and refusal behavior."
+    status: proposed
+  - id: FR-SWIFT-005
+    text: "The SDK MUST return explicit result types, stable problem identities, RFC 6901 pointers, deterministic ordering, cycle-safe evaluation, and accepted resource floors rather than relying only on thrown Swift errors."
+    status: proposed
+  - id: FR-SWIFT-006
+    text: "Swift MUST replay the repository-owned v1 conformance corpus without a Go, TypeScript, Fornada, or network runtime dependency; reference implementations MAY detect development drift."
+    status: proposed
+  - id: FR-SWIFT-007
+    text: "SchemamiDiff MUST deterministically compare two admitted complete documents and report protocol structural changes without identity effects, merging, culinary judgment, or application projection policy."
+    status: proposed
+  - id: FR-ADJ-001
+    text: "External adapters MAY propose complete candidates from user intent, but the Swift SDK MUST accept structured documents only and MUST NOT execute prose or call a provider."
+    status: proposed
+  - id: FR-ADJ-002
+    text: "Persisted composition, method, fermentation-condition, or substitution changes MUST produce a complete new recipe with exact lineage.derived_from while leaving the original unchanged."
+    status: proposed
+  - id: FR-ADJ-003
+    text: "Temporary yield adjustment MUST remain a non-publishable Calculus result; only a reviewed persisted composition or method change becomes a derived recipe under application policy."
+    status: proposed
+  - id: FR-ADJ-004
+    text: "Fornada mappings, projections, overlays, timer rules, biological models, execution state, HTTP presentation, and revision policy MUST remain outside all SDK products."
+    status: proposed
+acceptance_criteria:
+  - id: AC-SWIFT-001-1
+    fr: FR-SWIFT-001
+    given: Fornada's verified Swift tools 5.10, iOS 17, and macOS 14 baseline
+    when: the package is integrated
+    then: all SDK products compile and their tests run with compatible tooling
+    status: proposed
+  - id: AC-SWIFT-002-1
+    fr: FR-SWIFT-002
+    given: a valid unfamiliar complete v1 document with x-* values
+    when: Swift decodes and re-encodes it
+    then: no admitted content or authored array order is lost
+    status: proposed
+  - id: AC-SWIFT-003-1
+    fr: FR-SWIFT-003
+    given: the canonicalization vectors
+    when: Swift processes them
+    then: it produces the pinned RFC 8785 bytes and SHA-256 digests or required refusal without locale-dependent behavior
+    status: proposed
+  - id: AC-SWIFT-004-1
+    fr: FR-SWIFT-004
+    given: every accepted Calculus result and refusal vector
+    when: Swift replays it
+    then: results match without floating tolerance, density inference, network lookup, or Swift-specific rounding
+    status: proposed
+  - id: AC-SWIFT-005-1
+    fr: FR-SWIFT-005
+    given: independent semantic blockers or resource exhaustion
+    when: admission or evaluation runs
+    then: stable problems are deduplicated and deterministically ordered with RFC 6901 pointers
+    status: proposed
+  - id: AC-SWIFT-006-1
+    fr: FR-SWIFT-006
+    given: the complete required v1 corpus
+    when: Swift CI runs
+    then: expected results require no Go CLI, TypeScript runtime, Fornada checkout, or network access
+    status: proposed
+  - id: AC-SWIFT-007-1
+    fr: FR-SWIFT-007
+    given: two admitted complete recipes
+    when: SchemamiDiff compares them
+    then: it reports deterministic protocol structural changes as non-canonical metadata without culinary judgment, while application projection assessment remains separate
+    status: proposed
+  - id: AC-ADJ-001-1
+    fr: FR-ADJ-001
+    given: hostile or ambiguous adjustment prose
+    when: a structured candidate is submitted
+    then: only structured content is evaluated and provider claims cannot override admission or calculations
+    status: proposed
+  - id: AC-ADJ-002-1
+    fr: FR-ADJ-002
+    given: an approved changed recipe
+    when: Fornada imports it
+    then: it is a complete document with an exact parent reference and the original bytes remain unchanged
+    status: proposed
+  - id: AC-ADJ-003-1
+    fr: FR-ADJ-003
+    given: a session-only yield change
+    when: scale succeeds
+    then: no new recipe identity, revision, digest, or lineage is invented
+    status: proposed
+  - id: AC-ADJ-004-1
+    fr: FR-ADJ-004
+    given: Fornada-specific mappings and baking policy
+    when: SDK boundaries are audited
+    then: none appears in SchemamiCore, SchemamiCalculus, or SchemamiDiff
+    status: proposed
+protections:
+  - id: SP-001
+    text: "The Swift SDK is deterministic and provider-neutral; no model, prompt, OCR, scraper, retry, or provider policy enters it."
+  - id: SP-002
+    text: "A changed recipe is a complete derived document; the original is immutable and lineage is never an executable patch chain."
+  - id: SP-003
+    text: "Generated Codable types alone are not a Schemami SDK; admission, exact Calculus, identity, diagnostics, and corpus parity are required."
+  - id: SP-004
+    text: "Fornada mappings, projections, baking intelligence, execution state, and HTTP presentation remain application-owned."
+  - id: SP-005
+    text: "Swift delivery does not wait for Go/TypeScript SDK extraction, but no Swift-only protocol behavior is accepted without a shared vector."
+solution_references:
+  - type: doc
+    path_or_url: docs/product/specs/SPEC-007-schemami-v1-stable-release/spec.md
+    description: Accepted v1 schema, semantic, Calculus, and conformance authority.
+  - type: doc
+    path_or_url: "Fornada repository: docs/architecture/HANDOFF-schemami-sdk-ai-recipe-adjustment.md"
+    description: Fornada consumer boundary and SDK capability handoff.
+stakeholders:
+  - name: Daniel Gomes
+    role: owner
+    required: true
+    signed_off_at: null
+dependencies: [PRD-007]
+nfrs:
+  - category: other
+    requirement: "The Swift package replays a language-neutral corpus that later Go and TypeScript SDKs can consume."
+  - category: other
+    requirement: "Canonicalization, exact arithmetic, diagnostics, and diff ordering do not depend on locale or binary floating point."
+  - category: security
+    requirement: "Parsing and semantic analysis are cycle-safe, resource-bounded, offline, and never execute source or extension content."
+risks:
+  - id: R-SWIFT-1
+    description: "Fast delivery produces an incomplete generated-model package."
+    likelihood: medium
+    impact: high
+    mitigation: "Definition of done requires admission, Calculus, identity, diagnostics, diff, and corpus replay."
+open_questions: []
+source_specs: [SPEC-009]
+supersedes: null
+superseded_by: null
+deprecated_at: null
+deprecated_reason: null
+cancelled_at: null
+cancelled_reason: null
+forcing_questions:
+  problem_behind_problem: "Fornada needs trustworthy native import, calculation, and adjustment review without waiting for unrelated SDK packaging work."
+  evidence_or_hypothesis: "A complete Swift-first SDK can dogfood Schemami quickly while a shared corpus prevents a Swift-only protocol fork."
+  north_metric_and_counter: "North: Fornada pins and uses a conformant Swift SDK. Counter: zero provider/app policy in the package and zero undocumented Swift-only semantics."
+  must_not_change: "No model calls, no original-recipe mutation, no Fornada mappings in SDK products, and no structs-only SDK claim."
+  riskiest_assumption: "The full v1 semantics can be delivered on the verified Fornada Swift baseline without waiting for Go/TypeScript package extraction."
+revision_history:
+  - at: "2026-08-11T18:21:47Z"
+    author: Daniel Gomes
+    action: created
+    note: "Drafted first as a three-SDK track, then narrowed to an approved Swift fast lane while retaining Go/TypeScript as a later parity track."
+extensions: {}
+_sync:
+  md_hash: ""
+  yaml_hash: ""
+  synced_at: ""

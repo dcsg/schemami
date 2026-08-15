@@ -1,0 +1,38 @@
+/* Schemami offline viewer. Classes only; the CSP forbids style attributes. */
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 64rem; padding: 1.5rem; font: 16px/1.55 system-ui, sans-serif; }
+main { display: grid; gap: 1.1rem; }
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.05rem; margin-bottom: .4rem; }
+textarea#input { width: 100%; min-height: 13rem; padding: .75rem; font: 13px/1.4 ui-monospace, monospace; border: 2px dashed color-mix(in srgb, currentColor 35%, transparent); border-radius: 8px; }
+textarea#input:focus-visible, button:focus-visible, input:focus-visible { outline: 3px solid #4a7dbd; outline-offset: 2px; }
+.toolbar { display: flex; justify-content: flex-end; align-items: center; gap: .75rem; flex-wrap: wrap; }
+button, input, .file-label { font: inherit; font-size: .85rem; }
+button { padding: .35rem .8rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); background: color-mix(in srgb, currentColor 8%, transparent); cursor: pointer; }
+#file-input { max-width: 18rem; }
+#busy { font-style: italic; }
+.verdicts { border-left: 4px solid #4a7dbd; padding: .45rem 1rem; overflow-x: auto; }
+.verdicts.valid { border-color: #2c7a3d; }
+.verdicts.invalid { border-color: #b04a4a; }
+.verdicts code { overflow-wrap: anywhere; }
+.doc-block { border: 1px solid color-mix(in srgb, currentColor 18%, transparent); border-radius: 10px; padding: 1rem 1.25rem; }
+.doc-block header p { opacity: .75; }
+.formula { border-left: 3px solid color-mix(in srgb, currentColor 28%, transparent); padding-left: .8rem; }
+.ingredients { max-height: 26rem; overflow-y: auto; padding-left: 1.25rem; }
+.ingredients > li { margin: .45rem 0; }
+.ingredients .amount { font-variant-numeric: tabular-nums; font-weight: 650; }
+.notes { opacity: .8; font-size: .9rem; margin: .15rem 0 .35rem; }
+.steps li { margin: .6rem 0; overflow-wrap: anywhere; }
+.steps p { margin: 0 0 .2rem; }
+.meta { display: inline-block; font-size: .75rem; padding: .08rem .4rem; border-radius: 999px; background: color-mix(in srgb, currentColor 9%, transparent); border: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
+.scale-control { display: flex; gap: .5rem; align-items: baseline; flex-wrap: wrap; margin: .75rem 0; }
+.scale-control input { width: 6rem; padding: .25rem .4rem; border-radius: 6px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.scale-refusal { margin: .5rem 0; }
+.schedule { margin-top: 1rem; border-top: 1px dashed color-mix(in srgb, currentColor 25%, transparent); padding-top: .5rem; }
+.schedule code, .amount { font-variant-numeric: tabular-nums; }
+.empty { opacity: .75; }
+@media (max-width: 40rem) {
+  body { padding: 1rem; }
+  .toolbar { justify-content: flex-start; }
+}

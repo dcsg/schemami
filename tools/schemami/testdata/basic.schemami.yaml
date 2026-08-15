@@ -1,0 +1,49 @@
+schemami: "1"
+collection: paodeportugal
+id: pao-massa-mae
+revision: 1
+content_language: pt-PT
+title: Pão de massa-mãe
+x-paodeportugal-review: draft
+sources:
+  - id: pao-book
+    uri: https://example.org/pao-massa-mae
+    media_type: text/plain
+    sha256: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+evidence:
+  - id: flour-basis
+    source: pao-book
+    pointer: /formulas/0/basis_quantity/value
+    raw_text: 500 g de farinha
+    confidence: "0.9"
+ingredients:
+  - id: starter
+    name: Massa-mãe
+  - id: flour
+    name: Farinha T65
+  - id: water
+    name: Água
+formulas:
+  - id: dough
+    kind: percentage
+    basis: { kind: ingredient, id: flour }
+    terms:
+      - { input: { kind: ingredient, id: starter }, percentage: "20" }
+      - { input: { kind: ingredient, id: flour }, percentage: "100" }
+      - { input: { kind: ingredient, id: water }, percentage: "75" }
+    basis_quantity: { kind: measured, value: "500", unit: g }
+method:
+  sequence:
+    - kind: step
+      id: mix
+      instruction: Misture os ingredientes.
+      uses:
+        - { kind: ingredient, id: starter }
+        - { kind: ingredient, id: flour }
+        - { kind: ingredient, id: water }
+      duration: { target: PT8M }
+    - kind: step
+      id: rest
+      instruction: Deixe repousar.
+      after: [mix]
+      duration: { minimum: PT30M, target: PT45M, maximum: PT1H }

@@ -1,0 +1,23 @@
+{
+  "contract": "https://schemami.dev/contracts/source-to-candidate/1",
+  "adapter": {
+    "id": "https://example.com/adapters/adversarial-fixture",
+    "release": "phase-3"
+  },
+  "submitted_sha256": "efce9f10a476c34445ebc55c7b951a392024aa2a4bc2983f413cb91dac928aad",
+  "coverage": [
+    {
+      "source": "source-1",
+      "status": "captured",
+      "candidate_pointer": "/components/0"
+    }
+  ],
+  "review_items": [
+    {
+      "code": "adapter-representation-choice",
+      "source": "source-1",
+      "candidate_pointer": "/components/0",
+      "message": "The already-admitted child is represented by its exact recipe identity and digest."
+    }
+  ]
+}
